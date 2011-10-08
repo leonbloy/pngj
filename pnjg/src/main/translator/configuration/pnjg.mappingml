@@ -1,0 +1,30 @@
+<!-- -->
+<!-- ILOG Java 2 CSharp translator mapping file for project pnjg -->
+<!-- -->
+<mapping>
+   <!--          -->
+   <!-- packages -->
+   <!--          -->
+   <packages>
+      <!--               -->
+      <!-- ar.com.hjg.pngj -->
+      <!--              -->
+      <package name="ar.com.hjg.pngj">
+      </package>
+      <!--               -->
+      <!-- ar.com.hjg.pngj.chunks -->
+      <!--              -->
+      <package name="ar.com.hjg.pngj.chunks">
+      </package>
+      <!--               -->
+      <!-- ar.com.hjg.pngj.nosandbox -->
+      <!--              -->
+      <package name="ar.com.hjg.pngj.nosandbox">
+      </package>
+      <!--               -->
+      <!-- ar.com.hjg.pngj.test -->
+      <!--              -->
+      <package name="ar.com.hjg.pngj.test">
+      </package>
+   </packages>
+</mapping>
