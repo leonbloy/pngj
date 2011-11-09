@@ -34,6 +34,7 @@ public class ImageLine {
 	 * tracks the current row number (from 0 to rows-1)
 	 */
 	private int rown = -1;
+	public PngFilterType filterUsed; // informational ; only filled by the reader
 
 	public ImageLine(ImageInfo imgInfo) {
 		this.imgInfo = imgInfo;

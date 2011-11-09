@@ -26,7 +26,7 @@ public class PngWriter {
 	private int[] scanline = null;
 	private short[] rowb = null; // element 0 is filter type!
 	private short[] rowbprev = null; // rowb prev
-	private byte[] rowbfilter = null; // current line with filter
+	private byte[] rowbfilter = null; // current line with filter  
 	private final OutputStream os;
 	private final String filename; // optional
 	private PngIDatChunkOutputStream datStream;
@@ -252,13 +252,13 @@ public class PngWriter {
 		}
 	}
 
-	private long sumRowbfilter() { // sums absolute value 
-		long s = 0;
+	private int sumRowbfilter() { // sums absolute value 
+		int s = 0;
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++)
 			if (rowbfilter[i] < 0)
-				s -= (long) rowbfilter[i];
+				s -= (int ) rowbfilter[i];
 			else
-				s += (long) rowbfilter[i];
+				s += (int ) rowbfilter[i];
 		return s;
 	}
 
@@ -296,7 +296,7 @@ public class PngWriter {
 	private void filterRowPaeth() {
 		int i, j;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			rowbfilter[i] = (byte) (rowb[i] - PngHelper.filterPaethPredictor(j > 0 ? rowb[j] : 0, rowbprev[i], j > 0 ? rowbprev[j] : 0));
+			rowbfilter[i] = (byte) (rowb[i] - PngFilterType.filterPaethPredictor(j > 0 ? rowb[j] : 0, rowbprev[i], j > 0 ? rowbprev[j] : 0));
 		}
 	}
 

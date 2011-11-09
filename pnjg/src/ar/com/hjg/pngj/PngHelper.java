@@ -157,22 +157,7 @@ public class PngHelper {
 		}
 	}
 
-	public static int filterPaethPredictor(int a, int b, int c) {
-		// from http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
-		// a = left, b = above, c = upper left
-		final int p = a + b - c;// ; initial estimate
-		final int pa = p>=a? p-a : a-p;
-		final int pb = p>=b? p-b : b-p;
-		final int pc = p>=c? p-c : c-p;
-		// ; return nearest of a,b,c,
-		// ; breaking ties in order a,b,c.
-		if (pa <= pb && pa <= pc)
-			return a;
-		else if (pb <= pc)
-			return b;
-		else
-			return c;
-	}
+
 
 	public static void logdebug(String msg) {
 		if (DEBUG)
@@ -212,6 +197,10 @@ public class PngHelper {
 
 	public static double intToDouble100000(int i) {
 		return i /100000.0;
+	}
+
+	public static int clampTo_0_255(int i) {
+		return i>255 ? 255 : (i<0 ? 0 : i);
 	}
 
 }

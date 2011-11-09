@@ -20,19 +20,7 @@ public abstract class PngChunkTextVar extends PngChunk {
 		public String warning;
 		public String source;
 		public String comment;
-		/*
-		 * public void writeChunks() { writeChunk("Title", title);
-		 * writeChunk("Author", author); writeChunk("Description", description);
-		 * writeChunk("Creation Time", creation_time); writeChunk("Software",
-		 * software); writeChunk("Disclaimer", disclaimer); writeChunk("Software",
-		 * software); writeChunk("Warning", warning); writeChunk("Source", source);
-		 * writeChunk("Comment", comment); }
-		 */
-		/*
-		 * private void writeChunk(String name, String val) { if (val == null)
-		 * return; PngChunk p = PngChunk.createTextChunk(name, val, crcEngine);
-		 * p.writeChunk(os); }
-		 */
+		
 	}
 
 	public String getKey() {
@@ -42,4 +30,11 @@ public abstract class PngChunkTextVar extends PngChunk {
 	public String getVal() {
 		return val;
 	}
+
+	public void setKeyVal(String key,String val) {
+		this.key = key;
+		this.val = val;
+	}
+	
+	
 }

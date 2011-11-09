@@ -240,6 +240,7 @@ public class PngReader {
 	 */
 	public ImageLine readRow(int nrow) {
 		readRow(imgLine.scanline, nrow);
+		imgLine.filterUsed = PngFilterType.getByVal(rowbfilter[0]);
 		imgLine.incRown();
 		return imgLine;
 	}
@@ -271,6 +272,7 @@ public class PngReader {
 		// loads in rowbfilter "raw" bytes, with filter
 		PngHelper.readBytes(idatIstream, rowbfilter, 0, rowbfilter.length);
 		rowb[0] = rowbfilter[0];
+		
 		unfilterRow();
 		convertRowFromBytes(buffer);
 		return buffer;
@@ -351,8 +353,7 @@ public class PngReader {
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
 			x = j > 0 ? rowb[j] : 0;
 			y = j > 0 ? rowbprev[j] : 0;
-			rowb[i] = ((int) (rowbfilter[i] & 0xFF) + PngHelper.filterPaethPredictor(x,
-					rowbprev[i], y)) & 0xFF;
+			rowb[i] = ((int) (rowbfilter[i] & 0xFF) + PngFilterType.filterPaethPredictor(x,	rowbprev[i], y)) & 0xFF;
 		}
 	}
 

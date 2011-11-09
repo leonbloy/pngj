@@ -8,7 +8,7 @@ package ar.com.hjg.pngj;
 public class ImageInfo {
 	//ref: http://www.w3.org/TR/PNG/#11IHDR
 
-	private static final int MAX_COLS_ROWS_VAL = 400000; // very big value
+	private static final int MAX_COLS_ROWS_VAL = 1000000; // very big value ; actually we are ok with 2**22=4M, perhaps even more
 
 	/**
 	 * Image width, in pixels.

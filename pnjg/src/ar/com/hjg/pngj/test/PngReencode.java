@@ -15,6 +15,7 @@ import ar.com.hjg.pngj.nosandbox.FileHelper;
 public class PngReencode {
 	public static void reencode(String orig, String dest, PngFilterType filterType,
 			int cLevel) {
+		if(orig.equals(dest)) throw new RuntimeException("files are the same!");
 		PngReader pngr = FileHelper.createPngReader(new File(orig));
 		PngWriter pngw = FileHelper.createPngWriter(new File(dest), pngr.imgInfo, true);
 		System.out.println(pngr.toString());
@@ -34,16 +35,21 @@ public class PngReencode {
 		System.out.println("Done");
 	}
 
+	public static void fromCmdLineArgs(String[] args) {
+	if (args.length != 4) {
+		System.err.println("Arguments: [pngsrc] [pngdest] [filter] [compressionlevel]");
+		System.err.println(" Where filter = 0..4  , compressionLevel = 0 .. 9");
+		System.exit(1);
+	}
+	long t0 = System.currentTimeMillis();
+	reencode(args[0], args[1], PngFilterType.getByVal(Integer.parseInt(args[2])),
+			Integer.parseInt(args[3]));
+	long t1 = System.currentTimeMillis();
+	System.out.println("Listo: " + (t1-t0) + " msecs");
+	}
+	
 	public static void main(String[] args) throws Exception {
-		if (args.length != 4) {
-			System.err.println("Arguments: [pngsrc] [pngdest] [filter] [compressionlevel]");
-			System.err.println(" Where filter = 0..4  , compressionLevel = 0 .. 9");
-			System.exit(1);
-		}
-		long t0 = System.currentTimeMillis();
-		reencode(args[0], args[1], PngFilterType.getByVal(Integer.parseInt(args[2])),
-				Integer.parseInt(args[3]));
-		long t1 = System.currentTimeMillis();
-		System.out.println("Listo: " + (t1-t0) + " msecs");
+		//fromCmdLineArgs(args);
+		reencode("/temp/testturb.png", "/temp/testturb2.png", PngFilterType.FILTER_AGRESSIVE, 9);
 	}
 }

@@ -8,7 +8,7 @@ import ar.com.hjg.pngj.nosandbox.FileHelper;
 /**
  * 
  */
-public class ShowInfo {
+public class ShowGralInfo {
 	/*
 	 * public static void show(File file, boolean includeChunksSkel) { PngReader
 	 * pngr = FileHelper.createPngReader(file);
@@ -16,7 +16,7 @@ public class ShowInfo {
 	 * pngr.imgInfo.rows; row++) { pngr.readRow(row); } pngr.end();
 	 * if(includeChunksSkel) pngr.showChunks(); }
 	 */
-	public static void show2(File file, boolean includeChunksSkel) {
+	public static void show2(File file,boolean includeChunksSkel) {
 		PngReader pngr = FileHelper.createPngReader(file);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			pngr.readRow(row);
