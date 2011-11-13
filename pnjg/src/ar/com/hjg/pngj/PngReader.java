@@ -37,7 +37,7 @@ public class PngReader {
 	// line as bytes, counting from 1 (index 0 is reserved for filter type)
 	protected byte[] rowb = null; 
 	protected byte[] rowbprev = null; // rowb previous
-	protected byte[] rowbfilter = null; // current line 'filtered'
+	protected byte[] rowbfilter = null; // current line 'filtered': exactly as in uncompressed stream
 	/** 
 	 * All chunks loaded.
 	 * <p>
@@ -121,10 +121,10 @@ public class PngReader {
 			throw new PngjInputException("Invalid bit depth " + ihdr.bitspc);
 		imgInfo = new ImageInfo(ihdr.cols, ihdr.rows, ihdr.bitspc, alpha, grayscale, palette);
 		imgLine = new ImageLine(imgInfo);
-		// allocation
+		// allocation: one extra byte for filter type one pixel
+		rowbfilter = new byte[imgInfo.bytesPerRow + 1];
 		rowb = new byte[imgInfo.bytesPerRow + 1];
 		rowbprev = new byte[rowb.length];
-		rowbfilter = new byte[rowb.length];
 		int idatLen = readFirstChunks();
 		if (idatLen < 0)
 			throw new PngjInputException("first idat chunk not found!");

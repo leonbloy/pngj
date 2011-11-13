@@ -202,5 +202,11 @@ public class PngHelper {
 	public static int clampTo_0_255(int i) {
 		return i>255 ? 255 : (i<0 ? 0 : i);
 	}
+	
+
+	public static int clampTo_128_127(int x) {
+		return x>127?127 :(x<-128?-128:x);
+	}
+
 
 }

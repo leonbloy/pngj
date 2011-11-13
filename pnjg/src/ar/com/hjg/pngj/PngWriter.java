@@ -19,19 +19,19 @@ import ar.com.hjg.pngj.chunks.PngChunkTextVar;
  */
 public class PngWriter {
 	public final ImageInfo imgInfo;
-	private int compLevel = 6; // zip compression level 0 - 9
-	private FilterWriteStrategy filterStrat;
-	private int rowNum = -1; // current line number
+	protected int compLevel = 6; // zip compression level 0 - 9
+	protected FilterWriteStrategy filterStrat;
+	protected int rowNum = -1; // current line number
 	// current line, one (packed) sample per element (layout differnt from rowb!)
-	private int[] scanline = null;
-	private short[] rowb = null; // element 0 is filter type!
-	private short[] rowbprev = null; // rowb prev
-	private byte[] rowbfilter = null; // current line with filter  
-	private final OutputStream os;
-	private final String filename; // optional
+	protected int[] scanline = null;
+	protected byte[] rowb = null; // element 0 is filter type!
+	protected byte[] rowbprev = null; // rowb prev
+	protected byte[] rowbfilter = null; // current line with filter  
+	protected final OutputStream os;
+	protected final String filename; // optional
 	private PngIDatChunkOutputStream datStream;
 	private DeflaterOutputStream datStreamDeflated;
-	private ChunksToWrite chunks;
+	public ChunksToWrite chunks;
 
 	private enum WriteStep {
 		START, HEADER, HEADER_DONE, IDHR, IDHR_DONE, FIRST_CHUNKS, FIRST_CHUNKS_DONE, IDAT, IDAT_DONE, LAST_CHUNKS, LAST_CHUNKS_DONE, END;
@@ -59,8 +59,8 @@ public class PngWriter {
 		this.imgInfo = imgInfo;
 		// prealloc
 		scanline = new int[imgInfo.samplesPerRowP];
-		rowb = new short[imgInfo.bytesPerRow + 1];
-		rowbprev = new short[rowb.length];
+		rowb = new byte[imgInfo.bytesPerRow + 1];
+		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
 		datStream = new PngIDatChunkOutputStream(this.os);
 		chunks = new ChunksToWrite(imgInfo);
@@ -175,7 +175,7 @@ public class PngWriter {
 					+ " (expected=" + rowNum + ")");
 		scanline = newrow;
 		// swap
-		short[] tmp = rowb;
+		byte[] tmp = rowb;
 		rowb = rowbprev;
 		rowbprev = tmp;
 		convertRowToBytes();
@@ -262,57 +262,53 @@ public class PngWriter {
 		return s;
 	}
 
-	private void filterRowNone() {
+	protected void filterRowNone() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
 			rowbfilter[i] = (byte) rowb[i];
 		}
 	}
 
-	private void filterRowSub() {
+	protected void filterRowSub() {
 		int i, j;
-		for (i = 1; i <= imgInfo.bytesPixel; i++) {
+		for (i = 1; i <= imgInfo.bytesPixel; i++) 
 			rowbfilter[i] = (byte) rowb[i];
-		}
 		for (j = 1, i = imgInfo.bytesPixel + 1; i <= imgInfo.bytesPerRow; i++, j++) {
 			rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
 		}
 	}
 
-	private void filterRowUp() {
+	protected void filterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
 			rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]);
 		}
 	}
 
-	private void filterRowAverage() {
+	protected void filterRowAverage() {
 		int i, j;
-		short x;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			x = j > 0 ? rowb[j] : 0;
-			rowbfilter[i] = (byte) (rowb[i] - (rowbprev[i] + x) / 2);
+			rowbfilter[i] = (byte) (rowb[i] - ((rowbprev[i]&0xFF) + (j > 0 ? (rowb[j]&0xFF) : 0)) / 2);
 		}
 	}
 
-	private void filterRowPaeth() {
+	protected void filterRowPaeth() {
 		int i, j;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			rowbfilter[i] = (byte) (rowb[i] - PngFilterType.filterPaethPredictor(j > 0 ? rowb[j] : 0, rowbprev[i], j > 0 ? rowbprev[j] : 0));
+			rowbfilter[i] = (byte) (rowb[i] - PngFilterType.filterPaethPredictor(j > 0 ? (rowb[j]&0xFF) : 0, rowbprev[i]&0xFF, j > 0 ? (rowbprev[j] &0xFF): 0));
 		}
 	}
 
-	private void convertRowToBytes() {
+	protected void convertRowToBytes() {
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
-		int i, j, x;
-		//rowb[0] = (int) filterType.val;
+		int i, j;
 		if (imgInfo.bitDepth <= 8) {
 			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				rowb[j++] = (short)(((int) scanline[i]) & 0xFF);
+				rowb[j++] = (byte)(scanline[i]);
 			}
 		} else { // 16 bitspc
 			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				x = (int) (scanline[i]) & 0xFFFF;
-				rowb[j++] = (short)((x & 0xFF00) >> 8);
-				rowb[j++] = (short)(x & 0xFF);
+				//x = (int) (scanline[i]) & 0xFFFF;
+				rowb[j++] = (byte)(scanline[i] >> 8);
+				rowb[j++] = (byte)(scanline[i] );
 			}
 		}
 	}

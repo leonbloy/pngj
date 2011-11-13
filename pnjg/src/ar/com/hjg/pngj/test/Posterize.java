@@ -9,6 +9,9 @@ import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.lossy.ErrorDifussionFloydSteinberg;
+import ar.com.hjg.pngj.lossy.ErrorDifussionTrivial;
+import ar.com.hjg.pngj.lossy.IErrorDifussion;
 import ar.com.hjg.pngj.nosandbox.FileHelper;
 
 /**
@@ -18,15 +21,16 @@ public class Posterize {
 	
 	static int complevel=9;
 	static PngFilterType filter = PngFilterType.FILTER_AGRESSIVE;
-	static boolean errorDiffusion=true;
 
-	public static void posterize(String origFilename, String destFilename,int nbits) {
+	public static void posterize(String origFilename, String destFilename,int nbits,boolean errorDiffusion) {
 		PngReader pngr = FileHelper.createPngReader(new File(origFilename));
 		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), pngr.imgInfo, true);
 		
-		ErrorDifussionFloydSteinberg floys=null;
-		if(errorDiffusion)
-			floys = new ErrorDifussionFloydSteinberg(pngr.imgInfo.rows, pngr.imgInfo.cols*pngr.imgInfo.channels);
+		IErrorDifussion floys=null;
+		if(errorDiffusion) {
+			floys = new ErrorDifussionFloydSteinberg(pngr.imgInfo,0);
+			//floys = new ErrorDifussionTrivial(pngr.imgInfo,0);
+		}
 		if(origFilename.equals(destFilename)) throw new RuntimeException("files are the same!");
 		pngw.setCompLevel(complevel);
 		pngw.setFilterType(filter);
@@ -43,9 +47,10 @@ public class Posterize {
 			ImageLine l1 = pngr.readRow(row);
 			for (int j = 0; j < pngr.imgInfo.cols*channels; j++) {
 				if(floys!=null) err = floys.getTotalErr(row, j);
-				int newval = trimnBits(l1.scanline[j ]+err,bitstotrim);
-				newval = PngHelper.clampTo_0_255(newval);
-				if(floys!=null) floys.addErr(row, j, l1.scanline[j ]-newval);
+				int orig= l1.scanline[j ] ;
+				int desired= PngHelper.clampTo_0_255(orig+err);
+				int newval = trimnBits(desired,bitstotrim);
+				if(floys!=null) floys.addErr(row, j, desired - newval);
 				l1.scanline[j ] =  newval;
 			}
 			pngw.writeRow(l1);
@@ -71,12 +76,12 @@ public class Posterize {
 			System.err.println("Arguments: [pngsrc] [pngdest] [nbits]");
 			System.exit(1);
 		}
-		posterize(args[0], args[1],Integer.parseInt(args[2]));
+		posterize(args[0], args[1],Integer.parseInt(args[2]),false);
 		System.out.println("Done");
 	}
 	
 	public static void main(String[] args) throws Exception {
 		//mainFromArgs(args);
-		posterize("/temp/testturb.png","/temp/testturb6b.png",6);
+		posterize("/temp/gradbn.png","/temp/gradbnb6floyd.png",6,true);
 	}
 }

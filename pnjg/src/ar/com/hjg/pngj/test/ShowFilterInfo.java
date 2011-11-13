@@ -28,7 +28,7 @@ public class ShowFilterInfo {
 	}
 
 	public static void main(String[] args) throws Exception {
-		show2(new File("/temp/madrebn_lossy0.png"));
+		show2(new File("/temp/treetext-FULL-lossy-30.png"));
 		
 	}
 

@@ -65,7 +65,7 @@ public class ImgDiff {
 		i1.end();
 		i2.end();
 		if (maxDif == 0)
-			System.out.println("No diffence");
+			System.out.println("No difference");
 		else
 			System.out.printf("Images differ. MaxDif=%d [%d %d]\n", maxDif, maxDifCol,
 					maxDifRow);

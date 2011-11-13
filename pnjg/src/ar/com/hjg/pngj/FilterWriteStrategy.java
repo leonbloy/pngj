@@ -7,7 +7,7 @@ class FilterWriteStrategy {
 	private static final int COMPUTE_STATS_EVERY_N_LINES = 8;
 
 	final ImageInfo imgInfo;
-	private final PngFilterType configuredType; // can be negative (fin dout)
+	public final PngFilterType configuredType; // can be negative (fin dout)
 	private PngFilterType currentType; // 0-4
 	private int lastRowTested = -1000000;
 	private double[] lastSums = new double[5]; // performance of each filter (less is better) (can be negative)
