@@ -22,7 +22,7 @@ public class PngReader {
 	 * Basic image info - final and inmutable.
 	 */
 	public final ImageInfo imgInfo;
-	private final String filename; // optional
+	protected final String filename; // optional
 	private final InputStream is;
 	private final InflaterInputStream idatIstream;
 	private final PngIDatChunkInputStream iIdatCstream;
@@ -32,12 +32,12 @@ public class PngReader {
 	private int bytesChunksLoaded;
 	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS;
 	// private final int valsPerRow; // samples per row= cols x channels
-	private int rowNum = -1; // current row number
-	private ImageLine imgLine;
+	protected int rowNum = -1; // current row number
+	protected ImageLine imgLine;
 	// line as bytes, counting from 1 (index 0 is reserved for filter type)
-	private int[] rowb = null; // TODO: short would be nice
-	private int[] rowbprev = null; // rowb previous
-	private byte[] rowbfilter = null; // current line 'filtered'
+	protected byte[] rowb = null; 
+	protected byte[] rowbprev = null; // rowb previous
+	protected byte[] rowbfilter = null; // current line 'filtered'
 	/** 
 	 * All chunks loaded.
 	 * <p>
@@ -48,7 +48,7 @@ public class PngReader {
 	 */
 	public ChunkList chunks = new ChunkList();
 	// FoundChunkInfo/foundChunksInfo : all chunks signatures - merely informative
-	private List<FoundChunkInfo> foundChunksInfo = new ArrayList<FoundChunkInfo>();
+	protected List<FoundChunkInfo> foundChunksInfo = new ArrayList<FoundChunkInfo>();
 
 	private static class FoundChunkInfo {
 		public final String id;
@@ -122,8 +122,8 @@ public class PngReader {
 		imgInfo = new ImageInfo(ihdr.cols, ihdr.rows, ihdr.bitspc, alpha, grayscale, palette);
 		imgLine = new ImageLine(imgInfo);
 		// allocation
-		rowb = new int[imgInfo.bytesPerRow + 1];
-		rowbprev = new int[rowb.length];
+		rowb = new byte[imgInfo.bytesPerRow + 1];
+		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
 		int idatLen = readFirstChunks();
 		if (idatLen < 0)
@@ -266,14 +266,14 @@ public class PngReader {
 		if (buffer == null || buffer.length<imgInfo.samplesPerRowP)
 			buffer = new int[imgInfo.samplesPerRowP];
 		// swap
-		int[] tmp = rowb;
+		byte[] tmp = rowb;
 		rowb = rowbprev;
 		rowbprev = tmp;
 		// loads in rowbfilter "raw" bytes, with filter
 		PngHelper.readBytes(idatIstream, rowbfilter, 0, rowbfilter.length);
-		rowb[0] = rowbfilter[0];
-		
+		rowb[0] = 0;
 		unfilterRow();
+		rowb[0] = rowbfilter[0];
 		convertRowFromBytes(buffer);
 		return buffer;
 	}
@@ -283,11 +283,11 @@ public class PngReader {
 		int i, j;
 		if (imgInfo.bitDepth <= 8) {
 			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				buffer[i] = (rowb[j++]);
+				buffer[i] = (rowb[j++]&0xFF);
 			}
 		} else { // 16 bitspc
 			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				buffer[i] = (rowb[j++] << 8) + rowb[j++];
+				buffer[i] = ((rowb[j++]&0xFF) << 8) + (rowb[j++]&0xFF);
 			}
 		}
 	}
@@ -320,40 +320,40 @@ public class PngReader {
 
 	private void unfilterRowNone() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			rowb[i] = (int) (rowbfilter[i] & 0xFF);
+			rowb[i] = (byte) (rowbfilter[i] );
 		}
 	}
 
 	private void unfilterRowSub() {
 		int i, j;
 		for (i = 1; i <= imgInfo.bytesPixel; i++) {
-			rowb[i] = (int) (rowbfilter[i] & 0xFF);
+			rowb[i] = (byte) (rowbfilter[i]);
 		}
 		for (j = 1, i = imgInfo.bytesPixel + 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			rowb[i] = ((int) (rowbfilter[i] & 0xFF) + rowb[j]) & 0xFF;
+			rowb[i] = (byte) (rowbfilter[i] + rowb[j]);
 		}
 	}
 
 	private void unfilterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			rowb[i] = ((int) (rowbfilter[i] & 0xFF) + rowbprev[i]) & 0xFF;
+			rowb[i] = (byte) (rowbfilter[i] + rowbprev[i]) ;
 		}
 	}
 
 	private void unfilterRowAverage() {
 		int i, j, x;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			x = j > 0 ? rowb[j] : 0;
-			rowb[i] = ((int) (rowbfilter[i] & 0xFF) + (x + rowbprev[i]) / 2) & 0xFF;
+			x = j > 0 ? (rowb[j]&0xff) : 0;
+			rowb[i] = (byte) (rowbfilter[i]  + (x + (rowbprev[i]&0xFF)) / 2);
 		}
 	}
 
 	private void unfilterRowPaeth() {
 		int i, j, x, y;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			x = j > 0 ? rowb[j] : 0;
-			y = j > 0 ? rowbprev[j] : 0;
-			rowb[i] = ((int) (rowbfilter[i] & 0xFF) + PngFilterType.filterPaethPredictor(x,	rowbprev[i], y)) & 0xFF;
+			x = j > 0 ? (rowb[j]&0xFF) : 0;
+			y = j > 0 ? (rowbprev[j]&0xFF) : 0;
+			rowb[i] = (byte) (rowbfilter[i] + PngFilterType.filterPaethPredictor(x,	rowbprev[i]&0xFF, y));
 		}
 	}
 
