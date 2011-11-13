@@ -57,13 +57,13 @@ public class ImageInfo {
 	/**
 	 * Bits used for each pixel in the buffer:  channel * bitDepth
 	 */
-	final int bitspPixel;
+	public final int bitspPixel;
 	
-	final int bytesPixel; // rounded up : this is only for filter!
+	public final int bytesPixel; // rounded up : this is only for filter!
 	/**
 	 * ceil(bitspp*cols/8)
 	 */
-	final int bytesPerRow;
+	public final int bytesPerRow;
 	
 	/**
 	 * Equals cols * channels

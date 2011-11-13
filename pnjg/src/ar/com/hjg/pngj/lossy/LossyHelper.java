@@ -32,19 +32,20 @@ public class LossyHelper {
 
 	private double activity = 0.0; // average absolute value of prediction error
 
-	private static final boolean WRITE_LOSS_IMG_INFO = false;
+	private static final boolean WRITE_LOSS_IMG_INFO = false; // only for debuggin, testing
 
 	private int[] tablequant1; // 0-255
 	private int[] tablequant2; // idem, more precise the first
 	private int[] tablequant3; // idem, more precise the first
 
-	public IErrorDifussion errordif;
+	private IErrorDifussion errordif;
 	private final ImageInfo imginfo;
 	private PngWriter pngw;
 	private ImageLine imgline;
 	private final static long[] statR0 = new long[256];
 	private final static long[] statR1 = new long[256];
 
+	
 	public LossyHelper(ImageInfo imgInfo) {
 		this.imginfo = imgInfo;
 		if (imgInfo != null && WRITE_LOSS_IMG_INFO) {
@@ -54,6 +55,20 @@ public class LossyHelper {
 		}
 	}
 
+	public void setLossy(int lossyness) {
+		this.parLossy = lossyness;
+		parTableQuantA = lossyness * 0.1;
+		double step = Math.pow(2, parTableQuantA);
+		parGradient = 0.8;
+		parDetail = 0.25;
+		parTableQuantK = 1.98;
+		parTolerance = (int)(step * 5);
+		if (parTolerance > 50)
+			parTolerance = 50;
+		parMemory = 0.85;
+		parActivityThreshold = Math.sqrt(8.0*step) * parGradient;
+		parTrimPrediction = (int) (step *(1-parDetail) / (1 + parGradient * 3));
+	}
 	/**
 	 * Argument is the original prediction error, signed, beforebyte folding (range -255 255) Response is ready to write
 	 * prediction error, in range [0,255]
@@ -315,20 +330,7 @@ public class LossyHelper {
 
 	}
 
-	public void setLossy(int lossyness) {
-		this.parLossy = lossyness;
-		parTableQuantA = lossyness * 0.1;
-		double step = Math.pow(2, parTableQuantA);
-		parGradient = 0.8;
-		parDetail = 0.25;
-		parTableQuantK = 1.98;
-		parTolerance = (int)(step * 5);
-		if (parTolerance > 50)
-			parTolerance = 50;
-		parMemory = 0.85;
-		parActivityThreshold = Math.sqrt(8.0*step) * parGradient;
-		parTrimPrediction = (int) (step *(1-parDetail) / (1 + parGradient * 3));
-	}
+
 
 	public static void main(String[] args) throws Exception {
 		encode("/temp/balcony.png", 10);
