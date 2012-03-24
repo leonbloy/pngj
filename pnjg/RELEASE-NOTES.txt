@@ -1,6 +1,11 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.7  (March 2012)
+ - Full support for all Chunk types (bKGD CHRM ICCP ITXT TRNS ZTXT - some yet untested)  
+ - ar.com.hjg.pngj.nosandbox is now empty: PngFileHelper is back to main jar
+ - Lossy compression ar.com.hjg.pngj.lossy - (very EXPERIMENTAL yet, undocumented, lots of rough edges) 
+
 Version 0.62  (Jun 2011)
 -----------------------
 - Added Javadocs

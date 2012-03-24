@@ -3,16 +3,17 @@ package ar.com.hjg.pngj.lossy;
 import java.io.File;
 import java.util.Arrays;
 
+import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.PngFilterType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunksToWrite;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
-import ar.com.hjg.pngj.nosandbox.FileHelper;
 
 /**
  */
@@ -26,13 +27,13 @@ public class LossyHelper {
 	private double parGradient = 0.5; // between 0-1 - influences parActivityThreshold
 	private double parActivityThreshold = 0.0; // regions with activity (average r0) below this value will not be
 												// qunatized if |r|<=2 (0: never, 0.25: careful with gradients)
-	private double parDetail = 0.5; // between 0-1
-	private int parTrimPrediction = 0; // influenced by parSmooth
+	private double parDetail = 0.5; // between 0-1 : near 1: keep detail
+	private int parTrimPrediction = 0; // influenced by parDetail
 	private int parTolerance = 20; // error acceptable in image, in absolute value; should be about parLossy/4+2
 
 	private double activity = 0.0; // average absolute value of prediction error
 
-	private static final boolean WRITE_LOSS_IMG_INFO = false; // only for debuggin, testing
+	private static boolean WRITE_LOSS_IMG_INFO = false; // only for debuggin and testing
 
 	private int[] tablequant1; // 0-255
 	private int[] tablequant2; // idem, more precise the first
@@ -45,7 +46,6 @@ public class LossyHelper {
 	private final static long[] statR0 = new long[256];
 	private final static long[] statR1 = new long[256];
 
-	
 	public LossyHelper(ImageInfo imgInfo) {
 		this.imginfo = imgInfo;
 		if (imgInfo != null && WRITE_LOSS_IMG_INFO) {
@@ -56,22 +56,54 @@ public class LossyHelper {
 	}
 
 	public void setLossy(int lossyness) {
+		if (lossyness < 0)
+			throw new RuntimeException("'lossy' parameter must be positive");
+		// default values for a global lossynees value - should give lossless compression if lossyness==0
 		this.parLossy = lossyness;
 		parTableQuantA = lossyness * 0.1;
 		double step = Math.pow(2, parTableQuantA);
 		parGradient = 0.8;
-		parDetail = 0.25;
-		parTableQuantK = 1.98;
-		parTolerance = (int)(step * 5);
+		parDetail = 20.0 / (lossyness + 20);
+		parTableQuantK = 2.0 * (1.0 - 20.0 / (lossyness + 20)); // 0-2
+		parTolerance = (int) (step * 5);
 		if (parTolerance > 50)
 			parTolerance = 50;
 		parMemory = 0.85;
-		parActivityThreshold = Math.sqrt(8.0*step) * parGradient;
-		parTrimPrediction = (int) (step *(1-parDetail) / (1 + parGradient * 3));
+		parActivityThreshold = Math.sqrt(8.0 * step) * parGradient;
+		parTrimPrediction = (int) (step * (1 - parDetail) / (1 + parGradient * 3));
 	}
+
+	public void setParTableQuantK(double k) {
+		parTableQuantK = k;
+	}
+
+	public void setParMemory(double mem) {
+		parMemory = mem;
+	}
+
+	public void setParTolerance(int t) {
+		parTolerance = t;
+		if (parTolerance > 50)
+			parTolerance = 50;
+	}
+
+	public void setParGradient(double pg) {
+		double step = Math.pow(2, parTableQuantA);
+		parGradient = pg;
+		parActivityThreshold = Math.sqrt(8.0 * step) * parGradient;
+		parTrimPrediction = (int) (step * (1 - parDetail) / (1 + parGradient * 3));
+	}
+
+	public void setParDetail(double d) {
+		double step = Math.pow(2, parTableQuantA);
+		parDetail = d;
+		parActivityThreshold = Math.sqrt(8.0 * step) * parGradient;
+		parTrimPrediction = (int) (step * (1 - parDetail) / (1 + parGradient * 3));
+	}
+
 	/**
-	 * Argument is the original prediction error, signed, beforebyte folding (range -255 255) Response is ready to write
-	 * prediction error, in range [0,255]
+	 * Argument is the original prediction error, signed, (range -255 255) before byte folding Response is ready to
+	 * write prediction error, in range [0,255]
 	 * */
 	private int quantizeTable(int x, int offset, int usetable) {
 		if (tablequant1 == null) {
@@ -171,6 +203,8 @@ public class LossyHelper {
 	}
 
 	public static void printTable(int[] t, boolean oneline) {
+		if (t == null)
+			return;
 		if (oneline) {
 			System.out.println(Arrays.toString(t));
 			return;
@@ -204,11 +238,34 @@ public class LossyHelper {
 		}
 	}
 
-	public void reportOriginalR(int r0, int row, int col) {
-		reportOriginalR(r0, r0,row, col); 
+	// /// error difussion no used ///////
+
+	public void initErrorDif() {
+		errordif = new ErrorDifussionFloydSteinberg(imginfo, 0);
 	}
 
-	public void reportOriginalR(int r0, int r0orig,int row, int col) {
+	public int getDiffusedErrorToAdd(int row, int col) {
+		if (errordif == null)
+			return 0;
+		else
+			return errordif.getTotalErr(row, col);
+	}
+
+	public void writeErrorToDiffuse(int row, int col, int err) {
+		if (errordif != null)
+			errordif.addErr(row, col, err);
+	}
+
+	public void resetErrorDiffussion() {
+		if (errordif != null)
+			errordif.reset();
+	}
+
+	public void reportOriginalR(int r0, int row, int col) {
+		reportOriginalR(r0, r0, row, col);
+	}
+
+	public void reportOriginalR(int r0, int r0orig, int row, int col) {
 		activity = parMemory * activity + Math.abs(r0orig) * (1 - parMemory);
 		if (WRITE_LOSS_IMG_INFO) {
 			if (col < pngw.imgInfo.cols) {
@@ -239,39 +296,19 @@ public class LossyHelper {
 		statR1[(r1 + 256) % 256]++;
 	}
 
-	// /// error difussion no used ///////
-
-	public void initErrorDif() {
-		errordif = new ErrorDifussionFloydSteinberg(imginfo, 0);
-	}
-
-	public int getDiffusedErrorToAdd(int row, int col) {
-		if (errordif == null)
-			return 0;
-		else
-			return errordif.getTotalErr(row, col);
-	}
-
-	public void writeErrorToDiffuse(int row, int col, int err) {
-		if (errordif != null)
-			errordif.addErr(row, col, err);
-	}
-
-	public void resetErrorDiffussion() {
-		if (errordif != null)
-			errordif.reset();
-	}
-
 	// ////////
 
 	public String toString() {
-		return String.format("lossy=%d a=%.3f k=%.3f mem=%.4f threshold=%.4f tolerance=%d trim=%d detail=%s gradient=%s", parLossy,
-				parTableQuantA, parTableQuantK, parMemory, parActivityThreshold, parTolerance, parTrimPrediction,cd(parDetail),cd(parGradient));
+		return String.format(
+				"lossy=%d a=%.3f k=%.3f mem=%.4f threshold=%.4f tolerance=%d trim=%d detail=%s gradient=%s", parLossy,
+				parTableQuantA, parTableQuantK, parMemory, parActivityThreshold, parTolerance, parTrimPrediction,
+				cd(parDetail), cd(parGradient));
 	}
 
 	public String toStringCod() {
-		return String.format("%03d_%s_%s_%s_%s_%d_%d_%s_%s", parLossy, cd(parTableQuantA), cd(parTableQuantK), cd(parMemory),
-				cd(parActivityThreshold), parTolerance, parTrimPrediction,cd(parDetail),cd(parGradient));
+		return String.format("%03d_%s_%s_%s_%s_%d_%d_%s_%s", parLossy, cd(parTableQuantA), cd(parTableQuantK),
+				cd(parMemory), cd(parActivityThreshold), parTolerance, parTrimPrediction, cd(parDetail),
+				cd(parGradient));
 	}
 
 	private static String cd(double d) { // codifica double como dx100
@@ -295,8 +332,16 @@ public class LossyHelper {
 		PngReader pngr = FileHelper.createPngReader(new File(orig));
 		System.out.println(pngr.imgInfo);
 		File destf = new File(dest);
-		PngWriterLossy pngw = new PngWriterLossy(FileHelper.openFileForWriting(destf, true), pngr.imgInfo, destf.getName());
-		pngw.lossyHelper.setLossy(lossy);
+		PngWriterLossy pngw = new PngWriterLossy(FileHelper.openFileForWriting(destf, true), pngr.imgInfo,
+				destf.getName());
+		pngw.setFilterType(PngFilterType.FILTER_AVERAGE);
+		pngw.setLossy(lossy);
+		// pngw.lossyHelper.setParTableQuantK(3);
+		/*
+		 * pngw.lossyHelper.setParGradient(0.0); pngw.lossyHelper.setParDetail(0.0);
+		 * pngw.lossyHelper.setParTolerance(40); pngw.lossyHelper.setParTableQuantK(3);
+		 */
+
 		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE | ChunksToWrite.COPY_PALETTE);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
@@ -318,22 +363,21 @@ public class LossyHelper {
 
 		long t1 = System.currentTimeMillis();
 		long size0 = (new File(orig)).length();
-		long size1 = (new File(dest)).length();
+		long size1 = (new File(destfinal)).length();
 		double sizerel = (size1 * 1000.0) / size0;
 		System.out.printf("%s\t%d\t%.2f\n", dest, (t1 - t0), sizerel);
-		pngw.lossyHelper.showStatR();
-		System.out.println("tabla 1");
-		printTable(pngw.lossyHelper.tablequant1, false);
-		System.out.println("tabla 2");
-		printTable(pngw.lossyHelper.tablequant2, false);
-		System.out.println(pngw.lossyHelper);
+		// pngw.lossyHelper.showStatR();
+		// System.out.println("tabla 1");
+		// printTable(pngw.lossyHelper.tablequant1, false);
+		// System.out.println("tabla 2");
+		// printTable(pngw.lossyHelper.tablequant2, false);
+		// System.out.println(pngw.lossyHelper);
 
 	}
 
-
-
 	public static void main(String[] args) throws Exception {
-		encode("/temp/balcony.png", 10);
+		// encode("/temp/dilbert.png", 80);
+		encode("/temp/fondop.png", 10);
 		// test0(10,2);
 		// int[] tab = buildTable2(3.0, 1.0,2);
 		// showTable(tab);
