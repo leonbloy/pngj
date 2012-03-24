@@ -50,7 +50,7 @@
 		<copy todir="${versiondir}/doc"><fileset dir="../doc" /></copy>
 		<copy  file="${distdir}/pngj.jar" todir="${versiondir}"/>
 		<copy  file="${distdir}/pngj-src.jar" todir="${versiondir}"/>
-		<copy  file="${distdir}/pngj-sandbox.jar" todir="${versiondir}"/>
+	<!--	<copy  file="${distdir}/pngj-sandbox.jar" todir="${versiondir}"/> -->
 		<copy  file="../LICENSE.txt" todir="${versiondir}"/>
 		<copy  file="../NOTICE.txt" todir="${versiondir}"/>
 		<copy  file="../RELEASE-NOTES.txt" todir="${versiondir}"/>
