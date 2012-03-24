@@ -11,7 +11,7 @@ public class PngChunkPHYS extends PngChunk {
 	private int units; // 0: unknown 1:metre
 
 	public PngChunkPHYS(ImageInfo info) {
-		super(ChunkHelper.pHYs_TEXT, info);
+		super(ChunkHelper.pHYs, info);
 	}
 
 	@Override

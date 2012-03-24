@@ -15,7 +15,7 @@ public class PngChunkPLTE extends PngChunk {
 	private int[] entries;
 
 	public PngChunkPLTE(ImageInfo info) {
-		super(ChunkHelper.PLTE_TEXT, info);
+		super(ChunkHelper.PLTE, info);
 	}
 
 	@Override

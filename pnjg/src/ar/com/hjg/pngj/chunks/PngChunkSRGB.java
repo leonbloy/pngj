@@ -17,7 +17,7 @@ public class PngChunkSRGB extends PngChunk {
 	private int intent;
 
 	public PngChunkSRGB(ImageInfo info) {
-		super(ChunkHelper.sRGB_TEXT, info);
+		super(ChunkHelper.sRGB, info);
 	}
 
 	@Override

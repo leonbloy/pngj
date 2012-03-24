@@ -23,15 +23,19 @@
 	      	   basedir="../bin/"
 	           manifest="MANIFEST.MF"
        			 includes="**/*.class **/*.html"
-			 			 excludes="**/test/**"
 	           >
+			<exclude name="**/test/**"/>
+			<exclude name="**/lossy/**"/>
 			</jar>
 		<jar destfile="${distdir}/pngj-sandbox.jar"
 	      	   basedir="../bin/"
 	           includes="**/*.class **/*.html"
-						 excludes="**/test/** **/nosandbox/**"
 	           manifest="MANIFEST.MF"
-	           />
+	           >
+		<exclude name="**/test/**"/>
+		<exclude name="**/lossy/**"/>
+		<exclude name="**/nosandbox/**"/>
+	  </jar>
 		<jar destfile="${distdir}/pngj-src.jar"
 	      	   basedir="../src/"
 	           manifest="MANIFEST.MF"

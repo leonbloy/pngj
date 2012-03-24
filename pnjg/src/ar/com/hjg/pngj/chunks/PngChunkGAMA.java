@@ -11,7 +11,7 @@ public class PngChunkGAMA extends PngChunk {
 	private double gamma;
 
 	public PngChunkGAMA(ImageInfo info) {
-		super(ChunkHelper.gAMA_TEXT, info);
+		super(ChunkHelper.gAMA, info);
 	}
 
 	@Override

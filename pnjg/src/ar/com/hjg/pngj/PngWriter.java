@@ -399,7 +399,7 @@ public class PngWriter {
 			boolean copy = false;
 			PngChunk chunk = chunksR.get(i);
 			if (chunk.crit) {
-				if (chunk.id.equals(ChunkHelper.PLTE_TEXT)) {
+				if (chunk.id.equals(ChunkHelper.PLTE)) {
 					if (imgInfo.indexed && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_PALETTE))
 						copy = true;
 					if (!imgInfo.greyscale && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_ALL))
@@ -412,10 +412,10 @@ public class PngWriter {
 					copy = true;
 				if (safe && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_ALL_SAFE))
 					copy = true;
-				if (chunk.id.equals(ChunkHelper.tRNS_TEXT)
+				if (chunk.id.equals(ChunkHelper.tRNS)
 						&& ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_TRANSPARENCY))
 					copy = true;
-				if (chunk.id.equals(ChunkHelper.pHYs_TEXT)
+				if (chunk.id.equals(ChunkHelper.pHYs)
 						&& ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_PHYS))
 					copy = true;
 				if (text && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_TEXTUAL))

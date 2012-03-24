@@ -44,7 +44,7 @@ class PngIDatChunkInputStream extends InputStream {
 		this.lenLastChunk = lenFirstChunk;
 		toReadThisChunk = lenFirstChunk;
 		// we know it's a IDAT
-		System.arraycopy(ChunkHelper.IDAT, 0, idLastChunk, 0, 4);
+		System.arraycopy(ChunkHelper.b_IDAT, 0, idLastChunk, 0, 4);
 		crcEngine.update(idLastChunk, 0, 4);
 		foundChunksInfo.add(new IdatChunkInfo(lenLastChunk, offset - 8));
 		// PngHelper.logdebug("IDAT Initial fragment: len=" + lenLastChunk);
@@ -78,7 +78,7 @@ class PngIDatChunkInputStream extends InputStream {
 			toReadThisChunk = lenLastChunk;
 			PngHelper.readBytes(inputStream, idLastChunk, 0, 4);
 			offset += 8;
-			ended = !Arrays.equals(idLastChunk, ChunkHelper.IDAT);
+			ended = !Arrays.equals(idLastChunk, ChunkHelper.b_IDAT);
 			if (!ended) {
 				foundChunksInfo.add(new IdatChunkInfo(lenLastChunk, (int) (offset - 8)));
 				crcEngine.update(idLastChunk, 0, 4);

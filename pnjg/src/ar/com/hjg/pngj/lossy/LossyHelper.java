@@ -348,7 +348,7 @@ public class LossyHelper {
 			pngw.writeRow(l1);
 		}
 		String lossydesc = pngw.lossyHelper.toString();
-		PngChunkTEXT txtChunk = (PngChunkTEXT) PngChunk.factoryFromId(ChunkHelper.tEXt_TEXT, pngw.imgInfo);
+		PngChunkTEXT txtChunk = (PngChunkTEXT) PngChunk.factoryFromId(ChunkHelper.tEXt, pngw.imgInfo);
 		txtChunk.setKeyVal("description", lossydesc);
 		pngw.chunks.cloneAndAdd(txtChunk, true);
 		pngr.end();

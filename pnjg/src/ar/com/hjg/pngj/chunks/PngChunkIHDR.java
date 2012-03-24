@@ -21,12 +21,12 @@ public class PngChunkIHDR extends PngChunk {
 	// http://www.w3.org/TR/PNG/#11IHDR
 	//
 	public PngChunkIHDR(ImageInfo info) {
-		super(ChunkHelper.IHDR_TEXT, info);
+		super(ChunkHelper.IHDR, info);
 	}
 
 	@Override
 	public ChunkRaw createChunk() {
-		ChunkRaw c = new ChunkRaw(13, ChunkHelper.IHDR, true);
+		ChunkRaw c = new ChunkRaw(13, ChunkHelper.b_IHDR, true);
 		int offset = 0;
 		PngHelper.writeInt4tobytes(cols, c.data, offset);
 		offset += 4;

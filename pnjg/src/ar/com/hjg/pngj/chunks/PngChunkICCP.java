@@ -11,7 +11,7 @@ public class PngChunkICCP extends PngChunk {
 	private byte[] compressedProfile; // copmression/decopmresion is done in getter/setter
 
 	public PngChunkICCP(ImageInfo info) {
-		super(ChunkHelper.iCCP_TEXT, info);
+		super(ChunkHelper.iCCP, info);
 	}
 
 	@Override

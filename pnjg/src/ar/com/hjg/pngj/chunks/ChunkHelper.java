@@ -16,52 +16,52 @@ import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngjException;
 
 public class ChunkHelper {
-	public static final String IHDR_TEXT = "IHDR";
-	public static final String PLTE_TEXT = "PLTE";
-	public static final String IDAT_TEXT = "IDAT";
-	public static final String IEND_TEXT = "IEND";
-	public static final String cHRM_TEXT = "cHRM";// No Before PLTE and IDAT
-	public static final String gAMA_TEXT = "gAMA";// No Before PLTE and IDAT
-	public static final String iCCP_TEXT = "iCCP";// No Before PLTE and IDAT
-	public static final String sBIT_TEXT = "sBIT";// No Before PLTE and IDAT
-	public static final String sRGB_TEXT = "sRGB";// No Before PLTE and IDAT
-	public static final String bKGD_TEXT = "bKGD";// No After PLTE; before IDAT
-	public static final String hIST_TEXT = "hIST";// No After PLTE; before IDAT
-	public static final String tRNS_TEXT = "tRNS";// No After PLTE; before IDAT
-	public static final String pHYs_TEXT = "pHYs";// No Before IDAT
-	public static final String sPLT_TEXT = "sPLT";// Yes Before IDAT
-	public static final String tIME_TEXT = "tIME";// No None
-	public static final String iTXt_TEXT = "iTXt";// Yes None
-	public static final String tEXt_TEXT = "tEXt";// Yes None
-	public static final String zTXt_TEXT = "zTXt";// Yes None
-	public static final byte[] IHDR = toBytes(IHDR_TEXT);
-	public static final byte[] PLTE = toBytes(PLTE_TEXT);
-	public static final byte[] IDAT = toBytes(IDAT_TEXT);
-	public static final byte[] IEND = toBytes(IEND_TEXT);
-	public static final byte[] cHRM = toBytes(cHRM_TEXT);
-	public static final byte[] gAMA = toBytes(gAMA_TEXT);
-	public static final byte[] iCCP = toBytes(iCCP_TEXT);
-	public static final byte[] sBIT = toBytes(sBIT_TEXT);
-	public static final byte[] sRGB = toBytes(sRGB_TEXT);
-	public static final byte[] bKGD = toBytes(bKGD_TEXT);
-	public static final byte[] hIST = toBytes(hIST_TEXT);
-	public static final byte[] tRNS = toBytes(tRNS_TEXT);
-	public static final byte[] pHYs = toBytes(pHYs_TEXT);
-	public static final byte[] sPLT = toBytes(sPLT_TEXT);
-	public static final byte[] tIME = toBytes(tIME_TEXT);
-	public static final byte[] iTXt = toBytes(iTXt_TEXT);
-	public static final byte[] tEXt = toBytes(tEXt_TEXT);
-	public static final byte[] zTXt = toBytes(zTXt_TEXT);
-	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR_TEXT, PLTE_TEXT, IDAT_TEXT, IEND_TEXT);
+	public static final String IHDR = "IHDR";
+	public static final String PLTE = "PLTE";
+	public static final String IDAT = "IDAT";
+	public static final String IEND = "IEND";
+	public static final String cHRM = "cHRM";// No Before PLTE and IDAT
+	public static final String gAMA = "gAMA";// No Before PLTE and IDAT
+	public static final String iCCP = "iCCP";// No Before PLTE and IDAT
+	public static final String sBIT = "sBIT";// No Before PLTE and IDAT
+	public static final String sRGB = "sRGB";// No Before PLTE and IDAT
+	public static final String bKGD = "bKGD";// No After PLTE; before IDAT
+	public static final String hIST = "hIST";// No After PLTE; before IDAT
+	public static final String tRNS = "tRNS";// No After PLTE; before IDAT
+	public static final String pHYs = "pHYs";// No Before IDAT
+	public static final String sPLT = "sPLT";// Yes Before IDAT
+	public static final String tIME = "tIME";// No None
+	public static final String iTXt = "iTXt";// Yes None
+	public static final String tEXt = "tEXt";// Yes None
+	public static final String zTXt = "zTXt";// Yes None
+	public static final byte[] b_IHDR = toBytes(IHDR);
+	public static final byte[] b_PLTE = toBytes(PLTE);
+	public static final byte[] b_IDAT = toBytes(IDAT);
+	public static final byte[] b_IEND = toBytes(IEND);
+	public static final byte[] b_cHRM = toBytes(cHRM);
+	public static final byte[] b_gAMA = toBytes(gAMA);
+	public static final byte[] b_iCCP = toBytes(iCCP);
+	public static final byte[] b_sBIT = toBytes(sBIT);
+	public static final byte[] b_sRGB = toBytes(sRGB);
+	public static final byte[] b_bKGD = toBytes(bKGD);
+	public static final byte[] b_hIST = toBytes(hIST);
+	public static final byte[] b_tRNS = toBytes(tRNS);
+	public static final byte[] b_pHYs = toBytes(pHYs);
+	public static final byte[] b_sPLT = toBytes(sPLT);
+	public static final byte[] b_tIME = toBytes(tIME);
+	public static final byte[] b_iTXt = toBytes(iTXt);
+	public static final byte[] b_tEXt = toBytes(tEXt);
+	public static final byte[] b_zTXt = toBytes(zTXt);
+	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR, PLTE, IDAT, IEND);
 	// ancillary known chunks, before PLTE and IDAT
-	public static Set<String> KNOWN_CHUNKS_BEFORE_PLTE = PngHelper.asSet(cHRM_TEXT, gAMA_TEXT, iCCP_TEXT, sBIT_TEXT,
-			sRGB_TEXT);
+	public static Set<String> KNOWN_CHUNKS_BEFORE_PLTE = PngHelper.asSet(cHRM, gAMA, iCCP, sBIT,
+			sRGB);
 	// ancillary known chunks, after PLTE , before IDAT
-	public static Set<String> KNOWN_CHUNKS_AFTER_PLTE = PngHelper.asSet(bKGD_TEXT, hIST_TEXT, tRNS_TEXT);
+	public static Set<String> KNOWN_CHUNKS_AFTER_PLTE = PngHelper.asSet(bKGD, hIST, tRNS);
 	// ancillary known chunks, before IDAT (before or after PLTE)
-	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT = PngHelper.asSet(pHYs_TEXT, sPLT_TEXT);
+	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT = PngHelper.asSet(pHYs, sPLT);
 	// ancillary known chunks, before or after IDAT
-	public static Set<String> KNOWN_CHUNKS_ANYWHERE = PngHelper.asSet(tIME_TEXT, iTXt_TEXT, tEXt_TEXT, zTXt_TEXT);
+	public static Set<String> KNOWN_CHUNKS_ANYWHERE = PngHelper.asSet(tIME, iTXt, tEXt, zTXt);
 	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT_ALL = PngHelper.unionSets(KNOWN_CHUNKS_BEFORE_PLTE,
 			KNOWN_CHUNKS_AFTER_PLTE, KNOWN_CHUNKS_BEFORE_IDAT);
 	public static Set<String> KNOWN_CHUNKS_ANCILLARY_ALL = PngHelper.unionSets(KNOWN_CHUNKS_BEFORE_IDAT_ALL,
@@ -107,7 +107,7 @@ public class ChunkHelper {
 	}
 
 	public static boolean admitsMultiple(String id) { // only for ancillary
-		if (id.equals(sPLT_TEXT) || id.equals(iTXt_TEXT) || id.equals(tEXt_TEXT) || id.equals(zTXt_TEXT))
+		if (id.equals(sPLT) || id.equals(iTXt) || id.equals(tEXt) || id.equals(zTXt))
 			return true;
 		else
 			return false;

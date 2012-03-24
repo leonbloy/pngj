@@ -65,9 +65,9 @@ public class ChunksToWrite {
 	}
 
 	public void setPHYS(long resx, long resy, int unit) {
-		if (!chunks1.containsKey(ChunkHelper.pHYs_TEXT))
-			chunks1.put(ChunkHelper.pHYs_TEXT, new PngChunkPHYS(imgInfo));
-		PngChunkPHYS chunk = (PngChunkPHYS) chunks1.get(ChunkHelper.pHYs_TEXT);
+		if (!chunks1.containsKey(ChunkHelper.pHYs))
+			chunks1.put(ChunkHelper.pHYs, new PngChunkPHYS(imgInfo));
+		PngChunkPHYS chunk = (PngChunkPHYS) chunks1.get(ChunkHelper.pHYs);
 		chunk.setPixelsxUnitX(resx);
 		chunk.setPixelsxUnitY(resy);
 		chunk.setUnits(unit);

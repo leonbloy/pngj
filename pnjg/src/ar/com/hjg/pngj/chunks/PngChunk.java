@@ -51,42 +51,44 @@ public abstract class PngChunk {
 	}
 
 	public static PngChunk factoryFromId(String cid, ImageInfo info) {
-		PngChunk ctype = null;
-		if (cid.equals(ChunkHelper.IDAT_TEXT))
-			ctype = new PngChunkIDAT(info);
-		else if (cid.equals(ChunkHelper.IHDR_TEXT))
-			ctype = new PngChunkIHDR(info);
-		else if (cid.equals(ChunkHelper.PLTE_TEXT))
-			ctype = new PngChunkPLTE(info);
-		else if (cid.equals(ChunkHelper.IEND_TEXT))
-			ctype = new PngChunkIEND(info);
-		else if (cid.equals(ChunkHelper.gAMA_TEXT))
-			ctype = new PngChunkGAMA(info);
-		else if (cid.equals(ChunkHelper.tEXt_TEXT))
-			ctype = new PngChunkTEXT(info);
-		else if (cid.equals(ChunkHelper.iTXt_TEXT))
-			ctype = new PngChunkOTHER(cid, info);// new ChunkTypeITXT(info);
-		else if (cid.equals(ChunkHelper.zTXt_TEXT))
-			ctype = new PngChunkOTHER(cid, info);// new ChunkTypeZTXT(info);
-		else if (cid.equals(ChunkHelper.pHYs_TEXT))
-			ctype = new PngChunkPHYS(info);
-		else if (cid.equals(ChunkHelper.bKGD_TEXT))
-			ctype = new PngChunkBKGD(info);
-		else if (cid.equals(ChunkHelper.iCCP_TEXT))
-			ctype = new PngChunkICCP(info);
-		else if (cid.equals(ChunkHelper.tIME_TEXT))
-			ctype = new PngChunkTIME(info);
-		else if (cid.equals(ChunkHelper.tRNS_TEXT))
-			ctype = new PngChunkTRNS(info);
-		else if (cid.equals(ChunkHelper.cHRM_TEXT))
-			ctype = new PngChunkCHRM(info);
-		else if (cid.equals(ChunkHelper.sBIT_TEXT))
-			ctype = new PngChunkSBIT(info);
-		else if (cid.equals(ChunkHelper.sRGB_TEXT))
-			ctype = new PngChunkSRGB(info);
+		PngChunk chunk = null;
+		if (cid.equals(ChunkHelper.IDAT))
+			chunk = new PngChunkIDAT(info);
+		else if (cid.equals(ChunkHelper.IHDR))
+			chunk = new PngChunkIHDR(info);
+		else if (cid.equals(ChunkHelper.PLTE))
+			chunk = new PngChunkPLTE(info);
+		else if (cid.equals(ChunkHelper.IEND))
+			chunk = new PngChunkIEND(info);
+		else if (cid.equals(ChunkHelper.gAMA))
+			chunk = new PngChunkGAMA(info);
+		else if (cid.equals(ChunkHelper.tEXt))
+			chunk = new PngChunkTEXT(info);
+		else if (cid.equals(ChunkHelper.iTXt))
+			chunk = new PngChunkITXT(info);
+		else if (cid.equals(ChunkHelper.zTXt))
+			chunk = new PngChunkZTXT(info);
+		else if (cid.equals(ChunkHelper.pHYs))
+			chunk = new PngChunkPHYS(info);
+		else if (cid.equals(ChunkHelper.bKGD))
+			chunk = new PngChunkBKGD(info);
+		else if (cid.equals(ChunkHelper.iCCP))
+			chunk = new PngChunkICCP(info);
+		else if (cid.equals(ChunkHelper.tIME))
+			chunk = new PngChunkTIME(info);
+		else if (cid.equals(ChunkHelper.tRNS))
+			chunk = new PngChunkTRNS(info);
+		else if (cid.equals(ChunkHelper.cHRM))
+			chunk = new PngChunkCHRM(info);
+		else if (cid.equals(ChunkHelper.sBIT))
+			chunk = new PngChunkSBIT(info);
+		else if (cid.equals(ChunkHelper.sRGB))
+			chunk = new PngChunkSRGB(info);
+		else if (cid.equals(ChunkHelper.hIST))
+			chunk = new PngChunkHIST(info);
 		else
-			ctype = new PngChunkOTHER(cid, info);
-		return ctype;
+			chunk = new PngChunkOTHER(cid, info);
+		return chunk;
 	}
 
 	protected ChunkRaw createEmptyChunk(int len, boolean alloc) {
@@ -104,13 +106,13 @@ public abstract class PngChunk {
 	 * present) 3: before IDAT (4:IDAT) 5: after IDAT (6:END)
 	 */
 	public int writeOrder() {
-		if (id.equals(ChunkHelper.IHDR))
+		if (id.equals(ChunkHelper.b_IHDR))
 			return 0;
-		if (id.equals(ChunkHelper.PLTE))
+		if (id.equals(ChunkHelper.b_PLTE))
 			return 2;
-		if (id.equals(ChunkHelper.IDAT))
+		if (id.equals(ChunkHelper.b_IDAT))
 			return 4;
-		if (id.equals(ChunkHelper.IEND))
+		if (id.equals(ChunkHelper.b_IEND))
 			return 6;
 		if (ChunkHelper.beforePLTE(id))
 			return 1;

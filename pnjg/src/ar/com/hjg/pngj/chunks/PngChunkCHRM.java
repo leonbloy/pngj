@@ -14,7 +14,7 @@ public class PngChunkCHRM extends PngChunk {
 	private double bluex, bluey;
 
 	public PngChunkCHRM(ImageInfo info) {
-		super(ChunkHelper.cHRM_TEXT, info);
+		super(ChunkHelper.cHRM, info);
 	}
 
 	@Override

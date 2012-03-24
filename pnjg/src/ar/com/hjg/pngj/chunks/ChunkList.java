@@ -105,11 +105,11 @@ public class ChunkList {
 	}
 
 	public int positionIDAT() {
-		return firstOcurrence(ChunkHelper.IDAT_TEXT);
+		return firstOcurrence(ChunkHelper.IDAT);
 	}
 
 	public int positionIEND() {
-		return firstOcurrence(ChunkHelper.IEND_TEXT);
+		return firstOcurrence(ChunkHelper.IEND);
 	}
 
 	public String toString() {
@@ -124,7 +124,7 @@ public class ChunkList {
 	 * @return dpi, -1 if not set
 	 */
 	public double getPHYSdpi() { // nan if not set
-		int i = firstOcurrence(ChunkHelper.pHYs_TEXT);
+		int i = firstOcurrence(ChunkHelper.pHYs);
 		if (i < 0)
 			return -1.0;
 		PngChunkPHYS chunk = (PngChunkPHYS) getChunk(i);

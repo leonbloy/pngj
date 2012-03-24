@@ -15,7 +15,7 @@ public class PngChunkTRNS extends PngChunk {
 	private int[] paletteAlpha = new int[] {};
 
 	public PngChunkTRNS(ImageInfo info) {
-		super(ChunkHelper.tRNS_TEXT, info);
+		super(ChunkHelper.tRNS, info);
 	}
 
 	@Override

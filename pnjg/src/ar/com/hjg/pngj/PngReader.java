@@ -94,7 +94,7 @@ public class PngReader {
 			throw new RuntimeException("IDHR chunk len != 13 ?? " + clen);
 		byte[] chunkid = new byte[4];
 		PngHelper.readBytes(is, chunkid, 0, 4);
-		if (!Arrays.equals(chunkid, ChunkHelper.IHDR))
+		if (!Arrays.equals(chunkid, ChunkHelper.b_IHDR))
 			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
 		offset += 4;
 		ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -157,13 +157,13 @@ public class PngReader {
 				break;
 			PngHelper.readBytes(is, chunkid, 0, 4);
 			offset += 4;
-			if (Arrays.equals(chunkid, ChunkHelper.IDAT)) {
+			if (Arrays.equals(chunkid, ChunkHelper.b_IDAT)) {
 				found = true;
 				// add dummy idat chunk to list
 				ChunkRaw chunk = new ChunkRaw(0, chunkid, false);
 				addChunkToList(chunk);
 				break;
-			} else if (Arrays.equals(chunkid, ChunkHelper.IEND)) {
+			} else if (Arrays.equals(chunkid, ChunkHelper.b_IEND)) {
 				throw new PngjInputException("END chunk found before image data (IDAT) at offset=" + offset);
 			}
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -186,7 +186,7 @@ public class PngReader {
 			iIdatCstream.forceChunkEnd();
 		// add chunks to list (just informational)
 		for (IdatChunkInfo idat : iIdatCstream.foundChunksInfo)
-			foundChunksInfo.add(new FoundChunkInfo(ChunkHelper.IDAT_TEXT, idat.len, idat.offset, true));
+			foundChunksInfo.add(new FoundChunkInfo(ChunkHelper.IDAT, idat.len, idat.offset, true));
 		int clen = iIdatCstream.getLenLastChunk();
 		byte[] chunkid = iIdatCstream.getIdLastChunk();
 		boolean endfound = false;
@@ -203,10 +203,10 @@ public class PngReader {
 				offset += 4;
 			}
 			first = false;
-			if (Arrays.equals(chunkid, ChunkHelper.IDAT)) {
+			if (Arrays.equals(chunkid, ChunkHelper.b_IDAT)) {
 				// PngHelper.logdebug("extra IDAT chunk len - ignoring : ");
 				ignore = true;
-			} else if (Arrays.equals(chunkid, ChunkHelper.IEND)) {
+			} else if (Arrays.equals(chunkid, ChunkHelper.b_IEND)) {
 				endfound = true;
 			}
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);

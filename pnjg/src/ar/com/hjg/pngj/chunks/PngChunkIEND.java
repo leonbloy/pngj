@@ -6,12 +6,12 @@ public class PngChunkIEND extends PngChunk {
 	// http://www.w3.org/TR/PNG/#11IEND
 	// this is a dummy placeholder
 	public PngChunkIEND(ImageInfo info) {
-		super(ChunkHelper.IEND_TEXT, info);
+		super(ChunkHelper.IEND, info);
 	}
 
 	@Override
 	public ChunkRaw createChunk() {
-		ChunkRaw c = new ChunkRaw(0, ChunkHelper.IEND, false);
+		ChunkRaw c = new ChunkRaw(0, ChunkHelper.b_IEND, false);
 		return c;
 	}
 

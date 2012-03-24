@@ -15,7 +15,7 @@ public class PngChunkBKGD extends PngChunk {
 	private int paletteIndex;
 
 	public PngChunkBKGD(ImageInfo info) {
-		super(ChunkHelper.bKGD_TEXT, info);
+		super(ChunkHelper.bKGD, info);
 	}
 
 	@Override

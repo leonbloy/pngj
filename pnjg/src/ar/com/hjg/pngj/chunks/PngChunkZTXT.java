@@ -10,7 +10,7 @@ import ar.com.hjg.pngj.PngjException;
 public class PngChunkZTXT extends PngChunkTextVar {
 	// http://www.w3.org/TR/PNG/#11zTXt
 	public PngChunkZTXT(ImageInfo info) {
-		super(ChunkHelper.zTXt_TEXT, info);
+		super(ChunkHelper.zTXt, info);
 	}
 
 	@Override

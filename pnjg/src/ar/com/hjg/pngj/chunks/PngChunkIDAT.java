@@ -7,7 +7,7 @@ public class PngChunkIDAT extends PngChunk {
 	// This is dummy placeholder - we write/read this chunk (actually several)
 	// by special code.
 	public PngChunkIDAT(ImageInfo i) {
-		super(ChunkHelper.IDAT_TEXT, i);
+		super(ChunkHelper.IDAT, i);
 	}
 
 	@Override

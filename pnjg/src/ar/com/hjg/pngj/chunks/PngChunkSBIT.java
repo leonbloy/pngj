@@ -15,7 +15,7 @@ public class PngChunkSBIT extends PngChunk {
 	private int redsb, greensb, bluesb;
 
 	public PngChunkSBIT(ImageInfo info) {
-		super(ChunkHelper.sBIT_TEXT, info);
+		super(ChunkHelper.sBIT, info);
 	}
 
 	private int getLen() {

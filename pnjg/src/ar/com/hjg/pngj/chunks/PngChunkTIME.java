@@ -11,7 +11,7 @@ public class PngChunkTIME extends PngChunk {
 	private int year, mon, day, hour, min, sec;
 
 	public PngChunkTIME(ImageInfo info) {
-		super(ChunkHelper.tIME_TEXT, info);
+		super(ChunkHelper.tIME, info);
 	}
 
 	@Override

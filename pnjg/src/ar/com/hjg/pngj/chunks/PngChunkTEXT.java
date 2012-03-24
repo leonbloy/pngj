@@ -5,7 +5,7 @@ import ar.com.hjg.pngj.PngHelper;
 
 public class PngChunkTEXT extends PngChunkTextVar {
 	public PngChunkTEXT(ImageInfo info) {
-		super(ChunkHelper.tEXt_TEXT, info);
+		super(ChunkHelper.tEXt, info);
 	}
 
 	@Override

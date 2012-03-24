@@ -35,7 +35,7 @@ public class FileHelper {
 	 * 
 	 * @param file
 	 * @param allowOverwrite
-	 * @return
+	 * @return outputStream (should be of type FileOutputStream)
 	 */
 	public static OutputStream openFileForWriting(File file, boolean allowOverwrite) {
 		if (file.exists() && !allowOverwrite)
