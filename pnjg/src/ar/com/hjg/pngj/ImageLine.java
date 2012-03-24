@@ -13,29 +13,30 @@ import ar.com.hjg.pngj.ImageLineHelper.ImageLineStats;
  */
 public class ImageLine {
 	public final ImageInfo imgInfo;
-	public final int channels; // copied from imgInfo, more handy
-	public final int bitDepth; // copied from imgInfo, more handy
-	/**
-	 * The 'scanline' is an array of integers, corresponds to an image line (row).
-	* <p>
-	* Except for 'packed' formats (gray/indexed with 1-2-4 bitdepth) each int is a
-	* "sample" (one for channel), (0-255 or 0-65535) in the respective PNG sequence
-	* sequence : (R G B R G B...) or (R G B A R G B A...) or (g g g ...) or ( i i i) 
-	* (palette index)
-	* <p>
-	* For bitdepth 1/2/4 , each element is a PACKED byte! To get an unpacked copy,
-	* see <code>tf_pack()</code> and its inverse <code>tf_unpack()</code>
-	* <p>
-	* To convert a indexed line to RGB balues, see <code>ImageLineHelper.tf_palIdx2RGB()</code>
-	* (can't do the reverse)
-	*/
-	public final int[] scanline; // see explanation above!!
+	
 	/**
 	 * tracks the current row number (from 0 to rows-1)
 	 */
 	private int rown = -1;
-	public PngFilterType filterUsed; // informational ; only filled by the reader
-
+	
+	/**
+	 * The 'scanline' is an array of integers, corresponds to an image line (row).
+	 * <p>
+	 * Except for 'packed' formats (gray/indexed with 1-2-4 bitdepth) each int is a "sample" (one for channel), (0-255
+	 * or 0-65535) in the respective PNG sequence sequence : (R G B R G B...) or (R G B A R G B A...) or (g g g ...) or
+	 * ( i i i) (palette index)
+	 * <p>
+	 * For bitdepth 1/2/4 , each element is a PACKED byte! To get an unpacked copy, see <code>tf_pack()</code> and its
+	 * inverse <code>tf_unpack()</code>
+	 * <p>
+	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.tf_palIdx2RGB()</code> (can't do the reverse)
+	 */
+	public final int[] scanline; // see explanation above!!
+	
+	protected PngFilterType filterUsed; // informational ; only filled by the reader
+	protected final int channels; // copied from imgInfo, more handy
+	protected final int bitDepth; // copied from imgInfo, more handy
+	
 	public ImageLine(ImageInfo imgInfo) {
 		this.imgInfo = imgInfo;
 		channels = imgInfo.channels;
@@ -63,7 +64,7 @@ public class ImageLine {
 		System.arraycopy(b, 0, scanline, 0, scanline.length);
 	}
 
-	/** 
+	/**
 	 * Returns a copy from scanline, in byte array.
 	 * 
 	 * You can (OPTIONALLY) pass an preallocated array to use.
@@ -76,7 +77,7 @@ public class ImageLine {
 	}
 
 	/**
-	 * Unpacks scanline (for bitdepth 1-2-4) into buffer. 
+	 * Unpacks scanline (for bitdepth 1-2-4) into buffer.
 	 * <p>
 	 * You can (OPTIONALLY) pass an preallocated array to use.
 	 * <p>
@@ -121,7 +122,7 @@ public class ImageLine {
 	 * Packs scanline (for bitdepth 1-2-4) from buffer.
 	 * <p>
 	 * If scale==TRUE scales the value (just a bit shift).
-	  */
+	 */
 	public void tf_pack(int[] buf, boolean scale) { // writes scanline
 		int len = scanline.length;
 		if (bitDepth == 1)
@@ -163,16 +164,19 @@ public class ImageLine {
 		throw new RuntimeException("?");
 	}
 
-	/** 
+	public PngFilterType getFilterUsed() {
+		return filterUsed;
+	}
+
+	/**
 	 * Basic info
 	 */
 	public String toString() {
-		return "row=" + rown + " cols=" + imgInfo.cols + " bpc=" + imgInfo.bitDepth
-				+ " size=" + scanline.length;
+		return "row=" + rown + " cols=" + imgInfo.cols + " bpc=" + imgInfo.bitDepth + " size=" + scanline.length;
 	}
 
-	/** 
-	 * Prints some statistics - for debugging 
+	/**
+	 * Prints some statistics - just for debugging
 	 */
 	public static void showLineInfo(ImageLine line) {
 		System.out.println(line);
@@ -180,4 +184,5 @@ public class ImageLine {
 		System.out.println(stats);
 		System.out.println(ImageLineHelper.infoFirstLastPixels(line));
 	}
+
 }

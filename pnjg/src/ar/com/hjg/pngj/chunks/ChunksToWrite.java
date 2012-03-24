@@ -11,14 +11,13 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
 
 /**
- * Chunks to be written - not including IDHR/ IDAT / END (buy yes PLTE)
- * http://www.w3.org/TR/PNG/#table53
+ * Chunks to be written - not including IDHR/ IDAT / END (buy yes PLTE) http://www.w3.org/TR/PNG/#table53
  * 
  **/
 public class ChunksToWrite {
 	public static final int COPY_NONE = 0;
 	public static final int COPY_PALETTE = 1; // only for indexed - use COPY_ALL
-																						// for copy palette for RGB
+												// for copy palette for RGB
 	public static final int COPY_ALL_SAFE = 1 << 2;
 	public static final int COPY_ALL = 1 << 3; // includes palette!
 	public static final int COPY_PHYS = 1 << 4; // dpi
@@ -69,9 +68,9 @@ public class ChunksToWrite {
 		if (!chunks1.containsKey(ChunkHelper.pHYs_TEXT))
 			chunks1.put(ChunkHelper.pHYs_TEXT, new PngChunkPHYS(imgInfo));
 		PngChunkPHYS chunk = (PngChunkPHYS) chunks1.get(ChunkHelper.pHYs_TEXT);
-		chunk.pixelsxUnitX = resx;
-		chunk.pixelsxUnitY = resy;
-		chunk.units = unit;
+		chunk.setPixelsxUnitX(resx);
+		chunk.setPixelsxUnitY(resy);
+		chunk.setUnits(unit);
 	}
 
 	public void setPHYSdpi(double dpi) {

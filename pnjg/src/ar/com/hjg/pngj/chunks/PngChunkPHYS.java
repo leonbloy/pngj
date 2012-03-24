@@ -6,9 +6,9 @@ import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkPHYS extends PngChunk {
 	// http://www.w3.org/TR/PNG/#11pHYs
-	public long pixelsxUnitX;
-	public long pixelsxUnitY;
-	public int units; // 0: unknown 1:metre
+	private long pixelsxUnitX;
+	private long pixelsxUnitY;
+	private int units; // 0: unknown 1:metre
 
 	public PngChunkPHYS(ImageInfo info) {
 		super(ChunkHelper.pHYs_TEXT, info);
@@ -36,11 +36,56 @@ public class PngChunkPHYS extends PngChunk {
 		units = PngHelper.readInt1fromByte(chunk.data, 8);
 	}
 
-	// returns -1 if not in meters, or not equal
+	@Override
+	public void cloneDataFromRead(PngChunk other) {
+		PngChunkPHYS otherx = (PngChunkPHYS) other;
+		this.pixelsxUnitX = otherx.pixelsxUnitX;
+		this.pixelsxUnitY = otherx.pixelsxUnitY;
+		this.units = otherx.units;
+	}
+
+	public long getPixelsxUnitX() {
+		return pixelsxUnitX;
+	}
+
+	public void setPixelsxUnitX(long pixelsxUnitX) {
+		this.pixelsxUnitX = pixelsxUnitX;
+	}
+
+	public long getPixelsxUnitY() {
+		return pixelsxUnitY;
+	}
+
+	public void setPixelsxUnitY(long pixelsxUnitY) {
+		this.pixelsxUnitY = pixelsxUnitY;
+	}
+
+	public int getUnits() {
+		return units;
+	}
+
+	public void setUnits(int units) {
+		this.units = units;
+	}
+
+	// special getters / setters
+
+	/**
+	 * returns -1 if the physicial unit is unknown, or X-Y are not equal
+	 */
 	public double getAsDpi() {
 		if (units != 1 || pixelsxUnitX != pixelsxUnitY)
 			return -1;
 		return ((double) pixelsxUnitX) * 0.0254;
+	}
+
+	/**
+	 * returns -1 if the physicial unit is unknown
+	 */
+	public double[] getAsDpi2() {
+		if (units != 1)
+			return new double[] { -1, -1 };
+		return new double[] { ((double) pixelsxUnitX) * 0.0254, ((double) pixelsxUnitY) * 0.0254 };
 	}
 
 	public void setAsDpi(double dpi) {
@@ -49,11 +94,10 @@ public class PngChunkPHYS extends PngChunk {
 		pixelsxUnitY = pixelsxUnitX;
 	}
 
-	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkPHYS otherx = (PngChunkPHYS) other;
-		this.pixelsxUnitX = otherx.pixelsxUnitX;
-		this.pixelsxUnitY = otherx.pixelsxUnitY;
-		this.units = otherx.units;
+	public void setAsDpi2(double dpix, double dpiy) {
+		units = 1;
+		pixelsxUnitX = (long) (dpix / 0.0254 + 0.5);
+		pixelsxUnitY = (long) (dpiy / 0.0254 + 0.5);
 	}
+
 }

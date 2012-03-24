@@ -3,7 +3,7 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 
 public class PngChunkOTHER extends PngChunk { // unkown, custom or not
-																							// implemented chunks
+
 	private byte[] data;
 
 	public PngChunkOTHER(String id, ImageInfo info) {

@@ -2,6 +2,7 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngjException;
 
 /*
  */
@@ -11,7 +12,7 @@ public class PngChunkTRNS extends PngChunk {
 	// only one of these is meaningful
 	private int gray;
 	private int red, green, blue;
-	private int[] paletteAlpha;
+	private int[] paletteAlpha = new int[] {};
 
 	public PngChunkTRNS(ImageInfo info) {
 		super(ChunkHelper.tRNS_TEXT, info);
@@ -61,6 +62,58 @@ public class PngChunkTRNS extends PngChunk {
 		red = otherx.red;
 		green = otherx.red;
 		blue = otherx.red;
-		paletteAlpha = otherx.paletteAlpha; // not deep!
+		if (otherx.paletteAlpha != null) {
+			paletteAlpha = new int[otherx.paletteAlpha.length];
+			System.arraycopy(otherx.paletteAlpha, 0, paletteAlpha, 0, paletteAlpha.length);
+		}
 	}
+
+	/**
+	 * Set rgb values
+	 * 
+	 */
+	public void setRGB(int r, int g, int b) {
+		if (imgInfo.greyscale || imgInfo.indexed)
+			throw new PngjException("only rgb or rgba images support this");
+		red = r;
+		green = g;
+		blue = b;
+	}
+
+	public int[] getRGB() {
+		if (imgInfo.greyscale || imgInfo.indexed)
+			throw new PngjException("only rgb or rgba images support this");
+		return new int[] { red, green, blue };
+	}
+
+	public void setGray(int g) {
+		if (!imgInfo.greyscale)
+			throw new PngjException("only grayscale images support this");
+		gray = g;
+	}
+
+	public int getGray() {
+		if (!imgInfo.greyscale)
+			throw new PngjException("only grayscale images support this");
+		return gray;
+	}
+
+	/**
+	 * WARNING: non deep copy
+	 */
+	public void setPalletteAlpha(int[] palAlpha) {
+		if (!imgInfo.indexed)
+			throw new PngjException("only indexed images support this");
+		paletteAlpha = palAlpha;
+	}
+
+	/**
+	 * WARNING: non deep copy
+	 */
+	public int[] getPalletteAlpha() {
+		if (!imgInfo.indexed)
+			throw new PngjException("only indexed images support this");
+		return paletteAlpha;
+	}
+
 }

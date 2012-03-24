@@ -3,9 +3,17 @@ package ar.com.hjg.pngj.chunks;
 // see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
 // http://www.w3.org/TR/PNG/#5Chunk-naming-conventions
 // http://www.w3.org/TR/PNG/#table53
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.Set;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.InflaterInputStream;
 
 import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngjException;
 
 public class ChunkHelper {
 	public static final String IHDR_TEXT = "IHDR";
@@ -44,24 +52,20 @@ public class ChunkHelper {
 	public static final byte[] iTXt = toBytes(iTXt_TEXT);
 	public static final byte[] tEXt = toBytes(tEXt_TEXT);
 	public static final byte[] zTXt = toBytes(zTXt_TEXT);
-	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR_TEXT, PLTE_TEXT,
-			IDAT_TEXT, IEND_TEXT);
+	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR_TEXT, PLTE_TEXT, IDAT_TEXT, IEND_TEXT);
 	// ancillary known chunks, before PLTE and IDAT
-	public static Set<String> KNOWN_CHUNKS_BEFORE_PLTE = PngHelper.asSet(cHRM_TEXT,
-			gAMA_TEXT, iCCP_TEXT, sBIT_TEXT, sRGB_TEXT);
+	public static Set<String> KNOWN_CHUNKS_BEFORE_PLTE = PngHelper.asSet(cHRM_TEXT, gAMA_TEXT, iCCP_TEXT, sBIT_TEXT,
+			sRGB_TEXT);
 	// ancillary known chunks, after PLTE , before IDAT
-	public static Set<String> KNOWN_CHUNKS_AFTER_PLTE = PngHelper.asSet(bKGD_TEXT,
-			hIST_TEXT, tRNS_TEXT);
+	public static Set<String> KNOWN_CHUNKS_AFTER_PLTE = PngHelper.asSet(bKGD_TEXT, hIST_TEXT, tRNS_TEXT);
 	// ancillary known chunks, before IDAT (before or after PLTE)
-	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT = PngHelper.asSet(pHYs_TEXT,
-			sPLT_TEXT);
+	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT = PngHelper.asSet(pHYs_TEXT, sPLT_TEXT);
 	// ancillary known chunks, before or after IDAT
-	public static Set<String> KNOWN_CHUNKS_ANYWHERE = PngHelper.asSet(tIME_TEXT, iTXt_TEXT,
-			tEXt_TEXT, zTXt_TEXT);
-	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT_ALL = PngHelper.unionSets(
-			KNOWN_CHUNKS_BEFORE_PLTE, KNOWN_CHUNKS_AFTER_PLTE, KNOWN_CHUNKS_BEFORE_IDAT);
-	public static Set<String> KNOWN_CHUNKS_ANCILLARY_ALL = PngHelper.unionSets(
-			KNOWN_CHUNKS_BEFORE_IDAT_ALL, KNOWN_CHUNKS_ANYWHERE);
+	public static Set<String> KNOWN_CHUNKS_ANYWHERE = PngHelper.asSet(tIME_TEXT, iTXt_TEXT, tEXt_TEXT, zTXt_TEXT);
+	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT_ALL = PngHelper.unionSets(KNOWN_CHUNKS_BEFORE_PLTE,
+			KNOWN_CHUNKS_AFTER_PLTE, KNOWN_CHUNKS_BEFORE_IDAT);
+	public static Set<String> KNOWN_CHUNKS_ANCILLARY_ALL = PngHelper.unionSets(KNOWN_CHUNKS_BEFORE_IDAT_ALL,
+			KNOWN_CHUNKS_ANYWHERE);
 
 	public static boolean isKnown(String id) {
 		return KNOWN_CHUNKS_CRITICAL.contains(id) || KNOWN_CHUNKS_ANCILLARY_ALL.contains(id);
@@ -103,8 +107,7 @@ public class ChunkHelper {
 	}
 
 	public static boolean admitsMultiple(String id) { // only for ancillary
-		if (id.equals(sPLT_TEXT) || id.equals(iTXt_TEXT) || id.equals(tEXt_TEXT)
-				|| id.equals(zTXt_TEXT))
+		if (id.equals(sPLT_TEXT) || id.equals(iTXt_TEXT) || id.equals(tEXt_TEXT) || id.equals(zTXt_TEXT))
 			return true;
 		else
 			return false;
@@ -132,5 +135,35 @@ public class ChunkHelper {
 			return false;
 		}
 		return false; // should not reach here
+	}
+
+	public final static byte[] compressBytes(byte[] ori, boolean compress) {
+		return compressBytes(ori, 0, ori.length, compress);
+	}
+
+	public static byte[] compressBytes(byte[] ori, int offset, int len, boolean compress) {
+		try {
+			ByteArrayInputStream inb = new ByteArrayInputStream(ori, offset, len);
+			InputStream in = compress ? inb : new InflaterInputStream(inb);
+			ByteArrayOutputStream outb = new ByteArrayOutputStream();
+			OutputStream out = compress ? new DeflaterOutputStream(outb) : outb;
+			shovelInToOut(in, out);
+			in.close();
+			out.close();
+			return outb.toByteArray();
+		} catch (Exception e) {
+			throw new PngjException(e);
+		}
+	}
+
+	/**
+	 * Shovels all data from an input stream to an output stream.
+	 */
+	private static void shovelInToOut(InputStream in, OutputStream out) throws IOException {
+		byte[] buffer = new byte[1024];
+		int len;
+		while ((len = in.read(buffer)) > 0) {
+			out.write(buffer, 0, len);
+		}
 	}
 }

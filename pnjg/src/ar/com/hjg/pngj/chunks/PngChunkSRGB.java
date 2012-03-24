@@ -8,19 +8,18 @@ import ar.com.hjg.pngj.PngjException;
  */
 public class PngChunkSRGB extends PngChunk {
 	// http://www.w3.org/TR/PNG/#11sRGB
-	
+
 	public static final int RENDER_INTENT_Perceptual = 0;
 	public static final int RENDER_INTENT_Relative_colorimetric = 1;
 	public static final int RENDER_INTENT_Saturation = 2;
-	public static final int RENDER_INTENT_Absolute_colorimetric	 = 3;
-	
-	private int intent; 
-	
+	public static final int RENDER_INTENT_Absolute_colorimetric = 3;
+
+	private int intent;
+
 	public PngChunkSRGB(ImageInfo info) {
 		super(ChunkHelper.sRGB_TEXT, info);
 	}
 
-	
 	@Override
 	public void parseFromChunk(ChunkRaw c) {
 		if (c.len != 1)
@@ -36,10 +35,17 @@ public class PngChunkSRGB extends PngChunk {
 		return c;
 	}
 
-
 	@Override
 	public void cloneDataFromRead(PngChunk other) {
 		PngChunkSRGB otherx = (PngChunkSRGB) other;
 		intent = otherx.intent;
+	}
+
+	public int getIntent() {
+		return intent;
+	}
+
+	public void setIntent(int intent) {
+		this.intent = intent;
 	}
 }

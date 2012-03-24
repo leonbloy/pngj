@@ -2,11 +2,11 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 
+import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunksToWrite;
-import ar.com.hjg.pngj.nosandbox.FileHelper;
 
 /**
  * Example: cuts the red channel by two. Only for RGB
@@ -19,7 +19,8 @@ public class DecreaseRed {
 		// this can copy some metadata from reader
 		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE);
 		int channels = pngr.imgInfo.channels;
-		if (channels < 3) throw new RuntimeException("This method is for RGB/RGBA images");
+		if (channels < 3)
+			throw new RuntimeException("This method is for RGB/RGBA images");
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
 			for (int j = 0; j < pngr.imgInfo.cols; j++)

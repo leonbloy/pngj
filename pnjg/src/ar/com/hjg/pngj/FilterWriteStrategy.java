@@ -10,8 +10,14 @@ class FilterWriteStrategy {
 	public final PngFilterType configuredType; // can be negative (fin dout)
 	private PngFilterType currentType; // 0-4
 	private int lastRowTested = -1000000;
-	private double[] lastSums = new double[5]; // performance of each filter (less is better) (can be negative)
+	// performance of each filter (less is better) (can be negative)
+	private double[] lastSums = new double[5]; 
+	// performance of each filter (less is better) (can be negative)
+	private double[] lastEntropies = new double[5]; 
+	// a priori preference (NONE SUB UP AVERAGE PAETH) 
+	private double[] preference = new double[] { 1.1, 1.1, 1.1, 1.1, 1.2 }; 
 	private int discoverEachLines = -1;
+	private double[] histogram1 = new double[256];
 
 	FilterWriteStrategy(ImageInfo imgInfo, PngFilterType configuredType) {
 		this.imgInfo = imgInfo;
@@ -24,36 +30,63 @@ class FilterWriteStrategy {
 		} else {
 			currentType = configuredType;
 		}
-		if (configuredType == PngFilterType.FILTER_AGRESSIVE)
+		if (configuredType == PngFilterType.FILTER_AGGRESSIVE)
 			discoverEachLines = COMPUTE_STATS_EVERY_N_LINES;
-		if (configuredType == PngFilterType.FILTER_VERYAGGRESIVE)
+		if (configuredType == PngFilterType.FILTER_VERYAGGRESSIVE)
 			discoverEachLines = 1;
 	}
 
 	boolean shouldTestAll(int rown) {
-		if (discoverEachLines > 0 && lastRowTested + discoverEachLines <= rown)
+		if (discoverEachLines > 0 && lastRowTested + discoverEachLines <= rown) {
+			currentType = null;
 			return true;
-		else
+		} else
 			return false;
 	}
 
-	void fillResultsForFilter(int rown, PngFilterType type, double sum) {
-		lastRowTested = rown;
-		lastSums[type.val] = sum;
-		currentType = null;
+	public void setPreference(double none, double sub, double up, double ave, double paeth) {
+		preference = new double[] { none, sub, up, ave, paeth };
 	}
 
-	PngFilterType gimmeFilterType(int rown) {
+	public boolean computesStatistics() {
+		return (discoverEachLines > 0);
+	}
+
+	void fillResultsForFilter(int rown, PngFilterType type, double sum, int[] histo,boolean tentative) {
+		lastRowTested = rown;
+		lastSums[type.val] = sum;
+		if (histo != null) {
+			double v, alfa, beta, e;
+			alfa = rown == 0 ? 0.0 : 0.3;
+			beta = 1 - alfa;
+			e = 0.0;
+			for (int i = 0; i < 256; i++) {
+				v = ((double) histo[i]) / imgInfo.cols;
+				v = histogram1[i] * alfa + v * beta;
+				if (tentative)
+					e += v > 0.00000001 ? v * Math.log(v) : 0.0;
+				else
+					histogram1[i] = v;
+			}
+			lastEntropies[type.val] = (-e);
+		}
+	}
+
+	PngFilterType gimmeFilterType(int rown, boolean useEntropy) {
 		if (currentType == null) { // get better
 			if (rown == 0)
-				currentType = PngFilterType.FILTER_AVERAGE;
+				currentType = PngFilterType.FILTER_SUB;
 			else {
-				double bestsum = Double.MAX_VALUE;
-				for (int i = 0; i < 5; i++)
-					if (lastSums[i] <= bestsum) {
-						bestsum = lastSums[i];
+				double bestval = Double.MAX_VALUE;
+				double val;
+				for (int i = 0; i < 5; i++) {
+					val = useEntropy ? lastEntropies[i] : lastSums[i];
+					val /= preference[i];
+					if (val <= bestval) {
+						bestval = val;
 						currentType = PngFilterType.getByVal(i);
 					}
+				}
 			}
 		}
 		if (configuredType == PngFilterType.FILTER_ALTERNATE) {

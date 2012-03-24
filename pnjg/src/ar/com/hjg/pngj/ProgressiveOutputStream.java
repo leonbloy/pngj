@@ -4,8 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 /**
- * stream that outputs to memory and allows to flush fragments every 'size'
- * bytes to some other destination
+ * stream that outputs to memory and allows to flush fragments every 'size' bytes to some other destination
  */
 abstract class ProgressiveOutputStream extends ByteArrayOutputStream {
 	private final int size;
@@ -50,10 +49,10 @@ abstract class ProgressiveOutputStream extends ByteArrayOutputStream {
 	}
 
 	/**
-	 * if it's time to flush data (or if forced==true) calls abstract method
-	 * flushBuffer() and cleans those bytes from own buffer
+	 * if it's time to flush data (or if forced==true) calls abstract method flushBuffer() and cleans those bytes from
+	 * own buffer
 	 */
-	private final void  checkFlushBuffer(boolean forced) {
+	private final void checkFlushBuffer(boolean forced) {
 		while (forced || count >= size) {
 			int nb = size;
 			if (nb > count)

@@ -6,14 +6,17 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngjException;
 
+/**
+ * this is a special chunk!
+ */
 public class PngChunkIHDR extends PngChunk {
-	public int cols;
-	public int rows;
-	public int bitspc;
-	public int colormodel;
-	public int compmeth;
-	public int filmeth;
-	public int interlaced;
+	private int cols;
+	private int rows;
+	private int bitspc;
+	private int colormodel;
+	private int compmeth;
+	private int filmeth;
+	private int interlaced;
 
 	// http://www.w3.org/TR/PNG/#11IHDR
 	//
@@ -62,5 +65,61 @@ public class PngChunkIHDR extends PngChunk {
 		compmeth = otherx.compmeth;
 		filmeth = otherx.filmeth;
 		interlaced = otherx.interlaced;
+	}
+
+	public int getCols() {
+		return cols;
+	}
+
+	public void setCols(int cols) {
+		this.cols = cols;
+	}
+
+	public int getRows() {
+		return rows;
+	}
+
+	public void setRows(int rows) {
+		this.rows = rows;
+	}
+
+	public int getBitspc() {
+		return bitspc;
+	}
+
+	public void setBitspc(int bitspc) {
+		this.bitspc = bitspc;
+	}
+
+	public int getColormodel() {
+		return colormodel;
+	}
+
+	public void setColormodel(int colormodel) {
+		this.colormodel = colormodel;
+	}
+
+	public int getCompmeth() {
+		return compmeth;
+	}
+
+	public void setCompmeth(int compmeth) {
+		this.compmeth = compmeth;
+	}
+
+	public int getFilmeth() {
+		return filmeth;
+	}
+
+	public void setFilmeth(int filmeth) {
+		this.filmeth = filmeth;
+	}
+
+	public int getInterlaced() {
+		return interlaced;
+	}
+
+	public void setInterlaced(int interlaced) {
+		this.interlaced = interlaced;
 	}
 }

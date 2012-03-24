@@ -2,6 +2,7 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngjException;
 
 /*
  */
@@ -56,5 +57,56 @@ public class PngChunkBKGD extends PngChunk {
 		green = otherx.red;
 		blue = otherx.red;
 		paletteIndex = otherx.paletteIndex;
+	}
+
+	/**
+	 * Set gray value (0-255 if bitdept=8)
+	 * 
+	 * @param gray
+	 */
+	public void setGray(int gray) {
+		if (!imgInfo.greyscale)
+			throw new PngjException("only gray images support this");
+		this.gray = gray;
+	}
+
+	public int getGray() {
+		if (!imgInfo.greyscale)
+			throw new PngjException("only gray images support this");
+		return gray;
+	}
+
+	/**
+	 * Set pallette index
+	 * 
+	 */
+	public void setPaletteIndex(int i) {
+		if (!imgInfo.indexed)
+			throw new PngjException("only indexed (pallete) images support this");
+		this.paletteIndex = i;
+	}
+
+	public int getPaletteIndex() {
+		if (!imgInfo.indexed)
+			throw new PngjException("only indexed (pallete) images support this");
+		return paletteIndex;
+	}
+
+	/**
+	 * Set rgb values
+	 * 
+	 */
+	public void setRGB(int r, int g, int b) {
+		if (imgInfo.greyscale || imgInfo.indexed)
+			throw new PngjException("only rgb or rgba images support this");
+		red = r;
+		green = g;
+		blue = b;
+	}
+
+	public int[] getRGB() {
+		if (imgInfo.greyscale || imgInfo.indexed)
+			throw new PngjException("only rgb or rgba images support this");
+		return new int[] { red, green, blue };
 	}
 }

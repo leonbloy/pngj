@@ -2,20 +2,19 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 
+import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
-import ar.com.hjg.pngj.nosandbox.FileHelper;
 
 /**
- * Utility (and example) to verify that two images are identical. Computes the
- * maximum difference.
+ * Utility (and example) to verify that two images are identical. Computes the maximum difference.
  * 
  * TODO: Add alpha
  */
 public class ImgDiff {
 	/**
-	 * asume que las imagenes son equivalentes res[0]=maxima diferencia (suma
-	 * valores absoluto sobre todos los canales) res[1]=columna en que se produce
+	 * asume que las imagenes son equivalentes res[0]=maxima diferencia (suma valores absoluto sobre todos los canales)
+	 * res[1]=columna en que se produce
 	 * 
 	 * ignores alpha
 	 */
@@ -29,8 +28,7 @@ public class ImgDiff {
 					+ Math.abs(l1.scanline[col * channels + 1] - l2.scanline[col * channels + 1])
 					+ Math.abs(l1.scanline[col * channels + 2] - l2.scanline[col * channels + 2]);
 			if (channels == 4)
-				dif += Math
-						.abs(l1.scanline[col * channels + 3] - l2.scanline[col * channels + 3]);
+				dif += Math.abs(l1.scanline[col * channels + 3] - l2.scanline[col * channels + 3]);
 			if (dif > maxDif) {
 				maxDif = dif;
 				maxDifCol = col;
@@ -50,7 +48,7 @@ public class ImgDiff {
 		if (i1.imgInfo.channels < 3)
 			throw new RuntimeException("Images must be RGB or RGBA");
 		if (!i1.imgInfo.equals(i2.imgInfo))
-			throw new RuntimeException("Images must be comparable ");
+			throw new RuntimeException("Images must be comparable (same sizes and type) ");
 		int rows = i1.imgInfo.rows;
 		for (int row = 0; row < rows; row++) {
 			ImageLine l1 = i1.readRow(row);
@@ -67,8 +65,7 @@ public class ImgDiff {
 		if (maxDif == 0)
 			System.out.println("No difference");
 		else
-			System.out.printf("Images differ. MaxDif=%d [%d %d]\n", maxDif, maxDifCol,
-					maxDifRow);
+			System.out.printf("Images differ. MaxDif=%d [%d %d]\n", maxDif, maxDifCol, maxDifRow);
 	}
 
 	public static void main(String[] args) {

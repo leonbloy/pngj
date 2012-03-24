@@ -14,7 +14,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-public class FindDependecies {
+/**
+ * used in CheckWhiteListed
+ * @author Hernan J Gonzalez
+ *
+ */
+class FindDependecies {
+
 	public static List<File> getClassesFromDir(File dir, boolean recurse) {
 		File[] files = dir.listFiles();
 		List<File> f = new ArrayList<File>();
@@ -27,8 +33,7 @@ public class FindDependecies {
 		return f;
 	}
 
-	public static Map<String, List<File>> getReferencedClassesFromFiles(
-			Collection<File> files) {
+	public static Map<String, List<File>> getReferencedClassesFromFiles(Collection<File> files) {
 		HashMap<String, List<File>> map = new HashMap<String, List<File>>();
 		for (File file : files) {
 			Set<String> classes;
@@ -51,8 +56,7 @@ public class FindDependecies {
 		Set<Integer> classes = new HashSet<Integer>();
 		int indexCorrection = 0; // for correcting indexes to constant
 		// pools with long and double entries
-		DataInputStream stream = new DataInputStream(new BufferedInputStream(
-				new FileInputStream(file)));
+		DataInputStream stream = new DataInputStream(new BufferedInputStream(new FileInputStream(file)));
 		try {
 			readU4(stream); // magic byte
 			readU2(stream); // minor version

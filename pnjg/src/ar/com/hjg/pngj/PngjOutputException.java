@@ -1,5 +1,8 @@
 package ar.com.hjg.pngj;
 
+/**
+ * Exception thrown by writing process
+ */
 public class PngjOutputException extends PngjException {
 	private static final long serialVersionUID = 1L;
 

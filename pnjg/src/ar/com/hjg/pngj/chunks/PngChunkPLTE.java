@@ -8,11 +8,11 @@ import ar.com.hjg.pngj.PngjException;
  */
 public class PngChunkPLTE extends PngChunk {
 	// http://www.w3.org/TR/PNG/#11PLTE
-	public int nentries = 0;
+	private int nentries = 0;
 	/**
 	 * RGB8 packed in one integer
 	 */
-	public int[] entries; 
+	private int[] entries;
 
 	public PngChunkPLTE(ImageInfo info) {
 		super(ChunkHelper.PLTE_TEXT, info);
@@ -36,9 +36,15 @@ public class PngChunkPLTE extends PngChunk {
 	public void parseFromChunk(ChunkRaw chunk) {
 		setNentries(chunk.len / 3);
 		for (int n = 0, i = 0; n < nentries; n++) {
-			setEntry(n, (int) (chunk.data[i++] & 0xff), (int) (chunk.data[i++] & 0xff),
-					(int) (chunk.data[i++] & 0xff));
+			setEntry(n, (int) (chunk.data[i++] & 0xff), (int) (chunk.data[i++] & 0xff), (int) (chunk.data[i++] & 0xff));
 		}
+	}
+
+	@Override
+	public void cloneDataFromRead(PngChunk other) {
+		PngChunkPLTE otherx = (PngChunkPLTE) other;
+		this.setNentries(otherx.getNentries());
+		System.arraycopy(otherx.entries, 0, entries, 0, nentries);
 	}
 
 	public void setNentries(int n) {
@@ -63,14 +69,14 @@ public class PngChunkPLTE extends PngChunk {
 	}
 
 	public void getEntryRgb(int n, int[] rgb) {
-		getEntryRgb(n, rgb,0);
+		getEntryRgb(n, rgb, 0);
 	}
-	
-	public void getEntryRgb(int n, int[] rgb,int offset) {
+
+	public void getEntryRgb(int n, int[] rgb, int offset) {
 		int v = entries[n];
-		rgb[offset+0] = ((v & 0xff0000) >> 16);
-		rgb[offset+1] = ((v & 0xff00) >> 8);
-		rgb[offset+2] = (v & 0xff);
+		rgb[offset + 0] = ((v & 0xff0000) >> 16);
+		rgb[offset + 1] = ((v & 0xff00) >> 8);
+		rgb[offset + 2] = (v & 0xff);
 	}
 
 	public int minBitDepth() {
@@ -84,10 +90,4 @@ public class PngChunkPLTE extends PngChunk {
 			return 8;
 	}
 
-	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkPLTE otherx = (PngChunkPLTE) other;
-		this.setNentries(otherx.getNentries());
-		System.arraycopy(otherx.entries, 0, entries, 0, nentries);
-	}
 }

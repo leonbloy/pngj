@@ -9,7 +9,7 @@ import java.util.Set;
 import java.util.zip.CRC32;
 
 /**
- * Some utility static methods. 
+ * Some utility static methods.
  * <p>
  * See also <code>FileHelper</code> (if not sandboxed).
  * <p>
@@ -29,11 +29,12 @@ public class PngHelper {
 	}
 
 	static final byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 }; // png
-																																								// magic
+																			// magic
 	/**
 	 * Default charset, used internally by PNG for several things
 	 */
-	public static Charset charsetLatin1 = Charset.forName("ISO-8859-1"); 
+	public static Charset charsetLatin1 = Charset.forName("ISO-8859-1");
+	public static Charset charsetUTF8 = Charset.forName("UTF-8"); // only for some chunks
 
 	static boolean DEBUG = false;
 
@@ -83,8 +84,8 @@ public class PngHelper {
 	}
 
 	public static int readInt4fromBytes(byte[] b, int offset) {
-		return ((b[offset] & 0xff) << 24) | ((b[offset + 1] & 0xff) << 16)
-				| ((b[offset + 2] & 0xff) << 8) | (b[offset + 3] & 0xff);
+		return ((b[offset] & 0xff) << 24) | ((b[offset + 1] & 0xff) << 16) | ((b[offset + 2] & 0xff) << 8)
+				| (b[offset + 3] & 0xff);
 	}
 
 	public static void writeInt2tobytes(int n, byte[] b, int offset) {
@@ -156,8 +157,6 @@ public class PngHelper {
 		}
 	}
 
-
-
 	public static void logdebug(String msg) {
 		if (DEBUG)
 			System.out.println(msg);
@@ -191,21 +190,19 @@ public class PngHelper {
 	}
 
 	public static int doubleToInt100000(double d) {
-		return (int) (d *100000.0 +0.5);
+		return (int) (d * 100000.0 + 0.5);
 	}
 
 	public static double intToDouble100000(int i) {
-		return i /100000.0;
+		return i / 100000.0;
 	}
 
 	public static int clampTo_0_255(int i) {
-		return i>255 ? 255 : (i<0 ? 0 : i);
+		return i > 255 ? 255 : (i < 0 ? 0 : i);
 	}
-	
 
 	public static int clampTo_128_127(int x) {
-		return x>127?127 :(x<-128?-128:x);
+		return x > 127 ? 127 : (x < -128 ? -128 : x);
 	}
-
 
 }

@@ -20,7 +20,7 @@ public abstract class PngChunkTextVar extends PngChunk {
 		public String warning;
 		public String source;
 		public String comment;
-		
+
 	}
 
 	public String getKey() {
@@ -31,10 +31,9 @@ public abstract class PngChunkTextVar extends PngChunk {
 		return val;
 	}
 
-	public void setKeyVal(String key,String val) {
+	public void setKeyVal(String key, String val) {
 		this.key = key;
 		this.val = val;
 	}
-	
-	
+
 }

@@ -3,8 +3,7 @@ package ar.com.hjg.pngj;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
- * Bunch of utility static methods to process/analyze an image line. Not
- * essential at all.
+ * Bunch of utility static methods to process/analyze an image line. Not essential at all.
  */
 public class ImageLineHelper {
 	private final static double BIG_VALUE = Double.MAX_VALUE * 0.5;
@@ -13,52 +12,53 @@ public class ImageLineHelper {
 	/**
 	 * Given an indexed line with a palette, unpacks as a RGB array
 	 * 
-	 * @param line ImageLine as returned from PngReader
-	 * @param pal  Palette chunk
-	 * @param buf Preallocated array, optional
+	 * @param line
+	 *            ImageLine as returned from PngReader
+	 * @param pal
+	 *            Palette chunk
+	 * @param buf
+	 *            Preallocated array, optional
 	 * @return R G B (one byte per sample)
 	 */
 	public int[] tf_palIdx2RGB(ImageLine line, PngChunkPLTE pal, int[] buf) {
 		// TODO: test! Add alpha palette info?
 		int nbytes = line.imgInfo.cols * 3;
-		if(buf == null || buf.length < nbytes) buf = new int[nbytes];
+		if (buf == null || buf.length < nbytes)
+			buf = new int[nbytes];
 		int[] src; // from where to read the indexes as bytes
-		if(line.imgInfo.packed) { // requires unpacking
+		if (line.imgInfo.packed) { // requires unpacking
 			line.tf_unpack(buf, false); // use buf temporarily (have space)
-			src= buf;
+			src = buf;
 		} else {
 			src = line.scanline;
 		}
-		for(int c=line.imgInfo.cols-1;c>=0;c--) { 
-			// scan from right to left to not overwrite myself  
-			pal.getEntryRgb(src[c],buf,c*3);
+		for (int c = line.imgInfo.cols - 1; c >= 0; c--) {
+			// scan from right to left to not overwrite myself
+			pal.getEntryRgb(src[c], buf, c * 3);
 		}
 		return buf;
 	}
 
 	/** what follows is pretty uninteresting/untested/obsolete, subject to change */
 	/**
-	 * Just for basic info or debugging. Shows values for first and last pixel.
-	 * Does not include alpha
+	 * Just for basic info or debugging. Shows values for first and last pixel. Does not include alpha
 	 */
 	public static String infoFirstLastPixels(ImageLine line) {
-		return line.imgInfo.channels == 1 ? String.format("first=(%d) last=(%d)",
-				line.scanline[0], line.scanline[line.scanline.length - 1]) : String.format(
-				"first=(%d %d %d) last=(%d %d %d)", line.scanline[0], line.scanline[1],
-				line.scanline[2], line.scanline[line.scanline.length - line.imgInfo.channels],
-				line.scanline[line.scanline.length - line.imgInfo.channels + 1],
+		return line.imgInfo.channels == 1 ? String.format("first=(%d) last=(%d)", line.scanline[0],
+				line.scanline[line.scanline.length - 1]) : String.format("first=(%d %d %d) last=(%d %d %d)",
+				line.scanline[0], line.scanline[1], line.scanline[2], line.scanline[line.scanline.length
+						- line.imgInfo.channels], line.scanline[line.scanline.length - line.imgInfo.channels + 1],
 				line.scanline[line.scanline.length - line.imgInfo.channels + 2]);
 	}
 
 	public static String infoFull(ImageLine line) {
 		ImageLineStats stats = new ImageLineStats(line);
-		return "row=" + line.getRown() + " " + stats.toString() + "\n  "
-				+ infoFirstLastPixels(line);
+		return "row=" + line.getRown() + " " + stats.toString() + "\n  " + infoFirstLastPixels(line);
 	}
 
 	/**
-	 * Computes some statistics for the line. Not very efficient or elegant,
-	 * mainly for tests. Only for RGB/RGBA Outputs values as doubles (0.0 - 1.0)
+	 * Computes some statistics for the line. Not very efficient or elegant, mainly for tests. Only for RGB/RGBA Outputs
+	 * values as doubles (0.0 - 1.0)
 	 */
 	static class ImageLineStats {
 		public double[] prom = { 0.0, 0.0, 0.0, 0.0 }; // channel averages
@@ -71,19 +71,14 @@ public class ImageLineHelper {
 		public final int channels; // diferencia
 
 		public String toString() {
-			return channels == 3 ? String
-					.format(
-							"prom=%.1f (%.1f %.1f %.1f) max=%.1f (%.1f %.1f %.1f) min=%.1f (%.1f %.1f %.1f)",
-							promlum, prom[0], prom[1], prom[2], maxlum, maxv[0], maxv[1], maxv[2],
-							minlum, minv[0], minv[1], minv[2])
-					+ String.format(" maxdif=(%.1f %.1f %.1f)", maxdif[0], maxdif[1], maxdif[2])
-					: String
-							.format(
-									"prom=%.1f (%.1f %.1f %.1f %.1f) max=%.1f (%.1f %.1f %.1f %.1f) min=%.1f (%.1f %.1f %.1f %.1f)",
-									promlum, prom[0], prom[1], prom[2], prom[3], maxlum, maxv[0], maxv[1],
-									maxv[2], maxv[3], minlum, minv[0], minv[1], minv[2], minv[3])
-							+ String.format(" maxdif=(%.1f %.1f %.1f %.1f)", maxdif[0], maxdif[1],
-									maxdif[2], maxdif[3]);
+			return channels == 3 ? String.format(
+					"prom=%.1f (%.1f %.1f %.1f) max=%.1f (%.1f %.1f %.1f) min=%.1f (%.1f %.1f %.1f)", promlum, prom[0],
+					prom[1], prom[2], maxlum, maxv[0], maxv[1], maxv[2], minlum, minv[0], minv[1], minv[2])
+					+ String.format(" maxdif=(%.1f %.1f %.1f)", maxdif[0], maxdif[1], maxdif[2]) : String.format(
+					"prom=%.1f (%.1f %.1f %.1f %.1f) max=%.1f (%.1f %.1f %.1f %.1f) min=%.1f (%.1f %.1f %.1f %.1f)",
+					promlum, prom[0], prom[1], prom[2], prom[3], maxlum, maxv[0], maxv[1], maxv[2], maxv[3], minlum,
+					minv[0], minv[1], minv[2], minv[3])
+					+ String.format(" maxdif=(%.1f %.1f %.1f %.1f)", maxdif[0], maxdif[1], maxdif[2], maxdif[3]);
 		}
 
 		public ImageLineStats(ImageLine line) {
@@ -130,14 +125,13 @@ public class ImageLineHelper {
 	 **/
 	public static int getPixelRGB8(ImageLine line, int column) {
 		int offset = column * line.channels;
-		return (line.scanline[offset] << 16) + (line.scanline[offset + 1] << 8)
-				+ (line.scanline[offset + 2]);
+		return (line.scanline[offset] << 16) + (line.scanline[offset + 1] << 8) + (line.scanline[offset + 2]);
 	}
 
 	public static int getPixelARGB8(ImageLine line, int column) {
 		int offset = column * line.channels;
-		return (line.scanline[offset + 3] << 24) + (line.scanline[offset] << 16)
-				+ (line.scanline[offset + 1] << 8) + (line.scanline[offset + 2]);
+		return (line.scanline[offset + 3] << 24) + (line.scanline[offset] << 16) + (line.scanline[offset + 1] << 8)
+				+ (line.scanline[offset + 2]);
 	}
 
 	public static void setPixelsRGB8(ImageLine line, int[] rgb) {
@@ -148,15 +142,15 @@ public class ImageLineHelper {
 		}
 	}
 
-	public static void setPixelRGB8(ImageLine line, int col, int r,int g,int b) {
+	public static void setPixelRGB8(ImageLine line, int col, int r, int g, int b) {
 		line.scanline[col * line.channels] = r;
 		line.scanline[col * line.channels + 1] = g;
 		line.scanline[col * line.channels + 2] = b;
-		
+
 	}
-	
+
 	public static void setPixelRGB8(ImageLine line, int col, int rgb) {
-		setPixelRGB8(line,col,((rgb & 0xFF0000) >> 16),((rgb & 0xFF00) >> 8),((rgb & 0xFF)));
+		setPixelRGB8(line, col, ((rgb & 0xFF0000) >> 16), ((rgb & 0xFF00) >> 8), ((rgb & 0xFF)));
 	}
 
 	public static void setValD(ImageLine line, int i, double d) {

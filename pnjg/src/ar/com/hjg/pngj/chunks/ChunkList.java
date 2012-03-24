@@ -13,7 +13,7 @@ import java.util.Map;
  **/
 public class ChunkList {
 	// ref: http://www.w3.org/TR/PNG/#table53
-	// 
+	//
 	private List<PngChunk> chunks = new ArrayList<PngChunk>();
 	// for each chunkid, says the position(s) in list
 	private Map<String, List<Integer>> positions = new HashMap<String, List<Integer>>();
@@ -39,8 +39,7 @@ public class ChunkList {
 	}
 
 	/**
-	 * Adds chunk in next position. 
-	 * This is used when reading
+	 * Adds chunk in next position. This is used when reading
 	 */
 	public void appendChunk(PngChunk chunk) {
 		chunks.add(chunk);
@@ -102,8 +101,7 @@ public class ChunkList {
 	public List<Integer> allOcurrences(String chunkId) {
 		if (positionsDirty)
 			recalcPositions();
-		return positions.containsKey(chunkId) ? positions.get(chunkId)
-				: (List<Integer>) Collections.EMPTY_LIST;
+		return positions.containsKey(chunkId) ? positions.get(chunkId) : (List<Integer>) Collections.EMPTY_LIST;
 	}
 
 	public int positionIDAT() {
@@ -121,14 +119,15 @@ public class ChunkList {
 		}
 		return sb.toString();
 	}
-	
+
 	/**
 	 * @return dpi, -1 if not set
 	 */
 	public double getPHYSdpi() { // nan if not set
-		int i=firstOcurrence(ChunkHelper.pHYs_TEXT);
-		if(i<0) return -1.0;
-		PngChunkPHYS chunk = (PngChunkPHYS)getChunk(i);
+		int i = firstOcurrence(ChunkHelper.pHYs_TEXT);
+		if (i < 0)
+			return -1.0;
+		PngChunkPHYS chunk = (PngChunkPHYS) getChunk(i);
 		return chunk.getAsDpi();
 	}
 

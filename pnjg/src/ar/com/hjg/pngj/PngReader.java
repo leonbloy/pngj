@@ -35,14 +35,13 @@ public class PngReader {
 	protected int rowNum = -1; // current row number
 	protected ImageLine imgLine;
 	// line as bytes, counting from 1 (index 0 is reserved for filter type)
-	protected byte[] rowb = null; 
+	protected byte[] rowb = null;
 	protected byte[] rowbprev = null; // rowb previous
 	protected byte[] rowbfilter = null; // current line 'filtered': exactly as in uncompressed stream
-	/** 
+	/**
 	 * All chunks loaded.
 	 * <p>
-	 * Criticals are included, except that all IDAT chunks appearance are replaced
-	 * by a single dummy-marker IDAT chunk.
+	 * Criticals are included, except that all IDAT chunks appearance are replaced by a single dummy-marker IDAT chunk.
 	 * <p>
 	 * These might be copied to the PngWriter
 	 */
@@ -64,22 +63,20 @@ public class PngReader {
 		}
 
 		public String toString() {
-			return "chunk " + id + " len=" + len + " offset=" + offset
-					+ (this.loaded ? " " : " X ");
+			return "chunk " + id + " len=" + len + " offset=" + offset + (this.loaded ? " " : " X ");
 		}
 	}
 
 	/**
 	 * Constructs a PngReader from an InputStream.
 	 * <p>
-	 * It loads the header and first chunks, pausing at the
-	 * beginning of the image data (first IDAT chunk).
+	 * It loads the header and first chunks, pausing at the beginning of the image data (first IDAT chunk).
 	 * <p>
 	 * See also <code>FileHelper.createPngReader(File f)</code> if available.
-	 *     
-	 * @param filenameOrDescription : 
-	 *    Optional, can be a description. Just for error/debug messages
-	 *    
+	 * 
+	 * @param filenameOrDescription
+	 *            : Optional, can be a description. Just for error/debug messages
+	 * 
 	 */
 	public PngReader(InputStream inputStream, String filenameOrDescription) {
 		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
@@ -98,28 +95,27 @@ public class PngReader {
 		byte[] chunkid = new byte[4];
 		PngHelper.readBytes(is, chunkid, 0, 4);
 		if (!Arrays.equals(chunkid, ChunkHelper.IHDR))
-			throw new PngjInputException("IHDR not found as first chunk??? ["
-					+ ChunkHelper.toString(chunkid) + "]");
+			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
 		offset += 4;
 		ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
 		String chunkids = ChunkHelper.toString(chunkid);
 		foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, true));
 		offset += chunk.readChunkData(is);
 		PngChunkIHDR ihdr = (PngChunkIHDR) addChunkToList(chunk);
-		if (ihdr.interlaced != 0)
+		if (ihdr.getInterlaced() != 0)
 			throw new PngjUnsupportedException("PNG interlaced not supported by this library");
-		if (ihdr.filmeth != 0 || ihdr.compmeth != 0)
+		if (ihdr.getFilmeth() != 0 || ihdr.getCompmeth() != 0)
 			throw new PngjInputException("compmethod o filtermethod unrecognized");
-		boolean alpha = (ihdr.colormodel & 0x04) != 0;
-		boolean palette = (ihdr.colormodel & 0x01) != 0;
-		boolean grayscale = (ihdr.colormodel == 0 || ihdr.colormodel == 4);
-		if (ihdr.colormodel < 0 || ihdr.colormodel > 6 || ihdr.colormodel == 1
-				|| ihdr.colormodel == 5)
-			throw new PngjInputException("Invalid colormodel " + ihdr.colormodel);
-		if (ihdr.bitspc != 1 && ihdr.bitspc != 2 && ihdr.bitspc != 4 && ihdr.bitspc != 8
-				&& ihdr.bitspc != 16)
-			throw new PngjInputException("Invalid bit depth " + ihdr.bitspc);
-		imgInfo = new ImageInfo(ihdr.cols, ihdr.rows, ihdr.bitspc, alpha, grayscale, palette);
+		boolean alpha = (ihdr.getColormodel() & 0x04) != 0;
+		boolean palette = (ihdr.getColormodel() & 0x01) != 0;
+		boolean grayscale = (ihdr.getColormodel() == 0 || ihdr.getColormodel() == 4);
+		if (ihdr.getColormodel() < 0 || ihdr.getColormodel() > 6 || ihdr.getColormodel() == 1
+				|| ihdr.getColormodel() == 5)
+			throw new PngjInputException("Invalid colormodel " + ihdr.getColormodel());
+		if (ihdr.getBitspc() != 1 && ihdr.getBitspc() != 2 && ihdr.getBitspc() != 4 && ihdr.getBitspc() != 8
+				&& ihdr.getBitspc() != 16)
+			throw new PngjInputException("Invalid bit depth " + ihdr.getBitspc());
+		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getCols(), ihdr.getBitspc(), alpha, grayscale, palette);
 		imgLine = new ImageLine(imgInfo);
 		// allocation: one extra byte for filter type one pixel
 		rowbfilter = new byte[imgInfo.bytesPerRow + 1];
@@ -138,24 +134,22 @@ public class PngReader {
 			bytesChunksLoaded += chunk.len;
 		}
 		if (bytesChunksLoaded > MAX_BYTES_CHUNKS_TO_LOAD) {
-			throw new PngjInputException("Chunk exceeded available space ("
-					+ MAX_BYTES_CHUNKS_TO_LOAD + ") chunk: " + chunk
-					+ " See PngReader.MAX_BYTES_CHUNKS_TO_LOAD\n");
+			throw new PngjInputException("Chunk exceeded available space (" + MAX_BYTES_CHUNKS_TO_LOAD + ") chunk: "
+					+ chunk + " See PngReader.MAX_BYTES_CHUNKS_TO_LOAD\n");
 		}
 		chunks.appendChunk(chunkType);
 		return chunkType;
 	}
 
 	/**
-	 * Reads chunks before first IDAT. Position before: after IDHR (crc included)
-	 * Position after: just after the first IDAT chunk id Returns length of first
-	 * IDAT chunk , -1 if not found
+	 * Reads chunks before first IDAT. Position before: after IDHR (crc included) Position after: just after the first
+	 * IDAT chunk id Returns length of first IDAT chunk , -1 if not found
 	 **/
 	private int readFirstChunks() {
 		int clen = 0;
 		boolean found = false;
 		byte[] chunkid = new byte[4]; // it's important to reallocate in each
-																	// iteration
+										// iteration
 		while (!found) {
 			clen = PngHelper.readInt4(is);
 			offset += 4;
@@ -170,8 +164,7 @@ public class PngReader {
 				addChunkToList(chunk);
 				break;
 			} else if (Arrays.equals(chunkid, ChunkHelper.IEND)) {
-				throw new PngjInputException(
-						"END chunk found before image data (IDAT) at offset=" + offset);
+				throw new PngjInputException("END chunk found before image data (IDAT) at offset=" + offset);
 			}
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
 			String chunkids = ChunkHelper.toString(chunkid);
@@ -193,8 +186,7 @@ public class PngReader {
 			iIdatCstream.forceChunkEnd();
 		// add chunks to list (just informational)
 		for (IdatChunkInfo idat : iIdatCstream.foundChunksInfo)
-			foundChunksInfo.add(new FoundChunkInfo(ChunkHelper.IDAT_TEXT, idat.len,
-					idat.offset, true));
+			foundChunksInfo.add(new FoundChunkInfo(ChunkHelper.IDAT_TEXT, idat.len, idat.offset, true));
 		int clen = iIdatCstream.getLenLastChunk();
 		byte[] chunkid = iIdatCstream.getIdLastChunk();
 		boolean endfound = false;
@@ -232,9 +224,8 @@ public class PngReader {
 	}
 
 	/**
-	 * Calls <code>readRow(int[] buffer, int nrow)</code>
-	 * using internal ImageLine as buffer. This doesn't allocate
-	 * or copy anything.
+	 * Calls <code>readRow(int[] buffer, int nrow)</code> using internal ImageLine as buffer. This doesn't allocate or
+	 * copy anything.
 	 * 
 	 * @return The ImageLine that also is available inside this object.
 	 */
@@ -250,12 +241,12 @@ public class PngReader {
 	 * 
 	 * You can pass (optionally) a prealocatted buffer.
 	 * 
-	 * @param buffer Prealocated buffer, or null.
-	 * @param nrow Row number (0 is top). This is mostly for checking, because
-	 *  this library reads rows in sequence.
-	 *  
-	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one
-	 *         otherwise
+	 * @param buffer
+	 *            Prealocated buffer, or null.
+	 * @param nrow
+	 *            Row number (0 is top). This is mostly for checking, because this library reads rows in sequence.
+	 * 
+	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
 	 */
 	public int[] readRow(int[] buffer, int nrow) {
 		if (nrow < 0 || nrow >= imgInfo.rows)
@@ -263,7 +254,7 @@ public class PngReader {
 		if (nrow != rowNum + 1)
 			throw new PngjInputException("invalid line (expected: " + (rowNum + 1));
 		rowNum++;
-		if (buffer == null || buffer.length<imgInfo.samplesPerRowP)
+		if (buffer == null || buffer.length < imgInfo.samplesPerRowP)
 			buffer = new int[imgInfo.samplesPerRowP];
 		// swap
 		byte[] tmp = rowb;
@@ -283,11 +274,11 @@ public class PngReader {
 		int i, j;
 		if (imgInfo.bitDepth <= 8) {
 			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				buffer[i] = (rowb[j++]&0xFF);
+				buffer[i] = (rowb[j++] & 0xFF);
 			}
 		} else { // 16 bitspc
 			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				buffer[i] = ((rowb[j++]&0xFF) << 8) + (rowb[j++]&0xFF);
+				buffer[i] = ((rowb[j++] & 0xFF) << 8) + (rowb[j++] & 0xFF);
 			}
 		}
 	}
@@ -320,7 +311,7 @@ public class PngReader {
 
 	private void unfilterRowNone() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			rowb[i] = (byte) (rowbfilter[i] );
+			rowb[i] = (byte) (rowbfilter[i]);
 		}
 	}
 
@@ -336,30 +327,29 @@ public class PngReader {
 
 	private void unfilterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			rowb[i] = (byte) (rowbfilter[i] + rowbprev[i]) ;
+			rowb[i] = (byte) (rowbfilter[i] + rowbprev[i]);
 		}
 	}
 
 	private void unfilterRowAverage() {
 		int i, j, x;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			x = j > 0 ? (rowb[j]&0xff) : 0;
-			rowb[i] = (byte) (rowbfilter[i]  + (x + (rowbprev[i]&0xFF)) / 2);
+			x = j > 0 ? (rowb[j] & 0xff) : 0;
+			rowb[i] = (byte) (rowbfilter[i] + (x + (rowbprev[i] & 0xFF)) / 2);
 		}
 	}
 
 	private void unfilterRowPaeth() {
 		int i, j, x, y;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			x = j > 0 ? (rowb[j]&0xFF) : 0;
-			y = j > 0 ? (rowbprev[j]&0xFF) : 0;
-			rowb[i] = (byte) (rowbfilter[i] + PngFilterType.filterPaethPredictor(x,	rowbprev[i]&0xFF, y));
+			x = j > 0 ? (rowb[j] & 0xFF) : 0;
+			y = j > 0 ? (rowbprev[j] & 0xFF) : 0;
+			rowb[i] = (byte) (rowbfilter[i] + PngFilterType.filterPaethPredictor(x, rowbprev[i] & 0xFF, y));
 		}
 	}
 
 	/**
-	 * This should be called after having read the last line. It reads extra
-	 * chunks after IDAT, if present.
+	 * This should be called after having read the last line. It reads extra chunks after IDAT, if present.
 	 */
 	public void end() {
 		offset = (int) iIdatCstream.getOffset();
@@ -380,17 +370,15 @@ public class PngReader {
 	}
 
 	/** negative if not set */
-	public double getDpi() { 
+	public double getDpi() {
 		return chunks.getPHYSdpi();
 	}
 
-	
-	/** Prints chunks list to sdtio, for debugging. */
-	public void printFoundChunks() { 
+	/** Prints chunks list to stdio, only for debugging. */
+	public void printFoundChunks() {
 		for (FoundChunkInfo c : foundChunksInfo) {
 			System.out.println(c);
 		}
 	}
 
-	
 }

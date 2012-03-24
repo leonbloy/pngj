@@ -38,8 +38,7 @@ public abstract class PngChunk {
 	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
 		PngChunk cn = factoryFromId(chunk.id, info);
 		if (cn.getClass() != chunk.getClass())
-			throw new PngjException("bad class cloning chunk: " + cn.getClass() + " "
-					+ chunk.getClass());
+			throw new PngjException("bad class cloning chunk: " + cn.getClass() + " " + chunk.getClass());
 		cn.cloneDataFromRead(chunk);
 		return (T) cn;
 	}
@@ -101,9 +100,8 @@ public abstract class PngChunk {
 	}
 
 	/**
-	 * should be called for ancillary chunks only Our write order is defined as
-	 * (0:IDHR) 1: after IDHR (2:PLTE if present) 3: before IDAT (4:IDAT) 5: after
-	 * IDAT (6:END)
+	 * should be called for ancillary chunks only Our write order is defined as (0:IDHR) 1: after IDHR (2:PLTE if
+	 * present) 3: before IDAT (4:IDAT) 5: after IDAT (6:END)
 	 */
 	public int writeOrder() {
 		if (id.equals(ChunkHelper.IHDR))
