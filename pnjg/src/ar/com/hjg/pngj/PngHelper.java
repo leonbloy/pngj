@@ -117,7 +117,7 @@ public class PngHelper {
 			while (read < len) {
 				int n = is.read(b, offset + read, len - read);
 				if (n < 1)
-					throw new RuntimeException("error reading, " + n + " !=" + len);
+					throw new RuntimeException("error reading bytes, " + n + " !=" + len);
 				read += n;
 			}
 		} catch (IOException e) {

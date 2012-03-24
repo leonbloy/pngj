@@ -115,7 +115,7 @@ public class PngReader {
 		if (ihdr.getBitspc() != 1 && ihdr.getBitspc() != 2 && ihdr.getBitspc() != 4 && ihdr.getBitspc() != 8
 				&& ihdr.getBitspc() != 16)
 			throw new PngjInputException("Invalid bit depth " + ihdr.getBitspc());
-		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getCols(), ihdr.getBitspc(), alpha, grayscale, palette);
+		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getRows(), ihdr.getBitspc(), alpha, grayscale, palette);
 		imgLine = new ImageLine(imgInfo);
 		// allocation: one extra byte for filter type one pixel
 		rowbfilter = new byte[imgInfo.bytesPerRow + 1];

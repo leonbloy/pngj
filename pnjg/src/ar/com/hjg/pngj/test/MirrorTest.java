@@ -14,11 +14,23 @@ import ar.com.hjg.pngj.chunks.ChunksToWrite;
 
 /**
  * To test all images in PNG test suite (except interlaced) doing a horizontal mirror on all them
+ * 
+ * Instructions: 
+ *  Original images from PNG test suite is supposed to be in local dir
+ *    resources/testsuite1/
+ *  (images supposed to fail, because are erroneous or because are interlaced, must start with 'x')
+ *  Output dir is hardcoded in static "outdir" field - it should be empty
+ *  After running main, no error should be thrown 
+ *     Errors: 0/141
+ *  Result images are mirrored, with a 'z' appended to their names, and the originals are laso copied.  
+ *  Suggestion:  sort by name, and watch them in sequence
+ *       
  */
 public class MirrorTest {
+	static final String outdir = "C:/temp/test";
 	private static boolean showInfo = false;
 
-	public static void reencode(File orig, File dest) throws Exception {
+	public static void mirror(File orig, File dest) throws Exception {
 		PngReader pngr = FileHelper.createPngReader(orig);
 		if (showInfo)
 			System.out.println(pngr.toString());
@@ -52,7 +64,7 @@ public class MirrorTest {
 		pngw.end();
 	}
 
-	public static void testAll(File dirsrc, File dirdest) {
+	public static void testAllSuite(File dirsrc, File dirdest) {
 		if (!dirdest.isDirectory())
 			throw new RuntimeException(dirdest + " not a directory");
 		int cont = 0;
@@ -67,7 +79,7 @@ public class MirrorTest {
 			File fileCopy = new File(dirdest, name);
 			try {
 				cont++;
-				reencode(im1, newFile);
+				mirror(im1, newFile);
 				if (name.startsWith("x")) {
 					System.err.println("this should have failed! " + name);
 					conterr++;
@@ -78,6 +90,7 @@ public class MirrorTest {
 				} else { // real error
 					System.err.println("error with " + name + " " + e.getMessage());
 					conterr++;
+					throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
 				}
 			} finally {
 				if (name.startsWith("x")) { // suppposed to fail: remove it
@@ -98,7 +111,6 @@ public class MirrorTest {
 			if (!destFile.exists()) {
 				destFile.createNewFile();
 			}
-
 			FileChannel source = null;
 			FileChannel destination = null;
 			try {
@@ -122,13 +134,13 @@ public class MirrorTest {
 		// reencode("resources/testsuite1/basn0g01.png", "C:/temp/x.png");
 		// reencode(new File("resources/testsuite1/basn0g02.png"), new
 		// File("C:/temp/x2.png"));
-		reencode(new File("resources/testsuite1/basn0g08.png"), new File("C:/temp/test/xxx.png"));
+		mirror(new File("resources/testsuite1/cdhn2c08.png"), new File("C:/temp/test/xxx.png"));
 		System.out.println("done: ");
 	}
 
+	
 	public static void main(String[] args) throws Exception {
-		String outdir = "C:/temp/test";
-		testAll(new File("resources/testsuite1/"), new File(outdir));
+		testAllSuite(new File("resources/testsuite1/"), new File(outdir));
 		System.out.println("output dir: " + outdir);
 
 	}
