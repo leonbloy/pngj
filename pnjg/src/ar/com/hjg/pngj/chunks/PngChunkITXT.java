@@ -18,7 +18,7 @@ public class PngChunkITXT extends PngChunkTextVar {
 
 	// http://www.w3.org/TR/PNG/#11iTXt
 	public PngChunkITXT(ImageInfo info) {
-		super(ChunkHelper.tEXt, info);
+		super(ChunkHelper.iTXt, info);
 	}
 
 	@Override
