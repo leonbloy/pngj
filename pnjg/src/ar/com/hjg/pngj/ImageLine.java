@@ -17,7 +17,7 @@ public class ImageLine {
 	/**
 	 * tracks the current row number (from 0 to rows-1)
 	 */
-	private int rown = -1;
+	private int rown = 0;
 	
 	/**
 	 * The 'scanline' is an array of integers, corresponds to an image line (row).

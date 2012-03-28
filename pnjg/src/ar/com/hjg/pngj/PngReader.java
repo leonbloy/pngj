@@ -232,7 +232,7 @@ public class PngReader {
 	public ImageLine readRow(int nrow) {
 		readRow(imgLine.scanline, nrow);
 		imgLine.filterUsed = PngFilterType.getByVal(rowbfilter[0]);
-		imgLine.incRown();
+		imgLine.setRown(nrow);
 		return imgLine;
 	}
 

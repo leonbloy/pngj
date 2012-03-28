@@ -166,26 +166,26 @@ public class PngWriter {
 	 * 
 	 * @param newrow
 	 *            Array of pixel values
-	 * @param n
-	 *            Number of row, from 0 (top) to rows-1 (bottom)
+	 * @param rown
+	 *            Row number, from 0 (top) to rows-1 (bottom). This is just used as a check. Pass -1 if you want to autocompute it 
 	 */
-	public void writeRow(int[] newrow, int n) {
+	public void writeRow(int[] newrow, int rown) {
 		if (step != WriteStep.IDAT) {
 			writeDataBeforeIDAT();
 			step = WriteStep.IDAT;
 		}
-		if (n < 0 || n > imgInfo.rows)
-			throw new RuntimeException("invalid value for row " + n);
+		if (rown < -1 || rown > imgInfo.rows)
+			throw new RuntimeException("invalid value for row " + rown);
 		rowNum++;
-		if (rowNum != n)
-			throw new RuntimeException("rows must be written in strict consecutive order: tried to write row " + n + ", expected=" + rowNum );
+		if (rown >=0 && rowNum != rown)
+			throw new RuntimeException("rows must be written in strict consecutive order: tried to write row " + rown + ", expected=" + rowNum );
 		scanline = newrow;
 		// swap
 		byte[] tmp = rowb;
 		rowb = rowbprev;
 		rowbprev = tmp;
 		convertRowToBytes();
-		filterRow(n);
+		filterRow(rown);
 		try {
 			datStreamDeflated.write(rowbfilter, 0, imgInfo.bytesPerRow + 1);
 		} catch (IOException e) {
@@ -194,12 +194,28 @@ public class PngWriter {
 	}
 
 	/**
-	 * this uses the row number from the imageline, and automatically advances it
+	 * Same as writeRow(int[] newrow, int rown), but does not check row number
+	 * @param newrow
+	 */
+	public void writeRow(int[] newrow) {
+		writeRow(newrow,-1);
+	}
+
+	/**
+	 * Writes line. See writeRow(int[] newrow, int rown)
+	 */
+	public void writeRow(ImageLine imgline,int rownumber) {
+		writeRow(imgline.scanline, rownumber);
+	}
+
+	/**
+	 * Writes line, checks that the row number is consistent with that of the ImageLine
+	 * See writeRow(int[] newrow, int rown)
 	 */
 	public void writeRow(ImageLine imgline) {
 		writeRow(imgline.scanline, imgline.getRown());
-		imgline.setRown(imgline.getRown()+1);
 	}
+	
 
 	/**
 	 * Finalizes the image creation and closes the stream. This MUST be called after writing the lines.
