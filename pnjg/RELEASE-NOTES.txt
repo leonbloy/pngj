@@ -1,6 +1,10 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.80  (28 March 2012)
+ - Roll back auto increment of ImageLine rownumber at writing. Define some new PngWrite.writeLine() methods with slight change in semantics  
+ - Fix bad chunk-id in PngChunkITXT
+ 
 Version 0.71  (March 2012)
  - Full support for all Chunk types (bKGD CHRM ICCP ITXT TRNS ZTXT - some yet untested)  
  - ar.com.hjg.pngj.nosandbox is now empty: PngFileHelper is back to main jar
