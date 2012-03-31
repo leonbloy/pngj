@@ -17,11 +17,12 @@ public abstract class PngChunk {
 
 	private boolean writePriority = false; // for queued chunks
 	protected final ImageInfo imgInfo;
-	int minChunkGroup,maxChunkGroup; // for internal use
+
+	private int chunkGroup = -1; // chunk group where it was read or writen
 
 	/**
-	 * This static map defines which PngChunk class correspond to which ChunkID
-	 * The client can add other chunks to this map statically, before reading  
+	 * This static map defines which PngChunk class correspond to which ChunkID The client can add other chunks to this
+	 * map statically, before reading
 	 */
 	public final static Map<String, Class<? extends PngChunk>> factoryMap = new HashMap<String, Class<? extends PngChunk>>();
 	static {
@@ -45,37 +46,14 @@ public abstract class PngChunk {
 		factoryMap.put(ChunkHelper.sPLT, PngChunkSPLT.class);
 	}
 
-
 	protected PngChunk(String id, ImageInfo imgInfo) {
 		this.id = id;
 		this.imgInfo = imgInfo;
 		this.crit = ChunkHelper.isCritical(id);
 		this.pub = ChunkHelper.isPublic(id);
 		this.safe = ChunkHelper.isSafeToCopy(id);
-		computeMinMaxGroup();
 	}
-	
-	private void computeMinMaxGroup() {
-		if (id.equals(ChunkHelper.b_IHDR))
-			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_0_IDHR;
-		else if (id.equals(ChunkHelper.b_PLTE))
-			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_2_PLTE;
-		else if (id.equals(ChunkHelper.b_IDAT))
-			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_4_IDAT;
-		else if (id.equals(ChunkHelper.b_IEND))
-			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_6_END;
-		else if (mustGoBeforePLTE())
-			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_1_AFTERIDHR;
-		else if (mustGoBeforeIDAT()) {
-			maxChunkGroup = ChunkList.CHUCK_GROUP_3_AFTERPLTE ;
-			minChunkGroup = mustGoAfterPLTE()  ?  ChunkList.CHUCK_GROUP_3_AFTERPLTE : ChunkList.CHUCK_GROUP_1_AFTERIDHR;
-		}
-		else  {
-			maxChunkGroup = ChunkList.CHUCK_GROUP_5_AFTERIDAT;
-			minChunkGroup = ChunkList.CHUCK_GROUP_1_AFTERIDHR;
-		}
-	}
-	
+
 	public abstract ChunkRaw createChunk();
 
 	public abstract void parseFromChunk(ChunkRaw c);
@@ -144,16 +122,16 @@ public abstract class PngChunk {
 	public boolean allowsMultiple() {
 		return false; // override if allows multiple ocurrences
 	}
-	
+
 	/** mustGoBeforeXX/After must be overriden - only relevant for ancillary chunks */
 	public boolean mustGoBeforeIDAT() {
 		return false;
 	}
-	
+
 	public boolean mustGoBeforePLTE() {
 		return false;
 	}
-	
+
 	public boolean mustGoAfterPLTE() {
 		return false;
 	}
@@ -162,5 +140,12 @@ public abstract class PngChunk {
 		return factoryMap.containsKey(id);
 	}
 
-}
+	public int getChunkGroup() {
+		return chunkGroup;
+	}
 
+	public void setChunkGroup(int chunkGroup) {
+		this.chunkGroup = chunkGroup;
+	}
+
+}

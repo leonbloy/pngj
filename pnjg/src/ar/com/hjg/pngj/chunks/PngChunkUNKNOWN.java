@@ -9,7 +9,7 @@ public class PngChunkUNKNOWN extends PngChunk { // unkown, custom or not
 	public PngChunkUNKNOWN(String id, ImageInfo info) {
 		super(id, info);
 	}
-	
+
 	@Override
 	public boolean allowsMultiple() {
 		return true;

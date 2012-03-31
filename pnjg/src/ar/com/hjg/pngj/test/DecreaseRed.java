@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 
 /**
  * Example: cuts the red channel by two. Only for RGB
@@ -17,7 +17,7 @@ public class DecreaseRed {
 		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), pngr.imgInfo, true);
 		System.out.println(pngr.toString());
 		// this can copy some metadata from reader
-		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE);
+		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		int channels = pngr.imgInfo.channels;
 		if (channels < 3)
 			throw new RuntimeException("This method is for RGB/RGBA images");
@@ -29,7 +29,7 @@ public class DecreaseRed {
 		}
 		pngr.end();
 		// just in case some new metadata has been read
-		pngw.copyChunksLast(pngr, ChunksToWrite.COPY_ALL_SAFE);
+		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.end();
 	}
 

@@ -16,8 +16,9 @@ import java.util.Set;
 
 /**
  * used in CheckWhiteListed
+ * 
  * @author Hernan J Gonzalez
- *
+ * 
  */
 class FindDependecies {
 

@@ -25,20 +25,20 @@ public class ChunkHelper {
 	public static final byte[] b_IDAT = toBytes(IDAT);
 	public static final byte[] b_IEND = toBytes(IEND);
 
-	static final String cHRM = "cHRM";
-	static final String gAMA = "gAMA";
-	static final String iCCP = "iCCP";
-	static final String sBIT = "sBIT";
-	static final String sRGB = "sRGB";
-	static final String bKGD = "bKGD";
-	static final String hIST = "hIST";
+	public static final String cHRM = "cHRM";
+	public static final String gAMA = "gAMA";
+	public static final String iCCP = "iCCP";
+	public static final String sBIT = "sBIT";
+	public static final String sRGB = "sRGB";
+	public static final String bKGD = "bKGD";
+	public static final String hIST = "hIST";
 	public static final String tRNS = "tRNS";
 	public static final String pHYs = "pHYs";
-	static final String sPLT = "sPLT";
-	static final String tIME = "tIME";
-	static final String iTXt = "iTXt";
-	static final String tEXt = "tEXt";
-	static final String zTXt = "zTXt";
+	public static final String sPLT = "sPLT";
+	public static final String tIME = "tIME";
+	public static final String iTXt = "iTXt";
+	public static final String tEXt = "tEXt";
+	public static final String zTXt = "zTXt";
 
 	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR, PLTE, IDAT, IEND);
 
@@ -58,6 +58,16 @@ public class ChunkHelper {
 	public static boolean isPublic(String id) { // public chunk?
 		// second letter is uppercase
 		return (Character.isUpperCase(id.charAt(1)));
+	}
+
+	/**
+	 * This just means that our chunk factory (even when it has been augmented by client code) did not recognize its id
+	 * 
+	 * @param c
+	 * @return
+	 */
+	public static boolean isUnknown(PngChunk c) {
+		return c instanceof PngChunkUNKNOWN;
 	}
 
 	public static boolean isSafeToCopy(String id) { // safe to copy?
@@ -118,8 +128,9 @@ public class ChunkHelper {
 			out.write(buffer, 0, len);
 		}
 	}
-	
+
 	public static boolean maskMatch(int v, int mask) {
 		return (v & mask) != 0;
 	}
+
 }

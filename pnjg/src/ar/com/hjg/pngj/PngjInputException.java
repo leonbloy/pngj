@@ -1,4 +1,5 @@
 package ar.com.hjg.pngj;
+
 /**
  * Exception thrown by reading process
  */

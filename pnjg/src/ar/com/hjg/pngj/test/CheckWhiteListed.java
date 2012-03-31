@@ -21,8 +21,9 @@ import java.util.Set;
  * 
  */
 class CheckWhiteListed {
-	private static final String WHITELIST_FILENAME  ="whitelistedclasses.txt";
+	private static final String WHITELIST_FILENAME = "whitelistedclasses.txt";
 	private Set<String> whiteList;
+
 	public void checkDir(File dir, boolean recurse) {
 		List<File> files = FindDependecies.getClassesFromDir(dir, recurse);
 		Map<String, List<File>> classes = FindDependecies.getReferencedClassesFromFiles(files);
@@ -37,15 +38,15 @@ class CheckWhiteListed {
 		if (classes.isEmpty())
 			System.out.println(dir + ": OK! " + nclasses + " classes examined");
 		else
-			System.out.println(dir  +": ERR! " + classes.size() + "/" + nclasses +" classes with problems ");
+			System.out.println(dir + ": ERR! " + classes.size() + "/" + nclasses + " classes with problems ");
 	}
 
 	public boolean isWhiteListed(String name) {
-		if(whiteList == null)
+		if (whiteList == null)
 			whiteList = loadWhiteListed();
 		return whiteList.contains(name);
 	}
-	
+
 	private Set<String> loadWhiteListed() {
 		try {
 			InputStream is = this.getClass().getResourceAsStream(WHITELIST_FILENAME);

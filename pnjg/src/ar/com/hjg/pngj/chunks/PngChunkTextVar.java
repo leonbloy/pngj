@@ -1,8 +1,10 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
+
 /**
  * superclass for three textual chunks (TEXT, ITXT, ZTXT)
+ * 
  * @author Hernan J Gonzalez
  */
 public abstract class PngChunkTextVar extends PngChunk {
@@ -12,7 +14,7 @@ public abstract class PngChunkTextVar extends PngChunk {
 	protected PngChunkTextVar(String id, ImageInfo info) {
 		super(id, info);
 	}
-	
+
 	@Override
 	public boolean allowsMultiple() {
 		return true;

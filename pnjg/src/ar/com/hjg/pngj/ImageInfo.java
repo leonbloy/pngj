@@ -59,11 +59,11 @@ public class ImageInfo {
 	 */
 	public final int bitspPixel;
 
-	/** 
+	/**
 	 * rounded up value: this is only used internally for filter
 	 */
-	public final int bytesPixel; 
-	
+	public final int bytesPixel;
+
 	/**
 	 * ceil(bitspp*cols/8)
 	 */
@@ -73,7 +73,7 @@ public class ImageInfo {
 	 * Equals cols * channels
 	 */
 	public final int samplesPerRow;
-	
+
 	/**
 	 * For internal use only. Samples available for our packed scanline. Equals samplesPerRow if not packed. Elsewhere,
 	 * it's lower

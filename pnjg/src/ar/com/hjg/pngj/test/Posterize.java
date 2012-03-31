@@ -3,12 +3,12 @@ package ar.com.hjg.pngj.test;
 import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
-import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.lossy.ErrorDifussionFloydSteinberg;
 import ar.com.hjg.pngj.lossy.IErrorDifussion;
 
@@ -34,7 +34,7 @@ public class Posterize {
 		pngw.setCompLevel(complevel);
 		pngw.setFilterType(filter);
 		System.out.println(pngr.toString());
-		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE);
+		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALMOSTALL);
 		int channels = pngr.imgInfo.channels;
 		if (nbits > pngr.imgInfo.bitDepth || nbits < 2)
 			throw new RuntimeException("Invalid nbits ");
@@ -60,7 +60,7 @@ public class Posterize {
 			pngw.writeRow(l1);
 		}
 		pngr.end();
-		pngw.copyChunksLast(pngr, ChunksToWrite.COPY_ALL_SAFE);
+		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALMOSTALL);
 		pngw.end();
 	}
 

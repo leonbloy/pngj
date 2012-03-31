@@ -4,14 +4,14 @@ import java.io.File;
 import java.util.Arrays;
 
 import ar.com.hjg.pngj.FileHelper;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
-import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
@@ -342,7 +342,7 @@ public class LossyHelper {
 		 * pngw.lossyHelper.setParTolerance(40); pngw.lossyHelper.setParTableQuantK(3);
 		 */
 
-		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE | ChunksToWrite.COPY_PALETTE);
+		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_PALETTE);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
 			pngw.writeRow(l1);
@@ -350,9 +350,9 @@ public class LossyHelper {
 		String lossydesc = pngw.lossyHelper.toString();
 		PngChunkTEXT txtChunk = (PngChunkTEXT) PngChunk.factoryFromId(ChunkHelper.tEXt, pngw.imgInfo);
 		txtChunk.setKeyVal("description", lossydesc);
-		pngw.chunks.addChunk(txtChunk,false, true);
+		pngw.chunks.queueChunk(txtChunk, false, true);
 		pngr.end();
-		pngw.copyChunksLast(pngr, ChunksToWrite.COPY_ALL_SAFE);
+		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.end();
 		suffix = "lossy" + pngw.lossyHelper.toStringCod();
 		String destfinal = orig.replaceAll("\\.png$", "") + "_" + suffix + ".png";

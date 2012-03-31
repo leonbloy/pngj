@@ -4,8 +4,8 @@ import java.util.Arrays;
 
 import ar.com.hjg.pngj.ImageInfo;
 
-/** 
- * EXPERIMENTAL 
+/**
+ * EXPERIMENTAL
  */
 public class ErrorDifussionFloydSteinberg implements IErrorDifussion {
 

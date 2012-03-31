@@ -7,26 +7,21 @@ import java.nio.channels.FileChannel;
 import java.util.List;
 
 import ar.com.hjg.pngj.FileHelper;
-import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
-import ar.com.hjg.pngj.chunks.PngChunk;
 
 /**
  * To test all images in PNG test suite (except interlaced) doing a horizontal mirror on all them
  * 
- * Instructions: 
- *  Original images from PNG test suite is supposed to be in local dir
- *    resources/testsuite1/
- *  (images supposed to fail, because are erroneous or because are interlaced, must start with 'x')
- *  Output dir is hardcoded in static "outdir" field - it should be empty
- *  After running main, no error should be thrown 
- *     Errors: 0/141
- *  Result images are mirrored, with a 'z' appended to their names, and the originals are laso copied.  
- *  Suggestion:  sort by name, and watch them in sequence
- *       
+ * Instructions: Original images from PNG test suite is supposed to be in local dir resources/testsuite1/ (images
+ * supposed to fail, because are erroneous or because are interlaced, must start with 'x') Output dir is hardcoded in
+ * static "outdir" field - it should be empty After running main, no error should be thrown Errors: 0/141 Result images
+ * are mirrored, with a 'z' appended to their names, and the originals are laso copied. Suggestion: sort by name, and
+ * watch them in sequence
+ * 
  */
 public class MirrorTest {
 	static final String outdir = "C:/temp/test";
@@ -40,8 +35,10 @@ public class MirrorTest {
 		// PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, true);
 		PngWriter pngw = new PngWriter(new FileOutputStream(dest), pngr.imgInfo);
 		pngw.setFilterType(FilterType.FILTER_PAETH);
-		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_PALETTE
-				| ChunkCopyBehaviour.COPY_TRANSPARENCY);
+		// int copyPolicy = ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_PALETTE |
+		// ChunkCopyBehaviour.COPY_TRANSPARENCY;
+		int copyPolicy = ChunkCopyBehaviour.COPY_ALL;
+		pngw.copyChunksFirst(pngr, copyPolicy);
 		ImageLine lout = new ImageLine(pngw.imgInfo);
 		int[] line = null;
 		int cols = pngr.imgInfo.cols;
@@ -62,10 +59,10 @@ public class MirrorTest {
 			pngw.writeRow(lout);
 		}
 		pngr.end();
-		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_TRANSPARENCY);
+		pngw.copyChunksLast(pngr, copyPolicy);
 		pngw.end();
 		List<String> u = pngr.getChunksList().getChunksUnkown();
-		if(! u.isEmpty()) {
+		if (!u.isEmpty()) {
 			System.out.println("Unknown chunks:" + u);
 		}
 	}
@@ -96,7 +93,7 @@ public class MirrorTest {
 				} else { // real error
 					System.err.println("error with " + name + " " + e.getMessage());
 					conterr++;
-					throw e instanceof RuntimeException ? (RuntimeException)e : new RuntimeException(e);
+					throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
 				}
 			} finally {
 				if (name.startsWith("x")) { // suppposed to fail: remove it
@@ -144,10 +141,9 @@ public class MirrorTest {
 		System.out.println("done: ");
 	}
 
-	
 	public static void main(String[] args) throws Exception {
 		testAllSuite(new File("resources/testsuite1/"), new File(outdir));
-		
+
 		System.out.println("output dir: " + outdir);
 
 	}

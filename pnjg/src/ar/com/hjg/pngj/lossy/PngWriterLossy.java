@@ -2,8 +2,8 @@ package ar.com.hjg.pngj.lossy;
 
 import java.io.OutputStream;
 
-import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngWriter;
 
 /**

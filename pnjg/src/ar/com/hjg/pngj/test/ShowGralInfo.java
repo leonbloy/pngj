@@ -23,7 +23,7 @@ public class ShowGralInfo {
 		System.out.println(pngr.toString());
 		pngr.printFoundChunks();
 		if (includeChunksSkel)
-			System.out.println(pngr.chunks.toString());
+			System.out.println(pngr.getChunksList().toStringFull());
 	}
 
 	public static void main(String[] args) throws Exception {

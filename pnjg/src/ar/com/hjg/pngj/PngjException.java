@@ -1,9 +1,10 @@
 package ar.com.hjg.pngj;
+
 /**
- * Generic exception 
+ * Generic exception
  * 
  * @author Hernan J Gonzalez
- *
+ * 
  */
 public class PngjException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

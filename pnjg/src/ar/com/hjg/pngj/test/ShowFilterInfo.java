@@ -3,8 +3,8 @@ package ar.com.hjg.pngj.test;
 import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
-import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 
 /**

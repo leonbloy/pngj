@@ -75,7 +75,7 @@ public class PngReader {
 		if (!Arrays.equals(pngid, PngHelper.pngIdBytes))
 			throw new PngjInputException("Bad PNG signature");
 		// reads first chunk
-		currentChunkGroup = ChunkList.CHUCK_GROUP_0_IDHR;
+		currentChunkGroup = ChunkList.CHUNK_GROUP_0_IDHR;
 		int clen = PngHelper.readInt4(is);
 		offset += 4;
 		if (clen != 13)
@@ -150,12 +150,12 @@ public class PngReader {
 	 * This can be called explicitly before reading the rows. Normally it's not necesary
 	 **/
 	public void readFirstChunks() {
-		if (currentChunkGroup >= ChunkList.CHUCK_GROUP_1_AFTERIDHR)
+		if (currentChunkGroup >= ChunkList.CHUNK_GROUP_1_AFTERIDHR)
 			return; // already done
 		int clen = 0;
 		boolean found = false;
 		byte[] chunkid = new byte[4]; // it's important to reallocate in each iteration
-		currentChunkGroup = ChunkList.CHUCK_GROUP_1_AFTERIDHR;
+		currentChunkGroup = ChunkList.CHUNK_GROUP_1_AFTERIDHR;
 		while (!found) {
 			clen = PngHelper.readInt4(is);
 			offset += 4;
@@ -165,7 +165,7 @@ public class PngReader {
 			offset += 4;
 			if (Arrays.equals(chunkid, ChunkHelper.b_IDAT)) {
 				found = true;
-				currentChunkGroup = ChunkList.CHUCK_GROUP_4_IDAT;
+				currentChunkGroup = ChunkList.CHUNK_GROUP_4_IDAT;
 				// add dummy idat chunk to list
 				ChunkRaw chunk = new ChunkRaw(0, chunkid, false);
 				addChunkToList(chunk);
@@ -179,11 +179,11 @@ public class PngReader {
 			foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, loadchunk));
 			offset += chunk.readChunkData(is);
 			if (chunkids.equals(ChunkHelper.PLTE))
-				currentChunkGroup = ChunkList.CHUCK_GROUP_2_PLTE;
+				currentChunkGroup = ChunkList.CHUNK_GROUP_2_PLTE;
 			if (loadchunk)
 				addChunkToList(chunk);
 			if (chunkids.equals(ChunkHelper.PLTE))
-				currentChunkGroup = ChunkList.CHUCK_GROUP_3_AFTERPLTE;
+				currentChunkGroup = ChunkList.CHUNK_GROUP_3_AFTERPLTE;
 		}
 		int idatLen = found ? clen : -1;
 		if (idatLen < 0)
@@ -197,7 +197,7 @@ public class PngReader {
 	 **/
 	private void readLastChunks() {
 		// PngHelper.logdebug("idat ended? " + iIdatCstream.isEnded());
-		currentChunkGroup = ChunkList.CHUCK_GROUP_5_AFTERIDAT;
+		currentChunkGroup = ChunkList.CHUNK_GROUP_5_AFTERIDAT;
 		if (!iIdatCstream.isEnded())
 			iIdatCstream.forceChunkEnd();
 		// add chunks to list (just informational)
@@ -223,7 +223,7 @@ public class PngReader {
 				// PngHelper.logdebug("extra IDAT chunk len - ignoring : ");
 				ignore = true;
 			} else if (Arrays.equals(chunkid, ChunkHelper.b_IEND)) {
-				currentChunkGroup = ChunkList.CHUCK_GROUP_6_END;
+				currentChunkGroup = ChunkList.CHUNK_GROUP_6_END;
 				endfound = true;
 			}
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -266,7 +266,7 @@ public class PngReader {
 	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
 	 */
 	public int[] readRow(int[] buffer, int nrow) {
-		if (currentChunkGroup < ChunkList.CHUCK_GROUP_4_IDAT)
+		if (currentChunkGroup < ChunkList.CHUNK_GROUP_4_IDAT)
 			readFirstChunks();
 		if (nrow < 0 || nrow >= imgInfo.rows)
 			throw new PngjInputException("invalid line");

@@ -21,13 +21,12 @@ public class PngChunkCHRM extends PngChunk {
 	public boolean mustGoBeforeIDAT() {
 		return true;
 	}
-	
+
 	@Override
 	public boolean mustGoBeforePLTE() {
 		return true;
 	}
-	
-	
+
 	@Override
 	public ChunkRaw createChunk() {
 		ChunkRaw c = null;

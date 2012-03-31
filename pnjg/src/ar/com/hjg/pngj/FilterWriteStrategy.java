@@ -11,11 +11,11 @@ class FilterWriteStrategy {
 	private FilterType currentType; // 0-4
 	private int lastRowTested = -1000000;
 	// performance of each filter (less is better) (can be negative)
-	private double[] lastSums = new double[5]; 
+	private double[] lastSums = new double[5];
 	// performance of each filter (less is better) (can be negative)
-	private double[] lastEntropies = new double[5]; 
-	// a priori preference (NONE SUB UP AVERAGE PAETH) 
-	private double[] preference = new double[] { 1.1, 1.1, 1.1, 1.1, 1.2 }; 
+	private double[] lastEntropies = new double[5];
+	// a priori preference (NONE SUB UP AVERAGE PAETH)
+	private double[] preference = new double[] { 1.1, 1.1, 1.1, 1.1, 1.2 };
 	private int discoverEachLines = -1;
 	private double[] histogram1 = new double[256];
 
@@ -52,7 +52,7 @@ class FilterWriteStrategy {
 		return (discoverEachLines > 0);
 	}
 
-	void fillResultsForFilter(int rown, FilterType type, double sum, int[] histo,boolean tentative) {
+	void fillResultsForFilter(int rown, FilterType type, double sum, int[] histo, boolean tentative) {
 		lastRowTested = rown;
 		lastSums[type.val] = sum;
 		if (histo != null) {

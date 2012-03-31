@@ -7,7 +7,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 
 /**
  * reencodes a png image with a given filter and compression level
@@ -26,7 +26,7 @@ public class Png8to4 {
 		 * PngChunkPLTE(pnginfo2); int[] rgb=new int[]{3}; for(int pi =0;pi<16;pi++) { paletteorig.getEntryRgb(pi, rgb);
 		 * }
 		 */
-		png2.copyChunksFirst(png1, ChunksToWrite.COPY_ALL);
+		png2.copyChunksFirst(png1, ChunkCopyBehaviour.COPY_ALL);
 		ImageLine l2 = new ImageLine(pnginfo2);
 		for (int row = 0; row < pnginfo1.rows; row++) {
 			ImageLine l1 = png1.readRow(row);
@@ -35,7 +35,7 @@ public class Png8to4 {
 			png2.writeRow(l2);
 		}
 		png1.end();
-		png2.copyChunksLast(png1, ChunksToWrite.COPY_ALL);
+		png2.copyChunksLast(png1, ChunkCopyBehaviour.COPY_ALL);
 		png2.end();
 		System.out.println("Done");
 	}
@@ -45,7 +45,7 @@ public class Png8to4 {
 		ImageInfo pnginfo1 = png1.imgInfo;
 		ImageInfo pnginfo2 = new ImageInfo(pnginfo1.cols, pnginfo1.rows, 8, false, false, true);
 		PngWriter png2 = FileHelper.createPngWriter(new File(dest), pnginfo2, false);
-		png2.copyChunksFirst(png1, ChunksToWrite.COPY_ALL);
+		png2.copyChunksFirst(png1, ChunkCopyBehaviour.COPY_ALL);
 		ImageLine l2 = new ImageLine(pnginfo2);
 		for (int row = 0; row < pnginfo1.rows; row++) {
 			ImageLine l1 = png1.readRow(row);
@@ -54,7 +54,7 @@ public class Png8to4 {
 			png2.writeRow(l2);
 		}
 		png1.end();
-		png2.copyChunksLast(png1, ChunksToWrite.COPY_ALL);
+		png2.copyChunksLast(png1, ChunkCopyBehaviour.COPY_ALL);
 		png2.end();
 		System.out.println("Done");
 	}

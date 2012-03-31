@@ -13,12 +13,12 @@ import ar.com.hjg.pngj.ImageLineHelper.ImageLineStats;
  */
 public class ImageLine {
 	public final ImageInfo imgInfo;
-	
+
 	/**
 	 * tracks the current row number (from 0 to rows-1)
 	 */
 	private int rown = 0;
-	
+
 	/**
 	 * The 'scanline' is an array of integers, corresponds to an image line (row).
 	 * <p>
@@ -32,11 +32,11 @@ public class ImageLine {
 	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.tf_palIdx2RGB()</code> (can't do the reverse)
 	 */
 	public final int[] scanline; // see explanation above!!
-	
+
 	protected FilterType filterUsed; // informational ; only filled by the reader
 	protected final int channels; // copied from imgInfo, more handy
 	protected final int bitDepth; // copied from imgInfo, more handy
-	
+
 	public ImageLine(ImageInfo imgInfo) {
 		this.imgInfo = imgInfo;
 		channels = imgInfo.channels;

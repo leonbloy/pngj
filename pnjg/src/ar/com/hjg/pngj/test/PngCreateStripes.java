@@ -30,7 +30,6 @@ public class PngCreateStripes {
 		png.end();
 	}
 
-
 	public static void createTest(String name, int cols, int rows) {
 		PngWriter i2 = FileHelper.createPngWriter(new File(name), new ImageInfo(cols, rows, 8, false, true, false),
 				true);

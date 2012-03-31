@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj;
 
 /**
- * Exception thrown by bad CRC check 
+ * Exception thrown by bad CRC check
  */
 public class PngjBadCrcException extends PngjInputException {
 	private static final long serialVersionUID = 1L;

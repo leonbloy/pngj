@@ -11,8 +11,8 @@ import java.lang.reflect.Constructor;
 /**
  * A few static utility methods related with PngReader/PngWriter that read/writes to files.
  * <p>
- * This is not essential to the PNGJ library, and the writer will not work in sandboxed 
- * environments (eg. Google App Engine)
+ * This is not essential to the PNGJ library, and the writer will not work in sandboxed environments (eg. Google App
+ * Engine)
  */
 public class FileHelper {
 
@@ -30,10 +30,9 @@ public class FileHelper {
 
 	/***
 	 * WARNING: This method will throw exception if run in a sandboxed environment (as Google App Engine) that does not
-	 * permit to use Java class java.io.FileOutputStream 
+	 * permit to use Java class java.io.FileOutputStream
 	 * 
-	 * We use reflection to be sure that this just throw run time exception in that case, but that
-	 * the class is loadable
+	 * We use reflection to be sure that this just throw run time exception in that case, but that the class is loadable
 	 * 
 	 * @param file
 	 * @param allowOverwrite

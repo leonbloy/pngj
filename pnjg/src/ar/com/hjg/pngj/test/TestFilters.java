@@ -3,11 +3,11 @@ package ar.com.hjg.pngj.test;
 import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
-import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 
 /**
  * reencodes a png image with a given filter and compression level
@@ -21,13 +21,13 @@ public class TestFilters {
 		PngWriter pngw = FileHelper.createPngWriter(new File(dest), pngr.imgInfo, true);
 		pngw.setFilterType(filterType);
 		pngw.setCompLevel(cLevel);
-		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE | ChunksToWrite.COPY_PALETTE);
+		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
 			pngw.writeRow(l1);
 		}
 		pngr.end();
-		pngw.copyChunksLast(pngr, ChunksToWrite.COPY_ALL_SAFE);
+		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL);
 		pngw.end();
 		long t1 = System.currentTimeMillis();
 		long size0 = (new File(orig)).length();
