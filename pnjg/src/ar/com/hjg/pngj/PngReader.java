@@ -22,32 +22,94 @@ public class PngReader {
 	 * Basic image info - final and inmutable.
 	 */
 	public final ImageInfo imgInfo;
-	protected final String filename; // optional
-	private final InputStream is;
-	private final InflaterInputStream idatIstream;
-	private final PngIDatChunkInputStream iIdatCstream;
-	private int offset = 0;
-	// chunks: add exclusively with addChunkToList()
+	protected final String filename; // not necesarily a file, can be a description - merely informative
+
 	private static int MAX_BYTES_CHUNKS_TO_LOAD = 640000;
-	private int bytesChunksLoaded;
 	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS;
-	// private final int valsPerRow; // samples per row= cols x channels
+
+	private final InputStream is;
+	private InflaterInputStream idatIstream;
+	private PngIDatChunkInputStream iIdatCstream;
+
+	protected int currentChunkGroup = -1;
 	protected int rowNum = -1; // current row number
+	private int offset = 0;
+	private int bytesChunksLoaded; // bytes loaded from anciallary chunks
+
 	protected ImageLine imgLine;
+
 	// line as bytes, counting from 1 (index 0 is reserved for filter type)
 	protected byte[] rowb = null;
 	protected byte[] rowbprev = null; // rowb previous
 	protected byte[] rowbfilter = null; // current line 'filtered': exactly as in uncompressed stream
+
 	/**
-	 * All chunks loaded.
-	 * <p>
-	 * Criticals are included, except that all IDAT chunks appearance are replaced by a single dummy-marker IDAT chunk.
-	 * <p>
-	 * These might be copied to the PngWriter
+	 * All chunks loaded. Criticals are included, except that all IDAT chunks appearance are replaced by a single
+	 * dummy-marker IDAT chunk. These might be copied to the PngWriter
 	 */
-	public ChunkList chunks = new ChunkList();
-	// FoundChunkInfo/foundChunksInfo : all chunks signatures - merely informative
-	protected List<FoundChunkInfo> foundChunksInfo = new ArrayList<FoundChunkInfo>();
+	protected ChunkList chunksList;
+	/**
+	 * FoundChunkInfo/foundChunksInfo : all chunks signatures, including not loaded - merely informative/debug
+	 */
+	private List<FoundChunkInfo> foundChunksInfo = new ArrayList<FoundChunkInfo>();
+
+	/**
+	 * Constructs a PngReader from an InputStream.
+	 * <p>
+	 * See also <code>FileHelper.createPngReader(File f)</code> if available.
+	 * 
+	 * Reads only the signature and first chunk (IDHR)
+	 * 
+	 * @param filenameOrDescription
+	 *            : Optional, can be a filename or a description. Just for error/debug messages
+	 * 
+	 */
+	public PngReader(InputStream inputStream, String filenameOrDescription) {
+		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
+		this.is = inputStream;
+		this.chunksList = new ChunkList(null);
+		// reads header (magic bytes)
+		byte[] pngid = new byte[PngHelper.pngIdBytes.length];
+		PngHelper.readBytes(is, pngid, 0, pngid.length);
+		offset += pngid.length;
+		if (!Arrays.equals(pngid, PngHelper.pngIdBytes))
+			throw new PngjInputException("Bad PNG signature");
+		// reads first chunk
+		currentChunkGroup = ChunkList.CHUCK_GROUP_0_IDHR;
+		int clen = PngHelper.readInt4(is);
+		offset += 4;
+		if (clen != 13)
+			throw new RuntimeException("IDHR chunk len != 13 ?? " + clen);
+		byte[] chunkid = new byte[4];
+		PngHelper.readBytes(is, chunkid, 0, 4);
+		if (!Arrays.equals(chunkid, ChunkHelper.b_IHDR))
+			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
+		offset += 4;
+		ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
+		String chunkids = ChunkHelper.toString(chunkid);
+		foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, true));
+		offset += chunk.readChunkData(is);
+		PngChunkIHDR ihdr = (PngChunkIHDR) addChunkToList(chunk);
+		boolean alpha = (ihdr.getColormodel() & 0x04) != 0;
+		boolean palette = (ihdr.getColormodel() & 0x01) != 0;
+		boolean grayscale = (ihdr.getColormodel() == 0 || ihdr.getColormodel() == 4);
+		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getRows(), ihdr.getBitspc(), alpha, grayscale, palette);
+		imgLine = new ImageLine(imgInfo);
+		if (ihdr.getInterlaced() != 0)
+			throw new PngjUnsupportedException("PNG interlaced not supported by this library");
+		if (ihdr.getFilmeth() != 0 || ihdr.getCompmeth() != 0)
+			throw new PngjInputException("compmethod o filtermethod unrecognized");
+		if (ihdr.getColormodel() < 0 || ihdr.getColormodel() > 6 || ihdr.getColormodel() == 1
+				|| ihdr.getColormodel() == 5)
+			throw new PngjInputException("Invalid colormodel " + ihdr.getColormodel());
+		if (ihdr.getBitspc() != 1 && ihdr.getBitspc() != 2 && ihdr.getBitspc() != 4 && ihdr.getBitspc() != 8
+				&& ihdr.getBitspc() != 16)
+			throw new PngjInputException("Invalid bit depth " + ihdr.getBitspc());
+		// allocation: one extra byte for filter type one pixel
+		rowbfilter = new byte[imgInfo.bytesPerRow + 1];
+		rowb = new byte[imgInfo.bytesPerRow + 1];
+		rowbprev = new byte[rowb.length];
+	}
 
 	private static class FoundChunkInfo {
 		public final String id;
@@ -67,68 +129,8 @@ public class PngReader {
 		}
 	}
 
-	/**
-	 * Constructs a PngReader from an InputStream.
-	 * <p>
-	 * It loads the header and first chunks, pausing at the beginning of the image data (first IDAT chunk).
-	 * <p>
-	 * See also <code>FileHelper.createPngReader(File f)</code> if available.
-	 * 
-	 * @param filenameOrDescription
-	 *            : Optional, can be a description. Just for error/debug messages
-	 * 
-	 */
-	public PngReader(InputStream inputStream, String filenameOrDescription) {
-		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
-		this.is = inputStream;
-		// reads header (magic bytes)
-		byte[] pngid = new byte[PngHelper.pngIdBytes.length];
-		PngHelper.readBytes(is, pngid, 0, pngid.length);
-		offset += pngid.length;
-		if (!Arrays.equals(pngid, PngHelper.pngIdBytes))
-			throw new PngjInputException("Bad PNG signature");
-		// reads first chunks
-		int clen = PngHelper.readInt4(is);
-		offset += 4;
-		if (clen != 13)
-			throw new RuntimeException("IDHR chunk len != 13 ?? " + clen);
-		byte[] chunkid = new byte[4];
-		PngHelper.readBytes(is, chunkid, 0, 4);
-		if (!Arrays.equals(chunkid, ChunkHelper.b_IHDR))
-			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
-		offset += 4;
-		ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
-		String chunkids = ChunkHelper.toString(chunkid);
-		foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, true));
-		offset += chunk.readChunkData(is);
-		PngChunkIHDR ihdr = (PngChunkIHDR) addChunkToList(chunk);
-		if (ihdr.getInterlaced() != 0)
-			throw new PngjUnsupportedException("PNG interlaced not supported by this library");
-		if (ihdr.getFilmeth() != 0 || ihdr.getCompmeth() != 0)
-			throw new PngjInputException("compmethod o filtermethod unrecognized");
-		boolean alpha = (ihdr.getColormodel() & 0x04) != 0;
-		boolean palette = (ihdr.getColormodel() & 0x01) != 0;
-		boolean grayscale = (ihdr.getColormodel() == 0 || ihdr.getColormodel() == 4);
-		if (ihdr.getColormodel() < 0 || ihdr.getColormodel() > 6 || ihdr.getColormodel() == 1
-				|| ihdr.getColormodel() == 5)
-			throw new PngjInputException("Invalid colormodel " + ihdr.getColormodel());
-		if (ihdr.getBitspc() != 1 && ihdr.getBitspc() != 2 && ihdr.getBitspc() != 4 && ihdr.getBitspc() != 8
-				&& ihdr.getBitspc() != 16)
-			throw new PngjInputException("Invalid bit depth " + ihdr.getBitspc());
-		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getRows(), ihdr.getBitspc(), alpha, grayscale, palette);
-		imgLine = new ImageLine(imgInfo);
-		// allocation: one extra byte for filter type one pixel
-		rowbfilter = new byte[imgInfo.bytesPerRow + 1];
-		rowb = new byte[imgInfo.bytesPerRow + 1];
-		rowbprev = new byte[rowb.length];
-		int idatLen = readFirstChunks();
-		if (idatLen < 0)
-			throw new PngjInputException("first idat chunk not found!");
-		iIdatCstream = new PngIDatChunkInputStream(is, idatLen, offset);
-		idatIstream = new InflaterInputStream(iIdatCstream);
-	}
-
 	private PngChunk addChunkToList(ChunkRaw chunk) {
+		// this requires that the currentChunkGroup is ok
 		PngChunk chunkType = PngChunk.factory(chunk, imgInfo);
 		if (!chunkType.crit) {
 			bytesChunksLoaded += chunk.len;
@@ -137,19 +139,23 @@ public class PngReader {
 			throw new PngjInputException("Chunk exceeded available space (" + MAX_BYTES_CHUNKS_TO_LOAD + ") chunk: "
 					+ chunk + " See PngReader.MAX_BYTES_CHUNKS_TO_LOAD\n");
 		}
-		chunks.appendChunk(chunkType);
+		chunksList.appendReadChunk(chunkType, currentChunkGroup);
 		return chunkType;
 	}
 
 	/**
 	 * Reads chunks before first IDAT. Position before: after IDHR (crc included) Position after: just after the first
-	 * IDAT chunk id Returns length of first IDAT chunk , -1 if not found
+	 * IDAT chunk id
+	 * 
+	 * This can be called explicitly before reading the rows. Normally it's not necesary
 	 **/
-	private int readFirstChunks() {
+	public void readFirstChunks() {
+		if (currentChunkGroup >= ChunkList.CHUCK_GROUP_1_AFTERIDHR)
+			return; // already done
 		int clen = 0;
 		boolean found = false;
-		byte[] chunkid = new byte[4]; // it's important to reallocate in each
-										// iteration
+		byte[] chunkid = new byte[4]; // it's important to reallocate in each iteration
+		currentChunkGroup = ChunkList.CHUCK_GROUP_1_AFTERIDHR;
 		while (!found) {
 			clen = PngHelper.readInt4(is);
 			offset += 4;
@@ -159,6 +165,7 @@ public class PngReader {
 			offset += 4;
 			if (Arrays.equals(chunkid, ChunkHelper.b_IDAT)) {
 				found = true;
+				currentChunkGroup = ChunkList.CHUCK_GROUP_4_IDAT;
 				// add dummy idat chunk to list
 				ChunkRaw chunk = new ChunkRaw(0, chunkid, false);
 				addChunkToList(chunk);
@@ -171,17 +178,26 @@ public class PngReader {
 			boolean loadchunk = ChunkHelper.shouldLoad(chunkids, chunkLoadBehaviour);
 			foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, loadchunk));
 			offset += chunk.readChunkData(is);
+			if (chunkids.equals(ChunkHelper.PLTE))
+				currentChunkGroup = ChunkList.CHUCK_GROUP_2_PLTE;
 			if (loadchunk)
 				addChunkToList(chunk);
+			if (chunkids.equals(ChunkHelper.PLTE))
+				currentChunkGroup = ChunkList.CHUCK_GROUP_3_AFTERPLTE;
 		}
-		return found ? clen : -1;
+		int idatLen = found ? clen : -1;
+		if (idatLen < 0)
+			throw new PngjInputException("first idat chunk not found!");
+		iIdatCstream = new PngIDatChunkInputStream(is, idatLen, offset);
+		idatIstream = new InflaterInputStream(iIdatCstream);
 	}
 
 	/**
-	 * Reads (and processes ... up to a point) chunks after last IDAT.
+	 * Reads (and processes) chunks after last IDAT.
 	 **/
 	private void readLastChunks() {
 		// PngHelper.logdebug("idat ended? " + iIdatCstream.isEnded());
+		currentChunkGroup = ChunkList.CHUCK_GROUP_5_AFTERIDAT;
 		if (!iIdatCstream.isEnded())
 			iIdatCstream.forceChunkEnd();
 		// add chunks to list (just informational)
@@ -207,6 +223,7 @@ public class PngReader {
 				// PngHelper.logdebug("extra IDAT chunk len - ignoring : ");
 				ignore = true;
 			} else if (Arrays.equals(chunkid, ChunkHelper.b_IEND)) {
+				currentChunkGroup = ChunkList.CHUCK_GROUP_6_END;
 				endfound = true;
 			}
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -231,7 +248,7 @@ public class PngReader {
 	 */
 	public ImageLine readRow(int nrow) {
 		readRow(imgLine.scanline, nrow);
-		imgLine.filterUsed = PngFilterType.getByVal(rowbfilter[0]);
+		imgLine.filterUsed = FilterType.getByVal(rowbfilter[0]);
 		imgLine.setRown(nrow);
 		return imgLine;
 	}
@@ -249,6 +266,8 @@ public class PngReader {
 	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
 	 */
 	public int[] readRow(int[] buffer, int nrow) {
+		if (currentChunkGroup < ChunkList.CHUCK_GROUP_4_IDAT)
+			readFirstChunks();
 		if (nrow < 0 || nrow >= imgInfo.rows)
 			throw new PngjInputException("invalid line");
 		if (nrow != rowNum + 1)
@@ -269,6 +288,23 @@ public class PngReader {
 		return buffer;
 	}
 
+	/**
+	 * This should be called after having read the last line. It reads extra chunks after IDAT, if present.
+	 */
+	public void end() {
+		offset = (int) iIdatCstream.getOffset();
+		try {
+			idatIstream.close();
+		} catch (Exception e) {
+		}
+		readLastChunks();
+		try {
+			is.close();
+		} catch (Exception e) {
+			throw new PngjInputException("error closing input stream!", e);
+		}
+	}
+
 	private void convertRowFromBytes(int[] buffer) {
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
 		int i, j;
@@ -285,7 +321,7 @@ public class PngReader {
 
 	private void unfilterRow() {
 		int ftn = rowbfilter[0];
-		PngFilterType ft = PngFilterType.getByVal(ftn);
+		FilterType ft = FilterType.getByVal(ftn);
 		if (ft == null)
 			throw new PngjInputException("Filter type " + ftn + " invalid");
 		switch (ft) {
@@ -344,34 +380,20 @@ public class PngReader {
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
 			x = j > 0 ? (rowb[j] & 0xFF) : 0;
 			y = j > 0 ? (rowbprev[j] & 0xFF) : 0;
-			rowb[i] = (byte) (rowbfilter[i] + PngFilterType.filterPaethPredictor(x, rowbprev[i] & 0xFF, y));
+			rowb[i] = (byte) (rowbfilter[i] + FilterType.filterPaethPredictor(x, rowbprev[i] & 0xFF, y));
 		}
 	}
 
-	/**
-	 * This should be called after having read the last line. It reads extra chunks after IDAT, if present.
-	 */
-	public void end() {
-		offset = (int) iIdatCstream.getOffset();
-		try {
-			idatIstream.close();
-		} catch (Exception e) {
-		}
-		readLastChunks();
-		try {
-			is.close();
-		} catch (Exception e) {
-			throw new PngjInputException("error closing input stream!", e);
-		}
+	public ChunkLoadBehaviour getChunkLoadBehaviour() {
+		return chunkLoadBehaviour;
 	}
 
-	public String toString() { // basic info
-		return "filename=" + filename + " " + imgInfo.toString();
+	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
+		this.chunkLoadBehaviour = chunkLoadBehaviour;
 	}
 
-	/** negative if not set */
-	public double getDpi() {
-		return chunks.getPHYSdpi();
+	public ChunkList getChunksList() {
+		return chunksList;
 	}
 
 	/** Prints chunks list to stdio, only for debugging. */
@@ -379,6 +401,10 @@ public class PngReader {
 		for (FoundChunkInfo c : foundChunksInfo) {
 			System.out.println(c);
 		}
+	}
+
+	public String toString() { // basic info
+		return "filename=" + filename + " " + imgInfo.toString();
 	}
 
 }

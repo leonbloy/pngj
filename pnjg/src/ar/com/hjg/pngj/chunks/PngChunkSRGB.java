@@ -21,6 +21,16 @@ public class PngChunkSRGB extends PngChunk {
 	}
 
 	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+
+	@Override
+	public boolean mustGoBeforePLTE() {
+		return true;
+	}
+
+	@Override
 	public void parseFromChunk(ChunkRaw c) {
 		if (c.len != 1)
 			throw new PngjException("bad chunk length " + c);

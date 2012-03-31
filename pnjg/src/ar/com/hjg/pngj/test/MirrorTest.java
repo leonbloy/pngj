@@ -4,13 +4,15 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
+import java.util.List;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
+import ar.com.hjg.pngj.chunks.PngChunk;
 
 /**
  * To test all images in PNG test suite (except interlaced) doing a horizontal mirror on all them
@@ -37,9 +39,9 @@ public class MirrorTest {
 		// at this point we have loaded al chucks before IDAT
 		// PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, true);
 		PngWriter pngw = new PngWriter(new FileOutputStream(dest), pngr.imgInfo);
-		pngw.setFilterType(PngFilterType.FILTER_PAETH);
-		pngw.copyChunksFirst(pngr, ChunksToWrite.COPY_ALL_SAFE | ChunksToWrite.COPY_PALETTE
-				| ChunksToWrite.COPY_TRANSPARENCY);
+		pngw.setFilterType(FilterType.FILTER_PAETH);
+		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_PALETTE
+				| ChunkCopyBehaviour.COPY_TRANSPARENCY);
 		ImageLine lout = new ImageLine(pngw.imgInfo);
 		int[] line = null;
 		int cols = pngr.imgInfo.cols;
@@ -60,8 +62,12 @@ public class MirrorTest {
 			pngw.writeRow(lout);
 		}
 		pngr.end();
-		pngw.copyChunksLast(pngr, ChunksToWrite.COPY_ALL_SAFE | ChunksToWrite.COPY_TRANSPARENCY);
+		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_TRANSPARENCY);
 		pngw.end();
+		List<String> u = pngr.getChunksList().getChunksUnkown();
+		if(! u.isEmpty()) {
+			System.out.println("Unknown chunks:" + u);
+		}
 	}
 
 	public static void testAllSuite(File dirsrc, File dirdest) {
@@ -134,13 +140,14 @@ public class MirrorTest {
 		// reencode("resources/testsuite1/basn0g01.png", "C:/temp/x.png");
 		// reencode(new File("resources/testsuite1/basn0g02.png"), new
 		// File("C:/temp/x2.png"));
-		mirror(new File("resources/testsuite1/cdhn2c08.png"), new File("C:/temp/test/xxx.png"));
+		mirror(new File("resources/testsuite1/basn3p08.png"), new File("C:/temp/test/xxx.png"));
 		System.out.println("done: ");
 	}
 
 	
 	public static void main(String[] args) throws Exception {
 		testAllSuite(new File("resources/testsuite1/"), new File(outdir));
+		
 		System.out.println("output dir: " + outdir);
 
 	}

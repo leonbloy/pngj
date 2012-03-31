@@ -4,7 +4,7 @@ import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
@@ -18,7 +18,7 @@ import ar.com.hjg.pngj.lossy.IErrorDifussion;
 public class Posterize {
 
 	static int complevel = 9;
-	static PngFilterType filter = PngFilterType.FILTER_NONE;
+	static FilterType filter = FilterType.FILTER_NONE;
 
 	public static void posterize(String origFilename, String destFilename, int nbits, boolean errorDiffusion) {
 		PngReader pngr = FileHelper.createPngReader(new File(origFilename));

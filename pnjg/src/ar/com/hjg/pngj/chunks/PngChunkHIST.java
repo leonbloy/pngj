@@ -16,6 +16,17 @@ public class PngChunkHIST extends PngChunk {
 		super(ChunkHelper.hIST, info);
 	}
 
+	
+	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+
+	@Override
+	public boolean mustGoAfterPLTE() {
+		return true;
+	}
+
 
 	@Override
 	public void parseFromChunk(ChunkRaw c) {

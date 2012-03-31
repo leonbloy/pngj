@@ -1,18 +1,50 @@
 package ar.com.hjg.pngj.chunks;
 
 import java.io.OutputStream;
+import java.lang.reflect.Constructor;
+import java.util.HashMap;
+import java.util.Map;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
 // see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
 public abstract class PngChunk {
+
 	public final String id; // 4 letters
-	public final boolean crit, pub, safe, known, beforeIDAT, beforePLTE;
+	public final boolean crit, pub, safe;
 	private int lenori = -1; // merely informational, for read chunks
-	// 0:queued ; 1: queued prioritary; 2: dont write yet; 3: already written
-	private int writeStatus = 0;
+
+	private boolean writePriority = false; // for queued chunks
 	protected final ImageInfo imgInfo;
+	int minChunkGroup,maxChunkGroup; // for internal use
+
+	/**
+	 * This static map defines which PngChunk class correspond to which ChunkID
+	 * The client can add other chunks to this map statically, before reading  
+	 */
+	public final static Map<String, Class<? extends PngChunk>> factoryMap = new HashMap<String, Class<? extends PngChunk>>();
+	static {
+		factoryMap.put(ChunkHelper.IDAT, PngChunkIDAT.class);
+		factoryMap.put(ChunkHelper.IHDR, PngChunkIHDR.class);
+		factoryMap.put(ChunkHelper.PLTE, PngChunkPLTE.class);
+		factoryMap.put(ChunkHelper.IEND, PngChunkIEND.class);
+		factoryMap.put(ChunkHelper.tEXt, PngChunkTEXT.class);
+		factoryMap.put(ChunkHelper.iTXt, PngChunkITXT.class);
+		factoryMap.put(ChunkHelper.zTXt, PngChunkZTXT.class);
+		factoryMap.put(ChunkHelper.bKGD, PngChunkBKGD.class);
+		factoryMap.put(ChunkHelper.gAMA, PngChunkGAMA.class);
+		factoryMap.put(ChunkHelper.pHYs, PngChunkPHYS.class);
+		factoryMap.put(ChunkHelper.iCCP, PngChunkICCP.class);
+		factoryMap.put(ChunkHelper.tIME, PngChunkTIME.class);
+		factoryMap.put(ChunkHelper.tRNS, PngChunkTRNS.class);
+		factoryMap.put(ChunkHelper.cHRM, PngChunkCHRM.class);
+		factoryMap.put(ChunkHelper.sBIT, PngChunkSBIT.class);
+		factoryMap.put(ChunkHelper.sRGB, PngChunkSRGB.class);
+		factoryMap.put(ChunkHelper.hIST, PngChunkHIST.class);
+		factoryMap.put(ChunkHelper.sPLT, PngChunkSPLT.class);
+	}
+
 
 	protected PngChunk(String id, ImageInfo imgInfo) {
 		this.id = id;
@@ -20,13 +52,30 @@ public abstract class PngChunk {
 		this.crit = ChunkHelper.isCritical(id);
 		this.pub = ChunkHelper.isPublic(id);
 		this.safe = ChunkHelper.isSafeToCopy(id);
-		this.known = ChunkHelper.isKnown(id);
-		// beforeIDAT=true: MUST go before IDATA
-		this.beforeIDAT = ChunkHelper.beforeIDAT(id);
-		// beforePLTE=true: MUST go before PLTE (if present)
-		this.beforePLTE = ChunkHelper.beforePLTE(id);
+		computeMinMaxGroup();
 	}
-
+	
+	private void computeMinMaxGroup() {
+		if (id.equals(ChunkHelper.b_IHDR))
+			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_0_IDHR;
+		else if (id.equals(ChunkHelper.b_PLTE))
+			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_2_PLTE;
+		else if (id.equals(ChunkHelper.b_IDAT))
+			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_4_IDAT;
+		else if (id.equals(ChunkHelper.b_IEND))
+			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_6_END;
+		else if (mustGoBeforePLTE())
+			minChunkGroup=maxChunkGroup=ChunkList.CHUCK_GROUP_1_AFTERIDHR;
+		else if (mustGoBeforeIDAT()) {
+			maxChunkGroup = ChunkList.CHUCK_GROUP_3_AFTERPLTE ;
+			minChunkGroup = mustGoAfterPLTE()  ?  ChunkList.CHUCK_GROUP_3_AFTERPLTE : ChunkList.CHUCK_GROUP_1_AFTERIDHR;
+		}
+		else  {
+			maxChunkGroup = ChunkList.CHUCK_GROUP_5_AFTERIDAT;
+			minChunkGroup = ChunkList.CHUCK_GROUP_1_AFTERIDHR;
+		}
+	}
+	
 	public abstract ChunkRaw createChunk();
 
 	public abstract void parseFromChunk(ChunkRaw c);
@@ -52,42 +101,17 @@ public abstract class PngChunk {
 
 	public static PngChunk factoryFromId(String cid, ImageInfo info) {
 		PngChunk chunk = null;
-		if (cid.equals(ChunkHelper.IDAT))
-			chunk = new PngChunkIDAT(info);
-		else if (cid.equals(ChunkHelper.IHDR))
-			chunk = new PngChunkIHDR(info);
-		else if (cid.equals(ChunkHelper.PLTE))
-			chunk = new PngChunkPLTE(info);
-		else if (cid.equals(ChunkHelper.IEND))
-			chunk = new PngChunkIEND(info);
-		else if (cid.equals(ChunkHelper.gAMA))
-			chunk = new PngChunkGAMA(info);
-		else if (cid.equals(ChunkHelper.tEXt))
-			chunk = new PngChunkTEXT(info);
-		else if (cid.equals(ChunkHelper.iTXt))
-			chunk = new PngChunkITXT(info);
-		else if (cid.equals(ChunkHelper.zTXt))
-			chunk = new PngChunkZTXT(info);
-		else if (cid.equals(ChunkHelper.pHYs))
-			chunk = new PngChunkPHYS(info);
-		else if (cid.equals(ChunkHelper.bKGD))
-			chunk = new PngChunkBKGD(info);
-		else if (cid.equals(ChunkHelper.iCCP))
-			chunk = new PngChunkICCP(info);
-		else if (cid.equals(ChunkHelper.tIME))
-			chunk = new PngChunkTIME(info);
-		else if (cid.equals(ChunkHelper.tRNS))
-			chunk = new PngChunkTRNS(info);
-		else if (cid.equals(ChunkHelper.cHRM))
-			chunk = new PngChunkCHRM(info);
-		else if (cid.equals(ChunkHelper.sBIT))
-			chunk = new PngChunkSBIT(info);
-		else if (cid.equals(ChunkHelper.sRGB))
-			chunk = new PngChunkSRGB(info);
-		else if (cid.equals(ChunkHelper.hIST))
-			chunk = new PngChunkHIST(info);
-		else
-			chunk = new PngChunkOTHER(cid, info);
+		try {
+			Class<? extends PngChunk> cla = factoryMap.get(cid);
+			if (cla != null) {
+				Constructor<? extends PngChunk> constr = cla.getConstructor(ImageInfo.class);
+				chunk = constr.newInstance(info);
+			}
+		} catch (Exception e) {
+			// this can happend for unkown chunks
+		}
+		if (chunk == null)
+			chunk = new PngChunkUNKNOWN(cid, info);
 		return chunk;
 	}
 
@@ -101,43 +125,42 @@ public abstract class PngChunk {
 		return "chunk id= " + id + " (" + lenori + ") c=" + getClass().getSimpleName();
 	}
 
-	/**
-	 * should be called for ancillary chunks only Our write order is defined as (0:IDHR) 1: after IDHR (2:PLTE if
-	 * present) 3: before IDAT (4:IDAT) 5: after IDAT (6:END)
-	 */
-	public int writeOrder() {
-		if (id.equals(ChunkHelper.b_IHDR))
-			return 0;
-		if (id.equals(ChunkHelper.b_PLTE))
-			return 2;
-		if (id.equals(ChunkHelper.b_IDAT))
-			return 4;
-		if (id.equals(ChunkHelper.b_IEND))
-			return 6;
-		if (ChunkHelper.beforePLTE(id))
-			return 1;
-		if (ChunkHelper.beforeIDAT(id))
-			return 3;
-		else
-			return 5;
+	void setPriority(boolean highPrioriy) {
+		writePriority = highPrioriy;
 	}
 
-	public int getWriteStatus() {
-		return writeStatus;
-	}
-
-	public void setWriteStatus(int writeStatus) {
-		this.writeStatus = writeStatus;
-	}
-
-	public void writeAndMarkAsWrite(OutputStream os) {
-		if (getWriteStatus() >= 2)
-			throw new RuntimeException("bad write status");
+	void write(OutputStream os) {
 		ChunkRaw c = createChunk();
-		if (c != null)
-			c.writeChunk(os);
-		else
-			System.err.println("null chunk ! for " + this);
-		setWriteStatus(3);
+		if (c == null)
+			throw new PngjException("null chunk ! creation failed for " + this);
+		c.writeChunk(os);
 	}
+
+	public boolean isWritePriority() {
+		return writePriority;
+	}
+
+	/** must be overriden - only relevant for ancillary chunks */
+	public boolean allowsMultiple() {
+		return false; // override if allows multiple ocurrences
+	}
+	
+	/** mustGoBeforeXX/After must be overriden - only relevant for ancillary chunks */
+	public boolean mustGoBeforeIDAT() {
+		return false;
+	}
+	
+	public boolean mustGoBeforePLTE() {
+		return false;
+	}
+	
+	public boolean mustGoAfterPLTE() {
+		return false;
+	}
+
+	static boolean isKnown(String id) {
+		return factoryMap.containsKey(id);
+	}
+
 }
+

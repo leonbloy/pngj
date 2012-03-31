@@ -15,6 +15,11 @@ public class PngChunkPHYS extends PngChunk {
 	}
 
 	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+
+	@Override
 	public ChunkRaw createChunk() {
 		ChunkRaw c = createEmptyChunk(9, true);
 		PngHelper.writeInt4tobytes((int) pixelsxUnitX, c.data, 0);

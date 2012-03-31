@@ -4,7 +4,7 @@ package ar.com.hjg.pngj;
  * Internal PNG predictor filter, or strategy to select it.
  * 
  */
-public enum PngFilterType {
+public enum FilterType {
 	/**
 	 * No filter.
 	 */
@@ -43,12 +43,12 @@ public enum PngFilterType {
 	FILTER_VERYAGGRESSIVE(-4), ;
 	public final int val;
 
-	private PngFilterType(int val) {
+	private FilterType(int val) {
 		this.val = val;
 	}
 
-	public static PngFilterType getByVal(int i) {
-		for (PngFilterType ft : values()) {
+	public static FilterType getByVal(int i) {
+		for (FilterType ft : values()) {
 			if (ft.val == i)
 				return ft;
 		}

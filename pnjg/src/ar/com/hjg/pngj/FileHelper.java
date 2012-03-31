@@ -30,8 +30,10 @@ public class FileHelper {
 
 	/***
 	 * WARNING: This method will throw exception if run in a sandboxed environment (as Google App Engine) that does not
-	 * permit to use Java class java.io.FileOutputStream To be sure that this just throw error in that case, but that
-	 * the class is usable, we use reflection.
+	 * permit to use Java class java.io.FileOutputStream 
+	 * 
+	 * We use reflection to be sure that this just throw run time exception in that case, but that
+	 * the class is loadable
 	 * 
 	 * @param file
 	 * @param allowOverwrite

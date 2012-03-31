@@ -20,56 +20,27 @@ public class ChunkHelper {
 	public static final String PLTE = "PLTE";
 	public static final String IDAT = "IDAT";
 	public static final String IEND = "IEND";
-	public static final String cHRM = "cHRM";// No Before PLTE and IDAT
-	public static final String gAMA = "gAMA";// No Before PLTE and IDAT
-	public static final String iCCP = "iCCP";// No Before PLTE and IDAT
-	public static final String sBIT = "sBIT";// No Before PLTE and IDAT
-	public static final String sRGB = "sRGB";// No Before PLTE and IDAT
-	public static final String bKGD = "bKGD";// No After PLTE; before IDAT
-	public static final String hIST = "hIST";// No After PLTE; before IDAT
-	public static final String tRNS = "tRNS";// No After PLTE; before IDAT
-	public static final String pHYs = "pHYs";// No Before IDAT
-	public static final String sPLT = "sPLT";// Yes Before IDAT
-	public static final String tIME = "tIME";// No None
-	public static final String iTXt = "iTXt";// Yes None
-	public static final String tEXt = "tEXt";// Yes None
-	public static final String zTXt = "zTXt";// Yes None
 	public static final byte[] b_IHDR = toBytes(IHDR);
 	public static final byte[] b_PLTE = toBytes(PLTE);
 	public static final byte[] b_IDAT = toBytes(IDAT);
 	public static final byte[] b_IEND = toBytes(IEND);
-	public static final byte[] b_cHRM = toBytes(cHRM);
-	public static final byte[] b_gAMA = toBytes(gAMA);
-	public static final byte[] b_iCCP = toBytes(iCCP);
-	public static final byte[] b_sBIT = toBytes(sBIT);
-	public static final byte[] b_sRGB = toBytes(sRGB);
-	public static final byte[] b_bKGD = toBytes(bKGD);
-	public static final byte[] b_hIST = toBytes(hIST);
-	public static final byte[] b_tRNS = toBytes(tRNS);
-	public static final byte[] b_pHYs = toBytes(pHYs);
-	public static final byte[] b_sPLT = toBytes(sPLT);
-	public static final byte[] b_tIME = toBytes(tIME);
-	public static final byte[] b_iTXt = toBytes(iTXt);
-	public static final byte[] b_tEXt = toBytes(tEXt);
-	public static final byte[] b_zTXt = toBytes(zTXt);
-	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR, PLTE, IDAT, IEND);
-	// ancillary known chunks, before PLTE and IDAT
-	public static Set<String> KNOWN_CHUNKS_BEFORE_PLTE = PngHelper.asSet(cHRM, gAMA, iCCP, sBIT,
-			sRGB);
-	// ancillary known chunks, after PLTE , before IDAT
-	public static Set<String> KNOWN_CHUNKS_AFTER_PLTE = PngHelper.asSet(bKGD, hIST, tRNS);
-	// ancillary known chunks, before IDAT (before or after PLTE)
-	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT = PngHelper.asSet(pHYs, sPLT);
-	// ancillary known chunks, before or after IDAT
-	public static Set<String> KNOWN_CHUNKS_ANYWHERE = PngHelper.asSet(tIME, iTXt, tEXt, zTXt);
-	public static Set<String> KNOWN_CHUNKS_BEFORE_IDAT_ALL = PngHelper.unionSets(KNOWN_CHUNKS_BEFORE_PLTE,
-			KNOWN_CHUNKS_AFTER_PLTE, KNOWN_CHUNKS_BEFORE_IDAT);
-	public static Set<String> KNOWN_CHUNKS_ANCILLARY_ALL = PngHelper.unionSets(KNOWN_CHUNKS_BEFORE_IDAT_ALL,
-			KNOWN_CHUNKS_ANYWHERE);
 
-	public static boolean isKnown(String id) {
-		return KNOWN_CHUNKS_CRITICAL.contains(id) || KNOWN_CHUNKS_ANCILLARY_ALL.contains(id);
-	}
+	static final String cHRM = "cHRM";
+	static final String gAMA = "gAMA";
+	static final String iCCP = "iCCP";
+	static final String sBIT = "sBIT";
+	static final String sRGB = "sRGB";
+	static final String bKGD = "bKGD";
+	static final String hIST = "hIST";
+	public static final String tRNS = "tRNS";
+	public static final String pHYs = "pHYs";
+	static final String sPLT = "sPLT";
+	static final String tIME = "tIME";
+	static final String iTXt = "iTXt";
+	static final String tEXt = "tEXt";
+	static final String zTXt = "zTXt";
+
+	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR, PLTE, IDAT, IEND);
 
 	public static byte[] toBytes(String x) {
 		return x.getBytes(PngHelper.charsetLatin1);
@@ -94,25 +65,6 @@ public class ChunkHelper {
 		return (!Character.isUpperCase(id.charAt(3)));
 	}
 
-	public static boolean beforeIDAT(String id) { // only for ancillary
-		if (KNOWN_CHUNKS_BEFORE_IDAT_ALL.contains(id))
-			return true;
-		return false;
-	}
-
-	public static boolean beforePLTE(String id) { // only for ancillary
-		if (KNOWN_CHUNKS_BEFORE_PLTE.contains(id))
-			return true;
-		return false;
-	}
-
-	public static boolean admitsMultiple(String id) { // only for ancillary
-		if (id.equals(sPLT) || id.equals(iTXt) || id.equals(tEXt) || id.equals(zTXt))
-			return true;
-		else
-			return false;
-	}
-
 	public static int posNullByte(byte[] b) {
 		for (int i = 0; i < b.length; i++)
 			if (b[i] == 0)
@@ -123,7 +75,7 @@ public class ChunkHelper {
 	public static boolean shouldLoad(String id, ChunkLoadBehaviour behav) {
 		if (isCritical(id))
 			return true;
-		boolean kwown = isKnown(id);
+		boolean kwown = PngChunk.isKnown(id);
 		switch (behav) {
 		case LOAD_CHUNK_ALWAYS:
 			return true;
@@ -165,5 +117,9 @@ public class ChunkHelper {
 		while ((len = in.read(buffer)) > 0) {
 			out.write(buffer, 0, len);
 		}
+	}
+	
+	public static boolean maskMatch(int v, int mask) {
+		return (v & mask) != 0;
 	}
 }

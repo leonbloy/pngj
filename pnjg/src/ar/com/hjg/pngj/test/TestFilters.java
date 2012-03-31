@@ -4,7 +4,7 @@ import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunksToWrite;
@@ -13,7 +13,7 @@ import ar.com.hjg.pngj.chunks.ChunksToWrite;
  * reencodes a png image with a given filter and compression level
  */
 public class TestFilters {
-	public static void reencode(String orig, PngFilterType filterType, int cLevel) {
+	public static void reencode(String orig, FilterType filterType, int cLevel) {
 		long t0 = System.currentTimeMillis();
 		String suffix = filterType.toString().replace("FILTER_", "").toLowerCase() + "_" + String.valueOf(cLevel);
 		String dest = orig.replaceAll("\\.png$", "") + "_" + suffix + ".png";
@@ -37,7 +37,7 @@ public class TestFilters {
 	}
 
 	public static void tryAllFilters(String file, int clevel) {
-		for (PngFilterType filter : PngFilterType.values()) {
+		for (FilterType filter : FilterType.values()) {
 			reencode(file, filter, clevel);
 		}
 	}

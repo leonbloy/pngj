@@ -18,6 +18,16 @@ public class PngChunkSBIT extends PngChunk {
 		super(ChunkHelper.sBIT, info);
 	}
 
+	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+
+	@Override
+	public boolean mustGoBeforePLTE() {
+		return true;
+	}
+
 	private int getLen() {
 		int len = imgInfo.greyscale ? 1 : 3;
 		if (imgInfo.alpha)

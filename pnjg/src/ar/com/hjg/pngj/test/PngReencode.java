@@ -4,7 +4,7 @@ import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunksToWrite;
@@ -13,7 +13,7 @@ import ar.com.hjg.pngj.chunks.ChunksToWrite;
  * reencodes a png image with a given filter and compression level
  */
 public class PngReencode {
-	public static void reencode(String orig, String dest, PngFilterType filterType, int cLevel) {
+	public static void reencode(String orig, String dest, FilterType filterType, int cLevel) {
 		if (orig.equals(dest))
 			throw new RuntimeException("files are the same!");
 		PngReader pngr = FileHelper.createPngReader(new File(orig));
@@ -42,7 +42,7 @@ public class PngReencode {
 			System.exit(1);
 		}
 		long t0 = System.currentTimeMillis();
-		reencode(args[0], args[1], PngFilterType.getByVal(Integer.parseInt(args[2])), Integer.parseInt(args[3]));
+		reencode(args[0], args[1], FilterType.getByVal(Integer.parseInt(args[2])), Integer.parseInt(args[3]));
 		long t1 = System.currentTimeMillis();
 		System.out.println("Listo: " + (t1 - t0) + " msecs");
 	}
@@ -55,7 +55,7 @@ public class PngReencode {
 		 * reencode("/temp/people.png", "/temp/peoplex.png", PngFilterType.FILTER_ALTERNATE, 9);
 		 * reencode("/temp/peoplex.png", "/temp/peoplex2.png", PngFilterType.FILTER_ALTERNATE, 9);
 		 */
-		reencode("/temp/ibadPortrait.png", "/temp/ibadPortrait2.png", PngFilterType.FILTER_AVERAGE, 9);
+		reencode("/temp/ibadPortrait.png", "/temp/ibadPortrait2.png", FilterType.FILTER_AVERAGE, 9);
 		long t1 = System.currentTimeMillis();
 		System.out.println("Listo: " + (t1 - t0) + " msecs");
 	}

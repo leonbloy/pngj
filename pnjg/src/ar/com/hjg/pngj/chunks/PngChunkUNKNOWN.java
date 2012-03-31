@@ -2,15 +2,20 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 
-public class PngChunkOTHER extends PngChunk { // unkown, custom or not
+public class PngChunkUNKNOWN extends PngChunk { // unkown, custom or not
 
 	private byte[] data;
 
-	public PngChunkOTHER(String id, ImageInfo info) {
+	public PngChunkUNKNOWN(String id, ImageInfo info) {
 		super(id, info);
 	}
+	
+	@Override
+	public boolean allowsMultiple() {
+		return true;
+	}
 
-	private PngChunkOTHER(PngChunkOTHER c, ImageInfo info) {
+	private PngChunkUNKNOWN(PngChunkUNKNOWN c, ImageInfo info) {
 		super(c.id, info);
 		System.arraycopy(c.data, 0, data, 0, c.data.length);
 	}
@@ -40,7 +45,7 @@ public class PngChunkOTHER extends PngChunk { // unkown, custom or not
 	@Override
 	public void cloneDataFromRead(PngChunk other) {
 		// THIS SHOULD NOT BE CALLED IF ALREADY CLONED WITH COPY CONSTRUCTOR
-		PngChunkOTHER c = (PngChunkOTHER) other;
+		PngChunkUNKNOWN c = (PngChunkUNKNOWN) other;
 		data = c.data; // not deep copy
 	}
 }

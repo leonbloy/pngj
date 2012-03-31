@@ -7,39 +7,41 @@ import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
-import ar.com.hjg.pngj.chunks.ChunksToWrite;
+import ar.com.hjg.pngj.chunks.ChunkList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
-import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
 /**
  * Writes a PNG image, line by line.
  */
 public class PngWriter {
+	
 	public final ImageInfo imgInfo;
+
 	protected int compLevel = 6; // zip compression level 0 - 9
 	private int deflaterStrategy = Deflater.FILTERED;
 	protected FilterWriteStrategy filterStrat;
+
+	protected int currentChunkGroup = -1;
 	protected int rowNum = -1; // current line number
+	
 	// current line, one (packed) sample per element (layout differnt from rowb!)
 	protected int[] scanline = null;
 	protected byte[] rowb = null; // element 0 is filter type!
 	protected byte[] rowbprev = null; // rowb prev
 	protected byte[] rowbfilter = null; // current line with filter
+	
 	protected final OutputStream os;
-	protected final String filename; // optional
+	protected final String filename; // optional, can be a description
+	
 	private PngIDatChunkOutputStream datStream;
 	private DeflaterOutputStream datStreamDeflated;
-	public ChunksToWrite chunks;
 
-	private enum WriteStep {
-		START, HEADER, HEADER_DONE, IDHR, IDHR_DONE, FIRST_CHUNKS, FIRST_CHUNKS_DONE, IDAT, IDAT_DONE, LAST_CHUNKS, LAST_CHUNKS_DONE, END;
-	}
-
-	private WriteStep step;
+	public ChunkList chunks; 
 
 	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
 		this(outputStream, imgInfo, "[NO FILENAME AVAILABLE]");
@@ -67,23 +69,21 @@ public class PngWriter {
 		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
 		datStream = new PngIDatChunkOutputStream(this.os);
-		chunks = new ChunksToWrite(imgInfo);
-		step = WriteStep.START;
-		filterStrat = new FilterWriteStrategy(imgInfo, PngFilterType.FILTER_DEFAULT);
+		chunks = new ChunkList(imgInfo);
+		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT);
 	}
 
 	/**
 	 * Write id signature and also "IHDR" chunk
 	 */
 	private void writeSignatureAndIHDR() {
+		currentChunkGroup = ChunkList.CHUCK_GROUP_0_IDHR;
 		if (datStreamDeflated == null) {
 			Deflater def = new Deflater(compLevel);
 			def.setStrategy(deflaterStrategy);
-
 			datStreamDeflated = new DeflaterOutputStream(datStream, def, 8192);
 		}
 		PngHelper.writeBytes(os, PngHelper.pngIdBytes); // signature
-		step = WriteStep.IDHR;
 		PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
 		ihdr.setCols(imgInfo.cols);
@@ -101,61 +101,37 @@ public class PngWriter {
 		ihdr.setFilmeth(0); // filter method (0)
 		ihdr.setInterlaced(0); // we never interlace
 		ihdr.createChunk().writeChunk(os);
-		step = WriteStep.IDHR_DONE;
+		
 	}
 
 	private void writeFirstChunks() {
-		step = WriteStep.FIRST_CHUNKS;
-		PngChunkPLTE paletteChunk = null;
-		// first pass: before palette (and saves palette chunk if found)
-		for (PngChunk chunk : chunks.getPending()) {
-			if (chunk.beforePLTE)
-				chunk.writeAndMarkAsWrite(os);
-			if (chunk instanceof PngChunkPLTE)
-				paletteChunk = (PngChunkPLTE) chunk;
-		}
-		// writes palette?
-		if (paletteChunk != null) {
-			if (imgInfo.greyscale)
-				throw new PngjOutputException("cannot write palette for this format");
-			paletteChunk.writeAndMarkAsWrite(os);
-		} else { // no palette
-			if (imgInfo.indexed)
-				throw new PngjOutputException("missing palette");
-		}
-		// second pass: after palette
-		for (PngChunk chunk : chunks.getPending()) {
-			boolean prio = chunk.getWriteStatus() == 1;
-			if (chunk.beforeIDAT || prio)
-				chunk.writeAndMarkAsWrite(os);
-		}
-		step = WriteStep.FIRST_CHUNKS_DONE;
+		int nw=0;
+		currentChunkGroup = ChunkList.CHUCK_GROUP_1_AFTERIDHR;
+		nw = chunks.writeChunks(currentChunkGroup, os);
+		currentChunkGroup = ChunkList.CHUCK_GROUP_2_PLTE;
+		nw = chunks.writeChunks(currentChunkGroup, os);
+		if(nw >0 && imgInfo.greyscale)
+			throw new PngjOutputException("cannot write palette for this format");
+		if(nw ==0 && imgInfo.indexed)
+			throw new PngjOutputException("missing palette");
+		currentChunkGroup = ChunkList.CHUCK_GROUP_3_AFTERPLTE;
+		nw = chunks.writeChunks(currentChunkGroup, os);
+		currentChunkGroup = ChunkList.CHUCK_GROUP_4_IDAT;
 	}
 
 	private void writeLastChunks() { // not including end
-		step = WriteStep.LAST_CHUNKS;
-		for (PngChunk chunk : chunks.getPending()) {
-			if (chunk.beforePLTE || chunk.beforeIDAT)
-				throw new PngjOutputException("too late to write this chunk: " + chunk.id);
-			chunk.writeAndMarkAsWrite(os);
-		}
-		step = WriteStep.LAST_CHUNKS_DONE;
+		currentChunkGroup = ChunkList.CHUCK_GROUP_5_AFTERIDAT;
+		chunks.writeChunks(currentChunkGroup, os);
+		// should not be unwriten chunks
+		List<PngChunk> pending = chunks.getQueuedChunks();
+		if(!pending.isEmpty()) 
+			throw new PngjOutputException(pending.size() + " chunks were not written! Eg: " + pending.get(0).toString());
+		currentChunkGroup = ChunkList.CHUCK_GROUP_6_END;
 	}
 
 	private void writeEndChunk() {
 		PngChunkIEND c = new PngChunkIEND(imgInfo);
 		c.createChunk().writeChunk(os);
-		step = WriteStep.END;
-	}
-
-	private void writeDataBeforeIDAT() {
-		// notice that this if() are not exclusive
-		if (step == WriteStep.START)
-			writeSignatureAndIHDR(); // now we are in IDHR_DONE
-		if (step == WriteStep.IDHR_DONE)
-			writeFirstChunks(); // now we are in FIRST_CHUNKS_DONE
-		if (step != WriteStep.FIRST_CHUNKS_DONE) // check
-			throw new PngjOutputException("unexpected state before idat write: " + step);
 	}
 
 	/**
@@ -170,9 +146,9 @@ public class PngWriter {
 	 *            Row number, from 0 (top) to rows-1 (bottom). This is just used as a check. Pass -1 if you want to autocompute it 
 	 */
 	public void writeRow(int[] newrow, int rown) {
-		if (step != WriteStep.IDAT) {
-			writeDataBeforeIDAT();
-			step = WriteStep.IDAT;
+		if (rown==0) {
+			writeSignatureAndIHDR(); 
+			writeFirstChunks(); 
 		}
 		if (rown < -1 || rown > imgInfo.rows)
 			throw new RuntimeException("invalid value for row " + rown);
@@ -226,7 +202,6 @@ public class PngWriter {
 		try {
 			datStreamDeflated.finish();
 			datStream.flush();
-			step = WriteStep.IDAT_DONE;
 			writeLastChunks();
 			writeEndChunk();
 			os.close();
@@ -237,7 +212,7 @@ public class PngWriter {
 
 	private int[] histox = new int[256]; // auxiliar buffer, only used by reportResultsForFilter
 
-	private void reportResultsForFilter(int rown, PngFilterType type, boolean tentative) {
+	private void reportResultsForFilter(int rown, FilterType type, boolean tentative) {
 		Arrays.fill(histox, 0);
 		int s = 0, v;
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
@@ -256,17 +231,17 @@ public class PngWriter {
 		// initialized to 0 the first time
 		if (filterStrat.shouldTestAll(rown)) {
 			filterRowNone();
-			reportResultsForFilter(rown, PngFilterType.FILTER_NONE, true);
+			reportResultsForFilter(rown, FilterType.FILTER_NONE, true);
 			filterRowSub();
-			reportResultsForFilter(rown, PngFilterType.FILTER_SUB, true);
+			reportResultsForFilter(rown, FilterType.FILTER_SUB, true);
 			filterRowUp();
-			reportResultsForFilter(rown, PngFilterType.FILTER_UP, true);
+			reportResultsForFilter(rown, FilterType.FILTER_UP, true);
 			filterRowAverage();
-			reportResultsForFilter(rown, PngFilterType.FILTER_AVERAGE, true);
+			reportResultsForFilter(rown, FilterType.FILTER_AVERAGE, true);
 			filterRowPaeth();
-			reportResultsForFilter(rown, PngFilterType.FILTER_PAETH, true);
+			reportResultsForFilter(rown, FilterType.FILTER_PAETH, true);
 		}
-		PngFilterType filterType = filterStrat.gimmeFilterType(rown, true);
+		FilterType filterType = filterStrat.gimmeFilterType(rown, true);
 		rowbfilter[0] = (byte) filterType.val;
 		switch (filterType) {
 		case FILTER_NONE:
@@ -331,7 +306,7 @@ public class PngWriter {
 	protected void filterRowPaeth() {
 		int i, j;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			rowbfilter[i] = (byte) (rowb[i] - PngFilterType.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0,
+			rowbfilter[i] = (byte) (rowb[i] - FilterType.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0,
 					rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
 		}
 	}
@@ -353,12 +328,6 @@ public class PngWriter {
 	}
 
 	// /// several getters / setters - all this setters are optional
-	/**
-	 * Set physical resolution, in DPI (dots per inch). This goes inside a chunk, should be set before writing lines.
-	 */
-	public void setDpi(double dpi) {
-		chunks.setPHYSdpi(dpi);
-	}
 
 	/**
 	 * Sets internal prediction filter type, or strategy to choose it.
@@ -371,7 +340,7 @@ public class PngWriter {
 	 *            One of the five prediction types or strategy to choose it (see <code>PngFilterType</code>) Recommended
 	 *            values: DEFAULT (default) or AGGRESIVE
 	 */
-	public void setFilterType(PngFilterType filterType) {
+	public void setFilterType(FilterType filterType) {
 		filterStrat = new FilterWriteStrategy(imgInfo, filterType);
 	}
 
@@ -398,51 +367,44 @@ public class PngWriter {
 		return filename;
 	}
 
+	
+	
 	/**
 	 * copy chunks from reader - copy_mask : see ChunksToWrite.COPY_XXX
 	 * 
 	 * If we are after idat, only considers those chunks after IDAT in PngReader TODO: this should be more customizable
 	 */
 	private void copyChunks(PngReader reader, int copy_mask, boolean onlyAfterIdat) {
-		boolean idatDone = step.compareTo(WriteStep.IDAT) >= 0;
-		int posidat = reader.chunks.positionIDAT();
-		if (onlyAfterIdat && posidat < 0)
-			return; // nothing to do
-		List<PngChunk> chunksR = reader.chunks.getChunks();
-		for (int i = 0; i < chunksR.size(); i++) {
-			if (i < posidat && onlyAfterIdat)
-				continue;
+		boolean idatDone = currentChunkGroup>=ChunkList.CHUCK_GROUP_4_IDAT;
+		for (PngChunk chunk : reader.chunksList.getChunks()) {
+			int group = reader.chunksList.getChunkGroup(chunk);
+			if(group < ChunkList.CHUCK_GROUP_4_IDAT && idatDone) continue;
 			boolean copy = false;
-			PngChunk chunk = chunksR.get(i);
 			if (chunk.crit) {
 				if (chunk.id.equals(ChunkHelper.PLTE)) {
-					if (imgInfo.indexed && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_PALETTE))
+					if (imgInfo.indexed && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_PALETTE))
 						copy = true;
-					if (!imgInfo.greyscale && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_ALL))
+					if (!imgInfo.greyscale && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALL))
 						copy = true;
 				}
 			} else { // ancillary
 				boolean text = (chunk instanceof PngChunkTextVar);
 				boolean safe = chunk.safe;
-				if (ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_ALL))
+				if (ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALL))
 					copy = true;
-				if (safe && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_ALL_SAFE))
+				if (safe && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALL_SAFE))
 					copy = true;
 				if (chunk.id.equals(ChunkHelper.tRNS)
-						&& ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_TRANSPARENCY))
+						&& ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_TRANSPARENCY))
 					copy = true;
 				if (chunk.id.equals(ChunkHelper.pHYs)
-						&& ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_PHYS))
+						&& ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_PHYS))
 					copy = true;
-				if (text && ChunksToWrite.maskMatch(copy_mask, ChunksToWrite.COPY_TEXTUAL))
+				if (text && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_TEXTUAL))
 					copy = true;
 			}
 			if (copy) {
-				if (chunk.beforeIDAT && idatDone) {
-					System.err.println("too late to add pre-idat chunk - " + chunk);
-					continue;
-				}
-				chunks.cloneAndAdd(chunk, false);
+				chunks.queueChunk(PngChunk.cloneChunk(chunk, imgInfo), ! chunk.allowsMultiple(), false);
 			}
 		}
 	}
@@ -459,6 +421,7 @@ public class PngWriter {
 	 *            : Mask bit (OR), see <code>ChunksToWrite.COPY_XXX</code> constants
 	 */
 	public void copyChunksFirst(PngReader reader, int copy_mask) {
+		reader.readFirstChunks();
 		copyChunks(reader, copy_mask, false);
 	}
 

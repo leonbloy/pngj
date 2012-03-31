@@ -3,7 +3,7 @@ package ar.com.hjg.pngj.lossy;
 import java.io.OutputStream;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngWriter;
 
 /**
@@ -43,7 +43,7 @@ public class PngWriterLossy extends PngWriter {
 		rowbrx = new byte[rowb.length];
 		rowbprevrx = new byte[rowb.length];
 		lossyHelper = new LossyHelper(imgInfo);
-		setFilterType(PngFilterType.FILTER_AVERAGE);
+		setFilterType(FilterType.FILTER_AVERAGE);
 		setCompLevel(9);
 		setLossy(LOSSY_DEFAULT);
 	}
@@ -65,13 +65,13 @@ public class PngWriterLossy extends PngWriter {
 			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
-				x1 = PngFilterType.unfilterRowUp(r1, up);
+				x1 = FilterType.unfilterRowUp(r1, up);
 				if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
-					x1 = PngFilterType.unfilterRowUp(r0, up);
+					x1 = FilterType.unfilterRowUp(r0, up);
 				}
 			} else {
-				x1 = PngFilterType.unfilterRowUp(r0, up);
+				x1 = FilterType.unfilterRowUp(r0, up);
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;
@@ -111,13 +111,13 @@ public class PngWriterLossy extends PngWriter {
 			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
-				x1 = PngFilterType.unfilterRowNone(r1);
+				x1 = FilterType.unfilterRowNone(r1);
 				if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
-					x1 = PngFilterType.unfilterRowNone(r1);
+					x1 = FilterType.unfilterRowNone(r1);
 				}
 			} else {
-				x1 = PngFilterType.unfilterRowNone(r0);
+				x1 = FilterType.unfilterRowNone(r0);
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;
@@ -144,13 +144,13 @@ public class PngWriterLossy extends PngWriter {
 			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
-				x1 = PngFilterType.unfilterRowAverage(r1, left, up);
+				x1 = FilterType.unfilterRowAverage(r1, left, up);
 				if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
-					x1 = PngFilterType.unfilterRowAverage(r0, left, up);
+					x1 = FilterType.unfilterRowAverage(r0, left, up);
 				}
 			} else {
-				x1 = PngFilterType.unfilterRowAverage(r0, left, up);
+				x1 = FilterType.unfilterRowAverage(r0, left, up);
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;

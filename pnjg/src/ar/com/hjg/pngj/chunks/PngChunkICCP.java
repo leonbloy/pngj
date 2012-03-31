@@ -15,6 +15,16 @@ public class PngChunkICCP extends PngChunk {
 	}
 
 	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+
+	@Override
+	public boolean mustGoBeforePLTE() {
+		return true;
+	}
+
+	@Override
 	public ChunkRaw createChunk() {
 		ChunkRaw c = createEmptyChunk(profileName.length() + compressedProfile.length + 2, true);
 		System.arraycopy(ChunkHelper.toBytes(profileName), 0, c.data, 0, profileName.length());

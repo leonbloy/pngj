@@ -7,7 +7,7 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
@@ -334,7 +334,7 @@ public class LossyHelper {
 		File destf = new File(dest);
 		PngWriterLossy pngw = new PngWriterLossy(FileHelper.openFileForWriting(destf, true), pngr.imgInfo,
 				destf.getName());
-		pngw.setFilterType(PngFilterType.FILTER_AVERAGE);
+		pngw.setFilterType(FilterType.FILTER_AVERAGE);
 		pngw.setLossy(lossy);
 		// pngw.lossyHelper.setParTableQuantK(3);
 		/*
@@ -350,7 +350,7 @@ public class LossyHelper {
 		String lossydesc = pngw.lossyHelper.toString();
 		PngChunkTEXT txtChunk = (PngChunkTEXT) PngChunk.factoryFromId(ChunkHelper.tEXt, pngw.imgInfo);
 		txtChunk.setKeyVal("description", lossydesc);
-		pngw.chunks.cloneAndAdd(txtChunk, true);
+		pngw.chunks.addChunk(txtChunk,false, true);
 		pngr.end();
 		pngw.copyChunksLast(pngr, ChunksToWrite.COPY_ALL_SAFE);
 		pngw.end();

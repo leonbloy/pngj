@@ -19,6 +19,17 @@ public class PngChunkBKGD extends PngChunk {
 	}
 
 	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+	
+	@Override
+	public boolean mustGoAfterPLTE() {
+		return true;
+	}
+
+	
+	@Override
 	public ChunkRaw createChunk() {
 		ChunkRaw c = null;
 		if (imgInfo.greyscale) {

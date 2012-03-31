@@ -33,7 +33,7 @@ public class ImageLine {
 	 */
 	public final int[] scanline; // see explanation above!!
 	
-	protected PngFilterType filterUsed; // informational ; only filled by the reader
+	protected FilterType filterUsed; // informational ; only filled by the reader
 	protected final int channels; // copied from imgInfo, more handy
 	protected final int bitDepth; // copied from imgInfo, more handy
 	
@@ -164,7 +164,7 @@ public class ImageLine {
 		throw new RuntimeException("?");
 	}
 
-	public PngFilterType getFilterUsed() {
+	public FilterType getFilterUsed() {
 		return filterUsed;
 	}
 

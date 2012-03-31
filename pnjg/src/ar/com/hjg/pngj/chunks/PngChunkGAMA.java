@@ -15,6 +15,16 @@ public class PngChunkGAMA extends PngChunk {
 	}
 
 	@Override
+	public boolean mustGoBeforeIDAT() {
+		return true;
+	}
+
+	@Override
+	public boolean mustGoBeforePLTE() {
+		return true;
+	}
+
+	@Override
 	public ChunkRaw createChunk() {
 		ChunkRaw c = createEmptyChunk(4, true);
 		int g = (int) (gamma * 100000 + 0.5);
@@ -42,4 +52,5 @@ public class PngChunkGAMA extends PngChunk {
 	public void setGamma(double gamma) {
 		this.gamma = gamma;
 	}
+
 }

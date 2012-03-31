@@ -16,20 +16,6 @@ import java.util.zip.CRC32;
  * Client code should rarely need these methods.
  */
 public class PngHelper {
-
-	private static final ThreadLocal<CRC32> crcProvider = new ThreadLocal<CRC32>() {
-		protected CRC32 initialValue() {
-			return new CRC32();
-		}
-	};
-
-	/** thread-singleton crc engine */
-	public static CRC32 getCRC() {
-		return crcProvider.get();
-	}
-
-	static final byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 }; // png
-																			// magic
 	/**
 	 * Default charset, used internally by PNG for several things
 	 */
@@ -38,13 +24,18 @@ public class PngHelper {
 
 	static boolean DEBUG = false;
 
-	public static void writeInt2(OutputStream os, int n) {
-		byte[] temp = { (byte) ((n >> 8) & 0xff), (byte) (n & 0xff) };
-		writeBytes(os, temp);
+	public static int readByte(InputStream is) {
+		try {
+			return is.read();
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
+		}
 	}
 
 	/**
-	 * -1 si eof
+	 * -1 if eof
+	 * 
+	 * PNG uses "network byte order"
 	 */
 	public static int readInt2(InputStream is) {
 		try {
@@ -59,7 +50,7 @@ public class PngHelper {
 	}
 
 	/**
-	 * -1 si eof
+	 * -1 if eof
 	 */
 	public static int readInt4(InputStream is) {
 		try {
@@ -88,6 +79,25 @@ public class PngHelper {
 				| (b[offset + 3] & 0xff);
 	}
 
+	public static void writeByte(OutputStream os, byte b) {
+		try {
+			os.write(b);
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
+		}
+	}
+
+	public static void writeInt2(OutputStream os, int n) {
+		byte[] temp = { (byte) ((n >> 8) & 0xff), (byte) (n & 0xff) };
+		writeBytes(os, temp);
+	}
+
+	public static void writeInt4(OutputStream os, int n) {
+		byte[] temp = new byte[4];
+		writeInt4tobytes(n, temp, 0);
+		writeBytes(os, temp);
+	}
+
 	public static void writeInt2tobytes(int n, byte[] b, int offset) {
 		b[offset] = (byte) ((n >> 8) & 0xff);
 		b[offset + 1] = (byte) (n & 0xff);
@@ -98,12 +108,6 @@ public class PngHelper {
 		b[offset + 1] = (byte) ((n >> 16) & 0xff);
 		b[offset + 2] = (byte) ((n >> 8) & 0xff);
 		b[offset + 3] = (byte) (n & 0xff);
-	}
-
-	public static void writeInt4(OutputStream os, int n) {
-		byte[] temp = new byte[4];
-		writeInt4tobytes(n, temp, 0);
-		writeBytes(os, temp);
 	}
 
 	/**
@@ -141,22 +145,6 @@ public class PngHelper {
 		}
 	}
 
-	public static int readByte(InputStream is) {
-		try {
-			return is.read();
-		} catch (IOException e) {
-			throw new PngjOutputException(e);
-		}
-	}
-
-	public static void writeByte(OutputStream os, byte b) {
-		try {
-			os.write(b);
-		} catch (IOException e) {
-			throw new PngjOutputException(e);
-		}
-	}
-
 	public static void logdebug(String msg) {
 		if (DEBUG)
 			System.out.println(msg);
@@ -181,6 +169,19 @@ public class PngHelper {
 		return s;
 	}
 
+	private static final ThreadLocal<CRC32> crcProvider = new ThreadLocal<CRC32>() {
+		protected CRC32 initialValue() {
+			return new CRC32();
+		}
+	};
+
+	/** thread-singleton crc engine */
+	public static CRC32 getCRC() {
+		return crcProvider.get();
+	}
+
+	static final byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 }; // png magic
+
 	public static double resMetersToDpi(long res) {
 		return (double) res * 0.0254;
 	}
@@ -200,6 +201,11 @@ public class PngHelper {
 	public static int clampTo_0_255(int i) {
 		return i > 255 ? 255 : (i < 0 ? 0 : i);
 	}
+	
+	public static int clampTo_0_65535(int i) {
+		return i > 65535 ? 65535 : (i < 0 ? 0 : i);
+	}
+	
 
 	public static int clampTo_128_127(int x) {
 		return x > 127 ? 127 : (x < -128 ? -128 : x);

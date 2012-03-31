@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
-import ar.com.hjg.pngj.PngFilterType;
+import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.PngWriter;
 
 public class CreateHuge {
@@ -21,7 +21,7 @@ public class CreateHuge {
 	public static void createHuge(String filename, int cols, int rows) throws Exception {
 		OutputStream os = NULLSTREAM ? new NullOutputStream() : new FileOutputStream(new File(filename));
 		PngWriter png = new PngWriter(os, new ImageInfo(cols, rows, 8, false));
-		png.setFilterType(PngFilterType.FILTER_NONE);
+		png.setFilterType(FilterType.FILTER_NONE);
 		ImageLine iline1 = new ImageLine(png.imgInfo);
 		ImageLine iline2 = new ImageLine(png.imgInfo);
 		ImageLine iline = iline1;
