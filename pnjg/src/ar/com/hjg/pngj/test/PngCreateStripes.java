@@ -7,6 +7,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
 /**
  * grayscale image - distorted diagonal stripes
@@ -16,16 +17,18 @@ public class PngCreateStripes {
 	public static void makeTestImage(PngWriter png) {
 		int cols = png.imgInfo.cols;
 		int rows = png.imgInfo.rows;
+		png.getMetadata().setDpi(123.0);
+		png.getMetadata().setTimeNow(0);
+		png.getMetadata().setText(PngChunkTextVar.KEY_Software, "pngj test");
 		double t1 = (cols + rows) / 16.0; // typical period
 		ImageLine iline = new ImageLine(png.imgInfo);
-		iline.setRown(0);
 		for (int i = 0; i < rows; i++) {
 			double fase = Math.sin(1.3 * i / t1);
 			for (int j = 0; j < cols; j++) {
 				double sin = Math.sin((i + j) * Math.PI / t1 + fase);
 				iline.scanline[j] = PngHelper.clampTo_0_255((int) ((sin + 1) * 127 + 0.5));
 			}
-			png.writeRow(iline);
+			png.writeRow(iline,i);
 		}
 		png.end();
 	}

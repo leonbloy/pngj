@@ -1,6 +1,14 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.85  (1 April 2012)
+ - More robust Chunk management (ChunkGroup is now inside PngChunk; both PngReader and PngWriter have a ChunkList...)    
+ - PngMetadata: both  PngReader and PngWriter have an instance to deal with metadata (chunks) at high level. eg: setDpi()/getDpi 
+ - Added sPLT chunk
+ - The test of all testsuite images now copies all chunks ok.
+ - Deprecated Pngwrite.writeRow(ImageLine), use better Pngwrite.writeRow(ImageLine,rown)
+ - remove PngReader.foundChunksInfo 
+  
 Version 0.80  (28 March 2012)
  - Roll back auto increment of ImageLine rownumber at writing. Define some new PngWrite.writeLine() methods with slight change in semantics  
  - Fix bad chunk-id in PngChunkITXT

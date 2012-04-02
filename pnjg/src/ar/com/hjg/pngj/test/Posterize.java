@@ -57,7 +57,7 @@ public class Posterize {
 					floys.addErr(row, j, desired - newval);
 				l1.scanline[j] = newval;
 			}
-			pngw.writeRow(l1);
+			pngw.writeRow(l1,row);
 		}
 		pngr.end();
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALMOSTALL);

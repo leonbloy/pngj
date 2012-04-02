@@ -111,4 +111,28 @@ public class PngChunkSPLT extends PngChunk {
 		return palette.length / 5;
 	}
 
+	public String getPalName() {
+		return palName;
+	}
+
+	public void setPalName(String palName) {
+		this.palName = palName;
+	}
+
+	public int getSampledepth() {
+		return sampledepth;
+	}
+
+	public void setSampledepth(int sampledepth) {
+		this.sampledepth = sampledepth;
+	}
+
+	public int[] getPalette() {
+		return palette;
+	}
+
+	public void setPalette(int[] palette) {
+		this.palette = palette;
+	}
+
 }

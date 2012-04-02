@@ -26,8 +26,7 @@ public class PngReencode {
 				cLevel);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
-			// pngw.writeRow(l1.vals, row);
-			pngw.writeRow(l1);
+			pngw.writeRow(l1,row);
 		}
 		pngr.end();
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL);

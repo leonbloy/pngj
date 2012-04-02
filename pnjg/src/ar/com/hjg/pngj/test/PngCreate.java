@@ -25,7 +25,8 @@ public class PngCreate {
 		int channels = png.imgInfo.channels;
 		int valuesPerRow = png.imgInfo.samplesPerRow;
 		ImageLine iline = new ImageLine(png.imgInfo);
-		iline.setRown(0);
+		int linen = 0;
+		
 		ImageLineHelper.setValD(iline, 0, 1.0);
 		ImageLineHelper.setValD(iline, 1, 1.0); // primer columna amarilla
 		ImageLineHelper.setValD(iline, 2, 0.0);
@@ -41,7 +42,7 @@ public class PngCreate {
 		}
 		if (alpha)
 			addAlpha(iline);
-		png.writeRow(iline);
+		png.writeRow(iline,linen++);
 		iline.incRown();
 		for (int j = 1; j < cols - 1; j++) { // segunda fila: negra
 			ImageLineHelper.setValD(iline, j * channels, 0.0);
@@ -50,7 +51,7 @@ public class PngCreate {
 		}
 		if (alpha)
 			addAlpha(iline);
-		png.writeRow(iline);
+		png.writeRow(iline,linen++);
 		iline.incRown();
 		for (; iline.getRown() < rows; iline.incRown()) {
 			for (int j = 1; j < cols - 1; j++) {
@@ -61,7 +62,7 @@ public class PngCreate {
 			}
 			if (alpha)
 				addAlpha(iline);
-			png.writeRow(iline);
+			png.writeRow(iline,linen++);
 		}
 	}
 
@@ -109,8 +110,7 @@ public class PngCreate {
 		for (int j = 0; j < cols; j++)
 			ImageLineHelper.setPixelRGB8(iline, j, 0);
 		for (int row = 0; row < rows; row++) {
-			iline.setRown(row);
-			png.writeRow(iline);
+			png.writeRow(iline,row);
 		}
 		png.end();
 	}

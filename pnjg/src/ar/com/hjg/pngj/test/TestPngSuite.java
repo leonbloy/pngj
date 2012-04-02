@@ -23,7 +23,7 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
  * watch them in sequence
  * 
  */
-public class MirrorTest {
+public class TestPngSuite {
 	static final String outdir = "C:/temp/test";
 	private static boolean showInfo = false;
 
@@ -55,8 +55,7 @@ public class MirrorTest {
 				}
 			}
 			lout.tf_pack(line, false);
-			lout.setRown(l1.getRown());
-			pngw.writeRow(lout);
+			pngw.writeRow(lout,row);
 		}
 		pngr.end();
 		pngw.copyChunksLast(pngr, copyPolicy);

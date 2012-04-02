@@ -11,6 +11,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkList;
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
+import ar.com.hjg.pngj.chunks.PngMetadata;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 
@@ -47,11 +48,8 @@ public class PngReader {
 	 * All chunks loaded. Criticals are included, except that all IDAT chunks appearance are replaced by a single
 	 * dummy-marker IDAT chunk. These might be copied to the PngWriter
 	 */
-	protected ChunkList chunksList;
-	/**
-	 * FoundChunkInfo/foundChunksInfo : all chunks signatures, including not loaded - merely informative/debug
-	 */
-	private List<FoundChunkInfo> foundChunksInfo = new ArrayList<FoundChunkInfo>();
+	private final ChunkList chunksList;
+	private final PngMetadata metadata; // this a wrapper over chunks
 
 	/**
 	 * Constructs a PngReader from an InputStream.
@@ -68,6 +66,7 @@ public class PngReader {
 		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
 		this.is = inputStream;
 		this.chunksList = new ChunkList(null);
+		this.metadata = new PngMetadata(chunksList, true);
 		// reads header (magic bytes)
 		byte[] pngid = new byte[PngHelper.pngIdBytes.length];
 		PngHelper.readBytes(is, pngid, 0, pngid.length);
@@ -87,7 +86,6 @@ public class PngReader {
 		offset += 4;
 		ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
 		String chunkids = ChunkHelper.toString(chunkid);
-		foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, true));
 		offset += chunk.readChunkData(is);
 		PngChunkIHDR ihdr = (PngChunkIHDR) addChunkToList(chunk);
 		boolean alpha = (ihdr.getColormodel() & 0x04) != 0;
@@ -147,11 +145,17 @@ public class PngReader {
 	 * Reads chunks before first IDAT. Position before: after IDHR (crc included) Position after: just after the first
 	 * IDAT chunk id
 	 * 
-	 * This can be called explicitly before reading the rows. Normally it's not necesary
+	 * This can be called several times (tentatively), it does nothing if already run
+	 * 
+	 * (Note: when should this be called? in the constructor? hardly, because we loose the opportunity to call
+	 * setChunkLoadBehaviour() and perhaps other settings before reading the first row? but sometimes we want to access
+	 * some metadata (plte, phys) before. Because of this, this method can be called explicitly but is also called
+	 * implicititly in some methods (getMetatada(), getChunks())
+	 * 
 	 **/
 	public void readFirstChunks() {
-		if (currentChunkGroup >= ChunkList.CHUNK_GROUP_1_AFTERIDHR)
-			return; // already done
+		if (!firstChunksNotYetRead())
+			return;
 		int clen = 0;
 		boolean found = false;
 		byte[] chunkid = new byte[4]; // it's important to reallocate in each iteration
@@ -176,7 +180,6 @@ public class PngReader {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
 			String chunkids = ChunkHelper.toString(chunkid);
 			boolean loadchunk = ChunkHelper.shouldLoad(chunkids, chunkLoadBehaviour);
-			foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, loadchunk));
 			offset += chunk.readChunkData(is);
 			if (chunkids.equals(ChunkHelper.PLTE))
 				currentChunkGroup = ChunkList.CHUNK_GROUP_2_PLTE;
@@ -200,9 +203,6 @@ public class PngReader {
 		currentChunkGroup = ChunkList.CHUNK_GROUP_5_AFTERIDAT;
 		if (!iIdatCstream.isEnded())
 			iIdatCstream.forceChunkEnd();
-		// add chunks to list (just informational)
-		for (IdatChunkInfo idat : iIdatCstream.foundChunksInfo)
-			foundChunksInfo.add(new FoundChunkInfo(ChunkHelper.IDAT, idat.len, idat.offset, true));
 		int clen = iIdatCstream.getLenLastChunk();
 		byte[] chunkid = iIdatCstream.getIdLastChunk();
 		boolean endfound = false;
@@ -229,7 +229,6 @@ public class PngReader {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
 			String chunkids = ChunkHelper.toString(chunkid);
 			boolean loadchunk = ChunkHelper.shouldLoad(chunkids, chunkLoadBehaviour);
-			foundChunksInfo.add(new FoundChunkInfo(chunkids, clen, offset - 8, loadchunk));
 			offset += chunk.readChunkData(is);
 			if (loadchunk && !ignore) {
 				addChunkToList(chunk);
@@ -266,12 +265,12 @@ public class PngReader {
 	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
 	 */
 	public int[] readRow(int[] buffer, int nrow) {
-		if (currentChunkGroup < ChunkList.CHUNK_GROUP_4_IDAT)
-			readFirstChunks();
 		if (nrow < 0 || nrow >= imgInfo.rows)
 			throw new PngjInputException("invalid line");
 		if (nrow != rowNum + 1)
 			throw new PngjInputException("invalid line (expected: " + (rowNum + 1));
+		if (nrow == 0 && firstChunksNotYetRead())
+			readFirstChunks();
 		rowNum++;
 		if (buffer == null || buffer.length < imgInfo.samplesPerRowP)
 			buffer = new int[imgInfo.samplesPerRowP];
@@ -392,15 +391,20 @@ public class PngReader {
 		this.chunkLoadBehaviour = chunkLoadBehaviour;
 	}
 
+	public boolean firstChunksNotYetRead() {
+		return currentChunkGroup < ChunkList.CHUNK_GROUP_1_AFTERIDHR;
+	}
+
 	public ChunkList getChunksList() {
+		if (firstChunksNotYetRead())
+			readFirstChunks();
 		return chunksList;
 	}
 
-	/** Prints chunks list to stdio, only for debugging. */
-	public void printFoundChunks() {
-		for (FoundChunkInfo c : foundChunksInfo) {
-			System.out.println(c);
-		}
+	public PngMetadata getMetadata() {
+		if (firstChunksNotYetRead())
+			readFirstChunks();
+		return metadata;
 	}
 
 	public String toString() { // basic info

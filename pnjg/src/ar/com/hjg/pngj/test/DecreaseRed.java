@@ -25,7 +25,7 @@ public class DecreaseRed {
 			ImageLine l1 = pngr.readRow(row);
 			for (int j = 0; j < pngr.imgInfo.cols; j++)
 				l1.scanline[j * channels] /= 2;
-			pngw.writeRow(l1);
+			pngw.writeRow(l1,row);
 		}
 		pngr.end();
 		// just in case some new metadata has been read

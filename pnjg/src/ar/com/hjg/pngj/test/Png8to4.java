@@ -32,7 +32,7 @@ public class Png8to4 {
 			ImageLine l1 = png1.readRow(row);
 			l2.tf_pack(l1.scanline, false);
 			l2.setRown(row);
-			png2.writeRow(l2);
+			png2.writeRow(l2,row);
 		}
 		png1.end();
 		png2.copyChunksLast(png1, ChunkCopyBehaviour.COPY_ALL);
@@ -51,7 +51,7 @@ public class Png8to4 {
 			ImageLine l1 = png1.readRow(row);
 			l1.tf_unpack(l2.scanline, false);
 			l2.setRown(row);
-			png2.writeRow(l2);
+			png2.writeRow(l2,row);
 		}
 		png1.end();
 		png2.copyChunksLast(png1, ChunkCopyBehaviour.COPY_ALL);

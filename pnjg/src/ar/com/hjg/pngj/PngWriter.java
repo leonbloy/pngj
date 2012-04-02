@@ -10,6 +10,7 @@ import java.util.zip.DeflaterOutputStream;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkList;
+import ar.com.hjg.pngj.chunks.PngMetadata;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
@@ -41,7 +42,8 @@ public class PngWriter {
 	private PngIDatChunkOutputStream datStream;
 	private DeflaterOutputStream datStreamDeflated;
 
-	public ChunkList chunks;
+	private final ChunkList chunkList;
+	private final PngMetadata metadata; // high level wrapper over chunkList
 
 	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
 		this(outputStream, imgInfo, "[NO FILENAME AVAILABLE]");
@@ -69,7 +71,8 @@ public class PngWriter {
 		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
 		datStream = new PngIDatChunkOutputStream(this.os);
-		chunks = new ChunkList(imgInfo);
+		chunkList = new ChunkList(imgInfo);
+		metadata = new PngMetadata(chunkList, false);
 		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT);
 	}
 
@@ -107,23 +110,23 @@ public class PngWriter {
 	private void writeFirstChunks() {
 		int nw = 0;
 		currentChunkGroup = ChunkList.CHUNK_GROUP_1_AFTERIDHR;
-		nw = chunks.writeChunks(os, currentChunkGroup);
+		nw = chunkList.writeChunks(os, currentChunkGroup);
 		currentChunkGroup = ChunkList.CHUNK_GROUP_2_PLTE;
-		nw = chunks.writeChunks(os, currentChunkGroup);
+		nw = chunkList.writeChunks(os, currentChunkGroup);
 		if (nw > 0 && imgInfo.greyscale)
 			throw new PngjOutputException("cannot write palette for this format");
 		if (nw == 0 && imgInfo.indexed)
 			throw new PngjOutputException("missing palette");
 		currentChunkGroup = ChunkList.CHUNK_GROUP_3_AFTERPLTE;
-		nw = chunks.writeChunks(os, currentChunkGroup);
+		nw = chunkList.writeChunks(os, currentChunkGroup);
 		currentChunkGroup = ChunkList.CHUNK_GROUP_4_IDAT;
 	}
 
 	private void writeLastChunks() { // not including end
 		currentChunkGroup = ChunkList.CHUNK_GROUP_5_AFTERIDAT;
-		chunks.writeChunks(os, currentChunkGroup);
+		chunkList.writeChunks(os, currentChunkGroup);
 		// should not be unwriten chunks
-		List<PngChunk> pending = chunks.getQueuedChunks();
+		List<PngChunk> pending = chunkList.getQueuedChunks();
 		if (!pending.isEmpty())
 			throw new PngjOutputException(pending.size() + " chunks were not written! Eg: " + pending.get(0).toString());
 		currentChunkGroup = ChunkList.CHUNK_GROUP_6_END;
@@ -190,6 +193,8 @@ public class PngWriter {
 	/**
 	 * Writes line, checks that the row number is consistent with that of the ImageLine See writeRow(int[] newrow, int
 	 * rown)
+	 * 
+	 * @deprecated Better use writeRow(ImageLine imgline, int rownumber)
 	 */
 	public void writeRow(ImageLine imgline) {
 		writeRow(imgline.scanline, imgline.getRown());
@@ -376,7 +381,7 @@ public class PngWriter {
 	 */
 	private void copyChunks(PngReader reader, int copy_mask, boolean onlyAfterIdat) {
 		boolean idatDone = currentChunkGroup >= ChunkList.CHUNK_GROUP_4_IDAT;
-		for (PngChunk chunk : reader.chunksList.getChunks()) {
+		for (PngChunk chunk : reader.getChunksList().getChunks()) {
 			int group = chunk.getChunkGroup();
 			if (group < ChunkList.CHUNK_GROUP_4_IDAT && idatDone)
 				continue;
@@ -409,7 +414,7 @@ public class PngWriter {
 					copy = true;
 			}
 			if (copy) {
-				chunks.queueChunk(PngChunk.cloneChunk(chunk, imgInfo), !chunk.allowsMultiple(), false);
+				chunkList.queueChunk(PngChunk.cloneChunk(chunk, imgInfo), !chunk.allowsMultiple(), false);
 			}
 		}
 	}
@@ -426,7 +431,6 @@ public class PngWriter {
 	 *            : Mask bit (OR), see <code>ChunksToWrite.COPY_XXX</code> constants
 	 */
 	public void copyChunksFirst(PngReader reader, int copy_mask) {
-		reader.readFirstChunks();
 		copyChunks(reader, copy_mask, false);
 	}
 
@@ -444,6 +448,14 @@ public class PngWriter {
 	 */
 	public void copyChunksLast(PngReader reader, int copy_mask) {
 		copyChunks(reader, copy_mask, true);
+	}
+
+	public ChunkList getChunkList() {
+		return chunkList;
+	}
+
+	public PngMetadata getMetadata() {
+		return metadata;
 	}
 
 }

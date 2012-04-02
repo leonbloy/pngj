@@ -32,8 +32,7 @@ public class CreateHuge {
 		long t0 = System.currentTimeMillis();
 		for (int row = 0; row < rows; row++) {
 			iline = row % 4 == 0 ? iline2 : iline1;
-			iline.setRown(row);
-			png.writeRow(iline);
+			png.writeRow(iline,row);
 		}
 		png.end();
 		long t1 = System.currentTimeMillis();

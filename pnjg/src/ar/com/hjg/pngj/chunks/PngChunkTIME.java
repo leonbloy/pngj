@@ -60,6 +60,14 @@ public class PngChunkTIME extends PngChunk {
 		sec = d.get(Calendar.SECOND);
 	}
 
+	public void setYMDHMS(int yearx, int monx, int dayx, int hourx, int minx, int secx) {
+		year = yearx;
+		mon = monx;
+		day = dayx;
+		hour = hourx;
+		min = minx;
+		sec = secx;
+	}
 	public int[] getYMDHMS() {
 		return new int[] { year, mon, day, hour, min, sec };
 	}
@@ -69,13 +77,6 @@ public class PngChunkTIME extends PngChunk {
 		return String.format("%04/%02d/%02d %02d:%02d:%02d", year, mon, day, hour, min, sec);
 	}
 
-	public void setYMDHMS(int yearx, int monx, int dayx, int hourx, int minx, int secx) {
-		year = yearx;
-		mon = monx;
-		day = dayx;
-		hour = hourx;
-		min = minx;
-		sec = secx;
-	}
+	
 
 }

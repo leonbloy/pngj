@@ -21,7 +21,6 @@ public class ShowGralInfo {
 		}
 		pngr.end();
 		System.out.println(pngr.toString());
-		pngr.printFoundChunks();
 		if (includeChunksSkel)
 			System.out.println(pngr.getChunksList().toStringFull());
 	}

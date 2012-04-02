@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.Set;
 
 import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.PngjException;
 
 /**
  * All chunks that form an image, read or to be written
@@ -64,7 +65,7 @@ public class ChunkList {
 	/**
 	 * Remove Chunk: only from queued
 	 */
-	public boolean remove(PngChunk c) {
+	public boolean removeChunk(PngChunk c) {
 		return queuedChunks.remove(c);
 	}
 
@@ -76,7 +77,7 @@ public class ChunkList {
 		if (replace) {
 			List<PngChunk> current = getById(chunk.id, true, false);
 			for (PngChunk chunk2 : current)
-				remove(chunk2);
+				removeChunk(chunk2);
 		}
 		queuedChunks.add(chunk);
 	}
@@ -150,6 +151,110 @@ public class ChunkList {
 		return new ArrayList<PngChunk>(queuedChunks);
 	}
 
+	/**
+	 * behaviour:
+	 * 
+	 * a chunk already processed matches : exception a chunk queued matches and overwrite=true: replace it , return true
+	 * a chunk queued matches and overwrite=false: do nothing, return false no matching: set it, return true
+	 * 
+	 * @param c
+	 * @param overwriteIfPresent
+	 * @return
+	 */
+	public boolean setChunk(PngChunk c, boolean overwriteIfPresent) {
+		List<PngChunk> list = getMatching(c, false, true); // processed
+		if (!list.isEmpty())
+			throw new PngjException("chunk " + c.id + " already set ");
+		list = getMatching(c, true, false); // queued
+		if (!list.isEmpty()) {
+			if (overwriteIfPresent) {
+				for (PngChunk cx : list)
+					removeChunk(cx);
+				queueChunk(c, false, false);
+				return true;
+			}
+			return false;
+		}
+		queueChunk(c, false, false);
+		return true;
+	}
+
+	/**
+	 * returns only one chunk or null if nothing found - does not include queued
+	 * 
+	 * If innerid!=null , the chunk is assumed to be PngChunkTextVar or PngChunkSPLT, and filtered by that id
+	 * 
+	 * If more than one chunk (after filtering by inner id) is found, then an exception is thrown (failifMultiple=true)
+	 * or the last one is returned (failifMultiple=false)
+	 **/
+	public PngChunk getChunk1(String id, String innerid, boolean failIfMultiple) {
+		List<PngChunk> list = getChunks(id);
+		if (list.isEmpty())
+			return null;
+		if (innerid != null) {
+			List<PngChunk> list2 = new ArrayList<PngChunk>();
+			for (PngChunk c : list) {
+				if (c instanceof PngChunkTextVar)
+					if (((PngChunkTextVar) c).getKey().equals(innerid))
+						list2.add(c);
+				if (c instanceof PngChunkSPLT)
+					if (((PngChunkSPLT) c).getPalName().equals(innerid))
+						list2.add(c);
+			}
+			list = list2;
+		}
+		if (list.isEmpty())
+			return null;
+		if (list.size() > 1 && failIfMultiple)
+			throw new PngjException("unexpected multiple chunks id=" + id);
+		return list.get(list.size() - 1);
+	}
+
+	public PngChunk getChunk1(String id) {
+		return getChunk1(id, null, true);
+	}
+	
+	public List<PngChunk> getChunks(String id) { // not including queued
+		return getById(id, false, true);
+	}
+
+	private List<PngChunk> getMatching(PngChunk cnew, boolean includeQueued, boolean includeProcessed) {
+		List<PngChunk> list = new ArrayList<PngChunk>();
+		if (includeQueued)
+			for (PngChunk c : getQueuedChunks())
+				if (matches(cnew, c))
+					list.add(c);
+		if (includeProcessed)
+			for (PngChunk c : getChunks())
+				if (matches(cnew, c))
+					list.add(c);
+		return list;
+	}
+
+	/**
+	 * MY adhoc criteria: two chunks "match" if they have same id and (perhaps, if multiple are allowed) if the match
+	 * also in some "internal key" (eg: key for string values, palette for sPLT, etc)
+	 * 
+	 * @return
+	 */
+	public static boolean matches(PngChunk c2, PngChunk c1) {
+		if (c1 == null || c2 == null || !c1.id.equals(c2.id))
+			return false;
+		// same id
+		if (c1.getClass() != c2.getClass())
+			return false; // should not happen
+		if (!c2.allowsMultiple())
+			return true;
+		if (c1 instanceof PngChunkTextVar) {
+			return ((PngChunkTextVar) c1).getKey().equals(((PngChunkTextVar) c2).getKey());
+		}
+		if (c1 instanceof PngChunkSPLT) {
+			return ((PngChunkSPLT) c1).getPalName().equals(((PngChunkSPLT) c2).getPalName());
+		}
+		// unknown chunks that allow multiple? consider they don't match
+		return false;
+	}
+	
 	public String toString() {
 		return "ChunkList: processed: " + chunks.size() + " queue: " + queuedChunks.size();
 	}

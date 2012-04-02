@@ -34,8 +34,8 @@ public class ImageLine {
 	public final int[] scanline; // see explanation above!!
 
 	protected FilterType filterUsed; // informational ; only filled by the reader
-	protected final int channels; // copied from imgInfo, more handy
-	protected final int bitDepth; // copied from imgInfo, more handy
+	public final int channels; // copied from imgInfo, more handy
+	public final int bitDepth; // copied from imgInfo, more handy
 
 	public ImageLine(ImageInfo imgInfo) {
 		this.imgInfo = imgInfo;
