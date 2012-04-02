@@ -337,6 +337,13 @@ public class PngWriter {
 	// /// several getters / setters - all this setters are optional
 
 	/**
+	 * Filename or description, from the optional constructor argument.
+	 */
+	public String getFilename() {
+		return filename;
+	}
+
+	/**
 	 * Sets internal prediction filter type, or strategy to choose it.
 	 * <p>
 	 * This must be called just after constructor, before starting writing.
@@ -365,13 +372,6 @@ public class PngWriter {
 		if (compLevel < 0 || compLevel > 9)
 			throw new PngjException("Compression level invalid (" + compLevel + ") Must be 0..9");
 		this.compLevel = compLevel;
-	}
-
-	/**
-	 * Filename or description, from the optional constructor argument.
-	 */
-	public String getFilename() {
-		return filename;
 	}
 
 	/**

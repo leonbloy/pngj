@@ -1,9 +1,9 @@
 package ar.com.hjg.pngj.chunks;
 
 /**
- * chunk copy policy to apply when copyng from a pngReader to a pngWriter http://www.w3.org/TR/PNG/#14Ordering
- * 
- * these are masks, can be OR-ed
+ * Chunk copy policy to apply when copyng from a pngReader to a pngWriter http://www.w3.org/TR/PNG/#14
+ * <p>
+ * These are masks, can be OR-ed
  **/
 public class ChunkCopyBehaviour {
 

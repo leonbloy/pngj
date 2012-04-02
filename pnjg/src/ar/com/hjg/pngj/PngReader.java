@@ -391,7 +391,7 @@ public class PngReader {
 		this.chunkLoadBehaviour = chunkLoadBehaviour;
 	}
 
-	public boolean firstChunksNotYetRead() {
+	private boolean firstChunksNotYetRead() {
 		return currentChunkGroup < ChunkList.CHUNK_GROUP_1_AFTERIDHR;
 	}
 

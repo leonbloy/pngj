@@ -159,7 +159,7 @@ public class ChunkList {
 	 * 
 	 * @param c
 	 * @param overwriteIfPresent
-	 * @return
+	 * @return true if added chunk
 	 */
 	public boolean setChunk(PngChunk c, boolean overwriteIfPresent) {
 		List<PngChunk> list = getMatching(c, false, true); // processed
@@ -235,7 +235,7 @@ public class ChunkList {
 	 * MY adhoc criteria: two chunks "match" if they have same id and (perhaps, if multiple are allowed) if the match
 	 * also in some "internal key" (eg: key for string values, palette for sPLT, etc)
 	 * 
-	 * @return
+	 * @return true if "matches"
 	 */
 	public static boolean matches(PngChunk c2, PngChunk c1) {
 		if (c1 == null || c2 == null || !c1.id.equals(c2.id))

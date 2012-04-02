@@ -61,10 +61,7 @@ public class ChunkHelper {
 	}
 
 	/**
-	 * This just means that our chunk factory (even when it has been augmented by client code) did not recognize its id
-	 * 
-	 * @param c
-	 * @return
+	 * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize its id
 	 */
 	public static boolean isUnknown(PngChunk c) {
 		return c instanceof PngChunkUNKNOWN;

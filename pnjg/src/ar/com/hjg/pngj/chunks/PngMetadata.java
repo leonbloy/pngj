@@ -14,33 +14,53 @@ import ar.com.hjg.pngj.PngjException;
  * 
  */
 public class PngMetadata {
-	private final ChunkList chunks;
+	private final ChunkList chunkList;
 	private final boolean readonly;
 
 	public PngMetadata(ChunkList chunks, boolean readonly) {
-		this.chunks = chunks;
+		this.chunkList = chunks;
 		this.readonly = readonly;
 	}
 
+	/**
+	 * Queues the chunk at the writer
+	 */
 	public boolean setChunk(PngChunk c, boolean overwriteIfPresent) {
 		if (readonly)
 			throw new PngjException("cannot set chunk : readonly metadata");
-		return chunks.setChunk(c, overwriteIfPresent);
+		return chunkList.setChunk(c, overwriteIfPresent);
 	}
 
-	public PngChunk getChunk1(String id) {
-		return chunks.getChunk1(id);
-	}
-
+	
+	/**
+	 * Returns only one chunk or null if nothing found - does not include queued chunks
+	 *
+	 * If more than one chunk (after filtering by inner id) is found, then an exception is thrown (failifMultiple=true)
+	 * or the last one is returned (failifMultiple=false)
+	 * 
+	 * @param id Chunk id
+	 * @param innerid if not null, the chunk is assumed to be PngChunkTextVar or PngChunkSPLT, and filtered by that 'internal id'
+	 * @param failIfMultiple throw exception if more that one
+	 * @return chunk (not cloned)
+	 */
 	public PngChunk getChunk1(String id, String innerid, boolean failIfMultiple) {
-		return chunks.getChunk1(id, innerid, failIfMultiple);
+		return chunkList.getChunk1(id, innerid, failIfMultiple);
+	}
+
+	/**
+	 *  Same as  getChunk1(id,  innerid=null, failIfMultiple=true);
+	 */
+	public PngChunk getChunk1(String id) {
+		return chunkList.getChunk1(id);
 	}
 
 	// ///// high level utility methods follow ////////////
 
 	// //////////// DPI
 
-	/** returns -1 if not found or dimension unknown */
+	/** 
+	 * returns -1 if not found or dimension unknown 
+	 **/
 	public double[] getDpi() {
 		PngChunk c = getChunk1(ChunkHelper.pHYs, null, true);
 		if (c == null)
@@ -54,7 +74,7 @@ public class PngMetadata {
 	}
 
 	public void setDpi(double x, double y) {
-		PngChunkPHYS c = new PngChunkPHYS(chunks.imageInfo);
+		PngChunkPHYS c = new PngChunkPHYS(chunkList.imageInfo);
 		c.setAsDpi2(x, y);
 		setChunk(c, true);
 	}
@@ -62,13 +82,13 @@ public class PngMetadata {
 	// //////////// TIME
 
 	public void setTimeNow(int secsAgo) {
-		PngChunkTIME c = new PngChunkTIME(chunks.imageInfo);
+		PngChunkTIME c = new PngChunkTIME(chunkList.imageInfo);
 		c.setNow(secsAgo);
 		setChunk(c, true);
 	}
 
 	public void setTimeYMDHMS(int yearx, int monx, int dayx, int hourx, int minx, int secx) {
-		PngChunkTIME c = new PngChunkTIME(chunks.imageInfo);
+		PngChunkTIME c = new PngChunkTIME(chunkList.imageInfo);
 		c.setYMDHMS(yearx, monx, dayx, hourx, minx, secx);
 		setChunk(c, true);
 	}
@@ -86,12 +106,12 @@ public class PngMetadata {
 		PngChunkTextVar c;
 		if (useLatin1) {
 			if (compress) {
-				c = new PngChunkZTXT(chunks.imageInfo);
+				c = new PngChunkZTXT(chunkList.imageInfo);
 			} else {
-				c = new PngChunkTEXT(chunks.imageInfo);
+				c = new PngChunkTEXT(chunkList.imageInfo);
 			}
 		} else {
-			c = new PngChunkITXT(chunks.imageInfo);
+			c = new PngChunkITXT(chunkList.imageInfo);
 			((PngChunkITXT) c).setLangtag(k); // we use the same orig tag (this is not quite right)
 		}
 		c.setKeyVal(k, val);
