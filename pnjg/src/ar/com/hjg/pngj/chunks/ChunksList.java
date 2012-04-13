@@ -55,6 +55,27 @@ public class ChunksList {
 		return new ArrayList<PngChunk>(chunks);
 	}
 
+	protected static List<PngChunk> getXById(final List<PngChunk> list,final String id, final String innerid) {
+		if (innerid == null)
+			return ChunkHelper.filterList(list, new ChunkPredicate() {
+				public boolean match(PngChunk c) {
+					return c.id.equals(id);
+				}
+			});
+		else
+			return ChunkHelper.filterList(list, new ChunkPredicate() {
+				public boolean match(PngChunk c) {
+					if (c.id != id)
+						return false;
+					if (c instanceof PngChunkTextVar && !((PngChunkTextVar) c).getKey().equals(innerid))
+						return false;
+					if (c instanceof PngChunkSPLT && !((PngChunkSPLT) c).getPalName().equals(innerid))
+						return false;
+					return true;
+				}
+			});
+	}
+	
 	/**
 	 * Adds chunk in next position. This is used onyl by the pngReader
 	 */
@@ -66,29 +87,14 @@ public class ChunksList {
 	public List<? extends PngChunk> getById(final String id) {
 		return getById(id, null);
 	}
+	
+	
 
 	/**
 	 * If innerid!=null and the chunk is PngChunkTextVar or PngChunkSPLT, it's filtered by that id
 	 */
 	public List<? extends PngChunk> getById(final String id, final String innerid) {
-		if (innerid == null)
-			return ChunkHelper.filterList(chunks, new ChunkPredicate() {
-				public boolean match(PngChunk c) {
-					return c.id.equals(id);
-				}
-			});
-		else
-			return ChunkHelper.filterList(chunks, new ChunkPredicate() {
-				public boolean match(PngChunk c) {
-					if (c.id != id)
-						return false;
-					if (c instanceof PngChunkTextVar && !((PngChunkTextVar) c).getKey().equals(innerid))
-						return false;
-					if (c instanceof PngChunkSPLT && !((PngChunkSPLT) c).getPalName().equals(innerid))
-						return false;
-					return true;
-				}
-			});
+		return getXById(chunks, id, innerid);
 	}
 
 	/**

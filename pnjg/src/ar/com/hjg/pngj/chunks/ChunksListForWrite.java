@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.PngjOutputException;
 
 public class ChunksListForWrite extends ChunksList {
@@ -23,6 +24,46 @@ public class ChunksListForWrite extends ChunksList {
 		super(imfinfo);
 	}
 
+	/**
+	 * Same as getById(), but looking in the queued chunks
+	 */
+	public List<? extends PngChunk> getQueuedById(final String id) {
+		return getQueuedById(id, null);
+	}
+
+	/**
+	 * Same as getById(), but looking in the queued chunks
+	 */
+	public List<? extends PngChunk> getQueuedById(final String id, final String innerid) {
+		return getXById(queuedChunks, id, innerid);	}
+
+	/**
+	 * Same as getById1(), but looking in the queued chunks
+	 **/
+	public PngChunk getQueuedById1(final String id, final String innerid, final boolean failIfMultiple) {
+		List<? extends PngChunk> list = getQueuedById(id, innerid);
+		if (list.isEmpty())
+			return null;
+		if (list.size() > 1 && (failIfMultiple || !list.get(0).allowsMultiple()))
+			throw new PngjException("unexpected multiple chunks id=" + id);
+		return list.get(list.size() - 1);
+	}
+
+	/**
+	 * Same as getById1(), but looking in the queued chunks
+	 **/
+	public PngChunk getQueuedById1(final String id, final boolean failIfMultiple) {
+		return getQueuedById1(id, null, failIfMultiple);
+	}
+
+	/**
+	 * Same as getById1(), but looking in the queued chunks
+	 **/
+	public PngChunk getQueuedById1(final String id) {
+		return getQueuedById1(id, false);
+	}
+
+	
 	/**
 	 * Remove Chunk: only from queued
 	 * 
