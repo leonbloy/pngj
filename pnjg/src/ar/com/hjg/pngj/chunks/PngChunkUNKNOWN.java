@@ -2,17 +2,12 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 
-public class PngChunkUNKNOWN extends PngChunk { // unkown, custom or not
+public class PngChunkUNKNOWN extends PngChunkMultiple { // unkown, custom or not
 
 	private byte[] data;
 
 	public PngChunkUNKNOWN(String id, ImageInfo info) {
 		super(id, info);
-	}
-
-	@Override
-	public boolean allowsMultiple() {
-		return true;
 	}
 
 	private PngChunkUNKNOWN(PngChunkUNKNOWN c, ImageInfo info) {
@@ -21,14 +16,19 @@ public class PngChunkUNKNOWN extends PngChunk { // unkown, custom or not
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.NONE;
+	}
+
+	@Override
+	public ChunkRaw createRawChunk() {
 		ChunkRaw p = createEmptyChunk(data.length, false);
 		p.data = this.data;
 		return p;
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		data = c.data;
 	}
 

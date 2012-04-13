@@ -9,7 +9,7 @@ public class PngChunkTEXT extends PngChunkTextVar {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		if (val.isEmpty() || key.isEmpty())
 			return null;
 		byte[] b = (key + "\0" + val).getBytes(PngHelper.charsetLatin1);
@@ -19,7 +19,7 @@ public class PngChunkTEXT extends PngChunkTextVar {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		String[] k = (new String(c.data, PngHelper.charsetLatin1)).split("\0");
 		key = k[0];
 		val = k[1];

@@ -9,7 +9,7 @@ import ar.com.hjg.pngj.PngjException;
 /**
  * this is a special chunk!
  */
-public class PngChunkIHDR extends PngChunk {
+public class PngChunkIHDR extends PngChunkSingle {
 	private int cols;
 	private int rows;
 	private int bitspc;
@@ -25,7 +25,12 @@ public class PngChunkIHDR extends PngChunk {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.NA;
+	}
+
+	@Override
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = new ChunkRaw(13, ChunkHelper.b_IHDR, true);
 		int offset = 0;
 		PngHelper.writeInt4tobytes(cols, c.data, offset);
@@ -41,7 +46,7 @@ public class PngChunkIHDR extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		if (c.len != 13)
 			throw new PngjException("Bad IDHR len " + c.len);
 		ByteArrayInputStream st = c.getAsByteStream();

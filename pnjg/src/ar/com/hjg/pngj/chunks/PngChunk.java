@@ -8,17 +8,45 @@ import java.util.Map;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
-// see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
+/**
+ * Represents a PNG chunk
+ * 
+ * see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
+ * 
+ * <p>
+ * Notes for extending classes: <br>
+ * -
+ * 
+ * @author Hernan J Gonzalez
+ * 
+ */
 public abstract class PngChunk {
 
 	public final String id; // 4 letters
-	public final boolean crit, pub, safe;
-	private int lenori = -1; // merely informational, for read chunks
-
-	private boolean writePriority = false; // for queued chunks
 	protected final ImageInfo imgInfo;
+	public final boolean crit, pub, safe; // autocomputed
 
+	public enum ChunkOrderingConstraint {
+		NONE, BEFORE_PLTE_AND_IDAT, AFTER_PLTE_BEFORE_IDAT, BEFORE_IDAT, NA;
+		public boolean mustGoBeforePLTE() {
+			return this == BEFORE_PLTE_AND_IDAT;
+		}
+
+		public boolean mustGoBeforeIDAT() {
+			return this == BEFORE_IDAT || this == BEFORE_PLTE_AND_IDAT || this == AFTER_PLTE_BEFORE_IDAT;
+		}
+
+		public boolean mustGoAfterPLTE() {
+			return this == AFTER_PLTE_BEFORE_IDAT;
+		}
+	}
+
+	/**
+	 * For writing. Queued chunks with high prioirty will be written as soon as possible
+	 */
+	private boolean writePriority = false;
 	private int chunkGroup = -1; // chunk group where it was read or writen
+	private int lenori = -1; // merely informational, for read chunks
 
 	/**
 	 * This static map defines which PngChunk class correspond to which ChunkID The client can add other chunks to this
@@ -46,6 +74,10 @@ public abstract class PngChunk {
 		factoryMap.put(ChunkHelper.sPLT, PngChunkSPLT.class);
 	}
 
+	static boolean isKnown(String id) {
+		return factoryMap.containsKey(id);
+	}
+
 	protected PngChunk(String id, ImageInfo imgInfo) {
 		this.id = id;
 		this.imgInfo = imgInfo;
@@ -54,26 +86,10 @@ public abstract class PngChunk {
 		this.safe = ChunkHelper.isSafeToCopy(id);
 	}
 
-	public abstract ChunkRaw createChunk();
-
-	public abstract void parseFromChunk(ChunkRaw c);
-
-	// override to make deep copy from read data to write
-	public abstract void cloneDataFromRead(PngChunk other);
-
-	@SuppressWarnings("unchecked")
-	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
-		PngChunk cn = factoryFromId(chunk.id, info);
-		if (cn.getClass() != chunk.getClass())
-			throw new PngjException("bad class cloning chunk: " + cn.getClass() + " " + chunk.getClass());
-		cn.cloneDataFromRead(chunk);
-		return (T) cn;
-	}
-
 	public static PngChunk factory(ChunkRaw chunk, ImageInfo info) {
 		PngChunk c = factoryFromId(ChunkHelper.toString(chunk.idbytes), info);
 		c.lenori = chunk.len;
-		c.parseFromChunk(chunk);
+		c.parseFromRaw(chunk);
 		return c;
 	}
 
@@ -103,41 +119,21 @@ public abstract class PngChunk {
 		return "chunk id= " + id + " (" + lenori + ") c=" + getClass().getSimpleName();
 	}
 
+	@SuppressWarnings("unchecked")
+	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
+		PngChunk cn = factoryFromId(chunk.id, info);
+		if (cn.getClass() != chunk.getClass())
+			throw new PngjException("bad class cloning chunk: " + cn.getClass() + " " + chunk.getClass());
+		cn.cloneDataFromRead(chunk);
+		return (T) cn;
+	}
+
 	void setPriority(boolean highPrioriy) {
 		writePriority = highPrioriy;
 	}
 
-	void write(OutputStream os) {
-		ChunkRaw c = createChunk();
-		if (c == null)
-			throw new PngjException("null chunk ! creation failed for " + this);
-		c.writeChunk(os);
-	}
-
-	public boolean isWritePriority() {
+	boolean hasPriority() {
 		return writePriority;
-	}
-
-	/** must be overriden - only relevant for ancillary chunks */
-	public boolean allowsMultiple() {
-		return false; // override if allows multiple ocurrences
-	}
-
-	/** mustGoBeforeXX/After must be overriden - only relevant for ancillary chunks */
-	public boolean mustGoBeforeIDAT() {
-		return false;
-	}
-
-	public boolean mustGoBeforePLTE() {
-		return false;
-	}
-
-	public boolean mustGoAfterPLTE() {
-		return false;
-	}
-
-	static boolean isKnown(String id) {
-		return factoryMap.containsKey(id);
 	}
 
 	public int getChunkGroup() {
@@ -147,5 +143,39 @@ public abstract class PngChunk {
 	public void setChunkGroup(int chunkGroup) {
 		this.chunkGroup = chunkGroup;
 	}
+
+	void write(OutputStream os) {
+		ChunkRaw c = createRawChunk();
+		if (c == null)
+			throw new PngjException("null chunk ! creation failed for " + this);
+		c.writeChunk(os);
+	}
+
+	/**
+	 * Creates the phsyical chunk. This is uses when writing and must be implemented for each chunk type
+	 * 
+	 * @return
+	 */
+	public abstract ChunkRaw createRawChunk();
+
+	/**
+	 * Fill inside data from raw chunk. This is uses when reading and must be implemented for each chunk type
+	 */
+	public abstract void parseFromRaw(ChunkRaw c);
+
+	/**
+	 * Makes a copy of the chunk
+	 * 
+	 * This is used when copying chunks from a reader to a writer
+	 * 
+	 * It should normally be a deep copy, and after the cloning this.equals(other) should return true
+	 */
+	public abstract void cloneDataFromRead(PngChunk other);
+
+	/** must be overriden - only relevant for ancillary chunks */
+	public abstract boolean allowsMultiple();
+
+	/** mustGoBeforeXX/After must be overriden - only relevant for ancillary chunks */
+	public abstract ChunkOrderingConstraint getOrderingConstraint();
 
 }

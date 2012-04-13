@@ -1,19 +1,16 @@
 package ar.com.hjg.pngj;
 
 import java.io.InputStream;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 import java.util.zip.InflaterInputStream;
 
-import ar.com.hjg.pngj.PngIDatChunkInputStream.IdatChunkInfo;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
-import ar.com.hjg.pngj.chunks.ChunkList;
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
-import ar.com.hjg.pngj.chunks.PngMetadata;
+import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
+import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
  * Reads a PNG image, line by line
@@ -48,7 +45,7 @@ public class PngReader {
 	 * All chunks loaded. Criticals are included, except that all IDAT chunks appearance are replaced by a single
 	 * dummy-marker IDAT chunk. These might be copied to the PngWriter
 	 */
-	private final ChunkList chunksList;
+	private final ChunksList chunksList;
 	private final PngMetadata metadata; // this a wrapper over chunks
 
 	/**
@@ -65,8 +62,8 @@ public class PngReader {
 	public PngReader(InputStream inputStream, String filenameOrDescription) {
 		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
 		this.is = inputStream;
-		this.chunksList = new ChunkList(null);
-		this.metadata = new PngMetadata(chunksList, true);
+		this.chunksList = new ChunksList(null);
+		this.metadata = new PngMetadata(chunksList);
 		// reads header (magic bytes)
 		byte[] pngid = new byte[PngHelper.pngIdBytes.length];
 		PngHelper.readBytes(is, pngid, 0, pngid.length);
@@ -74,7 +71,7 @@ public class PngReader {
 		if (!Arrays.equals(pngid, PngHelper.pngIdBytes))
 			throw new PngjInputException("Bad PNG signature");
 		// reads first chunk
-		currentChunkGroup = ChunkList.CHUNK_GROUP_0_IDHR;
+		currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
 		int clen = PngHelper.readInt4(is);
 		offset += 4;
 		if (clen != 13)
@@ -159,7 +156,7 @@ public class PngReader {
 		int clen = 0;
 		boolean found = false;
 		byte[] chunkid = new byte[4]; // it's important to reallocate in each iteration
-		currentChunkGroup = ChunkList.CHUNK_GROUP_1_AFTERIDHR;
+		currentChunkGroup = ChunksList.CHUNK_GROUP_1_AFTERIDHR;
 		while (!found) {
 			clen = PngHelper.readInt4(is);
 			offset += 4;
@@ -169,7 +166,7 @@ public class PngReader {
 			offset += 4;
 			if (Arrays.equals(chunkid, ChunkHelper.b_IDAT)) {
 				found = true;
-				currentChunkGroup = ChunkList.CHUNK_GROUP_4_IDAT;
+				currentChunkGroup = ChunksList.CHUNK_GROUP_4_IDAT;
 				// add dummy idat chunk to list
 				ChunkRaw chunk = new ChunkRaw(0, chunkid, false);
 				addChunkToList(chunk);
@@ -182,11 +179,11 @@ public class PngReader {
 			boolean loadchunk = ChunkHelper.shouldLoad(chunkids, chunkLoadBehaviour);
 			offset += chunk.readChunkData(is);
 			if (chunkids.equals(ChunkHelper.PLTE))
-				currentChunkGroup = ChunkList.CHUNK_GROUP_2_PLTE;
+				currentChunkGroup = ChunksList.CHUNK_GROUP_2_PLTE;
 			if (loadchunk)
 				addChunkToList(chunk);
 			if (chunkids.equals(ChunkHelper.PLTE))
-				currentChunkGroup = ChunkList.CHUNK_GROUP_3_AFTERPLTE;
+				currentChunkGroup = ChunksList.CHUNK_GROUP_3_AFTERPLTE;
 		}
 		int idatLen = found ? clen : -1;
 		if (idatLen < 0)
@@ -200,7 +197,7 @@ public class PngReader {
 	 **/
 	private void readLastChunks() {
 		// PngHelper.logdebug("idat ended? " + iIdatCstream.isEnded());
-		currentChunkGroup = ChunkList.CHUNK_GROUP_5_AFTERIDAT;
+		currentChunkGroup = ChunksList.CHUNK_GROUP_5_AFTERIDAT;
 		if (!iIdatCstream.isEnded())
 			iIdatCstream.forceChunkEnd();
 		int clen = iIdatCstream.getLenLastChunk();
@@ -223,7 +220,7 @@ public class PngReader {
 				// PngHelper.logdebug("extra IDAT chunk len - ignoring : ");
 				ignore = true;
 			} else if (Arrays.equals(chunkid, ChunkHelper.b_IEND)) {
-				currentChunkGroup = ChunkList.CHUNK_GROUP_6_END;
+				currentChunkGroup = ChunksList.CHUNK_GROUP_6_END;
 				endfound = true;
 			}
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -392,10 +389,10 @@ public class PngReader {
 	}
 
 	private boolean firstChunksNotYetRead() {
-		return currentChunkGroup < ChunkList.CHUNK_GROUP_1_AFTERIDHR;
+		return currentChunkGroup < ChunksList.CHUNK_GROUP_1_AFTERIDHR;
 	}
 
-	public ChunkList getChunksList() {
+	public ChunksList getChunksList() {
 		if (firstChunksNotYetRead())
 			readFirstChunks();
 		return chunksList;

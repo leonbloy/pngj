@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 
 /*
  */
-public class PngChunkTRNS extends PngChunk {
+public class PngChunkTRNS extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11tRNS
 	// this chunk structure depends on the image type
 	// only one of these is meaningful
@@ -19,17 +19,12 @@ public class PngChunkTRNS extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.AFTER_PLTE_BEFORE_IDAT;
 	}
 
 	@Override
-	public boolean mustGoAfterPLTE() {
-		return true;
-	}
-
-	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = null;
 		if (imgInfo.greyscale) {
 			c = createEmptyChunk(2, true);
@@ -49,7 +44,7 @@ public class PngChunkTRNS extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		if (imgInfo.greyscale) {
 			gray = PngHelper.readInt2fromBytes(c.data, 0);
 		} else if (imgInfo.indexed) {

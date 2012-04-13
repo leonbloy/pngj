@@ -8,6 +8,9 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
@@ -61,7 +64,8 @@ public class ChunkHelper {
 	}
 
 	/**
-	 * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize its id
+	 * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize
+	 * its id
 	 */
 	public static boolean isUnknown(PngChunk c) {
 		return c instanceof PngChunkUNKNOWN;
@@ -130,4 +134,64 @@ public class ChunkHelper {
 		return (v & mask) != 0;
 	}
 
+	/**
+	 * Returns only the chunks that "match" the predicate
+	 * 
+	 * See also trimList()
+	 */
+	public static List<PngChunk> filterList(List<PngChunk> target, ChunkPredicate predicateKeep) {
+		List<PngChunk> result = new ArrayList<PngChunk>();
+		for (PngChunk element : target) {
+			if (predicateKeep.match(element)) {
+				result.add(element);
+			}
+		}
+		return result;
+	}
+
+	/**
+	 * Remove (in place) the chunks that "match" the predicate
+	 * 
+	 * See also filterList
+	 */
+	public static int trimList(List<PngChunk> target, ChunkPredicate predicateRemove) {
+		Iterator<PngChunk> it = target.iterator();
+		int cont = 0;
+		while (it.hasNext()) {
+			PngChunk c = it.next();
+			if (predicateRemove.match(c)) {
+				it.remove();
+				cont++;
+			}
+		}
+		return cont;
+	}
+
+	/**
+	 * MY adhoc criteria: two chunks are "equivalent" ("practically equal") if they have same id and (perhaps, if
+	 * multiple are allowed) if the match also in some "internal key" (eg: key for string values, palette for sPLT, etc)
+	 * 
+	 * Notice that the use of this is optional, and that the PNG standard allows Text chunks that have same key
+	 * 
+	 * @return true if "equivalent"
+	 */
+	public static final boolean equivalent(PngChunk c1, PngChunk c2) {
+		if (c1 == c2)
+			return true;
+		if (c1 == null || c2 == null || !c1.id.equals(c2.id))
+			return false;
+		// same id
+		if (c1.getClass() != c2.getClass())
+			return false; // should not happen
+		if (!c2.allowsMultiple())
+			return true;
+		if (c1 instanceof PngChunkTextVar) {
+			return ((PngChunkTextVar) c1).getKey().equals(((PngChunkTextVar) c2).getKey());
+		}
+		if (c1 instanceof PngChunkSPLT) {
+			return ((PngChunkSPLT) c1).getPalName().equals(((PngChunkSPLT) c2).getPalName());
+		}
+		// unknown chunks that allow multiple? consider they don't match
+		return false;
+	}
 }

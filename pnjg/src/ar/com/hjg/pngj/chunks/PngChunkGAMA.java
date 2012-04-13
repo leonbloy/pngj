@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 
 /*
  */
-public class PngChunkGAMA extends PngChunk {
+public class PngChunkGAMA extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11gAMA
 	private double gamma;
 
@@ -15,17 +15,12 @@ public class PngChunkGAMA extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.BEFORE_PLTE_AND_IDAT;
 	}
 
 	@Override
-	public boolean mustGoBeforePLTE() {
-		return true;
-	}
-
-	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(4, true);
 		int g = (int) (gamma * 100000 + 0.5);
 		PngHelper.writeInt4tobytes(g, c.data, 0);
@@ -33,7 +28,7 @@ public class PngChunkGAMA extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw chunk) {
+	public void parseFromRaw(ChunkRaw chunk) {
 		if (chunk.len != 4)
 			throw new PngjException("bad chunk " + chunk);
 		int g = PngHelper.readInt4fromBytes(chunk.data, 0);

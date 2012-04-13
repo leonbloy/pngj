@@ -7,7 +7,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngjException;
 
-public class PngChunkSPLT extends PngChunk {
+public class PngChunkSPLT extends PngChunkMultiple {
 	// http://www.w3.org/TR/PNG/#11sPLT
 
 	private String palName;
@@ -19,17 +19,12 @@ public class PngChunkSPLT extends PngChunk {
 	}
 
 	@Override
-	public boolean allowsMultiple() {
-		return true; // allows multiple, but pallete name should be different
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.BEFORE_IDAT;
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
-	}
-
-	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
 			ba.write(palName.getBytes(PngHelper.charsetLatin1));
@@ -55,7 +50,7 @@ public class PngChunkSPLT extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		int t = -1;
 		for (int i = 0; i < c.data.length; i++) { // look for first zero
 			if (c.data[i] == 0) {

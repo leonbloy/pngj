@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 
 /*
  */
-public class PngChunkSBIT extends PngChunk {
+public class PngChunkSBIT extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11sBIT
 	// this chunk structure depends on the image type
 
@@ -19,13 +19,8 @@ public class PngChunkSBIT extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
-	}
-
-	@Override
-	public boolean mustGoBeforePLTE() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.BEFORE_PLTE_AND_IDAT;
 	}
 
 	private int getLen() {
@@ -36,7 +31,7 @@ public class PngChunkSBIT extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		if (c.len != getLen())
 			throw new PngjException("bad chunk length " + c);
 		if (imgInfo.greyscale) {
@@ -53,7 +48,7 @@ public class PngChunkSBIT extends PngChunk {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = null;
 		c = createEmptyChunk(getLen(), true);
 		if (imgInfo.greyscale) {

@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 
 /*
  */
-public class PngChunkSRGB extends PngChunk {
+public class PngChunkSRGB extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11sRGB
 
 	public static final int RENDER_INTENT_Perceptual = 0;
@@ -21,24 +21,19 @@ public class PngChunkSRGB extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.BEFORE_PLTE_AND_IDAT;
 	}
 
 	@Override
-	public boolean mustGoBeforePLTE() {
-		return true;
-	}
-
-	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		if (c.len != 1)
 			throw new PngjException("bad chunk length " + c);
 		intent = PngHelper.readInt1fromByte(c.data, 0);
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = null;
 		c = createEmptyChunk(1, true);
 		c.data[0] = (byte) intent;

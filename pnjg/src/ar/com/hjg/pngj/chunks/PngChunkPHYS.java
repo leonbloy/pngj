@@ -4,7 +4,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngjException;
 
-public class PngChunkPHYS extends PngChunk {
+public class PngChunkPHYS extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11pHYs
 	private long pixelsxUnitX;
 	private long pixelsxUnitY;
@@ -15,12 +15,12 @@ public class PngChunkPHYS extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.BEFORE_IDAT;
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(9, true);
 		PngHelper.writeInt4tobytes((int) pixelsxUnitX, c.data, 0);
 		PngHelper.writeInt4tobytes((int) pixelsxUnitY, c.data, 4);
@@ -29,7 +29,7 @@ public class PngChunkPHYS extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw chunk) {
+	public void parseFromRaw(ChunkRaw chunk) {
 		if (chunk.len != 9)
 			throw new PngjException("bad chunk length " + chunk);
 		pixelsxUnitX = PngHelper.readInt4fromBytes(chunk.data, 0);

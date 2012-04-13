@@ -12,6 +12,9 @@ import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
+import ar.com.hjg.pngj.chunks.ChunkHelper;
+import ar.com.hjg.pngj.chunks.ChunkPredicate;
+import ar.com.hjg.pngj.chunks.PngChunk;
 
 /**
  * To test all images in PNG test suite (except interlaced) doing a horizontal mirror on all them
@@ -55,12 +58,16 @@ public class TestPngSuite {
 				}
 			}
 			lout.tf_pack(line, false);
-			pngw.writeRow(lout,row);
+			pngw.writeRow(lout, row);
 		}
 		pngr.end();
 		pngw.copyChunksLast(pngr, copyPolicy);
 		pngw.end();
-		List<String> u = pngr.getChunksList().getChunksUnkown();
+		List<PngChunk> u = ChunkHelper.filterList(pngr.getChunksList().getChunks(), new ChunkPredicate() {
+			public boolean match(PngChunk c) {
+				return ChunkHelper.isUnknown(c);
+			}
+		});
 		if (!u.isEmpty()) {
 			System.out.println("Unknown chunks:" + u);
 		}

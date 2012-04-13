@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelper;
 import ar.com.hjg.pngj.PngjException;
 
-public class PngChunkTIME extends PngChunk {
+public class PngChunkTIME extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11tIME
 	private int year, mon, day, hour, min, sec;
 
@@ -15,7 +15,12 @@ public class PngChunkTIME extends PngChunk {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.NONE;
+	}
+
+	@Override
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(7, true);
 		PngHelper.writeInt2tobytes(year, c.data, 0);
 		c.data[2] = (byte) mon;
@@ -27,7 +32,7 @@ public class PngChunkTIME extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw chunk) {
+	public void parseFromRaw(ChunkRaw chunk) {
 		if (chunk.len != 7)
 			throw new PngjException("bad chunk " + chunk);
 		year = PngHelper.readInt2fromBytes(chunk.data, 0);
@@ -68,6 +73,7 @@ public class PngChunkTIME extends PngChunk {
 		min = minx;
 		sec = secx;
 	}
+
 	public int[] getYMDHMS() {
 		return new int[] { year, mon, day, hour, min, sec };
 	}
@@ -76,7 +82,5 @@ public class PngChunkTIME extends PngChunk {
 	public String getAsString() {
 		return String.format("%04/%02d/%02d %02d:%02d:%02d", year, mon, day, hour, min, sec);
 	}
-
-	
 
 }

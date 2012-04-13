@@ -5,7 +5,7 @@ import ar.com.hjg.pngj.PngHelper;
 
 /*
  */
-public class PngChunkICCP extends PngChunk {
+public class PngChunkICCP extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11iCCP
 	private String profileName;
 	private byte[] compressedProfile; // copmression/decopmresion is done in getter/setter
@@ -15,17 +15,12 @@ public class PngChunkICCP extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.BEFORE_PLTE_AND_IDAT;
 	}
 
 	@Override
-	public boolean mustGoBeforePLTE() {
-		return true;
-	}
-
-	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(profileName.length() + compressedProfile.length + 2, true);
 		System.arraycopy(ChunkHelper.toBytes(profileName), 0, c.data, 0, profileName.length());
 		c.data[profileName.length()] = 0;
@@ -35,7 +30,7 @@ public class PngChunkICCP extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw chunk) {
+	public void parseFromRaw(ChunkRaw chunk) {
 		int pos0 = ChunkHelper.posNullByte(chunk.data);
 		profileName = new String(chunk.data, 0, pos0, PngHelper.charsetLatin1);
 		int comp = (chunk.data[pos0 + 1] & 0xff);

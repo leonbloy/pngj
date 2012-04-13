@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 /*
  * Palette chunk *this is critical*
  */
-public class PngChunkPLTE extends PngChunk {
+public class PngChunkPLTE extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11PLTE
 	private int nentries = 0;
 	/**
@@ -19,7 +19,12 @@ public class PngChunkPLTE extends PngChunk {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.NA;
+	}
+
+	@Override
+	public ChunkRaw createRawChunk() {
 		int len = 3 * nentries;
 		int[] rgb = new int[3];
 		ChunkRaw c = createEmptyChunk(len, true);
@@ -33,7 +38,7 @@ public class PngChunkPLTE extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw chunk) {
+	public void parseFromRaw(ChunkRaw chunk) {
 		setNentries(chunk.len / 3);
 		for (int n = 0, i = 0; n < nentries; n++) {
 			setEntry(n, (int) (chunk.data[i++] & 0xff), (int) (chunk.data[i++] & 0xff), (int) (chunk.data[i++] & 0xff));

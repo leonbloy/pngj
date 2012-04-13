@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 
 /*
  */
-public class PngChunkCHRM extends PngChunk {
+public class PngChunkCHRM extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11cHRM
 	private double whitex, whitey;
 	private double redx, redy;
@@ -18,17 +18,12 @@ public class PngChunkCHRM extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.AFTER_PLTE_BEFORE_IDAT;
 	}
 
 	@Override
-	public boolean mustGoBeforePLTE() {
-		return true;
-	}
-
-	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		ChunkRaw c = null;
 		c = createEmptyChunk(32, true);
 		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(whitex), c.data, 0);
@@ -43,7 +38,7 @@ public class PngChunkCHRM extends PngChunk {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		if (c.len != 32)
 			throw new PngjException("bad chunk " + c);
 		whitex = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 0));

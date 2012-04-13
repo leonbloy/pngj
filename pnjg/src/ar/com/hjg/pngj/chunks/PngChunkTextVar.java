@@ -7,7 +7,7 @@ import ar.com.hjg.pngj.ImageInfo;
  * 
  * @author Hernan J Gonzalez
  */
-public abstract class PngChunkTextVar extends PngChunk {
+public abstract class PngChunkTextVar extends PngChunkMultiple {
 	protected String key; // key/val: only for tEXt. lazy computed
 	protected String val;
 
@@ -28,8 +28,8 @@ public abstract class PngChunkTextVar extends PngChunk {
 	}
 
 	@Override
-	public boolean allowsMultiple() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.NONE;
 	}
 
 	public static class PngTxtInfo {

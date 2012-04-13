@@ -14,7 +14,7 @@ public class PngChunkZTXT extends PngChunkTextVar {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		if (val.isEmpty() || key.isEmpty())
 			return null;
 		try {
@@ -34,7 +34,7 @@ public class PngChunkZTXT extends PngChunkTextVar {
 	}
 
 	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		int nullsep = -1;
 		for (int i = 0; i < c.data.length; i++) { // look for first zero
 			if (c.data[i] != 0)

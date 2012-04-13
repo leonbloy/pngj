@@ -6,7 +6,7 @@ import ar.com.hjg.pngj.PngjException;
 
 /*
  */
-public class PngChunkHIST extends PngChunk {
+public class PngChunkHIST extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11hIST
 	// only for palette images
 
@@ -17,17 +17,12 @@ public class PngChunkHIST extends PngChunk {
 	}
 
 	@Override
-	public boolean mustGoBeforeIDAT() {
-		return true;
+	public ChunkOrderingConstraint getOrderingConstraint() {
+		return ChunkOrderingConstraint.AFTER_PLTE_BEFORE_IDAT;
 	}
 
 	@Override
-	public boolean mustGoAfterPLTE() {
-		return true;
-	}
-
-	@Override
-	public void parseFromChunk(ChunkRaw c) {
+	public void parseFromRaw(ChunkRaw c) {
 		if (!imgInfo.indexed)
 			throw new PngjException("only indexed images accept a HIST chunk");
 		int nentries = c.data.length / 2;
@@ -38,7 +33,7 @@ public class PngChunkHIST extends PngChunk {
 	}
 
 	@Override
-	public ChunkRaw createChunk() {
+	public ChunkRaw createRawChunk() {
 		if (!imgInfo.indexed)
 			throw new PngjException("only indexed images accept a HIST chunk");
 		ChunkRaw c = null;
