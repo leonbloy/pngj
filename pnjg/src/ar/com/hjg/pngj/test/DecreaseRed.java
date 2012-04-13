@@ -12,6 +12,7 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
  * Example: cuts the red channel by two. Only for RGB
  */
 public class DecreaseRed {
+	
 	public static void decreaseRed(String origFilename, String destFilename) {
 		PngReader pngr = FileHelper.createPngReader(new File(origFilename));
 		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), pngr.imgInfo, true);
@@ -25,9 +26,9 @@ public class DecreaseRed {
 			ImageLine l1 = pngr.readRow(row);
 			for (int j = 0; j < pngr.imgInfo.cols; j++)
 				l1.scanline[j * channels] /= 2;
-			pngw.writeRow(l1,row);
+			pngw.writeRow(l1, row);
 		}
-		pngr.end();
+		// pngr.end(); no necessary now
 		// just in case some new metadata has been read
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.end();

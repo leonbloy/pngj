@@ -377,11 +377,15 @@ public class PngWriter {
 
 	/**
 	 * copy chunks from reader - copy_mask : see ChunksToWrite.COPY_XXX
-	 * 
-	 * If we are after idat, only considers those chunks after IDAT in PngReader TODO: this should be more customizable
+	 * <p>
+	 * If we are after idat, only considers those chunks after IDAT in PngReader
+	 * <p>
+	 * TODO: this should be more customizable
 	 */
 	private void copyChunks(PngReader reader, int copy_mask, boolean onlyAfterIdat) {
 		boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
+		if (onlyAfterIdat && reader.getCurrentChunkGroup() < ChunksList.CHUNK_GROUP_6_END)
+			throw new PngjException("tried to copy last chunks but reader has not ended");
 		for (PngChunk chunk : reader.getChunksList().getChunks()) {
 			int group = chunk.getChunkGroup();
 			if (group < ChunksList.CHUNK_GROUP_4_IDAT && idatDone)

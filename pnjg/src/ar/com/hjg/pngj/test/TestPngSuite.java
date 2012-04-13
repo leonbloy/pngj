@@ -60,7 +60,7 @@ public class TestPngSuite {
 			lout.tf_pack(line, false);
 			pngw.writeRow(lout, row);
 		}
-		pngr.end();
+		//pngr.end();
 		pngw.copyChunksLast(pngr, copyPolicy);
 		pngw.end();
 		List<PngChunk> u = ChunkHelper.filterList(pngr.getChunksList().getChunks(), new ChunkPredicate() {

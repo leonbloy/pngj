@@ -55,7 +55,7 @@ public class ChunksList {
 		return new ArrayList<PngChunk>(chunks);
 	}
 
-	protected static List<PngChunk> getXById(final List<PngChunk> list,final String id, final String innerid) {
+	protected static List<PngChunk> getXById(final List<PngChunk> list, final String id, final String innerid) {
 		if (innerid == null)
 			return ChunkHelper.filterList(list, new ChunkPredicate() {
 				public boolean match(PngChunk c) {
@@ -75,7 +75,7 @@ public class ChunksList {
 				}
 			});
 	}
-	
+
 	/**
 	 * Adds chunk in next position. This is used onyl by the pngReader
 	 */
@@ -87,8 +87,6 @@ public class ChunksList {
 	public List<? extends PngChunk> getById(final String id) {
 		return getById(id, null);
 	}
-	
-	
 
 	/**
 	 * If innerid!=null and the chunk is PngChunkTextVar or PngChunkSPLT, it's filtered by that id

@@ -261,7 +261,7 @@ public class PngReader {
 	 * 
 	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
 	 */
-	public int[] readRow(int[] buffer, int nrow) {
+	public int[] readRow(int[] buffer, final int nrow) {
 		if (nrow < 0 || nrow >= imgInfo.rows)
 			throw new PngjInputException("invalid line");
 		if (nrow != rowNum + 1)
@@ -281,13 +281,16 @@ public class PngReader {
 		unfilterRow();
 		rowb[0] = rowbfilter[0];
 		convertRowFromBytes(buffer);
+		// new: if last row, automatically call end()
+		if (nrow == imgInfo.rows - 1)
+			readLastAndClose();
 		return buffer;
 	}
 
 	/**
-	 * This should be called after having read the last line. It reads extra chunks after IDAT, if present.
+	 * INternally called after having read the last line. It reads extra chunks after IDAT, if present.
 	 */
-	public void end() {
+	protected void readLastAndClose() {
 		offset = (int) iIdatCstream.getOffset();
 		try {
 			idatIstream.close();
@@ -299,6 +302,15 @@ public class PngReader {
 		} catch (Exception e) {
 			throw new PngjInputException("error closing input stream!", e);
 		}
+	}
+
+	/**
+	 * Dummy method
+	 * <p>
+	 * Since version 0.88 (Apr 2012) the ending chunks are read automatically, internally, after reading the last row.
+	 * This does nothing now, just kept for backward compatibily
+	 */
+	public void end() {
 	}
 
 	private void convertRowFromBytes(int[] buffer) {
@@ -402,6 +414,10 @@ public class PngReader {
 		if (firstChunksNotYetRead())
 			readFirstChunks();
 		return metadata;
+	}
+
+	public int getCurrentChunkGroup() {
+		return currentChunkGroup;
 	}
 
 	public String toString() { // basic info

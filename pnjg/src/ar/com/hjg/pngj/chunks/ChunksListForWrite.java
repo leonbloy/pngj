@@ -35,7 +35,8 @@ public class ChunksListForWrite extends ChunksList {
 	 * Same as getById(), but looking in the queued chunks
 	 */
 	public List<? extends PngChunk> getQueuedById(final String id, final String innerid) {
-		return getXById(queuedChunks, id, innerid);	}
+		return getXById(queuedChunks, id, innerid);
+	}
 
 	/**
 	 * Same as getById1(), but looking in the queued chunks
@@ -63,7 +64,6 @@ public class ChunksListForWrite extends ChunksList {
 		return getQueuedById1(id, false);
 	}
 
-	
 	/**
 	 * Remove Chunk: only from queued
 	 * 
