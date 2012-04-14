@@ -29,7 +29,6 @@ public class ShowFilterInfo {
 
 	public static void main(String[] args) throws Exception {
 		show2(new File(args[0]));
-
 	}
 
 }

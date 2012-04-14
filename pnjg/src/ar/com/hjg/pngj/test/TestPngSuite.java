@@ -28,48 +28,6 @@ import ar.com.hjg.pngj.chunks.PngChunk;
  */
 public class TestPngSuite {
 	static final String outdir = "C:/temp/test";
-	private static boolean showInfo = false;
-
-	public static void mirror(File orig, File dest) throws Exception {
-		PngReader pngr = FileHelper.createPngReader(orig);
-		if (showInfo)
-			System.out.println(pngr.toString());
-		// at this point we have loaded al chucks before IDAT
-		// PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, true);
-		PngWriter pngw = new PngWriter(new FileOutputStream(dest), pngr.imgInfo);
-		pngw.setFilterType(FilterType.FILTER_ALTERNATE); // just to test all
-		int copyPolicy = ChunkCopyBehaviour.COPY_ALL;
-		pngw.copyChunksFirst(pngr, copyPolicy);
-		ImageLine lout = new ImageLine(pngw.imgInfo);
-		int cols = pngr.imgInfo.cols;
-		int channels = pngr.imgInfo.channels;
-		int[] line = null;
-		int aux;
-		for (int row = 0; row < pngr.imgInfo.rows; row++) {
-			ImageLine l1 = pngr.readRow(row);
-			line = l1.tf_unpack(line, false);
-			for (int c1 = 0, c2 = cols - 1; c1 < c2; c1++, c2--) {
-				for (int i = 0; i < channels; i++) {
-					aux = line[c1 * channels + i];
-					line[c1 * channels + i] = line[c2 * channels + i];
-					line[c2 * channels + i] = aux;
-				}
-			}
-			lout.tf_pack(line, false);
-			pngw.writeRow(lout, row);
-		}
-		// pngr.end(); // not necessary now
-		pngw.copyChunksLast(pngr, copyPolicy);
-		pngw.end();
-		// print unknown chunks, just for information
-		List<PngChunk> u = ChunkHelper.filterList(pngr.getChunksList().getChunks(), new ChunkPredicate() {
-			public boolean match(PngChunk c) {
-				return ChunkHelper.isUnknown(c);
-			}
-		});
-		if (!u.isEmpty())
-			System.out.println("Unknown chunks:" + u);
-	}
 
 	public static void testAllSuite(File dirsrc, File dirdest) {
 		if (!dirdest.isDirectory())
@@ -86,7 +44,7 @@ public class TestPngSuite {
 			File fileCopy = new File(dirdest, name);
 			try {
 				cont++;
-				mirror(im1, newFile);
+				SampleMirrorImage.mirror(im1, newFile,true);
 				if (name.startsWith("x")) {
 					System.err.println("this should have failed! " + name);
 					conterr++;
@@ -137,18 +95,9 @@ public class TestPngSuite {
 		}
 	}
 
-	public static void test1() throws Exception {
-		// reencode("resources/testsuite1/basn0g01.png", "C:/temp/x.png");
-		// reencode(new File("resources/testsuite1/basn0g02.png"), new
-		// File("C:/temp/x2.png"));
-		mirror(new File("resources/testsuite1/basn3p08.png"), new File("C:/temp/test/xxx.png"));
-		System.out.println("done: ");
-	}
 
 	public static void main(String[] args) throws Exception {
 		testAllSuite(new File("resources/testsuite1/"), new File(outdir));
-
 		System.out.println("output dir: " + outdir);
-
 	}
 }

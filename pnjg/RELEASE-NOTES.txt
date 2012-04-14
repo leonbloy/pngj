@@ -7,6 +7,7 @@ Version 0.9  (14 April 2012)
   - PngReader.end() no more necessary: it's called automatically after reading the last row
   - PngWriter: user can set idatMaxSize (default increased to 32K)
   - Small optimizations in PngWriter
+  - PngHelper -> PngHelperInternal
  
 Version 0.85  (1 April 2012)
  - More robust Chunk management (ChunkGroup is now inside PngChunk; both PngReader and PngWriter have a ChunkList...)    
