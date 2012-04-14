@@ -28,7 +28,6 @@ public class SampleRemoveGama {
 			ImageLine l1 = pngr.readRow(row);
 			pngw.writeRow(l1, row);
 		}
-		pngr.end();
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL); // in case some new metadata has been read
 		pngw.end();
 	}
