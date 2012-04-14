@@ -15,7 +15,7 @@ import java.util.Set;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.InflaterInputStream;
 
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class ChunkHelper {
@@ -43,14 +43,12 @@ public class ChunkHelper {
 	public static final String tEXt = "tEXt";
 	public static final String zTXt = "zTXt";
 
-	public static Set<String> KNOWN_CHUNKS_CRITICAL = PngHelper.asSet(IHDR, PLTE, IDAT, IEND);
-
 	public static byte[] toBytes(String x) {
-		return x.getBytes(PngHelper.charsetLatin1);
+		return x.getBytes(PngHelperInternal.charsetLatin1);
 	}
 
 	public static String toString(byte[] x) {
-		return new String(x, PngHelper.charsetLatin1);
+		return new String(x, PngHelperInternal.charsetLatin1);
 	}
 
 	public static boolean isCritical(String id) { // critical chunk ?

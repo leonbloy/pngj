@@ -85,9 +85,7 @@ public class PngMetadata {
 	/**
 	 * Creates a time chunk with current time, less secsAgo seconds
 	 * <p>
-	 * Returns the created-queued chunk, just in case you want to examine or touch it
-	 * 
-	 * @return
+	 * @return Returns the created-queued chunk, just in case you want to examine or modify  it
 	 */
 	public PngChunkTIME setTimeNow(int secsAgo) {
 		PngChunkTIME c = new PngChunkTIME(chunkList.imageInfo);
@@ -96,12 +94,14 @@ public class PngMetadata {
 		return c;
 	}
 
+	public PngChunkTIME setTimeNow() {
+		return setTimeNow(0);
+	}
+
 	/**
 	 * Creates a time chunk with diven date-time
 	 * <p>
-	 * Returns the created-queued chunk, just in case you want to examine or touch it
-	 * 
-	 * @return
+	 * @return Returns the created-queued chunk, just in case you want to examine or modify  it
 	 */
 	public PngChunkTIME setTimeYMDHMS(int yearx, int monx, int dayx, int hourx, int minx, int secx) {
 		PngChunkTIME c = new PngChunkTIME(chunkList.imageInfo);
@@ -156,7 +156,7 @@ public class PngMetadata {
 	}
 
 	public PngChunkTextVar setText(String k, String val) {
-		return setText(k, val, false, val.length() > 400);
+		return setText(k, val, false, false);
 	}
 
 	/**

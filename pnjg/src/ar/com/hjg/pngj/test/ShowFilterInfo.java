@@ -28,7 +28,7 @@ public class ShowFilterInfo {
 	}
 
 	public static void main(String[] args) throws Exception {
-		show2(new File("/temp/dilbert256.10000.png"));
+		show2(new File(args[0]));
 
 	}
 

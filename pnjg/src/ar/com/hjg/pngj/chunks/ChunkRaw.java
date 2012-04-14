@@ -5,7 +5,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.CRC32;
 
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjBadCrcException;
 import ar.com.hjg.pngj.PngjOutputException;
 
@@ -62,7 +62,7 @@ public class ChunkRaw {
 	 * this is called after setting data, before writing to os
 	 */
 	private void computeCrc() {
-		CRC32 crcengine = PngHelper.getCRC();
+		CRC32 crcengine = PngHelperInternal.getCRC();
 		crcengine.reset();
 		crcengine.update(idbytes, 0, 4);
 		if (len > 0)
@@ -77,11 +77,11 @@ public class ChunkRaw {
 		if (idbytes.length != 4)
 			throw new PngjOutputException("bad chunkid [" + ChunkHelper.toString(idbytes) + "]");
 		computeCrc();
-		PngHelper.writeInt4(os, len);
-		PngHelper.writeBytes(os, idbytes);
+		PngHelperInternal.writeInt4(os, len);
+		PngHelperInternal.writeBytes(os, idbytes);
 		if (len > 0)
-			PngHelper.writeBytes(os, data, 0, len);
-		PngHelper.writeInt4(os, crcval);
+			PngHelperInternal.writeBytes(os, data, 0, len);
+		PngHelperInternal.writeInt4(os, crcval);
 	}
 
 	/**
@@ -89,8 +89,8 @@ public class ChunkRaw {
 	 * Return number of byte read.
 	 */
 	public int readChunkData(InputStream is) {
-		PngHelper.readBytes(is, data, 0, len);
-		int crcori = PngHelper.readInt4(is);
+		PngHelperInternal.readBytes(is, data, 0, len);
+		int crcori = PngHelperInternal.readInt4(is);
 		computeCrc();
 		if (crcori != crcval)
 			throw new PngjBadCrcException("crc invalid for chunk " + toString() + " calc=" + crcval + " read=" + crcori);
@@ -104,4 +104,5 @@ public class ChunkRaw {
 	public String toString() {
 		return "chunkid=" + ChunkHelper.toString(idbytes) + " len=" + len;
 	}
+	
 }

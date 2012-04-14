@@ -4,25 +4,38 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
-import java.util.HashSet;
-import java.util.Set;
 import java.util.zip.CRC32;
 
 /**
- * Some utility static methods.
+ * Some utility static methods for internal use.
  * <p>
- * See also <code>FileHelper</code> (if not sandboxed).
+ * Client code should not normally use this class
  * <p>
- * Client code should rarely need these methods.
  */
-public class PngHelper {
+public class PngHelperInternal {
 	/**
 	 * Default charset, used internally by PNG for several things
 	 */
 	public static Charset charsetLatin1 = Charset.forName("ISO-8859-1");
-	public static Charset charsetUTF8 = Charset.forName("UTF-8"); // only for some chunks
+	/**
+	 * UTF-8 is only used for some chunks
+	 */
+	public static Charset charsetUTF8 = Charset.forName("UTF-8");
 
 	static boolean DEBUG = false;
+
+	/**
+	 * PNG magic bytes
+	 */
+	static final byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 };
+
+	public static int doubleToInt100000(double d) {
+		return (int) (d * 100000.0 + 0.5);
+	}
+
+	public static double intToDouble100000(int i) {
+		return i / 100000.0;
+	}
 
 	public static int readByte(InputStream is) {
 		try {
@@ -150,25 +163,6 @@ public class PngHelper {
 			System.out.println(msg);
 	}
 
-	public static Set<String> asSet(String... values) {
-		return new HashSet<String>(java.util.Arrays.asList(values));
-	}
-
-	public static Set<String> unionSets(Set<String> set1, Set<String> set2) {
-		Set<String> s = new HashSet<String>();
-		s.addAll(set1);
-		s.addAll(set2);
-		return s;
-	}
-
-	public static Set<String> unionSets(Set<String> set1, Set<String> set2, Set<String> set3) {
-		Set<String> s = new HashSet<String>();
-		s.addAll(set1);
-		s.addAll(set2);
-		s.addAll(set3);
-		return s;
-	}
-
 	private static final ThreadLocal<CRC32> crcProvider = new ThreadLocal<CRC32>() {
 		protected CRC32 initialValue() {
 			return new CRC32();
@@ -178,36 +172,6 @@ public class PngHelper {
 	/** thread-singleton crc engine */
 	public static CRC32 getCRC() {
 		return crcProvider.get();
-	}
-
-	static final byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 }; // png magic
-
-	public static double resMetersToDpi(long res) {
-		return (double) res * 0.0254;
-	}
-
-	public static long resDpiToMeters(double dpi) {
-		return (long) (dpi / 0.0254 + 0.5);
-	}
-
-	public static int doubleToInt100000(double d) {
-		return (int) (d * 100000.0 + 0.5);
-	}
-
-	public static double intToDouble100000(int i) {
-		return i / 100000.0;
-	}
-
-	public static int clampTo_0_255(int i) {
-		return i > 255 ? 255 : (i < 0 ? 0 : i);
-	}
-
-	public static int clampTo_0_65535(int i) {
-		return i > 65535 ? 65535 : (i < 0 ? 0 : i);
-	}
-
-	public static int clampTo_128_127(int x) {
-		return x > 127 ? 127 : (x < -128 ? -128 : x);
 	}
 
 }

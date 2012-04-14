@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 
 /*
  */
@@ -32,7 +32,7 @@ public class PngChunkICCP extends PngChunkSingle {
 	@Override
 	public void parseFromRaw(ChunkRaw chunk) {
 		int pos0 = ChunkHelper.posNullByte(chunk.data);
-		profileName = new String(chunk.data, 0, pos0, PngHelper.charsetLatin1);
+		profileName = new String(chunk.data, 0, pos0, PngHelperInternal.charsetLatin1);
 		int comp = (chunk.data[pos0 + 1] & 0xff);
 		if (comp != 0)
 			throw new RuntimeException("bad compression for ChunkTypeICCP");
@@ -59,7 +59,7 @@ public class PngChunkICCP extends PngChunkSingle {
 	}
 
 	public void setProfileNameAndContent(String name, String profile) {
-		setProfileNameAndContent(name, profile.getBytes(PngHelper.charsetLatin1));
+		setProfileNameAndContent(name, profile.getBytes(PngHelperInternal.charsetLatin1));
 	}
 
 	public String getProfileName() {
@@ -74,7 +74,7 @@ public class PngChunkICCP extends PngChunkSingle {
 	}
 
 	public String getProfileAsString() {
-		return new String(getProfile(), PngHelper.charsetLatin1);
+		return new String(getProfile(), PngHelperInternal.charsetLatin1);
 	}
 
 }

@@ -37,15 +37,13 @@ public class TestPngSuite {
 		// at this point we have loaded al chucks before IDAT
 		// PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, true);
 		PngWriter pngw = new PngWriter(new FileOutputStream(dest), pngr.imgInfo);
-		pngw.setFilterType(FilterType.FILTER_PAETH);
-		// int copyPolicy = ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_PALETTE |
-		// ChunkCopyBehaviour.COPY_TRANSPARENCY;
+		pngw.setFilterType(FilterType.FILTER_ALTERNATE); // just to test all
 		int copyPolicy = ChunkCopyBehaviour.COPY_ALL;
 		pngw.copyChunksFirst(pngr, copyPolicy);
 		ImageLine lout = new ImageLine(pngw.imgInfo);
-		int[] line = null;
 		int cols = pngr.imgInfo.cols;
 		int channels = pngr.imgInfo.channels;
+		int[] line = null;
 		int aux;
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
@@ -60,17 +58,17 @@ public class TestPngSuite {
 			lout.tf_pack(line, false);
 			pngw.writeRow(lout, row);
 		}
-		//pngr.end();
+		// pngr.end(); // not necessary now
 		pngw.copyChunksLast(pngr, copyPolicy);
 		pngw.end();
+		// print unknown chunks, just for information
 		List<PngChunk> u = ChunkHelper.filterList(pngr.getChunksList().getChunks(), new ChunkPredicate() {
 			public boolean match(PngChunk c) {
 				return ChunkHelper.isUnknown(c);
 			}
 		});
-		if (!u.isEmpty()) {
+		if (!u.isEmpty())
 			System.out.println("Unknown chunks:" + u);
-		}
 	}
 
 	public static void testAllSuite(File dirsrc, File dirdest) {

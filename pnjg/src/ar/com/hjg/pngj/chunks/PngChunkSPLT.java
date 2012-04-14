@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkSPLT extends PngChunkMultiple {
@@ -27,18 +27,18 @@ public class PngChunkSPLT extends PngChunkMultiple {
 	public ChunkRaw createRawChunk() {
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
-			ba.write(palName.getBytes(PngHelper.charsetLatin1));
+			ba.write(palName.getBytes(PngHelperInternal.charsetLatin1));
 			ba.write(0); // separator
 			ba.write((byte) sampledepth);
 			int nentries = getNentries();
 			for (int n = 0; n < nentries; n++) {
 				for (int i = 0; i < 4; i++) {
 					if (sampledepth == 8)
-						PngHelper.writeByte(ba, (byte) palette[n * 5 + i]);
+						PngHelperInternal.writeByte(ba, (byte) palette[n * 5 + i]);
 					else
-						PngHelper.writeInt2(ba, palette[n * 5 + i]);
+						PngHelperInternal.writeInt2(ba, palette[n * 5 + i]);
 				}
-				PngHelper.writeInt2(ba, palette[n * 5 + 4]);
+				PngHelperInternal.writeInt2(ba, palette[n * 5 + 4]);
 			}
 			byte[] b = ba.toByteArray();
 			ChunkRaw chunk = createEmptyChunk(b.length, false);
@@ -60,8 +60,8 @@ public class PngChunkSPLT extends PngChunkMultiple {
 		}
 		if (t <= 0 || t > c.data.length - 2)
 			throw new PngjException("bad sPLT chunk: no separator found");
-		palName = new String(c.data, 0, t, PngHelper.charsetLatin1);
-		sampledepth = PngHelper.readInt1fromByte(c.data, t + 1);
+		palName = new String(c.data, 0, t, PngHelperInternal.charsetLatin1);
+		sampledepth = PngHelperInternal.readInt1fromByte(c.data, t + 1);
 		t += 2;
 		int nentries = (c.data.length - t) / (sampledepth == 8 ? 6 : 10);
 		palette = new int[nentries * 5];
@@ -69,21 +69,21 @@ public class PngChunkSPLT extends PngChunkMultiple {
 		ne = 0;
 		for (int i = 0; i < nentries; i++) {
 			if (sampledepth == 8) {
-				r = PngHelper.readInt1fromByte(c.data, t++);
-				g = PngHelper.readInt1fromByte(c.data, t++);
-				b = PngHelper.readInt1fromByte(c.data, t++);
-				a = PngHelper.readInt1fromByte(c.data, t++);
+				r = PngHelperInternal.readInt1fromByte(c.data, t++);
+				g = PngHelperInternal.readInt1fromByte(c.data, t++);
+				b = PngHelperInternal.readInt1fromByte(c.data, t++);
+				a = PngHelperInternal.readInt1fromByte(c.data, t++);
 			} else {
-				r = PngHelper.readInt2fromBytes(c.data, t);
+				r = PngHelperInternal.readInt2fromBytes(c.data, t);
 				t += 2;
-				g = PngHelper.readInt2fromBytes(c.data, t);
+				g = PngHelperInternal.readInt2fromBytes(c.data, t);
 				t += 2;
-				b = PngHelper.readInt2fromBytes(c.data, t);
+				b = PngHelperInternal.readInt2fromBytes(c.data, t);
 				t += 2;
-				a = PngHelper.readInt2fromBytes(c.data, t);
+				a = PngHelperInternal.readInt2fromBytes(c.data, t);
 				t += 2;
 			}
-			f = PngHelper.readInt2fromBytes(c.data, t);
+			f = PngHelperInternal.readInt2fromBytes(c.data, t);
 			t += 2;
 			palette[ne++] = r;
 			palette[ne++] = g;

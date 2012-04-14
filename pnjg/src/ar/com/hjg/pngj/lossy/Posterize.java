@@ -1,16 +1,15 @@
-package ar.com.hjg.pngj.test;
+package ar.com.hjg.pngj.lossy;
 
 import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
-import ar.com.hjg.pngj.lossy.ErrorDifussionFloydSteinberg;
-import ar.com.hjg.pngj.lossy.IErrorDifussion;
 
 /**
  * Example: posterizes a image to n bits.
@@ -51,13 +50,13 @@ public class Posterize {
 				if (floys != null)
 					err = floys.getTotalErr(row, j);
 				int orig = l1.scanline[j];
-				int desired = PngHelper.clampTo_0_255(orig + err);
+				int desired = ImageLineHelper.clampTo_0_255(orig + err);
 				int newval = trimnBits(desired, bitstotrim);
 				if (floys != null)
 					floys.addErr(row, j, desired - newval);
 				l1.scanline[j] = newval;
 			}
-			pngw.writeRow(l1,row);
+			pngw.writeRow(l1, row);
 		}
 		pngr.end();
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALMOSTALL);

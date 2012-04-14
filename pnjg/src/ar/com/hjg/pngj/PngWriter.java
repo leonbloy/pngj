@@ -27,6 +27,7 @@ public class PngWriter {
 	protected int compLevel = 6; // zip compression level 0 - 9
 	private int deflaterStrategy = Deflater.FILTERED;
 	protected FilterWriteStrategy filterStrat;
+	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 32768)
 
 	protected int currentChunkGroup = -1;
 	protected int rowNum = -1; // current line number
@@ -52,6 +53,8 @@ public class PngWriter {
 
 	/**
 	 * Constructs a new PngWriter from a output stream.
+	 * After construction nothing is writen yet. You still can set some parameters (compression, filters) and queue
+	 * chunks before start writing the pixels.           
 	 * <p>
 	 * See also <code>FileHelper.createPngWriter()</code> if available.
 	 * 
@@ -71,10 +74,9 @@ public class PngWriter {
 		rowb = new byte[imgInfo.bytesPerRow + 1];
 		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
-		datStream = new PngIDatChunkOutputStream(this.os);
 		chunkList = new ChunksListForWrite(imgInfo);
 		metadata = new PngMetadata(chunkList);
-		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT);
+		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT); // can be changed
 	}
 
 	/**
@@ -87,7 +89,7 @@ public class PngWriter {
 			def.setStrategy(deflaterStrategy);
 			datStreamDeflated = new DeflaterOutputStream(datStream, def, 8192);
 		}
-		PngHelper.writeBytes(os, PngHelper.pngIdBytes); // signature
+		PngHelperInternal.writeBytes(os, PngHelperInternal.pngIdBytes); // signature
 		PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
 		ihdr.setCols(imgInfo.cols);
@@ -152,8 +154,7 @@ public class PngWriter {
 	 */
 	public void writeRow(int[] newrow, int rown) {
 		if (rown == 0) {
-			writeSignatureAndIHDR();
-			writeFirstChunks();
+			init();
 		}
 		if (rown < -1 || rown > imgInfo.rows)
 			throw new RuntimeException("invalid value for row " + rown);
@@ -173,6 +174,12 @@ public class PngWriter {
 		} catch (IOException e) {
 			throw new PngjOutputException(e);
 		}
+	}
+
+	private void init() {
+		datStream = new PngIDatChunkOutputStream(this.os, idatMaxSize);
+		writeSignatureAndIHDR();
+		writeFirstChunks();
 	}
 
 	/**
@@ -305,15 +312,17 @@ public class PngWriter {
 	}
 
 	protected void filterRowAverage() {
-		int i, j;
-		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
+		int i, j, imax;
+		imax = imgInfo.bytesPerRow;
+		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
 			rowbfilter[i] = (byte) (rowb[i] - ((rowbprev[i] & 0xFF) + (j > 0 ? (rowb[j] & 0xFF) : 0)) / 2);
 		}
 	}
 
 	protected void filterRowPaeth() {
-		int i, j;
-		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
+		int i, j, imax;
+		imax = imgInfo.bytesPerRow;
+		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
 			rowbfilter[i] = (byte) (rowb[i] - FilterType.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0,
 					rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
 		}
@@ -321,16 +330,15 @@ public class PngWriter {
 
 	protected void convertRowToBytes() {
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
-		int i, j;
+		int j = 1;
 		if (imgInfo.bitDepth <= 8) {
-			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				rowb[j++] = (byte) (scanline[i]);
+			for (int x : scanline) { // optimized
+				rowb[j++] = (byte) x;
 			}
 		} else { // 16 bitspc
-			for (i = 0, j = 1; i < imgInfo.samplesPerRowP; i++) {
-				// x = (int) (scanline[i]) & 0xFFFF;
-				rowb[j++] = (byte) (scanline[i] >> 8);
-				rowb[j++] = (byte) (scanline[i]);
+			for (int x : scanline) { // optimized
+				rowb[j++] = (byte) (x >> 8);
+				rowb[j++] = (byte) (x);
 			}
 		}
 	}
@@ -373,6 +381,17 @@ public class PngWriter {
 		if (compLevel < 0 || compLevel > 9)
 			throw new PngjException("Compression level invalid (" + compLevel + ") Must be 0..9");
 		this.compLevel = compLevel;
+	}
+
+	/**
+	 * Sets maximum size of IDAT fragments. This has little effect on performance you should rarely call this
+	 * <p>
+	 * 
+	 * @param idatMaxSize
+	 *            default=0 : use defaultSize (32K)
+	 */
+	public void setIdatMaxSize(int idatMaxSize) {
+		this.idatMaxSize = idatMaxSize;
 	}
 
 	/**

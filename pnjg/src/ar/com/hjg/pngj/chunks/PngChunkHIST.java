@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /*
@@ -28,7 +28,7 @@ public class PngChunkHIST extends PngChunkSingle {
 		int nentries = c.data.length / 2;
 		hist = new int[nentries];
 		for (int i = 0; i < hist.length; i++) {
-			hist[i] = PngHelper.readInt2fromBytes(c.data, i * 2);
+			hist[i] = PngHelperInternal.readInt2fromBytes(c.data, i * 2);
 		}
 	}
 
@@ -39,7 +39,7 @@ public class PngChunkHIST extends PngChunkSingle {
 		ChunkRaw c = null;
 		c = createEmptyChunk(hist.length * 2, true);
 		for (int i = 0; i < hist.length; i++) {
-			PngHelper.writeInt2tobytes(hist[i], c.data, i * 2);
+			PngHelperInternal.writeInt2tobytes(hist[i], c.data, i * 2);
 		}
 		return c;
 	}

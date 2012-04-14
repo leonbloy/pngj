@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /*
@@ -29,7 +29,7 @@ public class PngChunkSRGB extends PngChunkSingle {
 	public void parseFromRaw(ChunkRaw c) {
 		if (c.len != 1)
 			throw new PngjException("bad chunk length " + c);
-		intent = PngHelper.readInt1fromByte(c.data, 0);
+		intent = PngHelperInternal.readInt1fromByte(c.data, 0);
 	}
 
 	@Override

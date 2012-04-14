@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkPHYS extends PngChunkSingle {
@@ -22,8 +22,8 @@ public class PngChunkPHYS extends PngChunkSingle {
 	@Override
 	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(9, true);
-		PngHelper.writeInt4tobytes((int) pixelsxUnitX, c.data, 0);
-		PngHelper.writeInt4tobytes((int) pixelsxUnitY, c.data, 4);
+		PngHelperInternal.writeInt4tobytes((int) pixelsxUnitX, c.data, 0);
+		PngHelperInternal.writeInt4tobytes((int) pixelsxUnitY, c.data, 4);
 		c.data[8] = (byte) units;
 		return c;
 	}
@@ -32,13 +32,13 @@ public class PngChunkPHYS extends PngChunkSingle {
 	public void parseFromRaw(ChunkRaw chunk) {
 		if (chunk.len != 9)
 			throw new PngjException("bad chunk length " + chunk);
-		pixelsxUnitX = PngHelper.readInt4fromBytes(chunk.data, 0);
+		pixelsxUnitX = PngHelperInternal.readInt4fromBytes(chunk.data, 0);
 		if (pixelsxUnitX < 0)
 			pixelsxUnitX += 0x100000000L;
-		pixelsxUnitY = PngHelper.readInt4fromBytes(chunk.data, 4);
+		pixelsxUnitY = PngHelperInternal.readInt4fromBytes(chunk.data, 4);
 		if (pixelsxUnitY < 0)
 			pixelsxUnitY += 0x100000000L;
-		units = PngHelper.readInt1fromByte(chunk.data, 8);
+		units = PngHelperInternal.readInt1fromByte(chunk.data, 8);
 	}
 
 	@Override

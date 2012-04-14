@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /*
@@ -28,7 +28,7 @@ public class PngChunkTRNS extends PngChunkSingle {
 		ChunkRaw c = null;
 		if (imgInfo.greyscale) {
 			c = createEmptyChunk(2, true);
-			PngHelper.writeInt2tobytes(gray, c.data, 0);
+			PngHelperInternal.writeInt2tobytes(gray, c.data, 0);
 		} else if (imgInfo.indexed) {
 			c = createEmptyChunk(paletteAlpha.length, true);
 			for (int n = 0; n < c.len; n++) {
@@ -36,9 +36,9 @@ public class PngChunkTRNS extends PngChunkSingle {
 			}
 		} else {
 			c = createEmptyChunk(6, true);
-			PngHelper.writeInt2tobytes(red, c.data, 0);
-			PngHelper.writeInt2tobytes(green, c.data, 0);
-			PngHelper.writeInt2tobytes(blue, c.data, 0);
+			PngHelperInternal.writeInt2tobytes(red, c.data, 0);
+			PngHelperInternal.writeInt2tobytes(green, c.data, 0);
+			PngHelperInternal.writeInt2tobytes(blue, c.data, 0);
 		}
 		return c;
 	}
@@ -46,7 +46,7 @@ public class PngChunkTRNS extends PngChunkSingle {
 	@Override
 	public void parseFromRaw(ChunkRaw c) {
 		if (imgInfo.greyscale) {
-			gray = PngHelper.readInt2fromBytes(c.data, 0);
+			gray = PngHelperInternal.readInt2fromBytes(c.data, 0);
 		} else if (imgInfo.indexed) {
 			int nentries = c.data.length;
 			paletteAlpha = new int[nentries];
@@ -54,9 +54,9 @@ public class PngChunkTRNS extends PngChunkSingle {
 				paletteAlpha[n] = (int) (c.data[n] & 0xff);
 			}
 		} else {
-			red = PngHelper.readInt2fromBytes(c.data, 0);
-			green = PngHelper.readInt2fromBytes(c.data, 2);
-			blue = PngHelper.readInt2fromBytes(c.data, 4);
+			red = PngHelperInternal.readInt2fromBytes(c.data, 0);
+			green = PngHelperInternal.readInt2fromBytes(c.data, 2);
+			blue = PngHelperInternal.readInt2fromBytes(c.data, 4);
 		}
 	}
 

@@ -282,7 +282,7 @@ public class LossyHelper {
 					g = 255;
 				ImageLineHelper.setPixelRGB8(imgline, col, r, g, r0x < 0 ? 64 : 0);
 				if (col == pngw.imgInfo.cols - 1) {
-					pngw.writeRow(imgline,row);
+					pngw.writeRow(imgline, row);
 					if (row == pngw.imgInfo.rows - 1)
 						pngw.end();
 				}
@@ -344,7 +344,7 @@ public class LossyHelper {
 		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE | ChunkCopyBehaviour.COPY_PALETTE);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
-			pngw.writeRow(l1,row);
+			pngw.writeRow(l1, row);
 		}
 		String lossydesc = pngw.lossyHelper.toString();
 		PngChunkTEXT txtChunk = (PngChunkTEXT) PngChunk.factoryFromId(ChunkHelper.tEXt, pngw.imgInfo);

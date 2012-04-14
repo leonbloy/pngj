@@ -10,14 +10,14 @@ import java.util.Random;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
-public class ZlibTest {
+public class TestZlib {
 
 	protected Random r = new Random();
 	protected final int size;
 	byte prev;
 	int contread = 0;
 
-	public ZlibTest(int size) {
+	public TestZlib(int size) {
 		this.size = size;
 	}
 
@@ -79,7 +79,7 @@ public class ZlibTest {
 	}
 
 	public static void test1(String[] args) {
-		ZlibTest t1 = new ZlibTest(1000000);
+		TestZlib t1 = new TestZlib(1000000);
 		System.out.println(t1.getClass() + " : " + t1.nTries(2));
 	}
 

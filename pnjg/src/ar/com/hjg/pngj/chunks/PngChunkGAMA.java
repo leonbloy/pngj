@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /*
@@ -23,7 +23,7 @@ public class PngChunkGAMA extends PngChunkSingle {
 	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(4, true);
 		int g = (int) (gamma * 100000 + 0.5);
-		PngHelper.writeInt4tobytes(g, c.data, 0);
+		PngHelperInternal.writeInt4tobytes(g, c.data, 0);
 		return c;
 	}
 
@@ -31,7 +31,7 @@ public class PngChunkGAMA extends PngChunkSingle {
 	public void parseFromRaw(ChunkRaw chunk) {
 		if (chunk.len != 4)
 			throw new PngjException("bad chunk " + chunk);
-		int g = PngHelper.readInt4fromBytes(chunk.data, 0);
+		int g = PngHelperInternal.readInt4fromBytes(chunk.data, 0);
 		gamma = ((double) g) / 100000.0;
 	}
 

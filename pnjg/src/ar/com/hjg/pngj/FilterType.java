@@ -75,7 +75,7 @@ public enum FilterType {
 		return (r + filterPaethPredictor(a, b, c)) & 0xFF;
 	}
 
-	public static int filterPaethPredictor(int a, int b, int c) {
+	public final static int filterPaethPredictor(final int a, final int b, final int c) {
 		// from http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
 		// a = left, b = above, c = upper left
 		final int p = a + b - c;// ; initial estimate

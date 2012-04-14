@@ -24,7 +24,7 @@ public class TestFilters {
 		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
-			pngw.writeRow(l1,row);
+			pngw.writeRow(l1, row);
 		}
 		pngr.end();
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL);

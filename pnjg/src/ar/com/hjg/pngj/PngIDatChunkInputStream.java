@@ -66,17 +66,17 @@ class PngIDatChunkInputStream extends InputStream {
 		// Those values are left in idLastChunk / lenLastChunk
 		// Skips empty IDATS
 		do {
-			int crc = PngHelper.readInt4(inputStream); //
+			int crc = PngHelperInternal.readInt4(inputStream); //
 			offset += 4;
 			int crccalc = (int) crcEngine.getValue();
 			if (lenLastChunk > 0 && crc != crccalc)
 				throw new PngjBadCrcException("error reading idat; offset: " + offset);
 			crcEngine.reset();
-			lenLastChunk = PngHelper.readInt4(inputStream);
+			lenLastChunk = PngHelperInternal.readInt4(inputStream);
 			if (lenLastChunk < 0)
 				throw new PngjInputException("invalid len for chunk: " + lenLastChunk);
 			toReadThisChunk = lenLastChunk;
-			PngHelper.readBytes(inputStream, idLastChunk, 0, 4);
+			PngHelperInternal.readBytes(inputStream, idLastChunk, 0, 4);
 			offset += 8;
 			ended = !Arrays.equals(idLastChunk, ChunkHelper.b_IDAT);
 			if (!ended) {
@@ -95,7 +95,7 @@ class PngIDatChunkInputStream extends InputStream {
 	void forceChunkEnd() {
 		if (!ended) {
 			byte[] dummy = new byte[toReadThisChunk];
-			PngHelper.readBytes(inputStream, dummy, 0, toReadThisChunk);
+			PngHelperInternal.readBytes(inputStream, dummy, 0, toReadThisChunk);
 			crcEngine.update(dummy, 0, toReadThisChunk);
 			endChunkGoForNext();
 		}

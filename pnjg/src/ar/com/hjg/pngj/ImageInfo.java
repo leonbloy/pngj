@@ -13,12 +13,12 @@ public class ImageInfo {
 	private static final int MAX_COLS_ROWS_VAL = 1000000;
 
 	/**
-	 * Image width, in pixels.
+	 * Cols= Image width, in pixels.
 	 */
 	public final int cols;
 
 	/**
-	 * Image height, in pixels
+	 * Rows= Image height, in pixels
 	 */
 	public final int rows;
 
@@ -29,8 +29,8 @@ public class ImageInfo {
 	public final int bitDepth;
 
 	/**
-	 * Number of channels, as used internally. This is 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for
-	 * grayscales or indexed.
+	 * Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for
+	 * grayscale or indexed.
 	 */
 	public final int channels;
 

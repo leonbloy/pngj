@@ -3,7 +3,7 @@ package ar.com.hjg.pngj.chunks;
 import java.util.Calendar;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkTIME extends PngChunkSingle {
@@ -22,7 +22,7 @@ public class PngChunkTIME extends PngChunkSingle {
 	@Override
 	public ChunkRaw createRawChunk() {
 		ChunkRaw c = createEmptyChunk(7, true);
-		PngHelper.writeInt2tobytes(year, c.data, 0);
+		PngHelperInternal.writeInt2tobytes(year, c.data, 0);
 		c.data[2] = (byte) mon;
 		c.data[3] = (byte) day;
 		c.data[4] = (byte) hour;
@@ -35,12 +35,12 @@ public class PngChunkTIME extends PngChunkSingle {
 	public void parseFromRaw(ChunkRaw chunk) {
 		if (chunk.len != 7)
 			throw new PngjException("bad chunk " + chunk);
-		year = PngHelper.readInt2fromBytes(chunk.data, 0);
-		mon = PngHelper.readInt1fromByte(chunk.data, 2);
-		day = PngHelper.readInt1fromByte(chunk.data, 3);
-		hour = PngHelper.readInt1fromByte(chunk.data, 4);
-		min = PngHelper.readInt1fromByte(chunk.data, 5);
-		sec = PngHelper.readInt1fromByte(chunk.data, 6);
+		year = PngHelperInternal.readInt2fromBytes(chunk.data, 0);
+		mon = PngHelperInternal.readInt1fromByte(chunk.data, 2);
+		day = PngHelperInternal.readInt1fromByte(chunk.data, 3);
+		hour = PngHelperInternal.readInt1fromByte(chunk.data, 4);
+		min = PngHelperInternal.readInt1fromByte(chunk.data, 5);
+		sec = PngHelperInternal.readInt1fromByte(chunk.data, 6);
 	}
 
 	@Override

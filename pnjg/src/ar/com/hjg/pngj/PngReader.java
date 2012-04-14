@@ -65,19 +65,19 @@ public class PngReader {
 		this.chunksList = new ChunksList(null);
 		this.metadata = new PngMetadata(chunksList);
 		// reads header (magic bytes)
-		byte[] pngid = new byte[PngHelper.pngIdBytes.length];
-		PngHelper.readBytes(is, pngid, 0, pngid.length);
+		byte[] pngid = new byte[PngHelperInternal.pngIdBytes.length];
+		PngHelperInternal.readBytes(is, pngid, 0, pngid.length);
 		offset += pngid.length;
-		if (!Arrays.equals(pngid, PngHelper.pngIdBytes))
+		if (!Arrays.equals(pngid, PngHelperInternal.pngIdBytes))
 			throw new PngjInputException("Bad PNG signature");
 		// reads first chunk
 		currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
-		int clen = PngHelper.readInt4(is);
+		int clen = PngHelperInternal.readInt4(is);
 		offset += 4;
 		if (clen != 13)
 			throw new RuntimeException("IDHR chunk len != 13 ?? " + clen);
 		byte[] chunkid = new byte[4];
-		PngHelper.readBytes(is, chunkid, 0, 4);
+		PngHelperInternal.readBytes(is, chunkid, 0, 4);
 		if (!Arrays.equals(chunkid, ChunkHelper.b_IHDR))
 			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
 		offset += 4;
@@ -158,11 +158,11 @@ public class PngReader {
 		byte[] chunkid = new byte[4]; // it's important to reallocate in each iteration
 		currentChunkGroup = ChunksList.CHUNK_GROUP_1_AFTERIDHR;
 		while (!found) {
-			clen = PngHelper.readInt4(is);
+			clen = PngHelperInternal.readInt4(is);
 			offset += 4;
 			if (clen < 0)
 				break;
-			PngHelper.readBytes(is, chunkid, 0, 4);
+			PngHelperInternal.readBytes(is, chunkid, 0, 4);
 			offset += 4;
 			if (Arrays.equals(chunkid, ChunkHelper.b_IDAT)) {
 				found = true;
@@ -208,11 +208,11 @@ public class PngReader {
 		while (!endfound) {
 			ignore = false;
 			if (!first) {
-				clen = PngHelper.readInt4(is);
+				clen = PngHelperInternal.readInt4(is);
 				offset += 4;
 				if (clen < 0)
 					throw new PngjInputException("bad len " + clen);
-				PngHelper.readBytes(is, chunkid, 0, 4);
+				PngHelperInternal.readBytes(is, chunkid, 0, 4);
 				offset += 4;
 			}
 			first = false;
@@ -276,7 +276,7 @@ public class PngReader {
 		rowb = rowbprev;
 		rowbprev = tmp;
 		// loads in rowbfilter "raw" bytes, with filter
-		PngHelper.readBytes(idatIstream, rowbfilter, 0, rowbfilter.length);
+		PngHelperInternal.readBytes(idatIstream, rowbfilter, 0, rowbfilter.length);
 		rowb[0] = 0;
 		unfilterRow();
 		rowb[0] = rowbfilter[0];

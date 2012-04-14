@@ -22,26 +22,26 @@ public class ImageLine {
 	/**
 	 * The 'scanline' is an array of integers, corresponds to an image line (row).
 	 * <p>
-	 * Except for 'packed' formats (gray/indexed with 1-2-4 bitdepth) each int is a "sample" (one for channel), (0-255
-	 * or 0-65535) in the respective PNG sequence sequence : (R G B R G B...) or (R G B A R G B A...) or (g g g ...) or
-	 * ( i i i) (palette index)
+	 * Except for 'packed' formats (gray/indexed with 1-2-4 bitdepth) each <code>int</code> is a "sample" (one for channel), (0-255
+	 * or 0-65535) in the corresponding PNG sequence: <code>R G B R G B...</code> or <code>R G B A R G B A...</tt> 
+	 * or <code>g g g ...</code> or  <code>i i i</code> (palette index)
 	 * <p>
-	 * For bitdepth 1/2/4 , each element is a PACKED byte! To get an unpacked copy, see <code>tf_pack()</code> and its
+	 * For bitdepth=1/2/4 , each value is a PACKED byte! To get an unpacked copy, see <code>tf_pack()</code> and its
 	 * inverse <code>tf_unpack()</code>
 	 * <p>
-	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.tf_palIdx2RGB()</code> (can't do the reverse)
+	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.tf_palIdx2RGB()</code> (you can't do the reverse)
 	 */
-	public final int[] scanline; // see explanation above!!
+	public final int[] scanline; 
 
 	protected FilterType filterUsed; // informational ; only filled by the reader
-	public final int channels; // copied from imgInfo, more handy
-	public final int bitDepth; // copied from imgInfo, more handy
+	final int channels; // copied from imgInfo, more handy
+	final int bitDepth; // copied from imgInfo, more handy
 
 	public ImageLine(ImageInfo imgInfo) {
 		this.imgInfo = imgInfo;
 		channels = imgInfo.channels;
 		scanline = new int[imgInfo.samplesPerRowP];
-		this.bitDepth = imgInfo.bitDepth;
+		bitDepth = imgInfo.bitDepth;
 	}
 
 	/** This row number inside the image (0 is top) */
@@ -77,11 +77,12 @@ public class ImageLine {
 	}
 
 	/**
-	 * Unpacks scanline (for bitdepth 1-2-4) into buffer.
+	 * Unpacks scanline (for bitdepth 1-2-4) into a array <code>int[]</code>
 	 * <p>
-	 * You can (OPTIONALLY) pass an preallocated array to use.
+	 * You can (OPTIONALLY) pass an preallocated array, that will be filled and returned.
+	 * If null, it will be allocated 
 	 * <p>
-	 * If scale==TRUE scales the value (just a bit shift).
+	 * If <code>scale==true<code>, it scales the value (just a bit shift).
 	 */
 	public int[] tf_unpack(int[] buf, boolean scale) {
 		int len = scanline.length;
@@ -119,9 +120,9 @@ public class ImageLine {
 	}
 
 	/**
-	 * Packs scanline (for bitdepth 1-2-4) from buffer.
+	 * Packs scanline (for bitdepth 1-2-4) from array into the scanline
 	 * <p>
-	 * If scale==TRUE scales the value (just a bit shift).
+	 * If <code>scale==true<code>, it scales the value (just a bit shift).
 	 */
 	public void tf_pack(int[] buf, boolean scale) { // writes scanline
 		int len = scanline.length;

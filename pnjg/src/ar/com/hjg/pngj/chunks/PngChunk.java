@@ -14,20 +14,42 @@ import ar.com.hjg.pngj.PngjException;
  * see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
  * 
  * <p>
- * Notes for extending classes: <br>
- * -
- * 
- * @author Hernan J Gonzalez
- * 
+ * New classes should extend PngChunkSingle or PngChunkMultiple
  */
 public abstract class PngChunk {
 
-	public final String id; // 4 letters
+	/**
+	 * Chunk id: 4 letters
+	 */
+	public final String id;
+	/**
+	 * autocomputed at creation time
+	 */
+	public final boolean crit, pub, safe;
 	protected final ImageInfo imgInfo;
-	public final boolean crit, pub, safe; // autocomputed
 
 	public enum ChunkOrderingConstraint {
-		NONE, BEFORE_PLTE_AND_IDAT, AFTER_PLTE_BEFORE_IDAT, BEFORE_IDAT, NA;
+		/**
+		 * no ordering constraint
+		 */
+		NONE,
+		/**
+		 * Must go before PLTE (and hence, also before IDAT)
+		 */
+		BEFORE_PLTE_AND_IDAT,
+		/**
+		 * Must go after PLTE but before IDAT
+		 */
+		AFTER_PLTE_BEFORE_IDAT,
+		/**
+		 * Must before IDAT (before or after PLTE)
+		 */
+		BEFORE_IDAT,
+		/**
+		 * Not apply
+		 */
+		NA;
+
 		public boolean mustGoBeforePLTE() {
 			return this == BEFORE_PLTE_AND_IDAT;
 		}
@@ -42,15 +64,17 @@ public abstract class PngChunk {
 	}
 
 	/**
-	 * For writing. Queued chunks with high prioirty will be written as soon as possible
+	 * For writing. Queued chunks with high priority will be written as soon as possible
 	 */
 	private boolean writePriority = false;
+
 	private int chunkGroup = -1; // chunk group where it was read or writen
 	private int lenori = -1; // merely informational, for read chunks
 
 	/**
-	 * This static map defines which PngChunk class correspond to which ChunkID The client can add other chunks to this
-	 * map statically, before reading
+	 * This static map defines which PngChunk class correspond to which ChunkID
+	 * <p>
+	 * The client can add other chunks to this map statically, before reading an image
 	 */
 	public final static Map<String, Class<? extends PngChunk>> factoryMap = new HashMap<String, Class<? extends PngChunk>>();
 	static {
@@ -74,7 +98,16 @@ public abstract class PngChunk {
 		factoryMap.put(ChunkHelper.sPLT, PngChunkSPLT.class);
 	}
 
-	static boolean isKnown(String id) {
+	/**
+	 * A chunks "is known" if we recognize its class, according with <code>factoryMap</code>
+	 * 
+	 * This is not necessarily the same as being "STANDARD"
+	 * 
+	 * @param id
+	 *            chunkid
+	 * @return true or false
+	 */
+	public static boolean isKnown(String id) {
 		return factoryMap.containsKey(id);
 	}
 
@@ -86,6 +119,9 @@ public abstract class PngChunk {
 		this.safe = ChunkHelper.isSafeToCopy(id);
 	}
 
+	/**
+	 * This factory creates the corresponding chunk and parses the raw chunk. This is used when reading.
+	 */
 	public static PngChunk factory(ChunkRaw chunk, ImageInfo info) {
 		PngChunk c = factoryFromId(ChunkHelper.toString(chunk.idbytes), info);
 		c.lenori = chunk.len;
@@ -93,6 +129,9 @@ public abstract class PngChunk {
 		return c;
 	}
 
+	/**
+	 * Creates one new blank chunk of the corresponding type, according to factoryMap (PngChunkUNKNOWN if not known)
+	 */
 	public static PngChunk factoryFromId(String cid, ImageInfo info) {
 		PngChunk chunk = null;
 		try {
@@ -119,6 +158,9 @@ public abstract class PngChunk {
 		return "chunk id= " + id + " (" + lenori + ") c=" + getClass().getSimpleName();
 	}
 
+	/**
+	 * Makes a clone (deep copy) calling <tt>cloneDataFromRead</tt>
+	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
 		PngChunk cn = factoryFromId(chunk.id, info);
@@ -128,6 +170,9 @@ public abstract class PngChunk {
 		return (T) cn;
 	}
 
+	/**
+	 * For writing. Queued chunks with high priority will be written as soon as possible
+	 */
 	void setPriority(boolean highPrioriy) {
 		writePriority = highPrioriy;
 	}
@@ -136,6 +181,10 @@ public abstract class PngChunk {
 		return writePriority;
 	}
 
+	/**
+	 * In which "chunkGroup" (see ChunkList object for definition) this was read or written. -1 if not read or written
+	 * (eg, queued)
+	 */
 	public int getChunkGroup() {
 		return chunkGroup;
 	}
@@ -154,7 +203,7 @@ public abstract class PngChunk {
 	/**
 	 * Creates the phsyical chunk. This is uses when writing and must be implemented for each chunk type
 	 * 
-	 * @return
+	 * @return A newly allocated and filled raw chunk
 	 */
 	public abstract ChunkRaw createRawChunk();
 
@@ -172,10 +221,12 @@ public abstract class PngChunk {
 	 */
 	public abstract void cloneDataFromRead(PngChunk other);
 
-	/** must be overriden - only relevant for ancillary chunks */
+	/** only relevant for ancillary chunks */
 	public abstract boolean allowsMultiple();
 
-	/** mustGoBeforeXX/After must be overriden - only relevant for ancillary chunks */
+	/**
+	 * must be overriden - only relevant for ancillary chunks
+	 */
 	public abstract ChunkOrderingConstraint getOrderingConstraint();
 
 }

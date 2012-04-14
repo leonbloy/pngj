@@ -59,6 +59,16 @@ public class FileHelper {
 		return os;
 	}
 
+	/**
+	 * WARNING: This will throw exception if run in a sandboxed environment (as Google App Engine) that does not
+	 * permit to use Java class java.io.FileOutputStream. You can always use the PngWriter constructor with 
+	 * an arbitrary OutputStream  
+     * 
+	 * @param file File to be writen
+	 * @param imgInfo  Target image basic info
+	 * @param allowOverwrite if true, file will be overwriten if it already exists. 
+	 * @return a new PngWriter - see constructor doc
+	 */
 	public static PngWriter createPngWriter(File file, ImageInfo imgInfo, boolean allowOverwrite) {
 		return new PngWriter(openFileForWriting(file, allowOverwrite), imgInfo, file.getName());
 	}

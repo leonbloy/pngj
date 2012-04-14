@@ -21,6 +21,7 @@ import java.util.Set;
  * 
  */
 class CheckWhiteListed {
+
 	private static final String WHITELIST_FILENAME = "whitelistedclasses.txt";
 	private Set<String> whiteList;
 
@@ -75,9 +76,10 @@ class CheckWhiteListed {
 
 	public static void main(String[] args) {
 		CheckWhiteListed checker = new CheckWhiteListed();
-		// this should include every directory except "nosandnbox"
+		// this should include every directory except "nosandnbox" and "test"
 		checker.checkDir(new File("bin/ar/com/hjg/pngj"), false);
 		checker.checkDir(new File("bin/ar/com/hjg/pngj/chunks"), false);
 		checker.checkDir(new File("bin/ar/com/hjg/pngj/lossy"), false);
+		// checker.checkDir(new File("bin/ar/com/hjg/pngj/test"), false); // This fails, it's ok
 	}
 }

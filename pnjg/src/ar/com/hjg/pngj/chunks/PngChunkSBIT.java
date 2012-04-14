@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /*
@@ -35,15 +35,15 @@ public class PngChunkSBIT extends PngChunkSingle {
 		if (c.len != getLen())
 			throw new PngjException("bad chunk length " + c);
 		if (imgInfo.greyscale) {
-			graysb = PngHelper.readInt1fromByte(c.data, 0);
+			graysb = PngHelperInternal.readInt1fromByte(c.data, 0);
 			if (imgInfo.alpha)
-				alphasb = PngHelper.readInt1fromByte(c.data, 1);
+				alphasb = PngHelperInternal.readInt1fromByte(c.data, 1);
 		} else {
-			redsb = PngHelper.readInt1fromByte(c.data, 0);
-			greensb = PngHelper.readInt1fromByte(c.data, 1);
-			bluesb = PngHelper.readInt1fromByte(c.data, 2);
+			redsb = PngHelperInternal.readInt1fromByte(c.data, 0);
+			greensb = PngHelperInternal.readInt1fromByte(c.data, 1);
+			bluesb = PngHelperInternal.readInt1fromByte(c.data, 2);
 			if (imgInfo.alpha)
-				alphasb = PngHelper.readInt1fromByte(c.data, 3);
+				alphasb = PngHelperInternal.readInt1fromByte(c.data, 3);
 		}
 	}
 

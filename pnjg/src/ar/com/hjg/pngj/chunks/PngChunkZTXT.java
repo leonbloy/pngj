@@ -4,7 +4,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkZTXT extends PngChunkTextVar {
@@ -19,10 +19,10 @@ public class PngChunkZTXT extends PngChunkTextVar {
 			return null;
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
-			ba.write(key.getBytes(PngHelper.charsetLatin1));
+			ba.write(key.getBytes(PngHelperInternal.charsetLatin1));
 			ba.write(0); // separator
 			ba.write(0); // compression method: 0
-			byte[] textbytes = ChunkHelper.compressBytes(val.getBytes(PngHelper.charsetLatin1), true);
+			byte[] textbytes = ChunkHelper.compressBytes(val.getBytes(PngHelperInternal.charsetLatin1), true);
 			ba.write(textbytes);
 			byte[] b = ba.toByteArray();
 			ChunkRaw chunk = createEmptyChunk(b.length, false);
@@ -44,12 +44,12 @@ public class PngChunkZTXT extends PngChunkTextVar {
 		}
 		if (nullsep < 0 || nullsep > c.data.length - 2)
 			throw new PngjException("bad zTXt chunk: no separator found");
-		key = new String(c.data, 0, nullsep, PngHelper.charsetLatin1);
+		key = new String(c.data, 0, nullsep, PngHelperInternal.charsetLatin1);
 		int compmet = (int) c.data[nullsep + 1];
 		if (compmet != 0)
 			throw new PngjException("bad zTXt chunk: unknown compression method");
 		byte[] uncomp = ChunkHelper.compressBytes(c.data, nullsep + 2, c.data.length - nullsep - 2, false); // uncompress
-		val = new String(uncomp, PngHelper.charsetLatin1);
+		val = new String(uncomp, PngHelperInternal.charsetLatin1);
 	}
 
 	@Override

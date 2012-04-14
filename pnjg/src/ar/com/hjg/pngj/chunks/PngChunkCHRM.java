@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelper;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /*
@@ -26,14 +26,14 @@ public class PngChunkCHRM extends PngChunkSingle {
 	public ChunkRaw createRawChunk() {
 		ChunkRaw c = null;
 		c = createEmptyChunk(32, true);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(whitex), c.data, 0);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(whitey), c.data, 4);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(redx), c.data, 8);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(redy), c.data, 12);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(greenx), c.data, 16);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(greeny), c.data, 20);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(bluex), c.data, 24);
-		PngHelper.writeInt4tobytes(PngHelper.doubleToInt100000(bluey), c.data, 28);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(whitex), c.data, 0);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(whitey), c.data, 4);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(redx), c.data, 8);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(redy), c.data, 12);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(greenx), c.data, 16);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(greeny), c.data, 20);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(bluex), c.data, 24);
+		PngHelperInternal.writeInt4tobytes(PngHelperInternal.doubleToInt100000(bluey), c.data, 28);
 		return c;
 	}
 
@@ -41,14 +41,14 @@ public class PngChunkCHRM extends PngChunkSingle {
 	public void parseFromRaw(ChunkRaw c) {
 		if (c.len != 32)
 			throw new PngjException("bad chunk " + c);
-		whitex = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 0));
-		whitey = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 4));
-		redx = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 8));
-		redy = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 12));
-		greenx = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 16));
-		greeny = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 20));
-		bluex = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 24));
-		bluey = PngHelper.intToDouble100000(PngHelper.readInt4fromBytes(c.data, 28));
+		whitex = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 0));
+		whitey = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 4));
+		redx = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 8));
+		redy = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 12));
+		greenx = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 16));
+		greeny = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 20));
+		bluex = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 24));
+		bluey = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 28));
 	}
 
 	@Override

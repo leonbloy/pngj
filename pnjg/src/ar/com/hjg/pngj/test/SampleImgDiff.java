@@ -11,7 +11,7 @@ import ar.com.hjg.pngj.PngReader;
  * 
  * TODO: Add alpha
  */
-public class ImgDiff {
+public class SampleImgDiff {
 	/**
 	 * asume que las imagenes son equivalentes res[0]=maxima diferencia (suma valores absoluto sobre todos los canales)
 	 * res[1]=columna en que se produce
@@ -60,8 +60,6 @@ public class ImgDiff {
 				maxDifRow = row;
 			}
 		}
-		i1.end();
-		i2.end();
 		if (maxDif == 0)
 			System.out.println("No difference");
 		else
@@ -69,7 +67,7 @@ public class ImgDiff {
 	}
 
 	public static void main(String[] args) {
-		if (args.length != 2) {
+		if (args.length != 2 || args[0].equals(args[1])) {
 			System.err.println("Enter two filenames (images to be compared)");
 			System.exit(1);
 		}

@@ -1,6 +1,13 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.9  (14 April 2012)
+  - Chunks API reorganization: PngChunkMultiple/Single, ChunksListForWrite, ChunkPredicate...
+  - ChunksListForWrite.getQueuedById and similar methods
+  - PngReader.end() no more necessary: it's called automatically after reading the last row
+  - PngWriter: user can set idatMaxSize (default increased to 32K)
+  - Small optimizations in PngWriter
+ 
 Version 0.85  (1 April 2012)
  - More robust Chunk management (ChunkGroup is now inside PngChunk; both PngReader and PngWriter have a ChunkList...)    
  - PngMetadata: both  PngReader and PngWriter have an instance to deal with metadata (chunks) at high level. eg: setDpi()/getDpi 

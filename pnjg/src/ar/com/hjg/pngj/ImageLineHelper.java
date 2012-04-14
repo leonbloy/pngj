@@ -3,10 +3,14 @@ package ar.com.hjg.pngj;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
- * Bunch of utility static methods to process/analyze an image line. Not essential at all.
+ * Bunch of utility static methods to process/analyze an image line at the pixel level.
+ * <p>
+ * Not essential at all.
  */
 public class ImageLineHelper {
+	
 	private final static double BIG_VALUE = Double.MAX_VALUE * 0.5;
+	
 	private final static double BIG_VALUE_NEG = Double.MAX_VALUE * (-0.5);
 
 	/**
@@ -176,5 +180,17 @@ public class ImageLineHelper {
 	public static int double2intClamped(ImageLine line, double d) {
 		d = d <= 0.0 ? 0 : (d >= 1.0 ? 1.0 : d);
 		return line.bitDepth == 16 ? (int) (d * 65535.0 + 0.5) : (int) (d * 255.0 + 0.5); //
+	}
+	
+	public static int clampTo_0_255(int i) {
+		return i > 255 ? 255 : (i < 0 ? 0 : i);
+	}
+
+	public static int clampTo_0_65535(int i) {
+		return i > 65535 ? 65535 : (i < 0 ? 0 : i);
+	}
+
+	public static int clampTo_128_127(int x) {
+		return x > 127 ? 127 : (x < -128 ? -128 : x);
 	}
 }
