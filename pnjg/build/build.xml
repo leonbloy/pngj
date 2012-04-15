@@ -29,7 +29,7 @@
 			<exclude name="**/nosandbox/**" />
 		</jar>
 		<jar destfile="${distdir}/pngj-src.jar" basedir="../src/" manifest="MANIFEST.MF" />
-		<jar destfile="${distdir}/pngj-doc.jar" basedir="../src/" manifest="MANIFEST.MF" />
+		<jar destfile="${distdir}/pngj-doc.jar" basedir="../doc/" manifest="MANIFEST.MF" />
 	</target>
 
 	<target name="maketar" depends="makejar">
