@@ -48,6 +48,8 @@
 		<copy file="../RELEASE-NOTES.txt" todir="${versiondir}" />
 		<tar destfile="${distdir}/pngj-${version.num}.tgz" basedir="${distdir}" includes="pngj-${version.num}/" compression="gzip">
 		</tar>
+		<zip destfile="${distdir}/pngj-${version.num}.zip" basedir="${distdir}" includes="pngj-${version.num}/">
+		</zip>
 		<delete dir="${versiondir}" />
 	</target>
 </project>
