@@ -6,12 +6,14 @@ import ar.com.hjg.pngj.PngHelperInternal;
 /*
  */
 public class PngChunkICCP extends PngChunkSingle {
+	public final static String ID = ChunkHelper.iCCP;
+
 	// http://www.w3.org/TR/PNG/#11iCCP
 	private String profileName;
 	private byte[] compressedProfile; // copmression/decopmresion is done in getter/setter
 
 	public PngChunkICCP(ImageInfo info) {
-		super(ChunkHelper.iCCP, info);
+		super(ID, info);
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import ar.com.hjg.pngj.PngjException;
 /*
  */
 public class PngChunkTRNS extends PngChunkSingle {
+	public final static String ID = ChunkHelper.tRNS;
+
 	// http://www.w3.org/TR/PNG/#11tRNS
 	// this chunk structure depends on the image type
 	// only one of these is meaningful
@@ -15,7 +17,7 @@ public class PngChunkTRNS extends PngChunkSingle {
 	private int[] paletteAlpha = new int[] {};
 
 	public PngChunkTRNS(ImageInfo info) {
-		super(ChunkHelper.tRNS, info);
+		super(ID, info);
 	}
 
 	@Override

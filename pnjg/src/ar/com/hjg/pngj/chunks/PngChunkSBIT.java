@@ -7,6 +7,7 @@ import ar.com.hjg.pngj.PngjException;
 /*
  */
 public class PngChunkSBIT extends PngChunkSingle {
+	public final static String ID = ChunkHelper.sBIT;
 	// http://www.w3.org/TR/PNG/#11sBIT
 	// this chunk structure depends on the image type
 
@@ -15,7 +16,7 @@ public class PngChunkSBIT extends PngChunkSingle {
 	private int redsb, greensb, bluesb;
 
 	public PngChunkSBIT(ImageInfo info) {
-		super(ChunkHelper.sBIT, info);
+		super(ID, info);
 	}
 
 	@Override

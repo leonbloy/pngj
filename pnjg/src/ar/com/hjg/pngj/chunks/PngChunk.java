@@ -74,9 +74,10 @@ public abstract class PngChunk {
 	/**
 	 * This static map defines which PngChunk class correspond to which ChunkID
 	 * <p>
-	 * The client can add other chunks to this map statically, before reading an image
+	 * The client can add other chunks to this map statically, before reading an image, calling
+	 * PngChunk.factoryRegister(id,class)
 	 */
-	public final static Map<String, Class<? extends PngChunk>> factoryMap = new HashMap<String, Class<? extends PngChunk>>();
+	private final static Map<String, Class<? extends PngChunk>> factoryMap = new HashMap<String, Class<? extends PngChunk>>();
 	static {
 		factoryMap.put(ChunkHelper.IDAT, PngChunkIDAT.class);
 		factoryMap.put(ChunkHelper.IHDR, PngChunkIHDR.class);
@@ -96,6 +97,16 @@ public abstract class PngChunk {
 		factoryMap.put(ChunkHelper.sRGB, PngChunkSRGB.class);
 		factoryMap.put(ChunkHelper.hIST, PngChunkHIST.class);
 		factoryMap.put(ChunkHelper.sPLT, PngChunkSPLT.class);
+		// extended
+		factoryMap.put(PngChunkOFFS.ID, PngChunkOFFS.class);
+		factoryMap.put(PngChunkSTER.ID, PngChunkSTER.class);
+	}
+
+	/**
+	 * to be called by user code that wants to add some chunks to the factory
+	 */
+	public static void factoryRegister(String chunkId, Class<? extends PngChunk> chunkClass) {
+		factoryMap.put(chunkId, chunkClass);
 	}
 
 	/**

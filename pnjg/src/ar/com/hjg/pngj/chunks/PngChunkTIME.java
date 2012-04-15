@@ -7,11 +7,13 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkTIME extends PngChunkSingle {
+	public final static String ID = ChunkHelper.tIME;
+
 	// http://www.w3.org/TR/PNG/#11tIME
 	private int year, mon, day, hour, min, sec;
 
 	public PngChunkTIME(ImageInfo info) {
-		super(ChunkHelper.tIME, info);
+		super(ID, info);
 	}
 
 	@Override

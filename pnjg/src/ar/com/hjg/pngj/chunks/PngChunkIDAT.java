@@ -3,11 +3,13 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 
 public class PngChunkIDAT extends PngChunkMultiple {
+	public final static String ID = ChunkHelper.IDAT;
+
 	// http://www.w3.org/TR/PNG/#11IDAT
 	// This is dummy placeholder - we write/read this chunk (actually several)
 	// by special code.
 	public PngChunkIDAT(ImageInfo i) {
-		super(ChunkHelper.IDAT, i);
+		super(ID, i);
 	}
 
 	@Override

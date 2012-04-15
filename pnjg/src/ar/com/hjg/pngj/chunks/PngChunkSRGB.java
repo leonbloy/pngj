@@ -7,6 +7,8 @@ import ar.com.hjg.pngj.PngjException;
 /*
  */
 public class PngChunkSRGB extends PngChunkSingle {
+	public final static String ID = ChunkHelper.sRGB;
+
 	// http://www.w3.org/TR/PNG/#11sRGB
 
 	public static final int RENDER_INTENT_Perceptual = 0;
@@ -17,7 +19,7 @@ public class PngChunkSRGB extends PngChunkSingle {
 	private int intent;
 
 	public PngChunkSRGB(ImageInfo info) {
-		super(ChunkHelper.sRGB, info);
+		super(ID, info);
 	}
 
 	@Override

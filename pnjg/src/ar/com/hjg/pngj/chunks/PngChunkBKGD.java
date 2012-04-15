@@ -13,6 +13,7 @@ import ar.com.hjg.pngj.PngjException;
  * this chunk structure depends on the image type
  */
 public class PngChunkBKGD extends PngChunkSingle {
+	public final static String ID = ChunkHelper.bKGD;
 	// only one of these is meaningful
 	private int gray;
 	private int red, green, blue;

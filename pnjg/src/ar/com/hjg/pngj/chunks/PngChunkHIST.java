@@ -7,13 +7,15 @@ import ar.com.hjg.pngj.PngjException;
 /*
  */
 public class PngChunkHIST extends PngChunkSingle {
+	public final static String ID = ChunkHelper.hIST;
+
 	// http://www.w3.org/TR/PNG/#11hIST
 	// only for palette images
 
 	private int[] hist = new int[0]; // should have same lenght as palette
 
 	public PngChunkHIST(ImageInfo info) {
-		super(ChunkHelper.hIST, info);
+		super(ID, info);
 	}
 
 	@Override

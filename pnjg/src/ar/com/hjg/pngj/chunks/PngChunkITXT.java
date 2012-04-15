@@ -11,6 +11,7 @@ import ar.com.hjg.pngj.PngjException;
  * UNTESTED!
  */
 public class PngChunkITXT extends PngChunkTextVar {
+	public final static String ID = ChunkHelper.iTXt;
 
 	private boolean compressed = false;
 	private String langTag = "";
@@ -18,7 +19,7 @@ public class PngChunkITXT extends PngChunkTextVar {
 
 	// http://www.w3.org/TR/PNG/#11iTXt
 	public PngChunkITXT(ImageInfo info) {
-		super(ChunkHelper.iTXt, info);
+		super(ID, info);
 	}
 
 	@Override
@@ -72,7 +73,8 @@ public class PngChunkITXT extends PngChunkTextVar {
 		if (compressed && c.data[i] != 0)
 			throw new PngjException("Bad formed PngChunkITXT chunk - bad compression method ");
 		langTag = new String(c.data, i, nullsIdx[1] - i, PngHelperInternal.charsetLatin1);
-		translatedTag = new String(c.data, nullsIdx[1] + 1, nullsIdx[2] - nullsIdx[1] - 1, PngHelperInternal.charsetUTF8);
+		translatedTag = new String(c.data, nullsIdx[1] + 1, nullsIdx[2] - nullsIdx[1] - 1,
+				PngHelperInternal.charsetUTF8);
 		i = nullsIdx[2] + 1;
 		if (compressed) {
 			byte[] bytes = ChunkHelper.compressBytes(c.data, i, c.data.length - i, false);

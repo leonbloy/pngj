@@ -7,11 +7,13 @@ import ar.com.hjg.pngj.PngjException;
 /*
  */
 public class PngChunkGAMA extends PngChunkSingle {
+	public final static String ID = ChunkHelper.gAMA;
+
 	// http://www.w3.org/TR/PNG/#11gAMA
 	private double gamma;
 
 	public PngChunkGAMA(ImageInfo info) {
-		super(ChunkHelper.gAMA, info);
+		super(ID, info);
 	}
 
 	@Override

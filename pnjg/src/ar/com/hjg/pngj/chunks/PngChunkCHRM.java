@@ -7,6 +7,8 @@ import ar.com.hjg.pngj.PngjException;
 /*
  */
 public class PngChunkCHRM extends PngChunkSingle {
+	public final static String ID = ChunkHelper.cHRM;
+
 	// http://www.w3.org/TR/PNG/#11cHRM
 	private double whitex, whitey;
 	private double redx, redy;
@@ -14,7 +16,7 @@ public class PngChunkCHRM extends PngChunkSingle {
 	private double bluex, bluey;
 
 	public PngChunkCHRM(ImageInfo info) {
-		super(ChunkHelper.cHRM, info);
+		super(ID, info);
 	}
 
 	@Override

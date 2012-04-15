@@ -5,13 +5,15 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkPHYS extends PngChunkSingle {
+	public final static String ID = ChunkHelper.pHYs;
+
 	// http://www.w3.org/TR/PNG/#11pHYs
 	private long pixelsxUnitX;
 	private long pixelsxUnitY;
 	private int units; // 0: unknown 1:metre
 
 	public PngChunkPHYS(ImageInfo info) {
-		super(ChunkHelper.pHYs, info);
+		super(ID, info);
 	}
 
 	@Override

@@ -7,6 +7,8 @@ import ar.com.hjg.pngj.PngjException;
  * Palette chunk *this is critical*
  */
 public class PngChunkPLTE extends PngChunkSingle {
+	public final static String ID = ChunkHelper.PLTE;
+
 	// http://www.w3.org/TR/PNG/#11PLTE
 	private int nentries = 0;
 	/**
@@ -15,7 +17,7 @@ public class PngChunkPLTE extends PngChunkSingle {
 	private int[] entries;
 
 	public PngChunkPLTE(ImageInfo info) {
-		super(ChunkHelper.PLTE, info);
+		super(ID, info);
 	}
 
 	@Override

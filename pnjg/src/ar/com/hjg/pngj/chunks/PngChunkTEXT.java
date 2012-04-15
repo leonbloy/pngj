@@ -4,8 +4,10 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 
 public class PngChunkTEXT extends PngChunkTextVar {
+	public final static String ID = ChunkHelper.tEXt;
+
 	public PngChunkTEXT(ImageInfo info) {
-		super(ChunkHelper.tEXt, info);
+		super(ID, info);
 	}
 
 	@Override

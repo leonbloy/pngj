@@ -8,6 +8,8 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkSPLT extends PngChunkMultiple {
+	public final static String ID = ChunkHelper.sPLT;
+
 	// http://www.w3.org/TR/PNG/#11sPLT
 
 	private String palName;
@@ -15,7 +17,7 @@ public class PngChunkSPLT extends PngChunkMultiple {
 	private int[] palette; // 5 elements per entry
 
 	public PngChunkSPLT(ImageInfo info) {
-		super(ChunkHelper.sPLT, info);
+		super(ID, info);
 	}
 
 	@Override

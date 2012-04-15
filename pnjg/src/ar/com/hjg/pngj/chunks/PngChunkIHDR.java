@@ -10,6 +10,8 @@ import ar.com.hjg.pngj.PngjException;
  * this is a special chunk!
  */
 public class PngChunkIHDR extends PngChunkSingle {
+	public final static String ID = ChunkHelper.IHDR;
+
 	private int cols;
 	private int rows;
 	private int bitspc;
@@ -21,7 +23,7 @@ public class PngChunkIHDR extends PngChunkSingle {
 	// http://www.w3.org/TR/PNG/#11IHDR
 	//
 	public PngChunkIHDR(ImageInfo info) {
-		super(ChunkHelper.IHDR, info);
+		super(ID, info);
 	}
 
 	@Override

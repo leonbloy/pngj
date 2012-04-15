@@ -8,9 +8,11 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngChunkZTXT extends PngChunkTextVar {
+	public final static String ID = ChunkHelper.zTXt;
+
 	// http://www.w3.org/TR/PNG/#11zTXt
 	public PngChunkZTXT(ImageInfo info) {
-		super(ChunkHelper.zTXt, info);
+		super(ID, info);
 	}
 
 	@Override
