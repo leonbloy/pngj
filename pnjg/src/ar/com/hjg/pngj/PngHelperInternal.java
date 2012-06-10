@@ -174,4 +174,41 @@ public class PngHelperInternal {
 		return crcProvider.get();
 	}
 
+	/// filters 
+	public static int unfilterRowNone(int r) {
+		return (int) (r & 0xFF);
+	}
+
+	public static int unfilterRowSub(int r, int left) {
+		return ((int) (r + left) & 0xFF);
+	}
+
+	public static int unfilterRowUp(int r, int up) {
+		return ((int) (r + up) & 0xFF);
+	}
+
+	public static int unfilterRowAverage(int r, int left, int up) {
+		return (r + (left + up) / 2) & 0xFF;
+	}
+
+	public static int unfilterRowPaeth(int r, int a, int b, int c) { // a = left, b = above, c = upper left
+		return (r + filterPaethPredictor(a, b, c)) & 0xFF;
+	}
+
+	public final static int filterPaethPredictor(final int a, final int b, final int c) {
+		// from http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
+		// a = left, b = above, c = upper left
+		final int p = a + b - c;// ; initial estimate
+		final int pa = p >= a ? p - a : a - p;
+		final int pb = p >= b ? p - b : b - p;
+		final int pc = p >= c ? p - c : c - p;
+		// ; return nearest of a,b,c,
+		// ; breaking ties in order a,b,c.
+		if (pa <= pb && pa <= pc)
+			return a;
+		else if (pb <= pc)
+			return b;
+		else
+			return c;
+	}
 }

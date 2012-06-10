@@ -6,7 +6,6 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 

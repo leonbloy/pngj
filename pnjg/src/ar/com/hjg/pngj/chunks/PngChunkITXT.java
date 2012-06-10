@@ -28,15 +28,15 @@ public class PngChunkITXT extends PngChunkTextVar {
 			return null;
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
-			ba.write(key.getBytes(PngHelperInternal.charsetLatin1));
+			ba.write(ChunkHelper.toBytes(key));
 			ba.write(0); // separator
 			ba.write(compressed ? 1 : 0);
 			ba.write(0); // compression method (always 0)
-			ba.write(langTag.getBytes(PngHelperInternal.charsetUTF8));
+			ba.write(ChunkHelper.toBytes(langTag));
 			ba.write(0); // separator
-			ba.write(translatedTag.getBytes(PngHelperInternal.charsetUTF8));
+			ba.write(ChunkHelper.toBytesUTF8(translatedTag));
 			ba.write(0); // separator
-			byte[] textbytes = val.getBytes(PngHelperInternal.charsetUTF8);
+			byte[] textbytes = ChunkHelper.toBytesUTF8(val);
 			if (compressed) {
 				textbytes = ChunkHelper.compressBytes(textbytes, true);
 			}
@@ -66,7 +66,7 @@ public class PngChunkITXT extends PngChunkTextVar {
 		}
 		if (nullsFound != 3)
 			throw new PngjException("Bad formed PngChunkITXT chunk");
-		key = new String(c.data, 0, nullsIdx[0], PngHelperInternal.charsetLatin1);
+		key = ChunkHelper.toString(c.data, 0, nullsIdx[0]);
 		int i = nullsIdx[0] + 1;
 		compressed = c.data[i] == 0 ? false : true;
 		i++;
@@ -78,9 +78,9 @@ public class PngChunkITXT extends PngChunkTextVar {
 		i = nullsIdx[2] + 1;
 		if (compressed) {
 			byte[] bytes = ChunkHelper.compressBytes(c.data, i, c.data.length - i, false);
-			val = new String(bytes, PngHelperInternal.charsetUTF8);
+			val = ChunkHelper.toStringUTF8(bytes);
 		} else {
-			val = new String(c.data, i, c.data.length - i, PngHelperInternal.charsetUTF8);
+			val =  ChunkHelper.toStringUTF8(c.data, i, c.data.length - i);
 		}
 	}
 

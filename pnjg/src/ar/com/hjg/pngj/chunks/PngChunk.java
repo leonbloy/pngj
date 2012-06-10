@@ -9,25 +9,36 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * Represents a PNG chunk
- * 
- * see http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
- * 
+ * Represents a instance of a PNG chunk
  * <p>
- * New classes should extend PngChunkSingle or PngChunkMultiple
+ * See <a
+ * href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks
+ * .html</a> </a>
+ * <p>
+ * Concrete classes should extend {@link PngChunkSingle} or {@link PngChunkMultiple}
+ * <p>
+ * Note that some methods/fields are type-specific (getOrderingConstraint(), allowsMultiple()),<br>
+ * some are 'almost' type-specific (id,crit,pub,safe; the exception is PngUKNOWN), <br>
+ * and the rest are instance-specific
  */
 public abstract class PngChunk {
 
 	/**
-	 * Chunk id: 4 letters
+	 * Chunk-id: 4 letters
 	 */
 	public final String id;
 	/**
-	 * autocomputed at creation time
+	 * Autocomputed at creation time
 	 */
 	public final boolean crit, pub, safe;
+
 	protected final ImageInfo imgInfo;
 
+	/**
+	 * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks. 
+	 * Theoretically, there could be more general
+	 * constraints, but these cover the constraints for standard chunks.  
+	 */
 	public enum ChunkOrderingConstraint {
 		/**
 		 * no ordering constraint
@@ -46,7 +57,7 @@ public abstract class PngChunk {
 		 */
 		BEFORE_IDAT,
 		/**
-		 * Not apply
+		 * Does not apply
 		 */
 		NA;
 
@@ -63,10 +74,7 @@ public abstract class PngChunk {
 		}
 	}
 
-	/**
-	 * For writing. Queued chunks with high priority will be written as soon as possible
-	 */
-	private boolean writePriority = false;
+	private boolean priority = false; //For writing. Queued chunks with high priority will be written as soon as possible
 
 	private int chunkGroup = -1; // chunk group where it was read or writen
 	private int lenori = -1; // merely informational, for read chunks
@@ -103,20 +111,23 @@ public abstract class PngChunk {
 	}
 
 	/**
-	 * to be called by user code that wants to add some chunks to the factory
+	 * Registers a chunk-id (4 letters) to be associated with a PngChunk class
+	 * <p>
+	 * This method should be called by user code that wants to add some chunks (not implmemented in this library) to the
+	 * factory, so that the PngReader knows about it.
 	 */
 	public static void factoryRegister(String chunkId, Class<? extends PngChunk> chunkClass) {
 		factoryMap.put(chunkId, chunkClass);
 	}
 
 	/**
-	 * A chunks "is known" if we recognize its class, according with <code>factoryMap</code>
-	 * 
-	 * This is not necessarily the same as being "STANDARD"
-	 * 
-	 * @param id
-	 *            chunkid
-	 * @return true or false
+	 * True if the chunk-id type is known.
+	 * <p>
+	 * A chunk is known if we recognize its class, according with <code>factoryMap</code> 
+	 * <p>
+	 * This is not necessarily the same as being "STANDARD", or being implemented in this library 
+	 * <p>
+	 * Unknown chunks will be parsed as instances of {@link PngChunkUNKNOWN}
 	 */
 	public static boolean isKnown(String id) {
 		return factoryMap.containsKey(id);
@@ -152,25 +163,20 @@ public abstract class PngChunk {
 				chunk = constr.newInstance(info);
 			}
 		} catch (Exception e) {
-			// this can happend for unkown chunks
+			// this can happen for unkown chunks
 		}
 		if (chunk == null)
 			chunk = new PngChunkUNKNOWN(cid, info);
 		return chunk;
 	}
 
-	protected ChunkRaw createEmptyChunk(int len, boolean alloc) {
+	protected final ChunkRaw createEmptyChunk(int len, boolean alloc) {
 		ChunkRaw c = new ChunkRaw(len, ChunkHelper.toBytes(id), alloc);
 		return c;
 	}
 
-	@Override
-	public String toString() {
-		return "chunk id= " + id + " (" + lenori + ") c=" + getClass().getSimpleName();
-	}
-
 	/**
-	 * Makes a clone (deep copy) calling <tt>cloneDataFromRead</tt>
+	 * Makes a clone (deep copy) calling {@link #cloneDataFromRead(PngChunk)}
 	 */
 	@SuppressWarnings("unchecked")
 	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
@@ -181,30 +187,33 @@ public abstract class PngChunk {
 		return (T) cn;
 	}
 
-	/**
-	 * For writing. Queued chunks with high priority will be written as soon as possible
-	 */
-	void setPriority(boolean highPrioriy) {
-		writePriority = highPrioriy;
-	}
 
-	boolean hasPriority() {
-		return writePriority;
-	}
 
 	/**
-	 * In which "chunkGroup" (see ChunkList object for definition) this was read or written. -1 if not read or written
-	 * (eg, queued)
+	 * In which "chunkGroup" (see {@link ChunksList}for definition) this chunks instance was read or written.
+	 * <p>
+	 * -1 if not read or written (eg, queued)
 	 */
-	public int getChunkGroup() {
+	final public int getChunkGroup() {
 		return chunkGroup;
 	}
 
-	public void setChunkGroup(int chunkGroup) {
+	/**
+	 * @see #getChunkGroup()
+	 */
+	final public void setChunkGroup(int chunkGroup) {
 		this.chunkGroup = chunkGroup;
 	}
 
-	void write(OutputStream os) {
+	public boolean hasPriority() {
+		return priority;
+	}
+
+	public void setPriority(boolean priority) {
+		this.priority = priority;
+	}
+
+	final void write(OutputStream os) {
 		ChunkRaw c = createRawChunk();
 		if (c == null)
 			throw new PngjException("null chunk ! creation failed for " + this);
@@ -212,32 +221,39 @@ public abstract class PngChunk {
 	}
 
 	/**
-	 * Creates the phsyical chunk. This is uses when writing and must be implemented for each chunk type
+	 * Creates the physical chunk. This is used when writing (serialization). Each particular chunk class implements its
+	 * own logic.
 	 * 
 	 * @return A newly allocated and filled raw chunk
 	 */
 	public abstract ChunkRaw createRawChunk();
 
 	/**
-	 * Fill inside data from raw chunk. This is uses when reading and must be implemented for each chunk type
+	 * Parses raw chunk and fill inside data. This is used when reading (deserialization). Each particular chunk class
+	 * implements its own logic.
 	 */
 	public abstract void parseFromRaw(ChunkRaw c);
 
 	/**
-	 * Makes a copy of the chunk
-	 * 
+	 * Makes a copy of the chunk.
+	 * <p>
 	 * This is used when copying chunks from a reader to a writer
-	 * 
+	 * <p>
 	 * It should normally be a deep copy, and after the cloning this.equals(other) should return true
 	 */
 	public abstract void cloneDataFromRead(PngChunk other);
 
-	/** only relevant for ancillary chunks */
-	public abstract boolean allowsMultiple();
-
+	public abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
+	
 	/**
-	 * must be overriden - only relevant for ancillary chunks
+	 * see {@link ChunkOrderingConstraint}
 	 */
 	public abstract ChunkOrderingConstraint getOrderingConstraint();
+
+	@Override
+	public String toString() {
+		return "chunk id= " + id + " (" + lenori + ") c=" + getClass().getSimpleName();
+	}
+
 
 }

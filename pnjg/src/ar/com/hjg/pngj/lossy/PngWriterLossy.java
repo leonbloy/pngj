@@ -4,6 +4,7 @@ import java.io.OutputStream;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngWriter;
 
 /**
@@ -34,7 +35,7 @@ public class PngWriterLossy extends PngWriter {
 	}
 
 	private void lossyInit() {
-		if (imgInfo.alpha || imgInfo.bitDepth < 8) {
+		if ( imgInfo.bitDepth < 8) {
 			enabled = false;
 			if (PRINT_WARNINGS)
 				System.err.println("Lossy mode not enabled for this kind of image : " + getFilename());
@@ -65,13 +66,13 @@ public class PngWriterLossy extends PngWriter {
 			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
-				x1 = FilterType.unfilterRowUp(r1, up);
+				x1 = PngHelperInternal.unfilterRowUp(r1, up);
 				if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
-					x1 = FilterType.unfilterRowUp(r0, up);
+					x1 = PngHelperInternal.unfilterRowUp(r0, up);
 				}
 			} else {
-				x1 = FilterType.unfilterRowUp(r0, up);
+				x1 = PngHelperInternal.unfilterRowUp(r0, up);
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;
@@ -111,13 +112,13 @@ public class PngWriterLossy extends PngWriter {
 			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
-				x1 = FilterType.unfilterRowNone(r1);
+				x1 = PngHelperInternal.unfilterRowNone(r1);
 				if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
-					x1 = FilterType.unfilterRowNone(r1);
+					x1 = PngHelperInternal.unfilterRowNone(r1);
 				}
 			} else {
-				x1 = FilterType.unfilterRowNone(r0);
+				x1 = PngHelperInternal.unfilterRowNone(r0);
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;
@@ -144,13 +145,13 @@ public class PngWriterLossy extends PngWriter {
 			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
-				x1 = FilterType.unfilterRowAverage(r1, left, up);
+				x1 = PngHelperInternal.unfilterRowAverage(r1, left, up);
 				if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
-					x1 = FilterType.unfilterRowAverage(r0, left, up);
+					x1 = PngHelperInternal.unfilterRowAverage(r0, left, up);
 				}
 			} else {
-				x1 = FilterType.unfilterRowAverage(r0, left, up);
+				x1 = PngHelperInternal.unfilterRowAverage(r0, left, up);
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;

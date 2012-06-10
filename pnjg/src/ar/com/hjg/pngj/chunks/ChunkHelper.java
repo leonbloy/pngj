@@ -42,12 +42,31 @@ public class ChunkHelper {
 	public static final String tEXt = "tEXt";
 	public static final String zTXt = "zTXt";
 
+	/**
+	 * this uses latin1!
+	 */
 	public static byte[] toBytes(String x) {
 		return x.getBytes(PngHelperInternal.charsetLatin1);
 	}
 
 	public static String toString(byte[] x) {
 		return new String(x, PngHelperInternal.charsetLatin1);
+	}
+
+	public static String toString(byte[] x,int offset, int len) {
+		return new String(x, offset,len,PngHelperInternal.charsetLatin1);
+	}
+	
+	public static byte[] toBytesUTF8(String x) {
+		return x.getBytes(PngHelperInternal.charsetUTF8);
+	}
+
+	public static String toStringUTF8(byte[] x) {
+		return new String(x, PngHelperInternal.charsetUTF8);
+	}
+
+	public static String toStringUTF8(byte[] x,int offset, int len) {
+		return new String(x, offset,len,PngHelperInternal.charsetUTF8);
 	}
 
 	public static boolean isCritical(String id) { // critical chunk ?

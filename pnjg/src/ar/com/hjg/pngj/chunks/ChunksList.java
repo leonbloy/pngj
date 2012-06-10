@@ -65,7 +65,7 @@ public class ChunksList {
 		else
 			return ChunkHelper.filterList(list, new ChunkPredicate() {
 				public boolean match(PngChunk c) {
-					if (c.id != id)
+					if (! c.id.equals(id))
 						return false;
 					if (c instanceof PngChunkTextVar && !((PngChunkTextVar) c).getKey().equals(innerid))
 						return false;

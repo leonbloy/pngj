@@ -5,7 +5,6 @@ import java.io.File;
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
