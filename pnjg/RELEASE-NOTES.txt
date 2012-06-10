@@ -2,8 +2,9 @@ PNGJ:  Release Notes  & History
 ==============================================================================
 
 Version 0.91  (?)
-  - Added 2  chunks from Extensions to the PNG 1.2 Specification: sTER and oFFs
-  - Added the 
+  - Added 2 chunks from Extensions to the PNG 1.2 Specification: sTER and oFFs
+  - Added PngChunks.factoryRegister() and some other minor chunks changes ( PngChunkXXX.ID) 
+  - Some polishing of test package -  renamed sample classes to Sample*
 
 Version 0.9  (14 April 2012)
 ---------------------------
