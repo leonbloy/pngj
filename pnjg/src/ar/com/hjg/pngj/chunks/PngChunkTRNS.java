@@ -115,6 +115,18 @@ public class PngChunkTRNS extends PngChunkSingle {
 	}
 
 	/**
+	 * to use when only one pallete index is set as totally transparent
+	 */
+	public void setIndexEntryAsTransparent(int palAlphaIndex) {
+		if (!imgInfo.indexed)
+			throw new PngjException("only indexed images support this");
+		paletteAlpha = new int[]{palAlphaIndex+1};
+		for(int i=0;i<palAlphaIndex;i++)
+			paletteAlpha[i]=255;
+		paletteAlpha[palAlphaIndex]=0;
+	}
+	
+	/**
 	 * WARNING: non deep copy
 	 */
 	public int[] getPalletteAlpha() {
