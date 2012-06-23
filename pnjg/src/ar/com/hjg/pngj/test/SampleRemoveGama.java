@@ -30,6 +30,7 @@ public class SampleRemoveGama {
 		}
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL); // in case some new metadata has been read
 		pngw.end();
+		pngr.end();
 	}
 
 	public static void removeGama(PngWriter pngw) {

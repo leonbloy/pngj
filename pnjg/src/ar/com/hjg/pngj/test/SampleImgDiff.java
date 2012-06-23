@@ -60,6 +60,8 @@ public class SampleImgDiff {
 				maxDifRow = row;
 			}
 		}
+		i1.end();
+		i2.end();
 		if (maxDif == 0)
 			System.out.println("No difference");
 		else

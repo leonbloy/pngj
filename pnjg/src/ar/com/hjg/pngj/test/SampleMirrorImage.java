@@ -28,7 +28,7 @@ public class SampleMirrorImage {
 		ImageLine lout = new ImageLine(pngw.imgInfo);
 		int cols = pngr.imgInfo.cols;
 		int channels = pngr.imgInfo.channels;
-		int[] line = null;
+		int[] line = new int[cols*channels];
 		int aux;
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
@@ -43,7 +43,7 @@ public class SampleMirrorImage {
 			lout.pack(line, false);
 			pngw.writeRow(lout, row);
 		}
-		// pngr.end(); // not necessary now
+		pngr.end(); 
 		pngw.copyChunksLast(pngr, copyPolicy);
 		pngw.end();
 		//// print unknown chunks, just for information

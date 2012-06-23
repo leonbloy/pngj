@@ -22,7 +22,7 @@ class PngIDatChunkOutputStream extends ProgressiveOutputStream {
 	}
 
 	@Override
-	public final void flushBuffer(byte[] b, int len) {
+	protected final void flushBuffer(byte[] b, int len) {
 		ChunkRaw c = new ChunkRaw(len, ChunkHelper.b_IDAT, false);
 		c.data = b;
 		c.writeChunk(outputStream);

@@ -36,6 +36,7 @@ public class SampleDecreaseRed {
 		}
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.end();
+		pngr.end();
 	}
 
 	public static void main(String[] args) throws Exception {

@@ -164,7 +164,7 @@ public class PngWriter {
 	 */
 	private void writeSignatureAndIHDR() {
 		currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
-		
+
 		PngHelperInternal.writeBytes(os, PngHelperInternal.pngIdBytes); // signature
 		PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
@@ -258,8 +258,10 @@ public class PngWriter {
 		int i, j, imax;
 		imax = imgInfo.bytesPerRow;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
-			//rowbfilter[i] = (byte) (rowb[i] - PngHelperInternal.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0, rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
-			rowbfilter[i] = (byte) PngHelperInternal.filterRowPaeth(rowb[i], j > 0 ? (rowb[j] & 0xFF) : 0, rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0);
+			// rowbfilter[i] = (byte) (rowb[i] - PngHelperInternal.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0,
+			// rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
+			rowbfilter[i] = (byte) PngHelperInternal.filterRowPaeth(rowb[i], j > 0 ? (rowb[j] & 0xFF) : 0,
+					rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0);
 		}
 	}
 
@@ -268,15 +270,15 @@ public class PngWriter {
 		for (i = 1; i <= imgInfo.bytesPixel; i++)
 			rowbfilter[i] = (byte) rowb[i];
 		for (j = 1, i = imgInfo.bytesPixel + 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			//!!! rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
-			rowbfilter[i] = (byte) PngHelperInternal.filterRowSub(rowb[i],rowb[j]);
+			// !!! rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
+			rowbfilter[i] = (byte) PngHelperInternal.filterRowSub(rowb[i], rowb[j]);
 		}
 	}
 
 	protected void filterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			//rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]); !!!
-			rowbfilter[i] = (byte) PngHelperInternal.filterRowUp(rowb[i],rowbprev[i]);
+			// rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]); !!!
+			rowbfilter[i] = (byte) PngHelperInternal.filterRowUp(rowb[i], rowbprev[i]);
 		}
 	}
 
@@ -516,6 +518,24 @@ public class PngWriter {
 		} catch (IOException e) {
 			throw new PngjOutputException(e);
 		}
+	}
+
+	/**
+	 * Computes compressed size/raw size, approximate
+	 * 
+	 * Actually: compressed size = total size of IDAT data , 
+	 * raw size = uncompressed pixel bytes = rows * (bytesPerRow + 1)
+	 * 
+	 * This must be called after pngw.end()
+	 * 
+	 * @return
+	 */
+	public double computeCompressionRatio() {
+		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
+			throw new PngjException("must be called after end()");
+		double compressed = (double) datStream.getCountFlushed();
+		double raw = (imgInfo.bytesPerRow + 1) * imgInfo.rows;
+		return compressed / raw;
 	}
 
 	public void setDeflaterStrategy(int deflaterStrategy) {
