@@ -4,7 +4,9 @@ PNGJ:  Release Notes  & History
 Version 0.91  (?)
   - Added 2 chunks from Extensions to the PNG 1.2 Specification: sTER and oFFs
   - Added PngChunks.factoryRegister() and some other minor chunks changes ( PngChunkXXX.ID) 
-  - Some polishing of test package -  renamed sample classes to Sample*
+  - Some polishing of test package -  renamed sample classes to Sample* - added TestSpeed to compare with C# port
+  - PngReader emits warning (and ignores more chunk data) instead of dying when too much bytes in chunks
+  - Some chunks polishing and internal methods  added reorganized 
 
 Version 0.9  (14 April 2012)
 ---------------------------
