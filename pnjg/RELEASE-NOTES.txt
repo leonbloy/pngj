@@ -1,6 +1,14 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.93 (22 June 2012) 
+  - PngReader.getRow() allows non sequential reading  (useful for skipping lines)
+  - PngReader.end() is no longer deprecated but recommended (related to the previous)
+  - some more polishing and some renaming: ImageLine.tf_pack -> ImageLine.pack (what was I thinking?), FilterType.ALTERNATE -> CYCLIC
+  - ImageLine.pack()/ ImageLine.unpack() was requiring/returning a buffer of length greater than cols*nchannels - fixed
+  - Added PngWriter.computeCompressionRatio() 
+  - Added a Neural Network Color Quantizer in test package, see SampleConvertPalette for example of use
+
 Version 0.91  (?)
   - Added 2 chunks from Extensions to the PNG 1.2 Specification: sTER and oFFs
   - Added PngChunks.factoryRegister() and some other minor chunks changes ( PngChunkXXX.ID) 
