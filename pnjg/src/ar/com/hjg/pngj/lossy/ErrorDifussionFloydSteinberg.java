@@ -11,71 +11,74 @@ public class ErrorDifussionFloydSteinberg implements IErrorDifussion {
 
 	final int rows, cols, channels;
 	private int currentRow;
-	private short[] row0, row1, aux;
+	private short[] row0, row1;
 	private boolean leftToright = true;
 	protected ImageInfo imginfo;
-	private final int stride;
+	private final int groups;
+	private final int alphachannel;
+	private final boolean useLuminance;
+	private final int channelsNoAlpha;
 
 	/**
-	 * warning: here (and in the methods) 'col' is measure not in pixels but in samples ! = cols x channels x
-	 * bytespsample
 	 */
-	public ErrorDifussionFloydSteinberg(ImageInfo imginfo, int stride) {
-		this.rows = imginfo.rows;
-		this.cols = imginfo.bytesPerRow;
-		this.channels = imginfo.channels;
+	public ErrorDifussionFloydSteinberg(ImageInfo imginfo,boolean useLuminance) {
+		this.useLuminance = useLuminance;
 		this.imginfo = imginfo;
-		this.stride = stride > 0 ? stride : imginfo.channels * imginfo.bitDepth / 8;
-		row0 = new short[cols + 2 * this.stride]; // we number from stride, leaving 'stride' dummy entries on each side
-		row1 = new short[cols + 2 * this.stride];
+		this.rows = imginfo.rows;
+		this.cols = imginfo.cols;
+		this.channels = imginfo.channels;
+		this.groups = useLuminance ? 1 + (imginfo.alpha? 1: 0) : imginfo.channels;
+		this.alphachannel = imginfo.alpha ? imginfo.channels-1 : -1;
+		channelsNoAlpha = imginfo.alpha ? channels -1 : channels;
+		row0 = new short[(cols + 2) * this.groups];
+		row1 = new short[(cols + 2) * this.groups];
 		currentRow = 0;
 	}
 
-	/**
-	 * warning: here (and in the methods) 'col' is measure not in pixels but in samples ! = cols x channels x
-	 * bytespsample
-	 */
-	public int getTotalErr(int row, int col) {
-		col += stride;
+	public int getTotalErr(int row, int col, int channel) {
 		if (row > currentRow + 1)
-			incrementeRow();
+			incrementRow();
+		int c = groups*col + groups + ( useLuminance ? (channel==alphachannel?1:0) : channel) ;
+		int factor = 16;
+		if(useLuminance && channel!= alphachannel)
+			factor *= channelsNoAlpha;
 		if (row == currentRow)
-			return row0[col] / 16;
+			return row0[c] / factor;
 		else if (row == currentRow + 1)
-			return row1[col] / 16;
+			return row1[c] / factor;
 		else
 			throw new RuntimeException("bad coordinates");
-	}
-
-	private void incrementeRow() {
-		aux = row0;
-		row0 = row1;
-		row1 = aux;
-		Arrays.fill(row1, (short) 0);
-		currentRow++;
 	}
 
 	/**
 	 * you must respect the order! leftoright or righttoleft err = exact - writen warning: here (and in the methods)
 	 * 'col' is measure not in pixels but in samples ! = cols x channels x bytespsample
 	 **/
-	public void addErr(int row, int col, int err) {
-		col += stride;
+	public void addErr(int row, int col, int channel, int err) {
 		if (row == currentRow + 1)
-			incrementeRow();
+			incrementRow();
 		if (row != currentRow)
 			throw new RuntimeException("bad coordinates!");
+		int c = groups*col + groups + ( useLuminance ? (channel==alphachannel?1:0) : channel) ;
 		if (leftToright) {
-			row0[col + stride] += (7 * err);
-			row1[col - stride] += (3 * err);
-			row1[col] += (5 * err);
-			row1[col + stride] += (err);
+			row0[c + groups] += (7 * err);
+			row1[c - groups] += (3 * err);
+			row1[c] += (5 * err);
+			row1[c + groups] += (err);
 		} else {
-			row0[col - stride] += (7 * err);
-			row1[col + stride] += (3 * err);
-			row1[col] += (5 * err);
-			row1[col - stride] += (err);
+			row0[c - groups] += (7 * err);
+			row1[c + groups] += (3 * err);
+			row1[c] += (5 * err);
+			row1[c - groups] += (err);
 		}
+	}
+
+	private void incrementRow() {
+		short[] aux = row0;
+		row0 = row1;
+		row1 = aux;
+		Arrays.fill(row1, (short) 0);
+		currentRow++;
 	}
 
 	public boolean isLeftToright() {

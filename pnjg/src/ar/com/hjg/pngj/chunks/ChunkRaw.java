@@ -97,7 +97,7 @@ public class ChunkRaw {
 		return len + 4;
 	}
 
-	public ByteArrayInputStream getAsByteStream() { // only the data
+	ByteArrayInputStream getAsByteStream() { // only the data
 		return new ByteArrayInputStream(data);
 	}
 

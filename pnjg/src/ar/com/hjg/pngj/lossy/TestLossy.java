@@ -21,6 +21,8 @@ public class TestLossy {
 		pngw.setLossy(lossy);
 		pngw.setFilterType(FilterType.FILTER_AVERAGE);
 		pngw.setCompLevel(9);
+		pngw.setLossy(50);
+		pngw.getLossyHelper().setParTolerance(6);
 		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);

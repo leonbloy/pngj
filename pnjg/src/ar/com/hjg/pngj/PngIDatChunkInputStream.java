@@ -57,7 +57,7 @@ class PngIDatChunkInputStream extends InputStream {
 	 */
 	@Override
 	public void close() throws IOException {
-		super.close(); // nothing
+		super.close(); // thsi does nothing
 	}
 
 	private void endChunkGoForNext() {

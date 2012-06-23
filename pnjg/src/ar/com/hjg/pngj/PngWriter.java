@@ -65,6 +65,7 @@ public class PngWriter {
 	private int[] histox = new int[256]; // auxiliar buffer, only used by reportResultsForFilter
 
 	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 32768)
+
 	private final OutputStream os;
 	// current line, one (packed) sample per element (layout differnt from rowb!)
 	protected int[] scanline = null;
@@ -107,6 +108,9 @@ public class PngWriter {
 
 	private void init() {
 		datStream = new PngIDatChunkOutputStream(this.os, idatMaxSize);
+		Deflater def = new Deflater(compLevel);
+		def.setStrategy(deflaterStrategy);
+		datStreamDeflated = new DeflaterOutputStream(datStream, def);
 		writeSignatureAndIHDR();
 		writeFirstChunks();
 	}
@@ -160,11 +164,7 @@ public class PngWriter {
 	 */
 	private void writeSignatureAndIHDR() {
 		currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
-		if (datStreamDeflated == null) {
-			Deflater def = new Deflater(compLevel);
-			def.setStrategy(deflaterStrategy);
-			datStreamDeflated = new DeflaterOutputStream(datStream, def, 8192);
-		}
+		
 		PngHelperInternal.writeBytes(os, PngHelperInternal.pngIdBytes); // signature
 		PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
@@ -258,8 +258,8 @@ public class PngWriter {
 		int i, j, imax;
 		imax = imgInfo.bytesPerRow;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
-			rowbfilter[i] = (byte) (rowb[i] - PngHelperInternal.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0,
-					rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
+			//rowbfilter[i] = (byte) (rowb[i] - PngHelperInternal.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0, rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
+			rowbfilter[i] = (byte) PngHelperInternal.filterRowPaeth(rowb[i], j > 0 ? (rowb[j] & 0xFF) : 0, rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0);
 		}
 	}
 
@@ -268,13 +268,15 @@ public class PngWriter {
 		for (i = 1; i <= imgInfo.bytesPixel; i++)
 			rowbfilter[i] = (byte) rowb[i];
 		for (j = 1, i = imgInfo.bytesPixel + 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
+			//!!! rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
+			rowbfilter[i] = (byte) PngHelperInternal.filterRowSub(rowb[i],rowb[j]);
 		}
 	}
 
 	protected void filterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]);
+			//rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]); !!!
+			rowbfilter[i] = (byte) PngHelperInternal.filterRowUp(rowb[i],rowbprev[i]);
 		}
 	}
 

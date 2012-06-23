@@ -16,7 +16,7 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 public class Posterize {
 
 	static int complevel = 9;
-	static FilterType filter = FilterType.FILTER_NONE;
+	static FilterType filter = FilterType.FILTER_AGGRESSIVE;
 
 	public static void posterize(String origFilename, String destFilename, int nbits, boolean errorDiffusion) {
 		PngReader pngr = FileHelper.createPngReader(new File(origFilename));
@@ -24,8 +24,8 @@ public class Posterize {
 
 		IErrorDifussion floys = null;
 		if (errorDiffusion) {
-			floys = new ErrorDifussionFloydSteinberg(pngr.imgInfo, 0);
-			// floys = new ErrorDifussionTrivial(pngr.imgInfo,0);
+			floys = new ErrorDifussionFloydSteinberg(pngr.imgInfo,true);
+			//floys = new ErrorDifussionTrivial(pngr.imgInfo);
 		}
 		if (origFilename.equals(destFilename))
 			throw new RuntimeException("files are the same!");
@@ -38,21 +38,26 @@ public class Posterize {
 			throw new RuntimeException("Invalid nbits ");
 		if (pngr.imgInfo.indexed)
 			throw new RuntimeException("This method is not apt for indexed (pallete) images");
-		if (pngr.imgInfo.bitDepth < 8)
-			throw new RuntimeException("This method is for 8/16 bitdepth");
+		if (pngr.imgInfo.bitDepth != 8)
+			throw new RuntimeException("This method is for 8 bitdepth");
 		int bitstotrim = pngr.imgInfo.bitDepth - nbits;
 		System.out.println("trimming " + bitstotrim + " bits");
 		int err = 0;
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
-			for (int j = 0; j < pngr.imgInfo.cols * channels; j++) {
+			int col=0;
+			for (int j = 0,channel=0; j < pngr.imgInfo.bytesPerRow; j++,channel++) {
+				if(channel>=channels) {
+					channel=0;
+					col++;
+				}
 				if (floys != null)
-					err = floys.getTotalErr(row, j);
+					err = floys.getTotalErr(row, col,channel);
 				int orig = l1.scanline[j];
 				int desired = ImageLineHelper.clampTo_0_255(orig + err);
 				int newval = trimnBits(desired, bitstotrim);
 				if (floys != null)
-					floys.addErr(row, j, desired - newval);
+					floys.addErr(row, col,channel, desired - newval);
 				l1.scanline[j] = newval;
 			}
 			pngw.writeRow(l1, row);
@@ -86,6 +91,6 @@ public class Posterize {
 
 	public static void main(String[] args) throws Exception {
 		// mainFromArgs(args);
-		posterize("/temp/balcony.png", "/temp/balcony5b.png", 5, false);
+		posterize("/temp/lossy/gradients.png", "/temp/lossy/gradients5b.png", 5, true);
 	}
 }

@@ -34,13 +34,18 @@ public enum FilterType {
 	 */
 	FILTER_AGGRESSIVE(-2),
 	/**
-	 * Uses all fiters, one for lines, cyciclally. Only for tests.
-	 */
-	FILTER_ALTERNATE(-3),
-	/**
 	 * Aggressive strategy: select one of the above filters trying each of the filters (this is done for every row!)
 	 */
-	FILTER_VERYAGGRESSIVE(-4), ;
+	FILTER_VERYAGGRESSIVE(-3),
+	/**
+	 * Uses all fiters, one for lines, cyciclally. Only for tests.
+	 */
+	FILTER_CYCLIC(-50),
+
+	/**
+	 * Not specified, placeholder for unknown or NA filters.
+	 */
+	FILTER_UNKNOWN(-100), ;
 	public final int val;
 
 	private FilterType(int val) {
@@ -54,6 +59,5 @@ public enum FilterType {
 		}
 		return null;
 	}
-
 
 }

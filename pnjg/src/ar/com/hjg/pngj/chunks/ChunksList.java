@@ -1,9 +1,8 @@
 package ar.com.hjg.pngj.chunks;
 
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
-import java.util.Set;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
@@ -26,8 +25,7 @@ public class ChunksList {
 	/**
 	 * All chunks, read (or written)
 	 * 
-	 * Does not include IHDR, IDAT, END for written)
-	 * 
+	 * But IDAT is a single pseudo chunk without data
 	 */
 	protected List<PngChunk> chunks = new ArrayList<PngChunk>();
 
@@ -38,17 +36,19 @@ public class ChunksList {
 	}
 
 	/**
-	 * processed (read or writen) chunks
+	 * Keys of processed (read or writen) chunks
+	 * @return key:chunk id, val: number of occurrences
 	 */
-	public Set<String> getChunksKeys() {
-		HashSet<String> ck = new HashSet<String>();
-		for (PngChunk c : chunks)
-			ck.add(c.id);
+	public HashMap<String, Integer> getChunksKeys() {
+		HashMap<String, Integer> ck = new HashMap<String, Integer>();
+		for (PngChunk c : chunks) {
+			ck.put(c.id, ck.containsKey(c.id) ? ck.get(c.id) + 1 : 1);
+		}
 		return ck;
 	}
 
 	/**
-	 * returns a copy of the list (but the chunks are not copied) <b> This should not be used for general metadata
+	 * Returns a copy of the list (but the chunks are not copied) <b> This should not be used for general metadata
 	 * handling
 	 */
 	public ArrayList<PngChunk> getChunks() {
@@ -65,7 +65,7 @@ public class ChunksList {
 		else
 			return ChunkHelper.filterList(list, new ChunkPredicate() {
 				public boolean match(PngChunk c) {
-					if (! c.id.equals(id))
+					if (!c.id.equals(id))
 						return false;
 					if (c instanceof PngChunkTextVar && !((PngChunkTextVar) c).getKey().equals(innerid))
 						return false;
@@ -84,19 +84,46 @@ public class ChunksList {
 		chunks.add(chunk);
 	}
 
+	/**
+	 * All chunks with this ID
+	 * @param id
+	 * @return List, empty if none
+	 */
 	public List<? extends PngChunk> getById(final String id) {
 		return getById(id, null);
 	}
 
 	/**
 	 * If innerid!=null and the chunk is PngChunkTextVar or PngChunkSPLT, it's filtered by that id
+	 * @param id
+	 * @return innerid Only used for text and SPLT chunks
+	 * @return List, empty if none
 	 */
 	public List<? extends PngChunk> getById(final String id, final String innerid) {
 		return getXById(chunks, id, innerid);
 	}
-
+	
 	/**
-	 * returns only one chunk or null if nothing found - does not include queued
+	 * Returns only one chunk 
+	 * @param id
+	 * @return First chunk found, null if not found
+	 */
+	public PngChunk getById1(final String id) {
+		return getById1(id, false);
+	}
+	
+	/**
+	 * Returns only one chunk or null if nothing found - does not include queued
+	 * <p>
+	 * If more than one chunk is found, then an exception is thrown (failifMultiple=true
+	 * or chunk is single) or the last one is returned (failifMultiple=false)
+	 **/
+	 public PngChunk getById1(final String id, final boolean failIfMultiple) {
+		return getById1(id, null, failIfMultiple);
+	}
+	
+	/**
+	 * Returns only one chunk or null if nothing found - does not include queued
 	 * <p>
 	 * If more than one chunk (after filtering by inner id) is found, then an exception is thrown (failifMultiple=true
 	 * or chunk is single) or the last one is returned (failifMultiple=false)
@@ -110,14 +137,11 @@ public class ChunksList {
 		return list.get(list.size() - 1);
 	}
 
-	public PngChunk getById1(final String id, final boolean failIfMultiple) {
-		return getById1(id, null, failIfMultiple);
-	}
-
-	public PngChunk getById1(final String id) {
-		return getById1(id, false);
-	}
-
+	/**
+	 * Finds all chunks "equivalent" to this one
+	 * @param c2
+	 * @return Empty if nothing found
+	 */
 	public List<PngChunk> getEquivalent(final PngChunk c2) {
 		return ChunkHelper.filterList(chunks, new ChunkPredicate() {
 			public boolean match(PngChunk c) {

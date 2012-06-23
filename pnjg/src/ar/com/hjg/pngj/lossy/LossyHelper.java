@@ -127,16 +127,28 @@ public class LossyHelper {
 	}
 
 	public int quantize(int x, int row, int col) {
+		return quantize2(x,row,col);
+	}
+
+	public int quantize1(int x) {
+	
+		// just for tests: trims 3 bits = posterize 32 levels 
+		//return x & 0xf8; //3 bits
+		return (x ==1 || x==-1) ? x : x & 0xfffffc; // trim 2 bits
+		//return x & 0xfe; // trim 1 bits
+	}
+
+	public int quantize2(int x, int row, int col) {
 		return quantizeTable(x, parTrimPrediction, activity >= parActivityThreshold ? 1
 				: activity >= parActivityThreshold * 0.5 ? 2 : 3);
 	}
 
 	public void setUpFloydErrorDiffusion() {
-		errordif = new ErrorDifussionFloydSteinberg(imginfo, 0);
+		errordif = new ErrorDifussionFloydSteinberg(imginfo,false);
 	}
 
 	public void setUpTrivialErrorDiffusion() {
-		errordif = new ErrorDifussionTrivial(imginfo, 0);
+		errordif = new ErrorDifussionTrivial(imginfo);
 	}
 
 	/**
@@ -241,19 +253,19 @@ public class LossyHelper {
 	// /// error difussion no used ///////
 
 	public void initErrorDif() {
-		errordif = new ErrorDifussionFloydSteinberg(imginfo, 0);
+		errordif = new ErrorDifussionFloydSteinberg(imginfo,false);
 	}
 
 	public int getDiffusedErrorToAdd(int row, int col) {
 		if (errordif == null)
 			return 0;
 		else
-			return errordif.getTotalErr(row, col);
+			return errordif.getTotalErr(row, col,imginfo.channels);
 	}
 
 	public void writeErrorToDiffuse(int row, int col, int err) {
 		if (errordif != null)
-			errordif.addErr(row, col, err);
+			errordif.addErr(row, col, imginfo.channels,err);
 	}
 
 	public void resetErrorDiffussion() {

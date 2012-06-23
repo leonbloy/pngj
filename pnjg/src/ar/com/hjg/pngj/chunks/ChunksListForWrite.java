@@ -2,7 +2,7 @@ package ar.com.hjg.pngj.chunks;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -18,7 +18,7 @@ public class ChunksListForWrite extends ChunksList {
 	private final List<PngChunk> queuedChunks = new ArrayList<PngChunk>();
 
 	// redundant, just for eficciency
-	private HashSet<String> alreadyWrittenKeys = new HashSet<String>();
+	private HashMap<String, Integer> alreadyWrittenKeys = new HashMap<String, Integer>();
 
 	public ChunksListForWrite(ImageInfo imfinfo) {
 		super(imfinfo);
@@ -75,9 +75,9 @@ public class ChunksListForWrite extends ChunksList {
 	}
 
 	/**
-	 * behaviour:
+	 * Adds chunk to queue
 	 * 
-	 * 
+	 * Does not check for duplicated or anything
 	 * @param c
 	 */
 	public boolean queue(PngChunk c) {
@@ -126,11 +126,11 @@ public class ChunksListForWrite extends ChunksList {
 				continue;
 			if (ChunkHelper.isCritical(c.id) && !c.id.equals(ChunkHelper.PLTE))
 				throw new PngjOutputException("bad chunk queued: " + c);
-			if (alreadyWrittenKeys.contains(c.id) && !c.allowsMultiple())
+			if (alreadyWrittenKeys.containsKey(c.id) && !c.allowsMultiple())
 				throw new PngjOutputException("duplicated chunk does not allow multiple: " + c);
 			c.write(os);
 			chunks.add(c);
-			alreadyWrittenKeys.add(c.id);
+			alreadyWrittenKeys.put(c.id, alreadyWrittenKeys.containsKey(c.id) ? alreadyWrittenKeys.get(c.id) + 1 : 1);
 			c.setChunkGroup(currentGroup);
 			it.remove();
 			cont++;

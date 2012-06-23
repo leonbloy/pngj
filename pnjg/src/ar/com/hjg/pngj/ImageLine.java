@@ -29,7 +29,7 @@ public class ImageLine {
 	 * For bitdepth=1/2/4 , each value is a PACKED byte! To get an unpacked copy, see <code>tf_pack()</code> and its
 	 * inverse <code>tf_unpack()</code>
 	 * <p>
-	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.tf_palIdx2RGB()</code> (you can't do the reverse)
+	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.palIdx2RGB()</code> (you can't do the reverse)
 	 */
 	public final int[] scanline; 
 
@@ -42,6 +42,7 @@ public class ImageLine {
 		channels = imgInfo.channels;
 		scanline = new int[imgInfo.samplesPerRowP];
 		bitDepth = imgInfo.bitDepth;
+		filterUsed = FilterType.FILTER_UNKNOWN;
 	}
 
 	/** This row number inside the image (0 is top) */
@@ -54,20 +55,22 @@ public class ImageLine {
 		this.rown++;
 	}
 
-	/** Sets row number */
+	/** Sets row number (0 : Rows-1) */
 	public void setRown(int n) {
 		this.rown = n;
 	}
 
-	/** Sets scanline, making copy from passed array */
+	/** Sets scanline, making copy from passed array. You'd rarely use this */
 	public void setScanLine(int[] b) {
 		System.arraycopy(b, 0, scanline, 0, scanline.length);
 	}
 
 	/**
 	 * Returns a copy from scanline, in byte array.
-	 * 
+	 * <p>
 	 * You can (OPTIONALLY) pass an preallocated array to use.
+	 * <p>
+	 * You should rarely use this 
 	 **/
 	public int[] getScanLineCopy(int[] b) {
 		if (b == null || b.length < scanline.length)
@@ -82,9 +85,9 @@ public class ImageLine {
 	 * You can (OPTIONALLY) pass an preallocated array, that will be filled and returned.
 	 * If null, it will be allocated 
 	 * <p>
-	 * If <code>scale==true<code>, it scales the value (just a bit shift).
+	 * If <code>scale==true<code>, it scales the value (just a bit shift) towards 0-255.
 	 */
-	public int[] tf_unpack(int[] buf, boolean scale) {
+	public int[] unpack(int[] buf, boolean scale) {
 		int len = scanline.length;
 		if (bitDepth == 1)
 			len *= 8;
@@ -124,7 +127,7 @@ public class ImageLine {
 	 * <p>
 	 * If <code>scale==true<code>, it scales the value (just a bit shift).
 	 */
-	public void tf_pack(int[] buf, boolean scale) { // writes scanline
+	public void pack(int[] buf, boolean scale) { // writes scanline
 		int len = scanline.length;
 		if (bitDepth == 1)
 			len *= 8;
@@ -167,6 +170,10 @@ public class ImageLine {
 
 	public FilterType getFilterUsed() {
 		return filterUsed;
+	}
+
+	public void setFilterUsed(FilterType ft) {
+		filterUsed=ft;
 	}
 
 	/**

@@ -22,7 +22,7 @@ public class SampleMirrorImage {
 	public static void mirror(File orig, File dest,boolean overwrite) throws Exception {
 		PngReader pngr = FileHelper.createPngReader(orig);
 		PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, overwrite);
-		pngw.setFilterType(FilterType.FILTER_ALTERNATE); // just to test all filters
+		pngw.setFilterType(FilterType.FILTER_CYCLIC); // just to test all filters
 		int copyPolicy = ChunkCopyBehaviour.COPY_ALL;
 		pngw.copyChunksFirst(pngr, copyPolicy);
 		ImageLine lout = new ImageLine(pngw.imgInfo);
@@ -32,7 +32,7 @@ public class SampleMirrorImage {
 		int aux;
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
-			line = l1.tf_unpack(line, false);
+			line = l1.unpack(line, false);
 			for (int c1 = 0, c2 = cols - 1; c1 < c2; c1++, c2--) {
 				for (int i = 0; i < channels; i++) {
 					aux = line[c1 * channels + i];
@@ -40,7 +40,7 @@ public class SampleMirrorImage {
 					line[c2 * channels + i] = aux;
 				}
 			}
-			lout.tf_pack(line, false);
+			lout.pack(line, false);
 			pngw.writeRow(lout, row);
 		}
 		// pngr.end(); // not necessary now

@@ -175,6 +175,26 @@ public class PngHelperInternal {
 	}
 
 	/// filters 
+	public static int filterRowNone(int r) {
+		return (int) (r & 0xFF);
+	}
+
+	public static int filterRowSub(int r, int left) {
+		return ((int) (r - left) & 0xFF);
+	}
+
+	public static int filterRowUp(int r, int up) {
+		return ((int) (r - up) & 0xFF);
+	}
+
+	public static int filterRowAverage(int r, int left, int up) {
+		return (r - (left + up) / 2) & 0xFF;
+	}
+	
+	public static int filterRowPaeth(int r, int left, int up, int upleft) { // a = left, b = above, c = upper left
+		return (r - filterPaethPredictor(left, up, upleft)) & 0xFF;
+	}
+	
 	public static int unfilterRowNone(int r) {
 		return (int) (r & 0xFF);
 	}
@@ -191,13 +211,13 @@ public class PngHelperInternal {
 		return (r + (left + up) / 2) & 0xFF;
 	}
 
-	public static int unfilterRowPaeth(int r, int a, int b, int c) { // a = left, b = above, c = upper left
-		return (r + filterPaethPredictor(a, b, c)) & 0xFF;
+	public static int unfilterRowPaeth(int r, int left, int up, int upleft) { // a = left, b = above, c = upper left
+		return (r + filterPaethPredictor(left, up, upleft)) & 0xFF;
 	}
 
-	public final static int filterPaethPredictor(final int a, final int b, final int c) {
+    final static int filterPaethPredictor(final int a, final int b, final int c) { // a = left, b = above, c = upper left
 		// from http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
-		// a = left, b = above, c = upper left
+		
 		final int p = a + b - c;// ; initial estimate
 		final int pa = p >= a ? p - a : a - p;
 		final int pb = p >= b ? p - b : b - p;

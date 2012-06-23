@@ -5,7 +5,7 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 /**
  * Bunch of utility static methods to process/analyze an image line at the pixel level.
  * <p>
- * Not essential at all.
+ * Not essential at all, some methods are probably to be removed if future releases.
  */
 public class ImageLineHelper {
 	
@@ -24,14 +24,14 @@ public class ImageLineHelper {
 	 *            Preallocated array, optional
 	 * @return R G B (one byte per sample)
 	 */
-	public int[] tf_palIdx2RGB(ImageLine line, PngChunkPLTE pal, int[] buf) {
+	public int[] PalIdx2RGB(ImageLine line, PngChunkPLTE pal, int[] buf) {
 		// TODO: test! Add alpha palette info?
 		int nbytes = line.imgInfo.cols * 3;
 		if (buf == null || buf.length < nbytes)
 			buf = new int[nbytes];
 		int[] src; // from where to read the indexes as bytes
 		if (line.imgInfo.packed) { // requires unpacking
-			line.tf_unpack(buf, false); // use buf temporarily (have space)
+			line.unpack(buf, false); // use buf temporarily (have space)
 			src = buf;
 		} else {
 			src = line.scanline;

@@ -35,17 +35,16 @@ public class PngWriterLossy extends PngWriter {
 	}
 
 	private void lossyInit() {
-		if ( imgInfo.bitDepth < 8) {
+		if ( imgInfo.bitDepth != 8) {
 			enabled = false;
 			if (PRINT_WARNINGS)
-				System.err.println("Lossy mode not enabled for this kind of image : " + getFilename());
+				System.err.println("Lossy mode only enabled for 8 bitdepth (RGB8, RGBA8, G8 GA8) : " + getFilename());
 			return;
 		}
 		rowbrx = new byte[rowb.length];
 		rowbprevrx = new byte[rowb.length];
 		lossyHelper = new LossyHelper(imgInfo);
 		setFilterType(FilterType.FILTER_AVERAGE);
-		setCompLevel(9);
 		setLossy(LOSSY_DEFAULT);
 	}
 
@@ -63,7 +62,7 @@ public class PngWriterLossy extends PngWriter {
 			r0s = (here - up);
 			r0orig = here - (rowbprev[i] & 0xff);
 			r0 = r0s & 0xFF;
-			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
+			//lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
 			if (r1 != r0) {
 				x1 = PngHelperInternal.unfilterRowUp(r1, up);
@@ -76,16 +75,64 @@ public class PngWriterLossy extends PngWriter {
 			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;
-			lossyHelper.reportFinalR(r1, rowNum, col);
+			//lossyHelper.reportFinalR(r1, rowNum, col);
 		}
 	}
 
 	protected void filterRowPaeth() {
-		throw new RuntimeException("Only AVERAGE filter type is accepted in lossy mode");
+		if (!enabled) {
+			super.filterRowPaeth();
+			return;
+		}
+		int i, j, up, left,upleft, here;
+		int r0, r0s, r0orig, r1, x1, col;
+		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
+			col = i - 1;
+			up = rowbprevrx[i] & 0xff;
+			left = j > 0 ? rowbrx[j] & 0xff : 0;
+			upleft = j > 0 ? rowbprevrx[j] & 0xff : 0;
+			here = rowb[i] & 0xff;
+			r0s = PngHelperInternal.filterRowPaeth(here, left, up, upleft);
+			//r0orig = (rowb[i] & 0xff) - ((rowbprev[i] & 0xff) + (j > 0 ? (rowb[j] & 0xFF) : 0)) / 2;
+			r0 = r0s & 0xFF;
+			//lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
+			r1 = lossyHelper.quantize(r0s, rowNum, col);
+			x1 = PngHelperInternal.unfilterRowPaeth(r1, left, up,upleft);
+			if (!lossyHelper.isacceptable(here, x1, false)) {
+					r1 = r0;
+					x1 = PngHelperInternal.unfilterRowPaeth(r0, left, up,upleft);
+				}
+			rowbrx[i] = (byte) x1;
+			rowbfilter[i] = (byte) r1;
+			//lossyHelper.reportFinalR(r1, rowNum, col);
+		}
 	}
 
 	protected void filterRowSub() {
-		throw new RuntimeException("Only AVERAGE filter type is accepted in lossy mode");
+		if (!enabled) {
+			super.filterRowSub();
+			return;
+		}
+		int i, left, here,j;
+		int r0, r0s, r0orig, r1, x1, col;
+		for (j = 1 - imgInfo.bytesPixel,i = 1; i <= imgInfo.bytesPerRow; i++,j++) {
+			col = i - 1;
+			left = j > 0 ? rowbrx[j] & 0xff : 0;
+			here = rowb[i] & 0xff;
+			r0s = (here - left);
+			//r0orig = here - (rowbprev[i] & 0xff);
+			r0 = r0s & 0xFF;
+			//lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
+			r1 = lossyHelper.quantize(r0s, rowNum, col);
+			x1 = PngHelperInternal.unfilterRowUp(r1, left);
+			if (!lossyHelper.isacceptable(here, x1, false)) {
+					r1 = r0;
+					x1 = PngHelperInternal.unfilterRowUp(r0, left);
+			}
+			rowbrx[i] = (byte) x1;
+			rowbfilter[i] = (byte) r1;
+			//lossyHelper.reportFinalR(r1, rowNum, col);
+		}
 	}
 
 	@Override
@@ -134,28 +181,25 @@ public class PngWriterLossy extends PngWriter {
 		}
 		int i, j, up, left, here;
 		int r0, r0s, r0orig, r1, x1, col;
-		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			col = i - 1;
+		for (j = 1 - imgInfo.bytesPixel, i = 1,col=0; i <= imgInfo.bytesPerRow; i++, j++) {
+			
 			up = rowbprevrx[i] & 0xff;
 			left = j > 0 ? rowbrx[j] & 0xff : 0;
 			here = rowb[i] & 0xff;
 			r0s = (here - (up + left) / 2);
-			r0orig = (rowb[i] & 0xff) - ((rowbprev[i] & 0xff) + (j > 0 ? (rowb[j] & 0xFF) : 0)) / 2;
+			//r0orig = (rowb[i] & 0xff) - ((rowbprev[i] & 0xff) + (j > 0 ? (rowb[j] & 0xFF) : 0)) / 2;
 			r0 = r0s & 0xFF;
-			lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
+			//lossyHelper.reportOriginalR(r0s, r0orig, rowNum, col);
 			r1 = lossyHelper.quantize(r0s, rowNum, col);
-			if (r1 != r0) {
-				x1 = PngHelperInternal.unfilterRowAverage(r1, left, up);
-				if (!lossyHelper.isacceptable(here, x1, false)) {
+			x1 = PngHelperInternal.unfilterRowAverage(r1, left, up);
+			if (!lossyHelper.isacceptable(here, x1, false)) {
 					r1 = r0;
 					x1 = PngHelperInternal.unfilterRowAverage(r0, left, up);
 				}
-			} else {
-				x1 = PngHelperInternal.unfilterRowAverage(r0, left, up);
-			}
 			rowbrx[i] = (byte) x1;
 			rowbfilter[i] = (byte) r1;
-			lossyHelper.reportFinalR(r1, rowNum, col);
+			//lossyHelper.reportFinalR(r1, rowNum, col);
+			if((i%imgInfo.channels)==0) col++;
 		}
 	}
 
