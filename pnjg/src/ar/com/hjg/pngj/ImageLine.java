@@ -88,14 +88,8 @@ public class ImageLine {
 	 * If <code>scale==true<code>, it scales the value (just a bit shift) towards 0-255.
 	 */
 	public int[] unpack(int[] buf, boolean scale) {
-		int len = scanline.length;
-		if (bitDepth == 1)
-			len *= 8;
-		else if (bitDepth == 2)
-			len *= 4;
-		else if (bitDepth == 4)
-			len *= 2;
-		if (buf == null)
+		int len = imgInfo.samplesPerRow;
+		if (buf == null || buf.length < len)
 			buf = new int[len];
 		if (bitDepth >= 8)
 			System.arraycopy(scanline, 0, buf, 0, scanline.length);
@@ -128,13 +122,9 @@ public class ImageLine {
 	 * If <code>scale==true<code>, it scales the value (just a bit shift).
 	 */
 	public void pack(int[] buf, boolean scale) { // writes scanline
-		int len = scanline.length;
-		if (bitDepth == 1)
-			len *= 8;
-		else if (bitDepth == 2)
-			len *= 4;
-		else if (bitDepth == 4)
-			len *= 2;
+		int len = imgInfo.samplesPerRow;
+		if (buf == null || buf.length < len)
+			buf = new int[len];
 		if (bitDepth >= 8)
 			System.arraycopy(buf, 0, scanline, 0, scanline.length);
 		else {
@@ -158,14 +148,14 @@ public class ImageLine {
 		}
 	}
 
-	private int getMaskForPackedFormats() { // Utility function for pacj/unpack
+	private int getMaskForPackedFormats() { // Utility function for pack/unpack
 		if (bitDepth == 1)
 			return 0x80;
 		if (bitDepth == 2)
 			return 0xc0;
 		if (bitDepth == 4)
 			return 0xf0;
-		throw new RuntimeException("?");
+		throw new RuntimeException("invalid bitDepth " + bitDepth);
 	}
 
 	public FilterType getFilterUsed() {
