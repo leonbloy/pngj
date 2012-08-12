@@ -87,6 +87,7 @@ public class TestPngSuite {
 
 	public static void main(String[] args) throws Exception {
 		testAllSuite(new File("resources/testsuite1/"), new File(outdir));
-		System.out.println("output dir: " + outdir);
+		System.out.println("Lines starting with 'ok error' are expected errors, they are ok.");
+		System.out.println("Output dir: " + outdir);
 	}
 }

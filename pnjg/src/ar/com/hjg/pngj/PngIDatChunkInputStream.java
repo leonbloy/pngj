@@ -19,14 +19,14 @@ class PngIDatChunkInputStream extends InputStream {
 	private byte[] idLastChunk = new byte[4];
 	private int toReadThisChunk = 0;
 	private boolean ended = false;
-	private long offset; // offset inside inputstream
+	private long offset; // offset inside whole inputstream (counting bytes before IDAT)
 
 	// just informational
 	static class IdatChunkInfo {
 		public final int len;
-		public final int offset;
+		public final long offset;
 
-		private IdatChunkInfo(int len, int offset) {
+		private IdatChunkInfo(int len, long offset) {
 			this.len = len;
 			this.offset = offset;
 		}
@@ -37,8 +37,8 @@ class PngIDatChunkInputStream extends InputStream {
 	/**
 	 * Constructor must be called just after reading length and id of first IDAT chunk
 	 **/
-	PngIDatChunkInputStream(InputStream iStream, int lenFirstChunk, int offset) {
-		this.offset = (long) offset;
+	PngIDatChunkInputStream(InputStream iStream, int lenFirstChunk, long offset) {
+		this.offset = offset;
 		inputStream = iStream;
 		crcEngine = new CRC32();
 		this.lenLastChunk = lenFirstChunk;

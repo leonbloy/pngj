@@ -124,7 +124,7 @@ public class PngHelperInternal {
 	}
 
 	/**
-	 * guaranteed to read exactly len bytes. throws error if it cant
+	 * guaranteed to read exactly len bytes. throws error if it can't
 	 */
 	public static void readBytes(InputStream is, byte[] b, int offset, int len) {
 		if (len == 0)
@@ -139,6 +139,21 @@ public class PngHelperInternal {
 			}
 		} catch (IOException e) {
 			throw new PngjInputException("error reading", e);
+		}
+	}
+
+	public static void skipBytes(InputStream is, int len) {
+		byte[] buf = new byte[8192*4];
+		int read,remain = len;
+		try {
+			while (remain > 0) {
+				read = is.read(buf, 0, remain > buf.length ? buf.length : remain);
+				if (read < 0)
+					throw new PngjInputException("error reading (skipping) : EOF");
+				remain -= read;
+			}
+		} catch (IOException e) {
+			throw new PngjInputException("error reading (skipping)", e);
 		}
 	}
 
@@ -174,7 +189,7 @@ public class PngHelperInternal {
 		return crcProvider.get();
 	}
 
-	/// filters 
+	// / filters
 	public static int filterRowNone(int r) {
 		return (int) (r & 0xFF);
 	}
@@ -190,11 +205,11 @@ public class PngHelperInternal {
 	public static int filterRowAverage(int r, int left, int up) {
 		return (r - (left + up) / 2) & 0xFF;
 	}
-	
+
 	public static int filterRowPaeth(int r, int left, int up, int upleft) { // a = left, b = above, c = upper left
 		return (r - filterPaethPredictor(left, up, upleft)) & 0xFF;
 	}
-	
+
 	public static int unfilterRowNone(int r) {
 		return (int) (r & 0xFF);
 	}
@@ -215,9 +230,10 @@ public class PngHelperInternal {
 		return (r + filterPaethPredictor(left, up, upleft)) & 0xFF;
 	}
 
-    final static int filterPaethPredictor(final int a, final int b, final int c) { // a = left, b = above, c = upper left
+	final static int filterPaethPredictor(final int a, final int b, final int c) { // a = left, b = above, c = upper
+																					// left
 		// from http://www.libpng.org/pub/png/spec/1.2/PNG-Filters.html
-		
+
 		final int p = a + b - c;// ; initial estimate
 		final int pa = p >= a ? p - a : a - p;
 		final int pb = p >= b ? p - b : b - p;

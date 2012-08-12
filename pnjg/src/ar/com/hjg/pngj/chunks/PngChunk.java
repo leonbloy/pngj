@@ -35,9 +35,8 @@ public abstract class PngChunk {
 	protected final ImageInfo imgInfo;
 
 	/**
-	 * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks. 
-	 * Theoretically, there could be more general
-	 * constraints, but these cover the constraints for standard chunks.  
+	 * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks. Theoretically, there could
+	 * be more general constraints, but these cover the constraints for standard chunks.
 	 */
 	public enum ChunkOrderingConstraint {
 		/**
@@ -74,10 +73,12 @@ public abstract class PngChunk {
 		}
 	}
 
-	private boolean priority = false; //For writing. Queued chunks with high priority will be written as soon as possible
+	private boolean priority = false; // For writing. Queued chunks with high priority will be written as soon as
+										// possible
 
-	private int chunkGroup = -1; // chunk group where it was read or writen
-	private int lenori = -1; // merely informational, for read chunks
+	protected int chunkGroup = -1; // chunk group where it was read or writen
+	protected int length = -1; // merely informational, for read chunks
+	protected long offset = 0; // merely informational, for read chunks
 
 	/**
 	 * This static map defines which PngChunk class correspond to which ChunkID
@@ -123,9 +124,9 @@ public abstract class PngChunk {
 	/**
 	 * True if the chunk-id type is known.
 	 * <p>
-	 * A chunk is known if we recognize its class, according with <code>factoryMap</code> 
+	 * A chunk is known if we recognize its class, according with <code>factoryMap</code>
 	 * <p>
-	 * This is not necessarily the same as being "STANDARD", or being implemented in this library 
+	 * This is not necessarily the same as being "STANDARD", or being implemented in this library
 	 * <p>
 	 * Unknown chunks will be parsed as instances of {@link PngChunkUNKNOWN}
 	 */
@@ -146,7 +147,7 @@ public abstract class PngChunk {
 	 */
 	public static PngChunk factory(ChunkRaw chunk, ImageInfo info) {
 		PngChunk c = factoryFromId(ChunkHelper.toString(chunk.idbytes), info);
-		c.lenori = chunk.len;
+		c.length = chunk.len;
 		c.parseFromRaw(chunk);
 		return c;
 	}
@@ -187,8 +188,6 @@ public abstract class PngChunk {
 		return (T) cn;
 	}
 
-
-
 	/**
 	 * In which "chunkGroup" (see {@link ChunksList}for definition) this chunks instance was read or written.
 	 * <p>
@@ -220,6 +219,23 @@ public abstract class PngChunk {
 		c.writeChunk(os);
 	}
 
+	public int getLength() {
+		return length;
+	}
+
+	public void setLength(int length) {
+		this.length = length;
+	}
+
+	public long getOffset() {
+		return offset;
+	}
+
+	public void setOffset(long offset) {
+		this.offset = offset;
+	}
+
+	
 	/**
 	 * Creates the physical chunk. This is used when writing (serialization). Each particular chunk class implements its
 	 * own logic.
@@ -244,7 +260,7 @@ public abstract class PngChunk {
 	public abstract void cloneDataFromRead(PngChunk other);
 
 	public abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
-	
+
 	/**
 	 * see {@link ChunkOrderingConstraint}
 	 */
@@ -252,7 +268,7 @@ public abstract class PngChunk {
 
 	@Override
 	public String toString() {
-		return "chunk id= " + id + " (" + lenori + ") c=" + getClass().getSimpleName();
+		return "chunk id= " + id + " (len=" + length + " offset=" + offset +") c=" + getClass().getSimpleName();
 	}
 
 

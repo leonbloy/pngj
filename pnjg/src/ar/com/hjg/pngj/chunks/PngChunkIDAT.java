@@ -8,8 +8,10 @@ public class PngChunkIDAT extends PngChunkMultiple {
 	// http://www.w3.org/TR/PNG/#11IDAT
 	// This is dummy placeholder - we write/read this chunk (actually several)
 	// by special code.
-	public PngChunkIDAT(ImageInfo i) {
+	public PngChunkIDAT(ImageInfo i,int len, long offset) {
 		super(ID, i);
+		this.length = len;
+		this.offset = offset; 
 	}
 
 	@Override
