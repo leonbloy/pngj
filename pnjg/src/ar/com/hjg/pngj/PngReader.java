@@ -152,7 +152,7 @@ public class PngReader {
 	 * Reads last Internally called after having read the last line. It reads extra chunks after IDAT, if present.
 	 */
 	private void readLastAndClose() {
-		offset = (int) iIdatCstream.getOffset();
+		//offset = iIdatCstream.getOffset();
 		try {
 			idatIstream.close();
 		} catch (Exception e) {
@@ -333,22 +333,24 @@ public class PngReader {
 	 * If it's skipped, a PngChunkSkipped object is created
 	 */
 	private PngChunk readChunk(byte[] chunkid, int clen, boolean skipforced) {
+		if(clen <0) throw new PngjInputException("invalid chunk lenght: " + clen);
 		// skipChunksByIdSet is created lazyly, if fist IHDR has already been read
 		if (skipChunkIdsSet == null && currentChunkGroup > ChunksList.CHUNK_GROUP_0_IDHR)
 			skipChunkIdsSet = new HashSet<String>(Arrays.asList(skipChunkIds));
 		String chunkidstr = ChunkHelper.toString(chunkid);
 		PngChunk pngChunk = null;
 		boolean skip = skipforced;
-		if (offset + clen > maxTotalBytesRead)
+		if ( clen > maxTotalBytesRead)
 			throw new PngjInputException("Maximum total bytes to read exceeeded: " + maxTotalBytesRead + " offset:"
 					+ offset);
 		// an ancillary chunks can be skipped because several reasons:
 		if (currentChunkGroup > ChunksList.CHUNK_GROUP_0_IDHR && !ChunkHelper.isCritical(chunkidstr))
 			skip = skip || clen >= skipChunkMaxSize || skipChunkIdsSet.contains(chunkidstr)
-					|| bytesChunksLoaded + clen > maxBytesMetadata
+					||  clen > maxBytesMetadata - bytesChunksLoaded
 					|| !ChunkHelper.shouldLoad(chunkidstr, chunkLoadBehaviour);
 		if (skip) {
-			PngHelperInternal.skipBytes(inputStream, clen + 4);
+			PngHelperInternal.skipBytes(inputStream, clen );
+			PngHelperInternal.readInt4(inputStream); // skip - we dont call PngHelperInternal.skipBytes(inputStream, clen + 4) for risk of overflow 
 			pngChunk = new PngChunkSkipped(chunkidstr, imgInfo, clen);
 		} else {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -357,9 +359,9 @@ public class PngReader {
 			if (!pngChunk.crit)
 				bytesChunksLoaded += chunk.len;
 		}
-		pngChunk.setOffset(offset - 8);
+		pngChunk.setOffset(offset - 8L);
 		chunksList.appendReadChunk(pngChunk, currentChunkGroup);
-		offset += clen + 4;
+		offset += clen + 4L;
 		return pngChunk;
 	}
 
@@ -466,6 +468,8 @@ public class PngReader {
 		// loads in rowbfilter "raw" bytes, with filter
 		PngHelperInternal.readBytes(idatIstream, rowbfilter, 0, rowbfilter.length);
 		offset = iIdatCstream.getOffset();
+		if(offset <0) throw new RuntimeException("??");
+		
 		if (offset >= maxTotalBytesRead)
 			throw new PngjInputException("Reading IDAT: Maximum total bytes to read exceeeded: " + maxTotalBytesRead
 					+ " offset:" + offset);
