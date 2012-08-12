@@ -4,12 +4,17 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
-/*
+/**
+ * sBIT chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11sBIT
+ * <p>
+ * this chunk structure depends on the image type
  */
 public class PngChunkSBIT extends PngChunkSingle {
 	public final static String ID = ChunkHelper.sBIT;
 	// http://www.w3.org/TR/PNG/#11sBIT
-	// this chunk structure depends on the image type
+	
 
 	// significant bits
 	private int graysb, alphasb;

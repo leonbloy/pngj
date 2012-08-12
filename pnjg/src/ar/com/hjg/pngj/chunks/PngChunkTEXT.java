@@ -3,6 +3,11 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 
+/**
+ * tEXt chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11tEXt
+ */
 public class PngChunkTEXT extends PngChunkTextVar {
 	public final static String ID = ChunkHelper.tEXt;
 

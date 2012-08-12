@@ -9,7 +9,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * Represents a instance of a PNG chunk
+ * Represents a instance of a PNG chunk.
  * <p>
  * See <a
  * href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks

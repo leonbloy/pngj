@@ -3,7 +3,10 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 
-/*
+/**
+ * iCCP chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11iCCP
  */
 public class PngChunkICCP extends PngChunkSingle {
 	public final static String ID = ChunkHelper.iCCP;

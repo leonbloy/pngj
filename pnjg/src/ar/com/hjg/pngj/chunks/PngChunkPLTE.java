@@ -3,8 +3,12 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
-/*
- * Palette chunk *this is critical*
+/**
+ * PLTE chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11PLTE
+ * <p>
+ * Critical chunk
  */
 public class PngChunkPLTE extends PngChunkSingle {
 	public final static String ID = ChunkHelper.PLTE;

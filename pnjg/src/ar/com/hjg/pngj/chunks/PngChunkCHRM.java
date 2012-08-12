@@ -4,7 +4,10 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
-/*
+/**
+ * cHRM chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11cHRM
  */
 public class PngChunkCHRM extends PngChunkSingle {
 	public final static String ID = ChunkHelper.cHRM;

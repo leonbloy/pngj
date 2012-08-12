@@ -4,14 +4,19 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
-/*
+/**
+ * tRNS chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11tRNS
+ * <p>
+ * this chunk structure depends on the image type
  */
 public class PngChunkTRNS extends PngChunkSingle {
 	public final static String ID = ChunkHelper.tRNS;
 
 	// http://www.w3.org/TR/PNG/#11tRNS
-	// this chunk structure depends on the image type
-	// only one of these is meaningful
+
+	// only one of these is meaningful, depending on the image type
 	private int gray;
 	private int red, green, blue;
 	private int[] paletteAlpha = new int[] {};

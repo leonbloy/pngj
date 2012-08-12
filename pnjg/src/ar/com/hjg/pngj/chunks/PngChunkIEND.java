@@ -2,6 +2,11 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 
+/**
+ * IEND chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11IEND
+ */
 public class PngChunkIEND extends PngChunkSingle {
 	public final static String ID = ChunkHelper.IEND;
 

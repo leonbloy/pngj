@@ -8,7 +8,9 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * UNTESTED!
+ * iTXt chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11iTXt
  */
 public class PngChunkITXT extends PngChunkTextVar {
 	public final static String ID = ChunkHelper.iTXt;

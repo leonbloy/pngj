@@ -8,8 +8,8 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * All chunks that form an image, read or to be written
- * 
+ * All chunks that form an image, read or to be written.
+ * <p>
  * chunks include all chunks, but IDAT is a single pseudo chunk without data
  **/
 public class ChunksList {

@@ -7,6 +7,11 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
+/**
+ * sPLT chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11sPLT
+ */
 public class PngChunkSPLT extends PngChunkMultiple {
 	public final static String ID = ChunkHelper.sPLT;
 

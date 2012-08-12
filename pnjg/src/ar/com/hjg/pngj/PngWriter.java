@@ -488,7 +488,9 @@ public class PngWriter {
 	}
 
 	/**
-	 * Writes a full image row. This must be called sequentially from n=0 to n=rows-1 One integer per sample , in the
+	 * Writes a full image row. 
+	 * <p>
+	 * This must be called sequentially from n=0 to n=rows-1 One integer per sample , in the
 	 * natural order: R G B R G B ... (or R G B A R G B A... if has alpha) The values should be between 0 and 255 for 8
 	 * bitspc images, and between 0- 65535 form 16 bitspc images (this applies also to the alpha channel if present) The
 	 * array can be reused.
@@ -524,14 +526,12 @@ public class PngWriter {
 	}
 
 	/**
-	 * Computes compressed size/raw size, approximate
-	 * 
+	 * Computes compressed size/raw size, approximate.
+	 * <p>
 	 * Actually: compressed size = total size of IDAT data , 
-	 * raw size = uncompressed pixel bytes = rows * (bytesPerRow + 1)
+	 * raw size = uncompressed pixel bytes = rows * (bytesPerRow + 1).
 	 * 
 	 * This must be called after pngw.end()
-	 * 
-	 * @return
 	 */
 	public double computeCompressionRatio() {
 		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
@@ -541,6 +541,9 @@ public class PngWriter {
 		return compressed / raw;
 	}
 
+	/**
+	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY Deflater.DEFAULT_STRATEGY 
+	 */
 	public void setDeflaterStrategy(int deflaterStrategy) {
 		this.deflaterStrategy = deflaterStrategy;
 	}

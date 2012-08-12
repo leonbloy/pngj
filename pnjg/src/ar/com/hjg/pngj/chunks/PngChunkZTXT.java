@@ -7,6 +7,11 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
+/**
+ * zTXt chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11zTXt
+ */
 public class PngChunkZTXT extends PngChunkTextVar {
 	public final static String ID = ChunkHelper.zTXt;
 

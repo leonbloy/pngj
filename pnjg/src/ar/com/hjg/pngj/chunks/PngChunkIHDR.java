@@ -7,7 +7,11 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * this is a special chunk!
+ * IHDR chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11IHDR
+ * <p>
+ * This is a special critical Chunk. 
  */
 public class PngChunkIHDR extends PngChunkSingle {
 	public final static String ID = ChunkHelper.IHDR;

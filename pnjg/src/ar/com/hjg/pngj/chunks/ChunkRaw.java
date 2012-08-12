@@ -10,11 +10,11 @@ import ar.com.hjg.pngj.PngjBadCrcException;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
- * Raw (physical) chunk
+ * Raw (physical) chunk.
  * <p>
- * Short lived object, to be created while serialing/deserializing Do not reuse it for different chunks
- * <p>
- * see http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
+ * Short lived object, to be created while serialing/deserializing Do not reuse it for different chunks.
+ * <br>
+ * See http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
  */
 public class ChunkRaw {
 	/**

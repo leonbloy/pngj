@@ -4,7 +4,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * pseudo chunk type, for skipped chunks on reading
+ * Pseudo chunk type, for chunks that were skipped on reading
  */
 public class PngChunkSkipped extends PngChunk {
 

@@ -3,6 +3,11 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
+/**
+ * sTER chunk.
+ * <p>
+ * see http://www.libpng.org/pub/png/spec/register/pngext-1.3.0-pdg.html#C.sTER
+ */
 public class PngChunkSTER extends PngChunkSingle {
 	public final static String ID = "sTER";
 

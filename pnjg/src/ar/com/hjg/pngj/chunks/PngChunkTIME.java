@@ -6,6 +6,11 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
+/**
+ * tIME chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11tIME
+ */
 public class PngChunkTIME extends PngChunkSingle {
 	public final static String ID = ChunkHelper.tIME;
 

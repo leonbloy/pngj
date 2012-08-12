@@ -4,13 +4,15 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
-/*
+/**
+ * hIST chunk.
+ * <p>
+ * see http://www.w3.org/TR/PNG/#11hIST
+ * <br>
+ *  only for palette images
  */
 public class PngChunkHIST extends PngChunkSingle {
 	public final static String ID = ChunkHelper.hIST;
-
-	// http://www.w3.org/TR/PNG/#11hIST
-	// only for palette images
 
 	private int[] hist = new int[0]; // should have same lenght as palette
 

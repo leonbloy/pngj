@@ -3,9 +3,7 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 
 /**
- * superclass for three textual chunks (TEXT, ITXT, ZTXT)
- * 
- * @author Hernan J Gonzalez
+ * Superclass (abstract) for three textual chunks (TEXT, ITXT, ZTXT)
  */
 public abstract class PngChunkTextVar extends PngChunkMultiple {
 	protected String key; // key/val: only for tEXt. lazy computed

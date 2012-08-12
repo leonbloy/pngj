@@ -30,11 +30,11 @@ public enum FilterType {
 	 */
 	FILTER_DEFAULT(-1),
 	/**
-	 * Aggressive strategy: select one of the above filters trying each of the filters (this is done every 8 rows)
+	 * Aggressive strategy: select one of the above filters trying each of the filters (every 8 rows)
 	 */
 	FILTER_AGGRESSIVE(-2),
 	/**
-	 * Aggressive strategy: select one of the above filters trying each of the filters (this is done for every row!)
+	 * Very aggressive strategy: select one of the above filters trying each of the filters (for every row!)
 	 */
 	FILTER_VERYAGGRESSIVE(-3),
 	/**

@@ -16,13 +16,14 @@ import ar.com.hjg.pngj.chunks.PngChunkSkipped;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
- * Reads a PNG image, line by line
+ * Reads a PNG image, line by line.
  * <p>
  * The reading sequence is as follows: <br>
  * 1. At construction time, the header and IHDR chunk are read (basic image info) <br>
- * 2. Optional: If you call GetMetadata() before reading the rows, the chunks before IDAT are automatically loaded <br>
- * 3. The rows are read in strict sequence, from 0 to nrows-1 <br>
- * 4. The reading of the last row triggers the loading of trailing chunks, and ends the reader.
+ * 2. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, the chunks before IDAT are automatically loaded <br>
+ * 3. The rows are read in strict sequence, from 0 to nrows-1 (you can skip rows by calling getRow() )<br>
+ * 4. Reading of the last row triggers the loading of trailing chunks, and ends the reader.<br>
+ * 5. end() forcibly finishes/aborts the reading and closes the stream  
  * 
  */
 public class PngReader {
@@ -483,7 +484,7 @@ public class PngReader {
 	}
 
 	/**
-	 * Set total maximum bytes to read (default: 200MB) <br>
+	 * Set total maximum bytes to read (default: 200MB). <br>
 	 * If exceeded, an exception will be thrown
 	 */
 	public void setMaxTotalBytesRead(long maxTotalBytesToRead) {
@@ -491,14 +492,14 @@ public class PngReader {
 	}
 
 	/**
-	 * @return Total maximum bytes to read
+	 * @return Total maximum bytes to read.
 	 */
 	public long getMaxTotalBytesRead() {
 		return maxTotalBytesRead;
 	}
 
 	/**
-	 * Set total maximum bytes to load from ancillary chunks (default: 5Mb)<br>
+	 * Set total maximum bytes to load from ancillary chunks (default: 5Mb).<br>
 	 * If exceeded, some chunks will be skipped
 	 */
 	public void setMaxBytesMetadata(int maxBytesChunksToLoad) {
@@ -506,14 +507,14 @@ public class PngReader {
 	}
 
 	/**
-	 * @return Total maximum bytes to load from ancillary ckunks
+	 * @return Total maximum bytes to load from ancillary ckunks.
 	 */
 	public int getMaxBytesMetadata() {
 		return maxBytesMetadata;
 	}
 
 	/**
-	 * Set maximum size in bytes for individual ancillary chunks (default: 2MB) <br>
+	 * Set maximum size in bytes for individual ancillary chunks (default: 2MB). <br>
 	 * Chunks exceeding this length will be skipped (the CRC will not be checked) and the chunk will be saved as a
 	 * PngChunkSkipped object. See also setSkipChunkIds
 	 */
@@ -529,7 +530,9 @@ public class PngReader {
 	}
 
 	/**
-	 * Chunks with these ids will be skipped, will be skipped (the CRC will not be checked) and the chunk will be saved
+	 * Chunks ids to be skipped. 
+	 * <br>
+	 * These chunks will be skipped (the CRC will not be checked) and the chunk will be saved
 	 * as a PngChunkSkipped object. See also setSkipChunkMaxSize
 	 */
 	public void setSkipChunkIds(String[] skipChunksById) {
@@ -537,7 +540,7 @@ public class PngReader {
 	}
 
 	/**
-	 * @return Chunk-IDs to be skipped
+	 * @return Chunk-IDs to be skipped.
 	 */
 	public String[] getSkipChunkIds() {
 		return skipChunkIds;

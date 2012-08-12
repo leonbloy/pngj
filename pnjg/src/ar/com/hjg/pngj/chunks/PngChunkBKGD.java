@@ -5,10 +5,9 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * bKGD CHUnk
+ * bKGD Chunk.
  * <p>
- * 
- * http://www.w3.org/TR/PNG/#11bKGD
+ * see http://www.w3.org/TR/PNG/#11bKGD
  * <p>
  * this chunk structure depends on the image type
  */

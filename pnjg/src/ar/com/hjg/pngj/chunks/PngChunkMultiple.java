@@ -3,7 +3,7 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.ImageInfo;
 
 /**
- * Represents a PNG chunk type that allows multiple instances in same image
+ * PNG chunk type (abstract) that allows multiple instances in same image.
  */
 public abstract class PngChunkMultiple extends PngChunk {
 
