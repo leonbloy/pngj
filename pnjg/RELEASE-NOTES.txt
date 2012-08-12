@@ -9,7 +9,8 @@ Version 0.94 (12 Aug 2012)
    -- Several related polishing in PngReader (parseChunkAndAddToList() removed, readChunk() added)
 	 -- 'offset' added in chunks (mainly informational)
 	 -- 'offset' in PngReader: now a long (to support greater than 2GB files), updated and checked against maxTotalBytesRead
-  - Added sample: SampleCustomChunk , registers a custom chunk	    
+  - Added sample: SampleCustomChunk , shows how to register a custom chunk	    
+  - Some fixes for very huge (more than 2GB) files - sample: CreateVeryHuge.java
   
 Version 0.93 (22 June 2012) 
   - PngReader.getRow() allows non sequential reading  (useful for skipping lines)
