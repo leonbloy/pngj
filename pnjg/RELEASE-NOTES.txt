@@ -1,6 +1,9 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.95 (14 Aug 2012) 
+  - Little stupid bug with PngReader,  maxTotalBytesRead was not really checked
+  
 Version 0.94 (12 Aug 2012) 
   - Defensive limits and related tuning in PngReader 
    -- Added: maxTotalBytesRead (200MB), maxBytesMetadata (5MB), skipChunkMaxSize (2MB) skipChunkIds ( "fdAT" )

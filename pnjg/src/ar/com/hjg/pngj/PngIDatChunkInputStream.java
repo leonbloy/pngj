@@ -80,7 +80,7 @@ class PngIDatChunkInputStream extends InputStream {
 			offset += 8;
 			ended = !Arrays.equals(idLastChunk, ChunkHelper.b_IDAT);
 			if (!ended) {
-				foundChunksInfo.add(new IdatChunkInfo(lenLastChunk, (long) (offset - 8)));
+				foundChunksInfo.add(new IdatChunkInfo(lenLastChunk, offset - 8));
 				crcEngine.update(idLastChunk, 0, 4);
 			}
 			// PngHelper.logdebug("IDAT ended. next len= " + lenLastChunk + " idat?" +

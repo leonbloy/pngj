@@ -329,7 +329,7 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads chunkd from input stream, adds to ChunksList, and returns it <br>
+	 * Reads chunkd from input stream, adds to ChunksList, and returns it. 
 	 * If it's skipped, a PngChunkSkipped object is created
 	 */
 	private PngChunk readChunk(byte[] chunkid, int clen, boolean skipforced) {
@@ -340,10 +340,10 @@ public class PngReader {
 		String chunkidstr = ChunkHelper.toString(chunkid);
 		PngChunk pngChunk = null;
 		boolean skip = skipforced;
-		if ( clen > maxTotalBytesRead)
+		if ( clen + offset > maxTotalBytesRead )
 			throw new PngjInputException("Maximum total bytes to read exceeeded: " + maxTotalBytesRead + " offset:"
-					+ offset);
-		// an ancillary chunks can be skipped because several reasons:
+					+ offset + " clen=" +clen);
+		// an ancillary chunks can be skipped because of several reasons:
 		if (currentChunkGroup > ChunksList.CHUNK_GROUP_0_IDHR && !ChunkHelper.isCritical(chunkidstr))
 			skip = skip || clen >= skipChunkMaxSize || skipChunkIdsSet.contains(chunkidstr)
 					||  clen > maxBytesMetadata - bytesChunksLoaded

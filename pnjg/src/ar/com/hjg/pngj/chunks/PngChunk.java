@@ -223,9 +223,9 @@ public abstract class PngChunk {
 		return length;
 	}
 
-	public void setLength(int length) {
+	/*public void setLength(int length) {
 		this.length = length;
-	}
+	}*/
 
 	public long getOffset() {
 		return offset;
