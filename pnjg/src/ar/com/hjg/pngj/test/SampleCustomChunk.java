@@ -7,20 +7,15 @@ import java.io.IOException;
 import java.util.Properties;
 
 import ar.com.hjg.pngj.FileHelper;
-import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
-import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkSingle;
-import ar.com.hjg.pngj.chunks.PngChunkTIME;
-import ar.com.hjg.pngj.chunks.PngChunk.ChunkOrderingConstraint;
 
 /**
  * This example shows how to register a custom chunk.

@@ -27,7 +27,9 @@ public class PngHelperInternal {
 	/**
 	 * PNG magic bytes
 	 */
-	static final byte[] pngIdBytes = { -119, 80, 78, 71, 13, 10, 26, 10 };
+	public static byte[] getPngIdSignature() {
+		return new byte[] { -119, 80, 78, 71, 13, 10, 26, 10 };
+	}
 
 	public static int doubleToInt100000(double d) {
 		return (int) (d * 100000.0 + 0.5);
@@ -143,8 +145,8 @@ public class PngHelperInternal {
 	}
 
 	public static void skipBytes(InputStream is, int len) {
-		byte[] buf = new byte[8192*4];
-		int read,remain = len;
+		byte[] buf = new byte[8192 * 4];
+		int read, remain = len;
 		try {
 			while (remain > 0) {
 				read = is.read(buf, 0, remain > buf.length ? buf.length : remain);

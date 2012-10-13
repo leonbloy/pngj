@@ -20,10 +20,11 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * <p>
  * The reading sequence is as follows: <br>
  * 1. At construction time, the header and IHDR chunk are read (basic image info) <br>
- * 2. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, the chunks before IDAT are automatically loaded <br>
+ * 2. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, the chunks before IDAT are
+ * automatically loaded <br>
  * 3. The rows are read in strict sequence, from 0 to nrows-1 (you can skip rows by calling getRow() )<br>
  * 4. Reading of the last row triggers the loading of trailing chunks, and ends the reader.<br>
- * 5. end() forcibly finishes/aborts the reading and closes the stream  
+ * 5. end() forcibly finishes/aborts the reading and closes the stream
  * 
  */
 public class PngReader {
@@ -90,10 +91,10 @@ public class PngReader {
 		this.chunksList = new ChunksList(null);
 		this.metadata = new PngMetadata(chunksList);
 		// starts reading: signature
-		byte[] pngid = new byte[PngHelperInternal.pngIdBytes.length];
+		byte[] pngid = new byte[8];
 		PngHelperInternal.readBytes(inputStream, pngid, 0, pngid.length);
 		offset += pngid.length;
-		if (!Arrays.equals(pngid, PngHelperInternal.pngIdBytes))
+		if (!Arrays.equals(pngid, PngHelperInternal.getPngIdSignature()))
 			throw new PngjInputException("Bad PNG signature");
 		// reads first chunk
 		currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
@@ -152,7 +153,7 @@ public class PngReader {
 	 * Reads last Internally called after having read the last line. It reads extra chunks after IDAT, if present.
 	 */
 	private void readLastAndClose() {
-		//offset = iIdatCstream.getOffset();
+		// offset = iIdatCstream.getOffset();
 		try {
 			idatIstream.close();
 		} catch (Exception e) {
@@ -329,28 +330,30 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads chunkd from input stream, adds to ChunksList, and returns it. 
-	 * If it's skipped, a PngChunkSkipped object is created
+	 * Reads chunkd from input stream, adds to ChunksList, and returns it. If it's skipped, a PngChunkSkipped object is
+	 * created
 	 */
 	private PngChunk readChunk(byte[] chunkid, int clen, boolean skipforced) {
-		if(clen <0) throw new PngjInputException("invalid chunk lenght: " + clen);
+		if (clen < 0)
+			throw new PngjInputException("invalid chunk lenght: " + clen);
 		// skipChunksByIdSet is created lazyly, if fist IHDR has already been read
 		if (skipChunkIdsSet == null && currentChunkGroup > ChunksList.CHUNK_GROUP_0_IDHR)
 			skipChunkIdsSet = new HashSet<String>(Arrays.asList(skipChunkIds));
 		String chunkidstr = ChunkHelper.toString(chunkid);
 		PngChunk pngChunk = null;
 		boolean skip = skipforced;
-		if ( clen + offset > maxTotalBytesRead )
+		if (maxTotalBytesRead > 0 && clen + offset > maxTotalBytesRead)
 			throw new PngjInputException("Maximum total bytes to read exceeeded: " + maxTotalBytesRead + " offset:"
-					+ offset + " clen=" +clen);
+					+ offset + " clen=" + clen);
 		// an ancillary chunks can be skipped because of several reasons:
 		if (currentChunkGroup > ChunksList.CHUNK_GROUP_0_IDHR && !ChunkHelper.isCritical(chunkidstr))
-			skip = skip || clen >= skipChunkMaxSize || skipChunkIdsSet.contains(chunkidstr)
-					||  clen > maxBytesMetadata - bytesChunksLoaded
+			skip = skip || (skipChunkMaxSize > 0 && clen >= skipChunkMaxSize) || skipChunkIdsSet.contains(chunkidstr)
+					|| (maxBytesMetadata > 0 && clen > maxBytesMetadata - bytesChunksLoaded)
 					|| !ChunkHelper.shouldLoad(chunkidstr, chunkLoadBehaviour);
 		if (skip) {
-			PngHelperInternal.skipBytes(inputStream, clen );
-			PngHelperInternal.readInt4(inputStream); // skip - we dont call PngHelperInternal.skipBytes(inputStream, clen + 4) for risk of overflow 
+			PngHelperInternal.skipBytes(inputStream, clen);
+			PngHelperInternal.readInt4(inputStream); // skip - we dont call PngHelperInternal.skipBytes(inputStream,
+														// clen + 4) for risk of overflow
 			pngChunk = new PngChunkSkipped(chunkidstr, imgInfo, clen);
 		} else {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
@@ -468,9 +471,10 @@ public class PngReader {
 		// loads in rowbfilter "raw" bytes, with filter
 		PngHelperInternal.readBytes(idatIstream, rowbfilter, 0, rowbfilter.length);
 		offset = iIdatCstream.getOffset();
-		if(offset <0) throw new RuntimeException("??");
-		
-		if (offset >= maxTotalBytesRead)
+		if (offset < 0)
+			throw new RuntimeException("??");
+
+		if (maxTotalBytesRead >0 && offset >= maxTotalBytesRead)
 			throw new PngjInputException("Reading IDAT: Maximum total bytes to read exceeeded: " + maxTotalBytesRead
 					+ " offset:" + offset);
 		rowb[0] = 0;
@@ -488,8 +492,9 @@ public class PngReader {
 	}
 
 	/**
-	 * Set total maximum bytes to read (default: 200MB). <br>
+	 * Set total maximum bytes to read (0: unlimited; default: 200MB). <br>
 	 * If exceeded, an exception will be thrown
+	 * 
 	 */
 	public void setMaxTotalBytesRead(long maxTotalBytesToRead) {
 		this.maxTotalBytesRead = maxTotalBytesToRead;
@@ -503,7 +508,7 @@ public class PngReader {
 	}
 
 	/**
-	 * Set total maximum bytes to load from ancillary chunks (default: 5Mb).<br>
+	 * Set total maximum bytes to load from ancillary chunks (0: unlimited; default: 5Mb).<br>
 	 * If exceeded, some chunks will be skipped
 	 */
 	public void setMaxBytesMetadata(int maxBytesChunksToLoad) {
@@ -518,7 +523,7 @@ public class PngReader {
 	}
 
 	/**
-	 * Set maximum size in bytes for individual ancillary chunks (default: 2MB). <br>
+	 * Set maximum size in bytes for individual ancillary chunks (0: unlimited; default: 2MB). <br>
 	 * Chunks exceeding this length will be skipped (the CRC will not be checked) and the chunk will be saved as a
 	 * PngChunkSkipped object. See also setSkipChunkIds
 	 */
@@ -534,13 +539,12 @@ public class PngReader {
 	}
 
 	/**
-	 * Chunks ids to be skipped. 
-	 * <br>
-	 * These chunks will be skipped (the CRC will not be checked) and the chunk will be saved
-	 * as a PngChunkSkipped object. See also setSkipChunkMaxSize
+	 * Chunks ids to be skipped. <br>
+	 * These chunks will be skipped (the CRC will not be checked) and the chunk will be saved as a PngChunkSkipped
+	 * object. See also setSkipChunkMaxSize
 	 */
 	public void setSkipChunkIds(String[] skipChunksById) {
-		this.skipChunkIds = skipChunksById;
+		this.skipChunkIds = skipChunksById == null ? new String[] {} : skipChunksById;
 	}
 
 	/**

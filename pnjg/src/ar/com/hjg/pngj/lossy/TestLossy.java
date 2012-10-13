@@ -6,7 +6,6 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
-import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 
 /**

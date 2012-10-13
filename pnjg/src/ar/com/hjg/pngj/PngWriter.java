@@ -166,7 +166,7 @@ public class PngWriter {
 	private void writeSignatureAndIHDR() {
 		currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
 
-		PngHelperInternal.writeBytes(os, PngHelperInternal.pngIdBytes); // signature
+		PngHelperInternal.writeBytes(os, PngHelperInternal.getPngIdSignature()); // signature
 		PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
 		ihdr.setCols(imgInfo.cols);
@@ -335,7 +335,7 @@ public class PngWriter {
 						&& !(ChunkHelper.isUnknown(chunk) || text || chunk.id.equals(ChunkHelper.hIST) || chunk.id
 								.equals(ChunkHelper.tIME)))
 					copy = true;
-				if( chunk instanceof PngChunkSkipped) 
+				if (chunk instanceof PngChunkSkipped)
 					copy = false;
 			}
 			if (copy) {
@@ -488,12 +488,11 @@ public class PngWriter {
 	}
 
 	/**
-	 * Writes a full image row. 
+	 * Writes a full image row.
 	 * <p>
-	 * This must be called sequentially from n=0 to n=rows-1 One integer per sample , in the
-	 * natural order: R G B R G B ... (or R G B A R G B A... if has alpha) The values should be between 0 and 255 for 8
-	 * bitspc images, and between 0- 65535 form 16 bitspc images (this applies also to the alpha channel if present) The
-	 * array can be reused.
+	 * This must be called sequentially from n=0 to n=rows-1 One integer per sample , in the natural order: R G B R G B
+	 * ... (or R G B A R G B A... if has alpha) The values should be between 0 and 255 for 8 bitspc images, and between
+	 * 0- 65535 form 16 bitspc images (this applies also to the alpha channel if present) The array can be reused.
 	 * 
 	 * @param newrow
 	 *            Array of pixel values
@@ -528,8 +527,8 @@ public class PngWriter {
 	/**
 	 * Computes compressed size/raw size, approximate.
 	 * <p>
-	 * Actually: compressed size = total size of IDAT data , 
-	 * raw size = uncompressed pixel bytes = rows * (bytesPerRow + 1).
+	 * Actually: compressed size = total size of IDAT data , raw size = uncompressed pixel bytes = rows * (bytesPerRow +
+	 * 1).
 	 * 
 	 * This must be called after pngw.end()
 	 */
@@ -542,7 +541,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY Deflater.DEFAULT_STRATEGY 
+	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY Deflater.DEFAULT_STRATEGY
 	 */
 	public void setDeflaterStrategy(int deflaterStrategy) {
 		this.deflaterStrategy = deflaterStrategy;
