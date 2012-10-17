@@ -184,12 +184,12 @@ public class PngMetadata {
 	 * Use getTxtsForKey() if you don't want this behaviour
 	 */
 	public String getTxtForKey(String k) {
-		String t = "";
 		List<? extends PngChunkTextVar> li = getTxtsForKey(k);
 		if (li.isEmpty())
-			return t;
+			return "";
+		StringBuilder t = new StringBuilder();
 		for (PngChunkTextVar c : li)
-			t = t + c.getVal() + "\n";
-		return t.trim();
+			t.append(c.getVal()).append("\n");
+		return t.toString().trim();
 	}
 }

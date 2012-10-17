@@ -8,9 +8,9 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
  * Not essential at all, some methods are probably to be removed if future releases.
  */
 public class ImageLineHelper {
-	
+
 	private final static double BIG_VALUE = Double.MAX_VALUE * 0.5;
-	
+
 	private final static double BIG_VALUE_NEG = Double.MAX_VALUE * (-0.5);
 
 	/**
@@ -139,22 +139,43 @@ public class ImageLineHelper {
 	}
 
 	public static void setPixelsRGB8(ImageLine line, int[] rgb) {
-		for (int i = 0; i < line.imgInfo.cols; i++) {
-			line.scanline[i * line.channels] = ((rgb[i] & 0xFF0000) >> 16);
-			line.scanline[i * line.channels + 1] = ((rgb[i] & 0xFF00) >> 8);
-			line.scanline[i * line.channels + 2] = ((rgb[i] & 0xFF));
+		for (int i = 0, j = 0; i < line.imgInfo.cols; i++) {
+			line.scanline[j++] = ((rgb[i] >> 16) & 0xFF);
+			line.scanline[j++] = ((rgb[i] >> 8) & 0xFF);
+			line.scanline[j++] = ((rgb[i] & 0xFF));
 		}
 	}
 
 	public static void setPixelRGB8(ImageLine line, int col, int r, int g, int b) {
-		line.scanline[col * line.channels] = r;
-		line.scanline[col * line.channels + 1] = g;
-		line.scanline[col * line.channels + 2] = b;
-
+		col *= line.channels;
+		line.scanline[col++] = r;
+		line.scanline[col++] = g;
+		line.scanline[col] = b;
 	}
 
 	public static void setPixelRGB8(ImageLine line, int col, int rgb) {
-		setPixelRGB8(line, col, ((rgb & 0xFF0000) >> 16), ((rgb & 0xFF00) >> 8), ((rgb & 0xFF)));
+		setPixelRGB8(line, col, (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF);
+	}
+
+	public static void setPixelsRGBA8(ImageLine line, int[] rgb) {
+		for (int i = 0, j = 0; i < line.imgInfo.cols; i++) {
+			line.scanline[j++] = ((rgb[i] >> 16) & 0xFF);
+			line.scanline[j++] = ((rgb[i] >> 8) & 0xFF);
+			line.scanline[j++] = ((rgb[i] & 0xFF));
+			line.scanline[j++] = ((rgb[i] >> 24) & 0xFF);
+		}
+	}
+
+	public static void setPixelRGBA8(ImageLine line, int col, int r, int g, int b, int a) {
+		col *= line.channels;
+		line.scanline[col++] = r;
+		line.scanline[col++] = g;
+		line.scanline[col++] = b;
+		line.scanline[col] = a;
+	}
+
+	public static void setPixelRGBA8(ImageLine line, int col, int rgb) {
+		setPixelRGBA8(line, col, (rgb >> 16) & 0xFF, (rgb >> 8) & 0xFF, rgb & 0xFF, (rgb >> 24) & 0xFF);
 	}
 
 	public static void setValD(ImageLine line, int i, double d) {
@@ -181,7 +202,7 @@ public class ImageLineHelper {
 		d = d <= 0.0 ? 0 : (d >= 1.0 ? 1.0 : d);
 		return line.bitDepth == 16 ? (int) (d * 65535.0 + 0.5) : (int) (d * 255.0 + 0.5); //
 	}
-	
+
 	public static int clampTo_0_255(int i) {
 		return i > 255 ? 255 : (i < 0 ? 0 : i);
 	}
