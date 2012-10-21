@@ -1,6 +1,12 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 0.96 (21 Oct 2012) 
+  - Fixed issue: PngWriter.init() not internally called when not passing row number
+  - Fixed bad format in PngChunkTIME (thanks harvey.harrison) 
+  - setMaxXXX() methods now accept zero, meaning unlimited (eg  PngReader.setMaxTotalBytesRead(0) = no limit)
+  - PngHelper.getPngIdSignature is public now
+  
 Version 0.95 (14 Aug 2012) 
   - Little stupid bug with PngReader,  maxTotalBytesRead was not really checked
   
