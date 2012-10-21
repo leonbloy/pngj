@@ -501,9 +501,8 @@ public class PngWriter {
 	 *            autocompute it
 	 */
 	public void writeRow(int[] newrow, int rown) {
-		if (rown == 0) {
+		if (datStream == null)
 			init();
-		}
 		if (rown < -1 || rown > imgInfo.rows)
 			throw new RuntimeException("invalid value for row " + rown);
 		rowNum++;
