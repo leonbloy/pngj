@@ -34,16 +34,16 @@ public class SampleRemoveGama {
 	}
 
 	public static void removeGama(PngWriter pngw) {
-		PngChunkGAMA gama = (PngChunkGAMA) pngw.getChunkList().getQueuedById1(ChunkHelper.gAMA);
+		PngChunkGAMA gama = (PngChunkGAMA) pngw.getChunksList().getQueuedById1(ChunkHelper.gAMA);
 		if (gama != null) {
 			System.out.println("removing gama chunk gamma=" + gama.getGamma());
-			pngw.getChunkList().removeChunk(gama);
+			pngw.getChunksList().removeChunk(gama);
 		}
 	}
 
 	// another way
 	public static void removeGama2(PngWriter pngw) {
-		int n = ChunkHelper.trimList(pngw.getChunkList().getQueuedChunks(), new ChunkPredicate() {
+		int n = ChunkHelper.trimList(pngw.getChunksList().getQueuedChunks(), new ChunkPredicate() {
 			public boolean match(PngChunk c) {
 				return c.id.equals(ChunkHelper.gAMA);
 			}

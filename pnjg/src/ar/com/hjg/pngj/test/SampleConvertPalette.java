@@ -41,12 +41,12 @@ public class SampleConvertPalette {
 			int[] col = cuant.getColor(i);
 			palette.setEntry(i, col[0], col[1], col[2]);
 		}
-		pngw.getChunkList().queue(palette);
+		pngw.getChunksList().queue(palette);
 		int transparentIndex = cuant.getTransparentIndex();
 		if (transparentIndex >= 0) {
 			PngChunkTRNS transparent = new PngChunkTRNS(imiw);
 			transparent.setIndexEntryAsTransparent(transparentIndex);
-			pngw.getChunkList().queue(transparent);
+			pngw.getChunksList().queue(transparent);
 		}
 		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		ImageLine linew = new ImageLine(imiw);

@@ -32,7 +32,7 @@ public class PngWriter {
 	 */
 	protected int rowNum = -1;
 
-	private final ChunksListForWrite chunkList;
+	private final ChunksListForWrite chunksList;
 
 	private final PngMetadata metadata; // high level wrapper over chunkList
 
@@ -102,8 +102,8 @@ public class PngWriter {
 		rowb = new byte[imgInfo.bytesPerRow + 1];
 		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
-		chunkList = new ChunksListForWrite(imgInfo);
-		metadata = new PngMetadata(chunkList);
+		chunksList = new ChunksListForWrite(imgInfo);
+		metadata = new PngMetadata(chunksList);
 		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT); // can be changed
 	}
 
@@ -138,23 +138,23 @@ public class PngWriter {
 	private void writeFirstChunks() {
 		int nw = 0;
 		currentChunkGroup = ChunksList.CHUNK_GROUP_1_AFTERIDHR;
-		nw = chunkList.writeChunks(os, currentChunkGroup);
+		nw = chunksList.writeChunks(os, currentChunkGroup);
 		currentChunkGroup = ChunksList.CHUNK_GROUP_2_PLTE;
-		nw = chunkList.writeChunks(os, currentChunkGroup);
+		nw = chunksList.writeChunks(os, currentChunkGroup);
 		if (nw > 0 && imgInfo.greyscale)
 			throw new PngjOutputException("cannot write palette for this format");
 		if (nw == 0 && imgInfo.indexed)
 			throw new PngjOutputException("missing palette");
 		currentChunkGroup = ChunksList.CHUNK_GROUP_3_AFTERPLTE;
-		nw = chunkList.writeChunks(os, currentChunkGroup);
+		nw = chunksList.writeChunks(os, currentChunkGroup);
 		currentChunkGroup = ChunksList.CHUNK_GROUP_4_IDAT;
 	}
 
 	private void writeLastChunks() { // not including end
 		currentChunkGroup = ChunksList.CHUNK_GROUP_5_AFTERIDAT;
-		chunkList.writeChunks(os, currentChunkGroup);
+		chunksList.writeChunks(os, currentChunkGroup);
 		// should not be unwriten chunks
-		List<PngChunk> pending = chunkList.getQueuedChunks();
+		List<PngChunk> pending = chunksList.getQueuedChunks();
 		if (!pending.isEmpty())
 			throw new PngjOutputException(pending.size() + " chunks were not written! Eg: " + pending.get(0).toString());
 		currentChunkGroup = ChunksList.CHUNK_GROUP_6_END;
@@ -339,7 +339,7 @@ public class PngWriter {
 					copy = false;
 			}
 			if (copy) {
-				chunkList.queue(PngChunk.cloneChunk(chunk, imgInfo));
+				chunksList.queue(PngChunk.cloneChunk(chunk, imgInfo));
 			}
 		}
 	}
@@ -393,9 +393,10 @@ public class PngWriter {
 		}
 	}
 
-	public ChunksListForWrite getChunkList() {
-		return chunkList;
+	public ChunksListForWrite getChunksList() {
+		return chunksList;
 	}
+
 
 	// /// several getters / setters - all this setters are optional
 
@@ -495,7 +496,7 @@ public class PngWriter {
 	 * 0- 65535 form 16 bitspc images (this applies also to the alpha channel if present) The array can be reused.
 	 * 
 	 * @param newrow
-	 *            Array of pixel values
+	 *            Array of pixel values. Warning: the array size should be exact (samplesPerRowP) 
 	 * @param rown
 	 *            Row number, from 0 (top) to rows-1 (bottom). This is just used as a check. Pass -1 if you want to
 	 *            autocompute it
@@ -541,6 +542,8 @@ public class PngWriter {
 
 	/**
 	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY Deflater.DEFAULT_STRATEGY
+	 * <p>
+	 * Default: Deflater.FILTERED . This should be changed very rarely.
 	 */
 	public void setDeflaterStrategy(int deflaterStrategy) {
 		this.deflaterStrategy = deflaterStrategy;

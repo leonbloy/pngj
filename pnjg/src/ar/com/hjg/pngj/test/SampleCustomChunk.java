@@ -97,7 +97,7 @@ public class SampleCustomChunk {
 		PngChunkPROP mychunk = new PngChunkPROP(pngw.imgInfo);
 		mychunk.getProps().putAll(p);
 		mychunk.setPriority(true); // if we want it to be written as soon as possible
-		pngw.getChunkList().queue(mychunk);
+		pngw.getChunksList().queue(mychunk);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = pngr.readRow(row);
 			pngw.writeRow(l1, row);

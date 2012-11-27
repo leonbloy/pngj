@@ -182,6 +182,15 @@ public class ImageLineHelper {
 		line.scanline[i] = double2int(line, d);
 	}
 
+	public static int interpol(int a, int b, int c, int d, double dx, double dy) {
+		// a b -> x (0-1)
+		// c d
+		//
+		double e = a * (1.0 - dx) + b * dx;
+		double f = c * (1.0 - dx) + d * dx;
+		return (int) (e * (1 - dy) + f * dy + 0.5);
+	}
+
 	public static double int2double(ImageLine line, int p) {
 		return line.bitDepth == 16 ? p / 65535.0 : p / 255.0;
 		// TODO: replace my multiplication? check for other bitdepths

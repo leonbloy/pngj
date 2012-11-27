@@ -2,6 +2,7 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 import java.util.List;
+import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
@@ -23,6 +24,7 @@ public class SampleMirrorImage {
 		PngReader pngr = FileHelper.createPngReader(orig);
 		PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, overwrite);
 		pngw.setFilterType(FilterType.FILTER_CYCLIC); // just to test all filters
+		pngw.setCompLevel(6);
 		int copyPolicy = ChunkCopyBehaviour.COPY_ALL;
 		pngw.copyChunksFirst(pngr, copyPolicy);
 		ImageLine lout = new ImageLine(pngw.imgInfo);

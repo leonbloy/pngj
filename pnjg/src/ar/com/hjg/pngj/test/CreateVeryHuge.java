@@ -20,12 +20,12 @@ public class CreateVeryHuge {
 public static void createVeryHuge(String filename, final int cols, final int rows) throws Exception {
 		OutputStream os = filename == null ? new NullOutputStream() : new FileOutputStream(new File(filename));
 		PngWriter png = new PngWriter(os, new ImageInfo(cols, rows, 8, false));
-		png.setFilterType(FilterType.FILTER_NONE);
+		png.setFilterType(FilterType.FILTER_NONE); // no compression at PNG prediction level
 		png.setIdatMaxSize(0x10000*256);
-		png.setCompLevel(0);
+		png.setCompLevel(0); // // no compression at ZLIB level
 		ImageLine iline1 = new ImageLine(png.imgInfo);
 		Random r  = new Random();
-		for (int j = 0; j < cols; j++) {
+		for (int j = 0; j < cols; j++) { // pure noise line 
 			ImageLineHelper.setPixelRGB8(iline1, j,r.nextInt(256),r.nextInt(256),r.nextInt(256));
 		}
 		long t0 = System.currentTimeMillis();

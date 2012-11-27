@@ -147,6 +147,7 @@ public class ImageLine {
 			}
 		}
 	}
+	
 
 	private int getMaskForPackedFormats() { // Utility function for pack/unpack
 		if (bitDepth == 1)
