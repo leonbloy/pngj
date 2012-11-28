@@ -135,12 +135,13 @@ public class PngWriterLossy extends PngWriter {
 		}
 	}
 
-	@Override
+	
 	protected void convertRowToBytes() {
 		byte[] tmp = rowbrx; // addition swap
 		rowbrx = rowbprevrx;
 		rowbprevrx = tmp;
-		super.convertRowToBytes();
+		//super.convertRowToBytes();
+		// TODO fix this
 	}
 
 	protected void filterRowNone() {

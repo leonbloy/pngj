@@ -1,6 +1,15 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 1.0
+   - Added int[][] readImage[]()
+   - Added readRow(byte[]) readRow(short[])  
+   - Implemented Interlacing (for reading)
+   - Several retouchings in PngReader. getRow is more efficient when skipping rows
+
+Version 0.97 (?)
+  - Corrected typo in PngWriter: getChunkList() -> getChunksList()  
+    
 Version 0.96 (21 Oct 2012) 
   - Fixed issue: PngWriter.init() not internally called when not passing row number
   - Fixed bad format in PngChunkTIME (thanks harvey.harrison) 

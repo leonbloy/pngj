@@ -186,16 +186,32 @@ public class PngWriter {
 		ihdr.createRawChunk().writeChunk(os);
 
 	}
-
-	protected void convertRowToBytes() {
+	
+	protected void encodeRowFromByte(byte[] row) {
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
 		int j = 1;
 		if (imgInfo.bitDepth <= 8) {
-			for (int x : scanline) { // optimized
+			for (byte  x : row) { // optimized
+				rowb[j++] =  x;
+			}
+		} else { // 16 bitspc
+			j=1;
+			for (byte x : row) { // optimized
+				rowb[j] = (byte) (x);
+				j+=2;
+			}
+		}
+	}
+
+	protected void encodeRowFromInt(int[] row) {
+		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
+		int j = 1;
+		if (imgInfo.bitDepth <= 8) {
+			for (int x : row) { // optimized
 				rowb[j++] = (byte) x;
 			}
 		} else { // 16 bitspc
-			for (int x : scanline) { // optimized
+			for (int x : row) { // optimized
 				rowb[j++] = (byte) (x >> 8);
 				rowb[j++] = (byte) (x);
 			}
@@ -239,6 +255,30 @@ public class PngWriter {
 			throw new PngjOutputException("Filter type " + filterType + " not implemented");
 		}
 		reportResultsForFilter(rown, filterType, false);
+	}
+
+	private void prepareEncodeRow(int rown) {
+		if (datStream == null)
+			init();
+		if (rown < -1 || rown > imgInfo.rows)
+			throw new RuntimeException("invalid value for row " + rown);
+		rowNum++;
+		if (rown >= 0 && rowNum != rown)
+			throw new RuntimeException("rows must be written in strict consecutive order: tried to write row " + rown
+					+ ", expected=" + rowNum);
+		// swap
+		byte[] tmp = rowb;
+		rowb = rowbprev;
+		rowbprev = tmp;
+	}
+
+	private void filterAndSend(int rown) {
+		filterRow(rown);
+		try {
+			datStreamDeflated.write(rowbfilter, 0, imgInfo.bytesPerRow + 1);
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
+		}
 	}
 
 	protected void filterRowAverage() {
@@ -376,6 +416,22 @@ public class PngWriter {
 	}
 
 	/**
+	 * Computes compressed size/raw size, approximate.
+	 * <p>
+	 * Actually: compressed size = total size of IDAT data , raw size = uncompressed pixel bytes = rows * (bytesPerRow +
+	 * 1).
+	 * 
+	 * This must be called after pngw.end()
+	 */
+	public double computeCompressionRatio() {
+		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
+			throw new PngjException("must be called after end()");
+		double compressed = (double) datStream.getCountFlushed();
+		double raw = (imgInfo.bytesPerRow + 1) * imgInfo.rows;
+		return compressed / raw;
+	}
+
+	/**
 	 * Finalizes the image creation and closes the stream. This MUST be called after writing the lines.
 	 */
 	public void end() {
@@ -463,6 +519,15 @@ public class PngWriter {
 	}
 
 	/**
+	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY Deflater.DEFAULT_STRATEGY
+	 * <p>
+	 * Default: Deflater.FILTERED . This should be changed very rarely.
+	 */
+	public void setDeflaterStrategy(int deflaterStrategy) {
+		this.deflaterStrategy = deflaterStrategy;
+	}
+
+	/**
 	 * Writes line, checks that the row number is consistent with that of the ImageLine See writeRow(int[] newrow, int
 	 * rown)
 	 * 
@@ -489,6 +554,14 @@ public class PngWriter {
 	}
 
 	/**
+	 * Alias to writeRowInt
+	 * @see #writeRowInt(int[], int)
+	 */
+	public void writeRow(int[] newrow, int rown) {
+		writeRowInt(newrow,rown);
+	}
+	
+	/**
 	 * Writes a full image row.
 	 * <p>
 	 * This must be called sequentially from n=0 to n=rows-1 One integer per sample , in the natural order: R G B R G B
@@ -501,52 +574,40 @@ public class PngWriter {
 	 *            Row number, from 0 (top) to rows-1 (bottom). This is just used as a check. Pass -1 if you want to
 	 *            autocompute it
 	 */
-	public void writeRow(int[] newrow, int rown) {
-		if (datStream == null)
-			init();
-		if (rown < -1 || rown > imgInfo.rows)
-			throw new RuntimeException("invalid value for row " + rown);
-		rowNum++;
-		if (rown >= 0 && rowNum != rown)
-			throw new RuntimeException("rows must be written in strict consecutive order: tried to write row " + rown
-					+ ", expected=" + rowNum);
+	public void writeRowInt(int[] newrow, int rown) {
+		prepareEncodeRow(rown);
 		scanline = newrow;
-		// swap
-		byte[] tmp = rowb;
-		rowb = rowbprev;
-		rowbprev = tmp;
-		convertRowToBytes();
-		filterRow(rown);
-		try {
-			datStreamDeflated.write(rowbfilter, 0, imgInfo.bytesPerRow + 1);
-		} catch (IOException e) {
-			throw new PngjOutputException(e);
-		}
+		encodeRowFromInt(newrow);
+		filterAndSend(rown);
+		
 	}
 
 	/**
-	 * Computes compressed size/raw size, approximate.
-	 * <p>
-	 * Actually: compressed size = total size of IDAT data , raw size = uncompressed pixel bytes = rows * (bytesPerRow +
-	 * 1).
+	 * Same semantics as writeRowInt but using bytes. Each byte is still a (packed) sample. 
+     * If 16bitdepth, we are passing only the most significant byte (bad idea, in general)
 	 * 
-	 * This must be called after pngw.end()
+	 * @see PngWriter#writeRowInt(int[], int)
 	 */
-	public double computeCompressionRatio() {
-		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
-			throw new PngjException("must be called after end()");
-		double compressed = (double) datStream.getCountFlushed();
-		double raw = (imgInfo.bytesPerRow + 1) * imgInfo.rows;
-		return compressed / raw;
+	public void writeRowByte(byte[] newrow, int rown) {
+		prepareEncodeRow(rown);
+		encodeRowFromByte(newrow);
+		filterAndSend(rown);
+	}
+	
+	/**
+	 * Writes all the pixels, calling writeRowInt() for each image row
+	 */
+	public void writeImageInt(int[][] image) {
+		for(int i=0;i<imgInfo.rows;i++)
+			writeRowInt(image[i], i);
 	}
 
 	/**
-	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY Deflater.DEFAULT_STRATEGY
-	 * <p>
-	 * Default: Deflater.FILTERED . This should be changed very rarely.
+	 * Writes all the pixels, calling writeRowByte() for each image row
 	 */
-	public void setDeflaterStrategy(int deflaterStrategy) {
-		this.deflaterStrategy = deflaterStrategy;
+	public void writeImageByte(byte[][] image) {
+		for(int i=0;i<imgInfo.rows;i++)
+			writeRowByte(image[i], i);
 	}
 
 }
