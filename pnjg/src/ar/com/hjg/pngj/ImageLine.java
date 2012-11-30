@@ -97,7 +97,7 @@ public class ImageLine {
 		} else {
 			throw new PngjException("not implemented");
 		}
-
+		this.rown = -1;
 	}
 
 	/** This row number inside the image (0 is top) */

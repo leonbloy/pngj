@@ -239,7 +239,7 @@ public class TestPngSuite {
 
 	public static void main(String[] args) throws Exception {
 		testAllSuite(new File("resources/testsuite1/"), new File(outdir), 1005);
-		// testmirror(new File(outdir,"basi0g01.png"),null);
+		//testmirror(new File(outdir,"basi0g01.png"),new File("resources/testsuite1/","basi0g01_ni.png"),null);
 		System.out.println("Lines starting with 'ok error' are expected errors, they are ok.");
 		System.out.println("Output dir: " + outdir);
 

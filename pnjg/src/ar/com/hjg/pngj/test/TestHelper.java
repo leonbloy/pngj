@@ -26,7 +26,7 @@ public class TestHelper {
 		long crc1 = PngHelperInternal.getCrctestVal(png1);
 		long crc2 = PngHelperInternal.getCrctestVal(png2);
 		if (crc1 != crc2)
-			fatalError("different crcs", png1, png2);
+			fatalError("different crcs " + image1 + "=" + crc1 + " " + image2 + "=" + crc2, png1, png2);
 	}
 	
 	public static void testCrcEquals(File image1, long crc) {
