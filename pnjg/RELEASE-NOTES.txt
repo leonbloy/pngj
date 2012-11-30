@@ -6,7 +6,9 @@ Version 1.0
    - Added readRow(byte[]) readRow(short[])  
    - Implemented Interlacing (for reading)
    - Several retouchings in PngReader. getRow is more efficient when skipping rows
-
+   - added crctest and PngReaderTest to implement better tests
+   - ImageLineHelper.pal2rgb  (renamed, corrected, supports alpha if TRNS passed). Added to TestSuite
+   - Added getMetadata().getPalette() getMetadata().createNewPalette()     
 Version 0.97 (?)
   - Corrected typo in PngWriter: getChunkList() -> getChunksList()  
     

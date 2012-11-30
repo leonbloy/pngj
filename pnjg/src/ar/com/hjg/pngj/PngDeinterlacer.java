@@ -105,8 +105,8 @@ class PngDeinterlacer {
 	}
 
 	// notice that this is a "partial" deinterlace, it will be called several times for the same row!
-	void deinterlaceInt(int[] src, int[] dst) {
-		if (!imi.packed)
+	void deinterlaceInt(int[] src, int[] dst, boolean readInPackedFormat) {
+		if (!(imi.packed && readInPackedFormat))
 			for (int i = 0, j = oXsamples; i < cols * imi.channels; i += imi.channels, j += dXsamples)
 				for (int k = 0; k < imi.channels; k++)
 					dst[j + k] = src[i + k];
@@ -143,8 +143,8 @@ class PngDeinterlacer {
 	}
 
 	// yes, duplication of code is evil, normally
-	void deinterlaceByte(byte[] src, byte[] dst) {
-		if (!imi.packed)
+	void deinterlaceByte(byte[] src, byte[] dst, boolean readInPackedFormat) {
+		if (!(imi.packed && readInPackedFormat))
 			for (int i = 0, j = oXsamples; i < cols * imi.channels; i += imi.channels, j += dXsamples)
 				for (int k = 0; k < imi.channels; k++)
 					dst[j + k] = src[i + k];
@@ -155,7 +155,7 @@ class PngDeinterlacer {
 	private void deinterlacePackedByte(byte[] src, byte[] dst) {
 		int spos, smod, smask; // source byte position, bits to shift to left (01,2,3,4
 		int tpos, tmod, p, d;
-		// what the heck are you reading here? I told you would not enjoy this
+		// what the heck are you reading here? I told you would not enjoy this. Try Dostoyevsky or Simone Weil instead
 		spos = 0;
 		smask = packedMask;
 		smod = -1;

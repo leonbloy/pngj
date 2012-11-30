@@ -14,7 +14,7 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 /**
  * Example: convert a RGB8/RGBA8 image to palette using Kohonen quantizer Supports Alpha Does not support dithering yet
  */
-public class SampleConvertPalette {
+public class SampleConvertToPalette {
 
 	public static void convertPal(String origFilename, String destFilename) {
 		if (origFilename.equals(destFilename))
@@ -34,14 +34,14 @@ public class SampleConvertPalette {
 		ImageInfo imiw = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, false, false, true);
 		// second pass
 		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), imiw, true);
-		PngChunkPLTE palette = new PngChunkPLTE(imiw);
+		
+		PngChunkPLTE palette = pngw.getMetadata().createPLTEChunk();
 		int ncolors = cuant.getColorCount();
 		palette.setNentries(ncolors);
 		for (int i = 0; i < ncolors; i++) {
 			int[] col = cuant.getColor(i);
 			palette.setEntry(i, col[0], col[1], col[2]);
 		}
-		pngw.getChunksList().queue(palette);
 		int transparentIndex = cuant.getTransparentIndex();
 		if (transparentIndex >= 0) {
 			PngChunkTRNS transparent = new PngChunkTRNS(imiw);

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import ar.com.hjg.pngj.ImageLine.SampleType;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunksList;
@@ -68,13 +69,14 @@ public class PngWriter {
 	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 32768)
 
 	private final OutputStream os;
-	// current line, one (packed) sample per element (layout differnt from rowb!)
-	protected int[] scanline = null;
 
 	protected byte[] rowb = null; // element 0 is filter type!
 	protected byte[] rowbfilter = null; // current line with filter
 
 	protected byte[] rowbprev = null; // rowb prev
+
+	// this only influences the 1-2-4 bitdepth format - and if we pass a ImageLine to writeRow, this is ignored
+	private boolean unpackedMode = false;
 
 	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
 		this(outputStream, imgInfo, "[NO FILENAME AVAILABLE]");
@@ -98,7 +100,6 @@ public class PngWriter {
 		this.os = outputStream;
 		this.imgInfo = imgInfo;
 		// prealloc
-		scanline = new int[imgInfo.samplesPerRowP];
 		rowb = new byte[imgInfo.bytesPerRow + 1];
 		rowbprev = new byte[rowb.length];
 		rowbfilter = new byte[rowb.length];
@@ -186,34 +187,67 @@ public class PngWriter {
 		ihdr.createRawChunk().writeChunk(os);
 
 	}
-	
+
 	protected void encodeRowFromByte(byte[] row) {
-		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
-		int j = 1;
-		if (imgInfo.bitDepth <= 8) {
-			for (byte  x : row) { // optimized
-				rowb[j++] =  x;
+		if (row.length == imgInfo.samplesPerRowPacked) {
+			// some duplication of code - because this case is typical and it works faster this way
+			int j = 1;
+			if (imgInfo.bitDepth <= 8) {
+				for (byte x : row) { // optimized
+					rowb[j++] = x;
+				}
+			} else { // 16 bitspc
+				for (byte x : row) { // optimized
+					rowb[j] = x;
+					j += 2;
+				}
 			}
-		} else { // 16 bitspc
-			j=1;
-			for (byte x : row) { // optimized
-				rowb[j] = (byte) (x);
-				j+=2;
+		} else {
+			// perhaps we need to pack?
+			if (row.length >= imgInfo.samplesPerRow && unpackedMode)
+				ImageLine.packInplaceByte(imgInfo, row, row, false); // row is packed in place!
+			if (imgInfo.bitDepth <= 8) {
+				for (int i = 0, j = 1; i < imgInfo.samplesPerRowPacked; i++) {
+					rowb[j++] = row[i];
+				}
+			} else { // 16 bitspc
+				for (int i = 0, j = 1; i < imgInfo.samplesPerRowPacked; i++) {
+					rowb[j++] = row[i];
+					rowb[j++] = 0;
+				}
 			}
+
 		}
 	}
 
 	protected void encodeRowFromInt(int[] row) {
 		// http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
-		int j = 1;
-		if (imgInfo.bitDepth <= 8) {
-			for (int x : row) { // optimized
-				rowb[j++] = (byte) x;
+		if (row.length == imgInfo.samplesPerRowPacked) {
+			// some duplication of code - because this case is typical and it works faster this way
+			int j = 1;
+			if (imgInfo.bitDepth <= 8) {
+				for (int x : row) { // optimized
+					rowb[j++] = (byte) x;
+				}
+			} else { // 16 bitspc
+				for (int x : row) { // optimized
+					rowb[j++] = (byte) (x >> 8);
+					rowb[j++] = (byte) (x);
+				}
 			}
-		} else { // 16 bitspc
-			for (int x : row) { // optimized
-				rowb[j++] = (byte) (x >> 8);
-				rowb[j++] = (byte) (x);
+		} else {
+			// perhaps we need to pack?
+			if (row.length >= imgInfo.samplesPerRow && unpackedMode)
+				ImageLine.packInplaceInt(imgInfo, row, row, false); // row is packed in place!
+			if (imgInfo.bitDepth <= 8) {
+				for (int i = 0, j = 1; i < imgInfo.samplesPerRowPacked; i++) {
+					rowb[j++] = (byte) (row[i]);
+				}
+			} else { // 16 bitspc
+				for (int i = 0, j = 1; i < imgInfo.samplesPerRowPacked; i++) {
+					rowb[j++] = (byte) (row[i] >> 8);
+					rowb[j++] = (byte) (row[i]);
+				}
 			}
 		}
 	}
@@ -260,12 +294,9 @@ public class PngWriter {
 	private void prepareEncodeRow(int rown) {
 		if (datStream == null)
 			init();
-		if (rown < -1 || rown > imgInfo.rows)
-			throw new RuntimeException("invalid value for row " + rown);
 		rowNum++;
 		if (rown >= 0 && rowNum != rown)
-			throw new RuntimeException("rows must be written in strict consecutive order: tried to write row " + rown
-					+ ", expected=" + rowNum);
+			throw new PngjOutputException("rows must be written in order: expected:" + rowNum + " passed:" + rown);
 		// swap
 		byte[] tmp = rowb;
 		rowb = rowbprev;
@@ -343,7 +374,7 @@ public class PngWriter {
 	private void copyChunks(PngReader reader, int copy_mask, boolean onlyAfterIdat) {
 		boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
 		if (onlyAfterIdat && reader.getCurrentChunkGroup() < ChunksList.CHUNK_GROUP_6_END)
-			throw new PngjException("tried to copy last chunks but reader has not ended");
+			throw new PngjOutputException("tried to copy last chunks but reader has not ended");
 		for (PngChunk chunk : reader.getChunksList().getChunks()) {
 			int group = chunk.getChunkGroup();
 			if (group < ChunksList.CHUNK_GROUP_4_IDAT && idatDone)
@@ -425,7 +456,7 @@ public class PngWriter {
 	 */
 	public double computeCompressionRatio() {
 		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
-			throw new PngjException("must be called after end()");
+			throw new PngjOutputException("must be called after end()");
 		double compressed = (double) datStream.getCountFlushed();
 		double raw = (imgInfo.bytesPerRow + 1) * imgInfo.rows;
 		return compressed / raw;
@@ -453,7 +484,6 @@ public class PngWriter {
 		return chunksList;
 	}
 
-
 	// /// several getters / setters - all this setters are optional
 
 	/**
@@ -479,7 +509,7 @@ public class PngWriter {
 	 */
 	public void setCompLevel(int compLevel) {
 		if (compLevel < 0 || compLevel > 9)
-			throw new PngjException("Compression level invalid (" + compLevel + ") Must be 0..9");
+			throw new PngjOutputException("Compression level invalid (" + compLevel + ") Must be 0..9");
 		this.compLevel = compLevel;
 	}
 
@@ -539,9 +569,17 @@ public class PngWriter {
 
 	/**
 	 * Writes line. See writeRow(int[] newrow, int rown)
+	 * 
+	 * The <tt>packed</tt> flag of the imageline is honoured!
+	 * 
+	 * @see #writeRowInt(int[], int)
 	 */
 	public void writeRow(ImageLine imgline, int rownumber) {
-		writeRow(imgline.scanline, rownumber);
+		unpackedMode = imgline.unpackedMode;
+		if (imgline.sampleType == SampleType.INT)
+			writeRowInt(imgline.scanline, rownumber);
+		else
+			writeRowByte(imgline.scanlineb, rownumber);
 	}
 
 	/**
@@ -555,36 +593,38 @@ public class PngWriter {
 
 	/**
 	 * Alias to writeRowInt
+	 * 
 	 * @see #writeRowInt(int[], int)
 	 */
 	public void writeRow(int[] newrow, int rown) {
-		writeRowInt(newrow,rown);
+		writeRowInt(newrow, rown);
 	}
-	
+
 	/**
 	 * Writes a full image row.
 	 * <p>
 	 * This must be called sequentially from n=0 to n=rows-1 One integer per sample , in the natural order: R G B R G B
 	 * ... (or R G B A R G B A... if has alpha) The values should be between 0 and 255 for 8 bitspc images, and between
 	 * 0- 65535 form 16 bitspc images (this applies also to the alpha channel if present) The array can be reused.
+	 * <p>
+	 * Warning: the array might be modified in some cases (unpacked row with low bitdepth)
+	 * <p>
 	 * 
 	 * @param newrow
-	 *            Array of pixel values. Warning: the array size should be exact (samplesPerRowP) 
+	 *            Array of pixel values. Warning: the array size should be exact (samplesPerRowP)
 	 * @param rown
 	 *            Row number, from 0 (top) to rows-1 (bottom). This is just used as a check. Pass -1 if you want to
 	 *            autocompute it
 	 */
 	public void writeRowInt(int[] newrow, int rown) {
 		prepareEncodeRow(rown);
-		scanline = newrow;
 		encodeRowFromInt(newrow);
 		filterAndSend(rown);
-		
 	}
 
 	/**
-	 * Same semantics as writeRowInt but using bytes. Each byte is still a (packed) sample. 
-     * If 16bitdepth, we are passing only the most significant byte (bad idea, in general)
+	 * Same semantics as writeRowInt but using bytes. Each byte is still a sample. If 16bitdepth, we are passing only
+	 * the most significant byte (and hence losing info)
 	 * 
 	 * @see PngWriter#writeRowInt(int[], int)
 	 */
@@ -593,21 +633,37 @@ public class PngWriter {
 		encodeRowFromByte(newrow);
 		filterAndSend(rown);
 	}
-	
+
 	/**
 	 * Writes all the pixels, calling writeRowInt() for each image row
 	 */
-	public void writeImageInt(int[][] image) {
-		for(int i=0;i<imgInfo.rows;i++)
+	public void writeRowsInt(int[][] image) {
+		for (int i = 0; i < imgInfo.rows; i++)
 			writeRowInt(image[i], i);
 	}
 
 	/**
 	 * Writes all the pixels, calling writeRowByte() for each image row
 	 */
-	public void writeImageByte(byte[][] image) {
-		for(int i=0;i<imgInfo.rows;i++)
+	public void writeRowsByte(byte[][] image) {
+		for (int i = 0; i < imgInfo.rows; i++)
 			writeRowByte(image[i], i);
+	}
+
+	public boolean isUnpackedMode() {
+		return unpackedMode;
+	}
+
+	/**
+	 * If true (default), and image has bitdepth 1-2-4, the scanlines passed are assumed to be already packed.
+	 * <p>
+	 * If false, each element is a sample, and the writer must perform the packing.
+	 * <p>
+	 * Warning: when using {@link #writeRow(ImageLine, int)} (recommended) the <tt>packed</tt> flag of the ImageLine
+	 * object overrides (and overwrites!) this
+	 */
+	public void setUseUnPackedMode(boolean useUnpackedMode) {
+		this.unpackedMode = useUnpackedMode;
 	}
 
 }

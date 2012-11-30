@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj;
 
 import java.util.Arrays;
+import java.util.Random;
 
 import ar.com.hjg.pngj.ImageLineHelper.ImageLineStats;
 
@@ -27,39 +28,71 @@ public class ImageLine {
 	 * <code>R G B A R G B A...</tt> 
 	 * or <code>g g g ...</code> or <code>i i i</code> (palette index)
 	 * <p>
-	 * For bitdepth=1/2/4 , each value is a PACKED byte! To get an unpacked copy, see <code>tf_pack()</code> and its
-	 * inverse <code>tf_unpack()</code>
+	 * For bitdepth=1/2/4 , and if unpackedFormat=false, each value is a PACKED byte!
 	 * <p>
 	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.palIdx2RGB()</code> (you can't do the reverse)
 	 */
 	public final int[] scanline;
+	/**
+	 * Same as {@link #scanline}, but with one byte per sample. Only one of scanline and scanlineb is valid - this
+	 * depends on {@link #sampleType}
+	 */
 	public final byte[] scanlineb;
-
-	public enum SampleType {
-		INT, SHORT, BYTE
-	}
-
-	public final SampleType sampleType;
 
 	protected FilterType filterUsed; // informational ; only filled by the reader
 	final int channels; // copied from imgInfo, more handy
 	final int bitDepth; // copied from imgInfo, more handy
+	final int elementsPerRow; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
 
-	public ImageLine(ImageInfo imgInfo) {
-		this(imgInfo, SampleType.INT);
+	public enum SampleType {
+		INT, // 4 bytes per sample
+		// SHORT, // 2 bytes per sample
+		BYTE // 1 byte per sample
 	}
 
-	public ImageLine(ImageInfo imgInfo, SampleType stype) {
+	/**
+	 * tells if we are using BYTE or INT to store the samples.
+	 */
+	public final SampleType sampleType;
+
+	/**
+	 * true: each element of the scanline array represents a sample always, even for internally packed PNG formats
+	 * 
+	 * false: if the original image was of packed type (bit depth less than 8) we keep samples packed in a single array
+	 * element
+	 */
+	public final boolean unpackedMode;
+
+	/**
+	 * default mode: INT packed
+	 */
+	public ImageLine(ImageInfo imgInfo) {
+		this(imgInfo, SampleType.INT, false);
+	}
+
+	/**
+	 * 
+	 * @param imgInfo
+	 *            Inmutable ImageInfo, basic parameter of the image we are reading or writing
+	 * @param stype
+	 *            INT or BYTE : this determines which scanline is the really used one
+	 * @param loadpacked
+	 *            If true, and the
+	 * 
+	 */
+	public ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedFormat) {
 		this.imgInfo = imgInfo;
 		channels = imgInfo.channels;
 		bitDepth = imgInfo.bitDepth;
 		filterUsed = FilterType.FILTER_UNKNOWN;
 		this.sampleType = stype;
+		this.unpackedMode = unpackedFormat || !imgInfo.packed;
+		elementsPerRow = unpackedFormat ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked;
 		if (stype == SampleType.INT) {
-			scanline = new int[imgInfo.samplesPerRowP];
+			scanline = new int[elementsPerRow];
 			scanlineb = null;
 		} else if (stype == SampleType.BYTE) {
-			scanlineb = new byte[imgInfo.samplesPerRowP];
+			scanlineb = new byte[elementsPerRow];
 			scanline = null;
 		} else {
 			throw new PngjException("not implemented");
@@ -72,148 +105,180 @@ public class ImageLine {
 		return rown;
 	}
 
-	/** Increments row number */
-	public void incRown() {
-		this.rown++;
-	}
-
 	/** Sets row number (0 : Rows-1) */
 	public void setRown(int n) {
 		this.rown = n;
 	}
 
-	/**
-	 * Unpacks scanline (for bitdepth 1-2-4) into a array <code>int[]</code>
-	 * <p>
-	 * You can (OPTIONALLY) pass an preallocated array, that will be filled and returned. If null, it will be allocated
-	 * <p>
+	/*
+	 * Unpacks scanline (for bitdepth 1-2-4)
+	 * 
+	 * Arrays must be prealocated. src : samplesPerRowPacked dst : samplesPerRow
+	 * 
+	 * This usually works in place (with src==dst and length=samplesPerRow)!
+	 * 
+	 * If not, you should only call this only when necesary (bitdepth <8)
+	 * 
 	 * If <code>scale==true<code>, it scales the value (just a bit shift) towards 0-255.
 	 */
-	public int[] unpack(int[] buf, boolean scale) {
-		int len = imgInfo.samplesPerRow;
-		if (buf == null || buf.length < len)
-			buf = new int[len];
+	static void unpackInplaceInt(final ImageInfo iminfo, final int[] src, final int[] dst, final boolean scale) {
+		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
-			System.arraycopy(scanline, 0, buf, 0, scanline.length);
-		else {
-			int mask, offset, v;
-			int mask0 = getMaskForPackedFormats();
-			int offset0 = 8 - bitDepth;
+			return; // nothing to do
+		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
+		final int scalefactor = 8 - bitDepth;
+		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
+		int mask, offset, v;
+		if (offset0 != 8) {
+			mask = mask0 << offset0;
+			offset = offset0; // how many bits to shift the mask to the right to recover mask0
+		} else {
 			mask = mask0;
-			offset = offset0;
-			for (int i = 0, j = 0; i < len; i++) {
-				v = (scanline[j] & mask) >> offset;
-				if (scale)
-					v <<= offset0;
-				buf[i] = v;
-				mask = mask >> bitDepth;
-				offset -= bitDepth;
-				if (mask == 0) { // new byte in source
-					mask = mask0;
-					offset = offset0;
-					j++;
-				}
+			offset = 0;
+		}
+		for (int j = iminfo.samplesPerRow - 1, i = iminfo.samplesPerRowPacked - 1; j >= 0; j--) {
+			v = (src[i] & mask) >> offset;
+			if (scale)
+				v <<= scalefactor;
+			dst[j] = v;
+			mask <<= bitDepth;
+			offset += bitDepth;
+			if (offset == 8) {
+				mask = mask0;
+				offset = 0;
+				i--;
 			}
 		}
-		return buf;
 	}
 
-	public byte[] unpack(byte[] buf, boolean scale) { // i know, i know, code duplication stinks
-		int len = imgInfo.samplesPerRow;
-		if (buf == null || buf.length < len)
-			buf = new byte[len];
-		if (bitDepth >= 8)
-			System.arraycopy(scanlineb, 0, buf, 0, scanlineb.length);
-		else {
-			int mask, offset, v;
-			int mask0 = getMaskForPackedFormats();
-			int offset0 = 8 - bitDepth;
-			mask = mask0;
-			offset = offset0;
-			for (int i = 0, j = 0; i < len; i++) {
-				v = (scanlineb[j] & mask) >> offset;
-				if (scale)
-					v <<= offset0;
-				buf[i] = (byte) (v&0xFF);
-				mask = mask >> bitDepth;
-				offset -= bitDepth;
-				if (mask == 0) { // new byte in source
-					mask = mask0;
-					offset = offset0;
-					j++;
-				}
-			}
-		}
-		return buf;
-	}
-	
-	/**
-	 * Packs scanline (for bitdepth 1-2-4) from array into the scanline
-	 * <p>
-	 * If <code>scale==true<code>, it scales the value (just a bit shift).
+	/*
+	 * Unpacks scanline (for bitdepth 1-2-4)
+	 * 
+	 * Arrays must be prealocated. src : samplesPerRow dst : samplesPerRowPacked
+	 * 
+	 * This usually works in place (with src==dst and length=samplesPerRow)! If not, you should only call this only when
+	 * necesary (bitdepth <8)
+	 * 
+	 * The trailing elements are trash
+	 * 
+	 * 
+	 * If <code>scale==true<code>, it scales the value (just a bit shift) towards 0-255.
 	 */
-	public void pack(int[] buf, boolean scale) { // writes scanline
-		int len = imgInfo.samplesPerRow;
-		if (buf == null || buf.length < len)
-			buf = new int[len];
+	static void packInplaceInt(final ImageInfo iminfo, final int[] src, final int[] dst, final boolean scaled) {
+		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
-			System.arraycopy(buf, 0, scanline, 0, scanline.length);
-		else {
-			int offset0 = 8 - bitDepth;
-			int mask0 = getMaskForPackedFormats() >> offset0;
-			int offset, v;
-			offset = offset0;
-			Arrays.fill(scanline, 0);
-			for (int i = 0, j = 0; i < len; i++) {
-				v = buf[i];
-				if (scale)
-					v >>= offset0;
-				v = (v & mask0) << offset;
-				scanline[j] |= v;
-				offset -= bitDepth;
-				if (offset < 0) { // new byte in scanline
-					offset = offset0;
-					j++;
-				}
+			return; // nothing to do
+		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
+		final int scalefactor = 8 - bitDepth;
+		final int offset0 = 8 - bitDepth;
+		int v, v0;
+		int offset = 8 - bitDepth;
+		v0 = src[0]; // first value is special for in place
+		dst[0] = 0;
+		if (scaled)
+			v0 >>= scalefactor;
+		v0 = ((v0 & mask0) << offset);
+		for (int i = 0, j = 0; j < iminfo.samplesPerRow; j++) {
+			v = src[j];
+			if (scaled)
+				v >>= scalefactor;
+			dst[i] |= ((v & mask0) << offset);
+			offset -= bitDepth;
+			if (offset < 0) {
+				offset = offset0;
+				i++;
+				dst[i] = 0;
+			}
+		}
+		dst[0] |= v0;
+	}
+
+	static void unpackInplaceByte(final ImageInfo iminfo, final byte[] src, final byte[] dst, final boolean scale) {
+		final int bitDepth = iminfo.bitDepth;
+		if (bitDepth >= 8)
+			return; // nothing to do
+		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
+		final int scalefactor = 8 - bitDepth;
+		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
+		int mask, offset, v;
+		if (offset0 != 8) {
+			mask = mask0 << offset0;
+			offset = offset0; // how many bits to shift the mask to the right to recover mask0
+		} else {
+			mask = mask0;
+			offset = 0;
+		}
+		for (int j = iminfo.samplesPerRow - 1, i = iminfo.samplesPerRowPacked - 1; j >= 0; j--) {
+			v = (src[i] & mask) >> offset;
+			if (scale)
+				v <<= scalefactor;
+			dst[j] = (byte) v;
+			mask <<= bitDepth;
+			offset += bitDepth;
+			if (offset == 8) {
+				mask = mask0;
+				offset = 0;
+				i--;
 			}
 		}
 	}
 
-	public void pack(byte[] buf, boolean scale) { // writes scanline
-		int len = imgInfo.samplesPerRow;
-		if (buf == null || buf.length < len)
-			buf = new byte[len];
+	/** size original: samplesPerRow sizeFinal: samplesPerRowPacked (trailing elements are trash!) **/
+	static void packInplaceByte(final ImageInfo iminfo, final byte[] src, final byte[] dst, final boolean scaled) {
+		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
-			System.arraycopy(buf, 0, scanlineb, 0, scanlineb.length);
-		else {
-			int offset0 = 8 - bitDepth;
-			int mask0 = getMaskForPackedFormats() >> offset0;
-			int offset, v;
-			offset = offset0;
-			Arrays.fill(scanlineb, (byte)0);
-			for (int i = 0, j = 0; i < len; i++) {
-				v = buf[i];
-				if (scale)
-					v >>= offset0;
-				v = (v & mask0) << offset;
-				scanlineb[j] |= v;
-				offset -= bitDepth;
-				if (offset < 0) { // new byte in scanline
-					offset = offset0;
-					j++;
-				}
+			return; // nothing to do
+		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
+		final int scalefactor = 8 - bitDepth;
+		final int offset0 = 8 - bitDepth;
+		int v, v0;
+		int offset = 8 - bitDepth;
+		v0 = src[0]; // first value is special
+		dst[0] = 0;
+		if (scaled)
+			v0 >>= scalefactor;
+		v0 = ((v0 & mask0) << offset);
+		for (int i = 0, j = 0; j < iminfo.samplesPerRow; j++) {
+			v = src[j];
+			if (scaled)
+				v >>= scalefactor;
+			dst[i] |= ((v & mask0) << offset);
+			offset -= bitDepth;
+			if (offset < 0) {
+				offset = offset0;
+				i++;
+				dst[i] = 0;
 			}
 		}
+		dst[0] |= v0;
 	}
-	
-	private int getMaskForPackedFormats() { // Utility function for pack/unpack
-		if (bitDepth == 1)
-			return 0x80;
-		else if (bitDepth == 2)
-			return 0xc0;
-		else if (bitDepth == 4)
-			return 0xf0;
-		throw new RuntimeException("invalid bitDepth " + bitDepth);
+
+	/**
+	 * Creates a new ImageLine similar to this, but unpacked
+	 * 
+	 * The caller must be sure that the original was really packed
+	 */
+	public ImageLine unpackToNewImageLine() {
+		ImageLine newline = new ImageLine(imgInfo, sampleType, true);
+		if (sampleType == SampleType.INT)
+			unpackInplaceInt(imgInfo, scanline, newline.scanline, false);
+		else
+			unpackInplaceByte(imgInfo, scanlineb, newline.scanlineb, false);
+		return newline;
+	}
+
+	/**
+	 * Creates a new ImageLine similar to this, but packed
+	 * 
+	 * The caller must be sure that the original was really unpacked
+	 */
+	public ImageLine packToNewImageLine() {
+		ImageLine newline = new ImageLine(imgInfo, sampleType, false);
+		if (sampleType == SampleType.INT)
+			packInplaceInt(imgInfo, scanline, newline.scanline, false);
+		else
+			packInplaceByte(imgInfo, scanlineb, newline.scanlineb, false);
+		return newline;
 	}
 
 	public FilterType getFilterUsed() {
@@ -241,4 +306,60 @@ public class ImageLine {
 		System.out.println(ImageLineHelper.infoFirstLastPixels(line));
 	}
 
+	public static void testPackInt() {
+		Random r = new Random();
+		for (int n = 0; n < 50000; n++) {
+			int bitdepth = r.nextInt(3) + 1;
+			if (bitdepth == 3)
+				bitdepth = 4;
+			boolean scale = r.nextBoolean();
+			ImageLine im = new ImageLine(new ImageInfo(r.nextInt(37) + 1, 1, bitdepth, false, true, false),
+					SampleType.INT, true);
+			int m = ImageLineHelper.getMaskForPackedFormatsLs(bitdepth);
+			for (int i = 0; i < im.elementsPerRow; i++)
+				im.scanline[i] = scale ? ((r.nextInt(256) & m) << (8 - bitdepth)) : (r.nextInt(256) & m);
+			int[] c = Arrays.copyOf(im.scanline, im.scanline.length);
+			// System.out.println(Arrays.toString(im.scanline));
+			ImageLine.packInplaceInt(im.imgInfo, im.scanline, im.scanline, scale);
+			// System.out.println(Arrays.toString(im.scanline));
+			ImageLine.unpackInplaceInt(im.imgInfo, im.scanline, im.scanline, scale);
+			// System.out.println(Arrays.toString(im.scanline));
+			if (!Arrays.equals(c, im.scanline)) {
+				throw new RuntimeException(Arrays.toString(c));
+			}
+
+		}
+		System.out.println("Done");
+	}
+
+	public static void testPackByte() {
+		Random r = new Random();
+		for (int n = 0; n < 50000; n++) {
+			int bitdepth = r.nextInt(3) + 1;
+			if (bitdepth == 3)
+				bitdepth = 4;
+			boolean scale = r.nextBoolean();
+			ImageLine im = new ImageLine(new ImageInfo(r.nextInt(37) + 1, 1, bitdepth, false, true, false),
+					SampleType.BYTE, true);
+			int m = ImageLineHelper.getMaskForPackedFormatsLs(bitdepth);
+			for (int i = 0; i < im.elementsPerRow; i++)
+				im.scanlineb[i] = (byte) (scale ? ((r.nextInt(256) & m) << (8 - bitdepth)) : (r.nextInt(256) & m));
+			byte[] c = Arrays.copyOf(im.scanlineb, im.scanlineb.length);
+			// System.out.println(Arrays.toString(im.scanlineb));
+			ImageLine.packInplaceByte(im.imgInfo, im.scanlineb, im.scanlineb, scale);
+			// System.out.println(Arrays.toString(im.scanlineb));
+			ImageLine.unpackInplaceByte(im.imgInfo, im.scanlineb, im.scanlineb, scale);
+			// System.out.println(Arrays.toString(im.scanlineb));
+			if (!Arrays.equals(c, im.scanlineb)) {
+				throw new RuntimeException(Arrays.toString(c));
+			}
+
+		}
+		System.out.println("Done");
+	}
+
+	public static void main(String[] args) {
+		testPackByte();
+		testPackInt();
+	}
 }

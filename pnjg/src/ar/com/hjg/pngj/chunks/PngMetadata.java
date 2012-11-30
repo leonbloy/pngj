@@ -3,6 +3,7 @@ package ar.com.hjg.pngj.chunks;
 import java.util.ArrayList;
 import java.util.List;
 
+import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngjException;
 
 /**
@@ -192,4 +193,44 @@ public class PngMetadata {
 			t.append(c.getVal()).append("\n");
 		return t.toString().trim();
 	}
+
+	/**
+	 * Returns the palette chunk, if present
+	 * @return null if not present 
+	 */
+	public PngChunkPLTE getPLTE() {
+		return (PngChunkPLTE) chunkList.getById1(PngChunkPLTE.ID);
+	}
+	
+	/**
+	 * Creates a new empty palette chunk, queues it for write and return
+	 * it to the caller, who should fill its entries
+	 */
+	public PngChunkPLTE createPLTEChunk() {
+		PngChunkPLTE plte = new PngChunkPLTE(chunkList.imageInfo);
+		queueChunk(plte);
+		return plte;
+	}
+	
+	/**
+	 * Returns the TRNS chunk, if present
+	 * @return null if not present 
+	 */
+	public PngChunkTRNS getTRNS() {
+		return (PngChunkTRNS) chunkList.getById1(PngChunkTRNS.ID);
+	}
+	
+	/**
+	 * Creates a new empty TRNS chunk, queues it for write and return
+	 * it to the caller, who should fill its entries
+	 */
+	public PngChunkTRNS createTRNSChunk() {
+		PngChunkTRNS trns = new PngChunkTRNS(chunkList.imageInfo);
+		queueChunk(trns);
+		return trns;
+	}
+	
+	
+	
+	
 }

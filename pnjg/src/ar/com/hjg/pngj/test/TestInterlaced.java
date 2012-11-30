@@ -41,12 +41,12 @@ public class TestInterlaced {
 
 		} else {
 			if (usebyte) {
-				byte[][] im = pngr.readImageByte();
+				byte[][] im = pngr.readRowsByte();
 				for (int row = 0; row < pngr.imgInfo.rows; row++)
 					pngw.writeRowByte(im[row], row);
 			
 			} else {
-				int[][] im = pngr.readImageInt();
+				int[][] im = pngr.readRowsInt();
 				for (int row = 0; row < pngr.imgInfo.rows; row++)
 					pngw.writeRow(im[row], row);
 			}

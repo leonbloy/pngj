@@ -249,4 +249,16 @@ public class PngHelperInternal {
 		else
 			return c;
 	}
+	
+	/*
+	 * we put this methods here so as to not pollute the public interface of PngReader
+	 */
+	public final static void initCrcForTests(PngReader pngr){
+		pngr.initCrctest();
+	}
+	
+	public final static long getCrctestVal(PngReader pngr){
+		return pngr.getCrctestVal();
+	}
+
 }

@@ -95,7 +95,7 @@ public class NeuQuant {
 		if(! png.imgInfo.alpha)
 		return new PixelGetter() {
 			public int[] getPixel(int row, int col) {
-				int[] line = png.getRow(row).scanline;
+				int[] line = png.readRowInt(row).scanline;
 				int off = col * png.imgInfo.channels;
 				return new int[] { line[off], line[off + 1], line[off + 2] };
 			}

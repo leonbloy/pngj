@@ -1,6 +1,11 @@
 package ar.com.hjg.pngj;
 
+import java.awt.Image;
+import java.util.Arrays;
+
+import ar.com.hjg.pngj.ImageLine.SampleType;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
+import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 
 /**
  * Bunch of utility static methods to process/analyze an image line at the pixel level.
@@ -14,7 +19,7 @@ public class ImageLineHelper {
 	private final static double BIG_VALUE_NEG = Double.MAX_VALUE * (-0.5);
 
 	/**
-	 * Given an indexed line with a palette, unpacks as a RGB array
+	 * Given an indexed line with a palette, unpacks as a RGB array, or RGBA if a non nul PngChunkTRNS chunk is passed
 	 * 
 	 * @param line
 	 *            ImageLine as returned from PngReader
@@ -22,25 +27,31 @@ public class ImageLineHelper {
 	 *            Palette chunk
 	 * @param buf
 	 *            Preallocated array, optional
-	 * @return R G B (one byte per sample)
+	 * @return R G B (A), one sample 0-255 per array element. Ready for pngw.writeRowInt()
 	 */
-	public int[] PalIdx2RGB(ImageLine line, PngChunkPLTE pal, int[] buf) {
-		// TODO: test! Add alpha palette info?
-		int nbytes = line.imgInfo.cols * 3;
-		if (buf == null || buf.length < nbytes)
-			buf = new int[nbytes];
-		int[] src; // from where to read the indexes as bytes
-		if (line.imgInfo.packed) { // requires unpacking
-			line.unpack(buf, false); // use buf temporarily (have space)
-			src = buf;
-		} else {
-			src = line.scanline;
-		}
-		for (int c = line.imgInfo.cols - 1; c >= 0; c--) {
-			// scan from right to left to not overwrite myself
-			pal.getEntryRgb(src[c], buf, c * 3);
+	public static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
+		boolean isalpha = trns != null;
+		int channels = isalpha ? 4 : 3;
+		int nsamples = line.imgInfo.cols * channels;
+		if (buf == null || buf.length < nsamples)
+			buf = new int[nsamples];
+		if (!line.unpackedMode)
+			line = line.unpackToNewImageLine();
+		boolean isbyte = line.sampleType == SampleType.BYTE;
+		int nindexesWithAlpha = trns != null ? trns.getPalletteAlpha().length : 0;
+		for (int c = 0; c < line.imgInfo.cols; c++) {
+			int index = isbyte ? (line.scanlineb[c] & 0xFF) : line.scanline[c];
+			pal.getEntryRgb(index, buf, c * channels);
+			if (isalpha) {
+				int alpha = index < nindexesWithAlpha ? trns.getPalletteAlpha()[index] : 255;
+				buf[c*channels+3]=alpha;
+			}
 		}
 		return buf;
+	}
+
+	public static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, int[] buf) {
+		return palette2rgb(line, pal, null, buf);
 	}
 
 	/** what follows is pretty uninteresting/untested/obsolete, subject to change */
@@ -223,4 +234,86 @@ public class ImageLineHelper {
 	public static int clampTo_128_127(int x) {
 		return x > 127 ? 127 : (x < -128 ? -128 : x);
 	}
+
+	/**
+	 * Unpacks scanline (for bitdepth 1-2-4) into a array <code>int[]</code>
+	 * <p>
+	 * You can (OPTIONALLY) pass an preallocated array, that will be filled and returned. If null, it will be allocated
+	 * <p>
+	 * If <code>scale==true<code>, it scales the value (just a bit shift) towards 0-255.
+	 * <p>
+	 * You probably should use {@link ImageLine#unpackToNewImageLine()}
+	 * 
+	 */
+	public static int[] unpack(ImageInfo imgInfo, int[] src, int[] dst, boolean scale) {
+		int len1 = imgInfo.samplesPerRow;
+		int len0 = imgInfo.samplesPerRowPacked;
+		if (dst == null || dst.length < len1)
+			dst = new int[len1];
+		if (imgInfo.packed)
+			ImageLine.unpackInplaceInt(imgInfo, src, dst, scale);
+		else
+			System.arraycopy(src, 0, dst, 0, len0);
+		return dst;
+	}
+
+	public static byte[] unpack(ImageInfo imgInfo, byte[] src, byte[] dst, boolean scale) {
+		int len1 = imgInfo.samplesPerRow;
+		int len0 = imgInfo.samplesPerRowPacked;
+		if (dst == null || dst.length < len1)
+			dst = new byte[len1];
+		if (imgInfo.packed)
+			ImageLine.unpackInplaceByte(imgInfo, src, dst, scale);
+		else
+			System.arraycopy(src, 0, dst, 0, len0);
+		return dst;
+	}
+
+	/**
+	 * Packs scanline (for bitdepth 1-2-4) from array into the scanline
+	 * <p>
+	 * If <code>scale==true<code>, it scales the value (just a bit shift).
+	 * 
+	 * You probably should use {@link ImageLine#packToNewImageLine()}
+	 */
+	public static int[] pack(ImageInfo imgInfo, int[] src, int[] dst, boolean scale) {
+		int len0 = imgInfo.samplesPerRowPacked;
+		if (dst == null || dst.length < len0)
+			dst = new int[len0];
+		if (imgInfo.packed)
+			ImageLine.packInplaceInt(imgInfo, src, dst, scale);
+		else
+			System.arraycopy(src, 0, dst, 0, len0);
+		return dst;
+	}
+
+	public static byte[] pack(ImageInfo imgInfo, byte[] src, byte[] dst, boolean scale) {
+		int len0 = imgInfo.samplesPerRowPacked;
+		if (dst == null || dst.length < len0)
+			dst = new byte[len0];
+		if (imgInfo.packed)
+			ImageLine.packInplaceByte(imgInfo, src, dst, scale);
+		else
+			System.arraycopy(src, 0, dst, 0, len0);
+		return dst;
+	}
+
+	static int getMaskForPackedFormats(int bitDepth) { // Utility function for pack/unpack
+		if (bitDepth == 4)
+			return 0xf0;
+		else if (bitDepth == 2)
+			return 0xc0;
+		else
+			return 0x80; // bitDepth == 1
+	}
+
+	static int getMaskForPackedFormatsLs(int bitDepth) { // Utility function for pack/unpack
+		if (bitDepth == 4)
+			return 0x0f;
+		else if (bitDepth == 2)
+			return 0x03;
+		else
+			return 0x01; // bitDepth == 1
+	}
+
 }

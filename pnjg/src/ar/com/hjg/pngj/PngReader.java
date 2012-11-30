@@ -3,6 +3,7 @@ package ar.com.hjg.pngj;
 import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
+import java.util.zip.CRC32;
 import java.util.zip.InflaterInputStream;
 
 import ar.com.hjg.pngj.ImageLine.SampleType;
@@ -23,7 +24,7 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * 1. At construction time, the header and IHDR chunk are read (basic image info) <br>
  * 2. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, the chunks before IDAT are
  * automatically loaded <br>
- * 3. The rows are read in strict sequence, from 0 to nrows-1 (you can skip rows by calling getRow() )<br>
+ * 3. The rows are read in incresing sequence, from 0 to nrows-1 (you can skip rows but not go backwards)<br>
  * 4. Reading of the last row triggers the loading of trailing chunks, and ends the reader.<br>
  * 5. end() forcibly finishes/aborts the reading and closes the stream
  * 
@@ -64,6 +65,8 @@ public class PngReader {
 	private final boolean interlaced;
 	private final PngDeinterlacer deinterlacer;
 
+	// this only influences the 1-2-4 bitdepth format
+	private boolean unpackedMode = false;
 	/**
 	 * Current chunk group, (0-6) already read or reading
 	 * <p>
@@ -78,6 +81,8 @@ public class PngReader {
 	protected final InputStream inputStream;
 	protected InflaterInputStream idatIstream;
 	protected PngIDatChunkInputStream iIdatCstream;
+
+	protected CRC32 crctest; // If set to non null, it gets a CRC of the unfiltered bytes, to check for images equality
 
 	/**
 	 * Constructs a PngReader from an InputStream.
@@ -171,7 +176,7 @@ public class PngReader {
 		}
 	}
 
-	// nbytes: NOT including the filter byte
+	// nbytes: NOT including the filter byte. leaves result in rowb
 	private void unfilterRow(int nbytes) {
 		int ftn = rowbfilter[0];
 		FilterType ft = FilterType.getByVal(ftn);
@@ -196,6 +201,8 @@ public class PngReader {
 		default:
 			throw new PngjInputException("Filter type " + ftn + " not implemented");
 		}
+		if (crctest != null)
+			crctest.update(rowb, 1, rowb.length - 1);
 	}
 
 	private void unfilterRowAverage(final int nbytes) {
@@ -402,41 +409,59 @@ public class PngReader {
 	}
 
 	/**
-	 * Calls <code>readRow(int[] buffer, int nrow)</code> using internal ImageLine as buffer. This doesn't allocate or
-	 * copy anything.
+	 * If called for first time, calls readRowInt. Elsewhere, it calls the appropiate readRowInt/readRowByte
 	 * 
-	 * @return The ImageLine that also is available inside this object.
+	 * In general, specifying the concrete readRowInt/readRowByte is preferrable
+	 * 
+	 * @see #readRowInt(int)
 	 */
 	public ImageLine readRow(int nrow) {
-		if(imgLine==null) imgLine = new ImageLine(imgInfo);
+		if (imgLine == null)
+			imgLine = new ImageLine(imgInfo, SampleType.INT, unpackedMode);
 		return imgLine.sampleType != SampleType.BYTE ? readRowInt(nrow) : readRowByte(nrow);
 	}
 
+	/**
+	 * Reads the row as INT, storing it in the {@link #imgLine} property and returning it.
+	 * 
+	 * The row must be greater or equal than the last read row. This method allows to pass the same row that was last
+	 * read.
+	 * 
+	 * @param nrow
+	 *            Row number, from 0 to rows-1. Increasing order.
+	 * @return ImageLine object, also available as field. Result is in Imageline.scanline (int) field.
+	 */
 	public ImageLine readRowInt(int nrow) {
-		if(imgLine==null) imgLine = new ImageLine(imgInfo,SampleType.INT);
+		if (imgLine == null)
+			imgLine = new ImageLine(imgInfo, SampleType.INT, unpackedMode);
+		if (imgLine.getRown() == nrow) // already read
+			return imgLine;
 		readRowInt(imgLine.scanline, nrow);
 		imgLine.setFilterUsed(FilterType.getByVal(rowbfilter[0]));
 		imgLine.setRown(nrow);
 		return imgLine;
 	}
 
+	/**
+	 * Reads the row as BYTES, storing it in the {@link #imgLine} property and returning it.
+	 * 
+	 * The row must be greater or equal than the last read row. This method allows to pass the same row that was last
+	 * read.
+	 * 
+	 * @param nrow
+	 *            Row number, from 0 to rows-1. Increasing order.
+	 * @return ImageLine object, also available as field. Result is in Imageline.scanlineb (byte) field.
+	 */
 	public ImageLine readRowByte(int nrow) {
-		if(imgLine==null) imgLine = new ImageLine(imgInfo,SampleType.BYTE);
+		if (imgLine == null)
+			imgLine = new ImageLine(imgInfo, SampleType.BYTE, unpackedMode);
 		readRowByte(imgLine.scanlineb, nrow);
 		imgLine.setFilterUsed(FilterType.getByVal(rowbfilter[0]));
 		imgLine.setRown(nrow);
 		return imgLine;
 	}
-	
+
 	/**
-	 * Like <code>readRow(int nrow)</code> but this accepts non consecutive rows.
-	 * <p>
-	 * If it's the current row, it will just return it. Elsewhere, it will try to read it. This implementation only
-	 * accepts nrow greater or equal than current row, but an extended class could implement some partial or full cache
-	 * of lines.
-	 * <p>
-	 * This should not not be mixed with calls to <code>readRow(int[] buffer, final int nrow)</code>
-	 * 
 	 * @param nrow
 	 * @deprecated Now readRow() implements the same funcion. This will be removed in future releases
 	 */
@@ -452,26 +477,29 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads a line and returns it as a int[] array.
-	 * <p>
-	 * You can pass (optionally) a prealocatted buffer.
-	 * <p>
-	 * If the bitdepth is less than 8, the bytes are packed.
-	 * 
-	 * @param buffer
-	 *            Prealocated buffer, or null.
-	 * @param nrow
-	 *            Row number (0 is top). This is mostly for checking, because this library reads rows in sequence.
-	 * 
-	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
+	 * @see #readRowInt(int[], int)
 	 */
 	public final int[] readRow(int[] buffer, final int nrow) {
 		return readRowInt(buffer, nrow);
 	}
 
+	/**
+	 * Reads a line and returns it as a int[] array.
+	 * <p>
+	 * You can pass (optionally) a prealocatted buffer.
+	 * <p>
+	 * If the bitdepth is less than 8, the bytes are packed - unless {@link #unpackedMode} is true.
+	 * 
+	 * @param buffer
+	 *            Prealocated buffer, or null.
+	 * @param nrow
+	 *            Row number (0 is top). Most be strictly greater than the last read row.
+	 * 
+	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
+	 */
 	public final int[] readRowInt(int[] buffer, final int nrow) {
 		if (buffer == null)
-			buffer = new int[imgInfo.samplesPerRowP];
+			buffer = new int[unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
 		if (!interlaced) {
 			if (nrow <= rowNum)
 				throw new RuntimeException("rows must be read in increasing order: " + nrow);
@@ -481,15 +509,32 @@ public class PngReader {
 			decodeLastReadRowToInt(buffer, bytesread);
 		} else { // interlaced
 			if (deinterlacer.getImageInt() == null)
-				deinterlacer.setImageInt(readImageInt()); // read all image and store it in deinterlacer
-			System.arraycopy(deinterlacer.getImageInt()[nrow], 0, buffer, 0, imgInfo.samplesPerRowP);
+				deinterlacer.setImageInt(readRowsInt()); // read all image and store it in deinterlacer
+			System.arraycopy(deinterlacer.getImageInt()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
+					: imgInfo.samplesPerRowPacked);
 		}
 		return buffer;
 	}
 
+	/**
+	 * Reads a line and returns it as a byte[] array.
+	 * <p>
+	 * You can pass (optionally) a prealocatted buffer.
+	 * <p>
+	 * If the bitdepth is less than 8, the bytes are packed - unless {@link #unpackedMode} is true. <br>
+	 * If the bitdepth is 16, the least significant byte is lost.
+	 * <p>
+	 * 
+	 * @param buffer
+	 *            Prealocated buffer, or null.
+	 * @param nrow
+	 *            Row number (0 is top). Most be strictly greater than the last read row.
+	 * 
+	 * @return The scanline in the same passwd buffer if it was allocated, a newly allocated one otherwise
+	 */
 	public final byte[] readRowByte(byte[] buffer, final int nrow) {
 		if (buffer == null)
-			buffer = new byte[imgInfo.samplesPerRowP];
+			buffer = new byte[unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
 		if (!interlaced) {
 			if (nrow <= rowNum)
 				throw new RuntimeException("rows must be read in increasing order: " + nrow);
@@ -499,8 +544,9 @@ public class PngReader {
 			decodeLastReadRowToByte(buffer, bytesread);
 		} else { // interlaced
 			if (deinterlacer.getImageByte() == null)
-				deinterlacer.setImageByte(readImageByte()); // read all image and store it in deinterlacer
-			System.arraycopy(deinterlacer.getImageByte()[nrow], 0, buffer, 0, imgInfo.samplesPerRowP);
+				deinterlacer.setImageByte(readRowsByte()); // read all image and store it in deinterlacer
+			System.arraycopy(deinterlacer.getImageByte()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
+					: imgInfo.samplesPerRowPacked);
 		}
 		return buffer;
 	}
@@ -512,6 +558,8 @@ public class PngReader {
 		else
 			for (int i = 0, j = 1; j <= bytesRead; i++)
 				buffer[i] = ((rowb[j++] & 0xFF) << 8) + (rowb[j++] & 0xFF); // 16 bitspc
+		if (imgInfo.packed && unpackedMode)
+			ImageLine.unpackInplaceInt(imgInfo, buffer, buffer, false);
 	}
 
 	private void decodeLastReadRowToByte(byte[] buffer, int bytesRead) {
@@ -520,81 +568,113 @@ public class PngReader {
 		else
 			for (int i = 0, j = 1; j < bytesRead; i++, j += 2)
 				buffer[i] = rowb[j];// 16 bits in 1 byte: this discards the LSB!!!
+		if (imgInfo.packed && unpackedMode)
+			ImageLine.unpackInplaceByte(imgInfo, buffer, buffer, false);
 	}
 
 	/**
-	 * Reads a line and returns it as a int[][] matrix. Internally it reads all lines, but decodes and stores only the
-	 * seected. Calls end()
+	 * Reads a set of lines and returns it as a int[][] matrix. Internally it reads all lines, but decodes and stores
+	 * only the wanted ones. This starts and ends the reading, and cannot be combined with other reading methods.
+	 * <p>
+	 * This it's more efficient (speed an memory) that doing calling readRowInt() for each desired line only if the
+	 * image is interlaced.
 	 * <p>
 	 * Notice that the columns in the matrix is not the pixel width of the image, but rather pixels x channels
 	 * 
-	 * @see #readRow(int[], int)
+	 * @see #readRowInt(int) to read about the format of each row
+	 * 
+	 * @param rowOffset
+	 *            Number of rows to be skipped
+	 * @param nRows
+	 *            Total number of rows to be read. -1: read all available
+	 * @param rowStep
+	 *            Row increment. If 1, we read consecutive lines; if 2, we read even/odd lines, etc
+	 * @return Set of lines as a matrix
 	 */
-	public int[][] readImageInt(int rowOffset, int nRows, int rowStep) {
-		if (rowStep < 1)
+	public int[][] readRowsInt(int rowOffset, int nRows, int rowStep) {
+		if (nRows < 0)
+			nRows = (imgInfo.rows - rowOffset) / rowStep;
+		if (rowStep < 1 || rowOffset < 0 || nRows * rowStep + rowOffset > imgInfo.rows)
 			throw new RuntimeException("bad args");
-		int[][] im = new int[nRows][imgInfo.samplesPerRowP];
+		int[][] im = new int[nRows][unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
 		if (!interlaced) {
 			for (int j = 0; j < imgInfo.rows; j++) {
 				int bytesread = readRowRaw(j); // read and perhaps discards
-				int k = j - rowOffset;
-				if (k >= 0 && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0))
+				int k = (j - rowOffset) / rowStep;
+				if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0))
 					decodeLastReadRowToInt(im[k], bytesread);
 			}
 		} else { // and now, for something completely different (interlaced)
-			int[] buf = new int[imgInfo.samplesPerRow];
+			int[] buf = new int[unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
 			for (int p = 1; p <= 7; p++) {
 				deinterlacer.setPass(p);
 				for (int i = 0; i < deinterlacer.getRows(); i++) {
 					int bytesread = readRowRaw(i);
 					int j = deinterlacer.getCurrRowReal();
-					int k = j - rowOffset;
-					if (k >= 0 && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0)) {
+					int k = (j - rowOffset) / rowStep;
+					if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0)) {
 						decodeLastReadRowToInt(buf, bytesread);
-						deinterlacer.deinterlaceInt(buf, im[k]);
+						deinterlacer.deinterlaceInt(buf, im[k], !unpackedMode);
 					}
 				}
 			}
 		}
 		end();
 		return im;
-	}
-
-	public int[][] readImageInt() {
-		return readImageInt(0, imgInfo.rows, 1);
 	}
 
 	/**
-	 * Reads the full image as a byte[][] matrix.
-	 * <p>
-	 * Warning: this will silently discard the LSB if depth=16 bits
-	 * <p>
+	 * Same as readRowsInt(0, imgInfo.rows, 1)
 	 * 
-	 * @see #readRow(int[], int)
-	 * @see #readRow(byte[], int)
+	 * @see #readRowsInt(int, int, int)
 	 */
-	public byte[][] readImageByte(int rowOffset, int nRows, int rowStep) {
-		if (rowStep < 1)
+	public int[][] readRowsInt() {
+		return readRowsInt(0, imgInfo.rows, 1);
+	}
+
+	/**
+	 * Reads a set of lines and returns it as a byte[][] matrix. Internally it reads all lines, but decodes and stores
+	 * only the wanted ones. This starts and ends the reading, and cannot be combined with other reading methods.
+	 * <p>
+	 * This it's more efficient (speed an memory) that doing calling readRowByte() for each desired line only if the
+	 * image is interlaced.
+	 * <p>
+	 * Notice that the columns in the matrix is not the pixel width of the image, but rather pixels x channels
+	 * 
+	 * @see #readRowByte(int) to read about the format of each row. Notice that if the bitdepth is 16 this will lose information
+	 * 
+	 * @param rowOffset
+	 *            Number of rows to be skipped
+	 * @param nRows
+	 *            Total number of rows to be read. -1: read all available
+	 * @param rowStep
+	 *            Row increment. If 1, we read consecutive lines; if 2, we read even/odd lines, etc
+	 * @return Set of lines as a matrix
+	 */
+	public byte[][] readRowsByte(int rowOffset, int nRows, int rowStep) {
+		if (nRows < 0)
+			nRows = (imgInfo.rows - rowOffset) / rowStep;
+		if (rowStep < 1 || rowOffset < 0 || nRows * rowStep + rowOffset > imgInfo.rows)
 			throw new RuntimeException("bad args");
-		byte[][] im = new byte[nRows][imgInfo.samplesPerRowP];
+		byte[][] im = new byte[nRows][unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
 		if (!interlaced) {
 			for (int j = 0; j < imgInfo.rows; j++) {
 				int bytesread = readRowRaw(j); // read and perhaps discards
-				int k = j - rowOffset;
-				if (k >= 0 && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0))
+				int k = (j - rowOffset) / rowStep;
+				if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0))
 					decodeLastReadRowToByte(im[k], bytesread);
 			}
 		} else { // and now, for something completely different (interlaced)
-			byte[] buf = new byte[imgInfo.samplesPerRow];
+			byte[] buf = new byte[unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
 			for (int p = 1; p <= 7; p++) {
 				deinterlacer.setPass(p);
 				for (int i = 0; i < deinterlacer.getRows(); i++) {
 					int bytesread = readRowRaw(i);
 					int j = deinterlacer.getCurrRowReal();
-					int k = j - rowOffset;
-					if (k >= 0 && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0)) {
+					int k = (j - rowOffset) / rowStep;
+					if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0)) {
 						decodeLastReadRowToByte(buf, bytesread);
-						deinterlacer.deinterlaceByte(buf, im[k]);
+						deinterlacer.deinterlaceByte(buf, im[k], !unpackedMode);
 					}
 				}
 			}
@@ -603,16 +683,28 @@ public class PngReader {
 		return im;
 	}
 
-	public byte[][] readImageByte() {
-		return readImageByte(0, imgInfo.rows, 1);
+	/**
+	 * Same as readRowsByte(0, imgInfo.rows, 1)
+	 * 
+	 * @see #readRowsByte(int, int, int)
+	 */
+	public byte[][] readRowsByte() {
+		return readRowsByte(0, imgInfo.rows, 1);
 	}
 
-	// For the interlaced case, nrow referes to the subsampled image - the pass must be set already
-	// This must be called in strict order, both for interlaced or no interlaced
-	// Updates rowNum
-	// Returns bytes actually read (not including the filter byte)
+	/*
+	 * For the interlaced case, nrow indicates the subsampled image - the pass must be set already.
+	 * 
+	 * This must be called in strict order, both for interlaced or no interlaced.
+	 * 
+	 * Updates rowNum.
+	 * 
+	 * Leaves raw result in rowb
+	 * 
+	 * Returns bytes actually read (not including the filter byte)
+	 */
 	private int readRowRaw(final int nrow) {
-		// leaves result undecoded in rowb -
+		//
 		if (nrow == 0 && firstChunksNotYetRead())
 			readFirstChunks();
 		if (nrow == 0 && interlaced)
@@ -638,7 +730,7 @@ public class PngReader {
 		PngHelperInternal.readBytes(idatIstream, rowbfilter, 0, bytesRead + 1);
 		offset = iIdatCstream.getOffset();
 		if (offset < 0)
-			throw new RuntimeException("bad offset ??");
+			throw new PngjInputException("bad offset ??");
 		if (maxTotalBytesRead > 0 && offset >= maxTotalBytesRead)
 			throw new PngjInputException("Reading IDAT: Maximum total bytes to read exceeeded: " + maxTotalBytesRead
 					+ " offset:" + offset);
@@ -651,9 +743,9 @@ public class PngReader {
 	}
 
 	private void resetFilters() {
-		Arrays.fill(rowbprev, (byte) 0);
-		Arrays.fill(rowb, (byte) 0);
-		Arrays.fill(rowbfilter, (byte) 0);
+		// Arrays.fill(rowbprev, (byte) 0);
+		Arrays.fill(rowb, (byte) 0); // this is enough
+		// Arrays.fill(rowbfilter, (byte) 0);
 	}
 
 	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
@@ -663,7 +755,6 @@ public class PngReader {
 	/**
 	 * Set total maximum bytes to read (0: unlimited; default: 200MB). <br>
 	 * These are the bytes read (not loaded) in the input stream. If exceeded, an exception will be thrown.
-	 * 
 	 */
 	public void setMaxTotalBytesRead(long maxTotalBytesToRead) {
 		this.maxTotalBytesRead = maxTotalBytesToRead;
@@ -741,10 +832,45 @@ public class PngReader {
 	}
 
 	/**
-	 * Interlaced PNG is not welcomed here, but...
+	 * Interlaced PNG is accepted -though not welcomed- now...
 	 */
 	public boolean isInterlaced() {
 		return interlaced;
+	}
+
+	/**
+	 * If false (default) packed types (bitdepth=1,2 or 4) will keep several samples packed in one element (byte or int) <br>
+	 * If true, samples are unpacked on reading, and each element in the scanline is a sample. This implies more
+	 * processing and memory, but it's the most efficient option if you intend to read individual pixels. <br>
+	 * This option should only be set before starting reading.
+	 * 
+	 * @param usePackedFormat
+	 */
+	public void setUnpackedMode(boolean unPackedMode) {
+		this.unpackedMode = unPackedMode;
+	}
+
+	/**
+	 * @see PngReader#setUnpackedMode(boolean)
+	 */
+	public boolean isUnpackedMode() {
+		return unpackedMode;
+	}
+
+	/**
+	 * Just for testing. TO be called after ending reading, only if initCrctest() was called before start
+	 * 
+	 * @return CRC of the raw pixels values
+	 */
+	long getCrctestVal() {
+		return crctest.getValue();
+	}
+
+	/**
+	 * Inits CRC object and enables CRC calculation
+	 */
+	void initCrctest() {
+		this.crctest = new CRC32();
 	}
 
 	/**

@@ -75,10 +75,10 @@ public class ImageInfo {
 	public final int samplesPerRow;
 
 	/**
-	 * For internal use only. Samples available for our packed scanline. Equals samplesPerRow if not packed. Elsewhere,
+	 * For internal use only. Samples available for the packed scanline. Equals samplesPerRow if not packed. Elsewhere,
 	 * it's lower
 	 */
-	final int samplesPerRowP;
+	final int samplesPerRowPacked;
 
 	/**
 	 * Short constructor: assumes truecolor (RGB/RGBA)
@@ -119,7 +119,7 @@ public class ImageInfo {
 		this.bytesPixel = (bitspPixel + 7) / 8;
 		this.bytesPerRow = (bitspPixel * cols + 7) / 8;
 		this.samplesPerRow = channels * this.cols;
-		this.samplesPerRowP = packed ? bytesPerRow : samplesPerRow;
+		this.samplesPerRowPacked = packed ? bytesPerRow : samplesPerRow;
 		// several checks
 		switch (this.bitDepth) {
 		case 1:
@@ -147,7 +147,7 @@ public class ImageInfo {
 	public String toString() {
 		return "ImageInfo [cols=" + cols + ", rows=" + rows + ", bitDepth=" + bitDepth + ", channels=" + channels
 				+ ", bitspPixel=" + bitspPixel + ", bytesPixel=" + bytesPixel + ", bytesPerRow=" + bytesPerRow
-				+ ", samplesPerRow=" + samplesPerRow + ", samplesPerRowP=" + samplesPerRowP + ", alpha=" + alpha
+				+ ", samplesPerRow=" + samplesPerRow + ", samplesPerRowP=" + samplesPerRowPacked + ", alpha=" + alpha
 				+ ", greyscale=" + greyscale + ", indexed=" + indexed + ", packed=" + packed + "]";
 	}
 
