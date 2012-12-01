@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
@@ -264,4 +265,10 @@ public class ChunkHelper {
 		// unknown chunks that allow multiple? consider they don't match
 		return false;
 	}
+
+	public static boolean isText(PngChunk c) { 
+		return c instanceof PngChunkTextVar;
+	}
+
+	
 }

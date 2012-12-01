@@ -12,8 +12,7 @@ import ar.com.hjg.pngj.PngjOutputException;
 /**
  * Raw (physical) chunk.
  * <p>
- * Short lived object, to be created while serialing/deserializing Do not reuse it for different chunks.
- * <br>
+ * Short lived object, to be created while serialing/deserializing Do not reuse it for different chunks. <br>
  * See http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
  */
 public class ChunkRaw {
@@ -61,13 +60,13 @@ public class ChunkRaw {
 	/**
 	 * this is called after setting data, before writing to os
 	 */
-	private void computeCrc() {
+	private int computeCrc() {
 		CRC32 crcengine = PngHelperInternal.getCRC();
 		crcengine.reset();
 		crcengine.update(idbytes, 0, 4);
 		if (len > 0)
 			crcengine.update(data, 0, len); //
-		crcval = (int) crcengine.getValue();
+		return (int) crcengine.getValue();
 	}
 
 	/**
@@ -76,7 +75,7 @@ public class ChunkRaw {
 	public void writeChunk(OutputStream os) {
 		if (idbytes.length != 4)
 			throw new PngjOutputException("bad chunkid [" + ChunkHelper.toString(idbytes) + "]");
-		computeCrc();
+		crcval = computeCrc();
 		PngHelperInternal.writeInt4(os, len);
 		PngHelperInternal.writeBytes(os, idbytes);
 		if (len > 0)
@@ -88,12 +87,14 @@ public class ChunkRaw {
 	 * position before: just after chunk id. positon after: after crc Data should be already allocated. Checks CRC
 	 * Return number of byte read.
 	 */
-	public int readChunkData(InputStream is) {
+	public int readChunkData(InputStream is, boolean checkCrc) {
 		PngHelperInternal.readBytes(is, data, 0, len);
-		int crcori = PngHelperInternal.readInt4(is);
-		computeCrc();
-		if (crcori != crcval)
-			throw new PngjBadCrcException("crc invalid for chunk " + toString() + " calc=" + crcval + " read=" + crcori);
+		crcval = PngHelperInternal.readInt4(is);
+		if (checkCrc) {
+			int crc = computeCrc();
+			if (crc != crcval)
+				throw new PngjBadCrcException("chunk: " + this + " crc calc=" + crc + " read=" + crcval);
+		}
 		return len + 4;
 	}
 
