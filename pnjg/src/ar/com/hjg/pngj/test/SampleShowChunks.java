@@ -12,7 +12,7 @@ public class SampleShowChunks {
 
 	public static void showChunks(String file) {
 		PngReader pngr = FileHelper.createPngReader(new File(file));
-		pngr.setMaxTotalBytesRead(1024*1024*1024L*3); //  3Gb! 
+		pngr.setMaxTotalBytesRead(1024 * 1024 * 1024L * 3); // 3Gb!
 		for (int row = 0; row < pngr.imgInfo.rows; row++)
 			pngr.readRow(row);
 		pngr.end();

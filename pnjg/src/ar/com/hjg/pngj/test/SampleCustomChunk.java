@@ -24,7 +24,7 @@ import ar.com.hjg.pngj.chunks.PngChunkSingle;
  */
 public class SampleCustomChunk {
 
-	// Example chunk: this stores a Java property as XML  
+	// Example chunk: this stores a Java property as XML
 	public static class PngChunkPROP extends PngChunkSingle {
 		// ID must follow the PNG conventions: four ascii letters,
 		// ID[0] : lowercase (ancillary)
@@ -33,8 +33,8 @@ public class SampleCustomChunk {
 		public final static String ID = "prOp";
 
 		private final Properties props;
-		
-		// fill with your own "high level" properties, in this example, 
+
+		// fill with your own "high level" properties, in this example,
 		public PngChunkPROP(ImageInfo imgInfo) {
 			super(ID, imgInfo);
 			props = new Properties();
@@ -43,34 +43,34 @@ public class SampleCustomChunk {
 		@Override
 		public ChunkRaw createRawChunk() {
 			// This code "serializes" your fields, according to our chunk spec
-			// For other examples, see the code from other PngChunk implementations  
-			ByteArrayOutputStream bos = new ByteArrayOutputStream(); 
+			// For other examples, see the code from other PngChunk implementations
+			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			try {
-				props.storeToXML(bos,"MyChunk");
+				props.storeToXML(bos, "MyChunk");
 			} catch (IOException e) {
-				throw new PngjException("error creating chunk",e);
+				throw new PngjException("error creating chunk", e);
 			}
 			ChunkRaw c = createEmptyChunk(bos.size(), true);
-			System.arraycopy(bos.toByteArray(), 0, c.data, 0,c.len);
+			System.arraycopy(bos.toByteArray(), 0, c.data, 0, c.len);
 			return c;
 		}
 
 		@Override
 		public void parseFromRaw(ChunkRaw c) {
 			// This code "deserializes" your fields, according to our chunk spec
-			// For other examples, see the code from other PngChunk implementations  
+			// For other examples, see the code from other PngChunk implementations
 			props.clear();
 			try {
-				ByteArrayInputStream bis = new ByteArrayInputStream(c.data,0,c.len);
+				ByteArrayInputStream bis = new ByteArrayInputStream(c.data, 0, c.len);
 				props.loadFromXML(bis);
 			} catch (Exception e) {
-				throw new PngjException("error creating chunk",e);
+				throw new PngjException("error creating chunk", e);
 			}
 		}
 
 		@Override
 		public void cloneDataFromRead(PngChunk other) {
-			// make a copy - preferably deep - this is only used  
+			// make a copy - preferably deep - this is only used
 			PngChunkPROP x = (PngChunkPROP) other;
 			props.clear();
 			props.putAll(x.props);
@@ -85,11 +85,12 @@ public class SampleCustomChunk {
 		public Properties getProps() {
 			return props;
 		}
-		
+
 	}
 
 	public static void addPropChunk(String orig, String dest, Properties p) {
-		if(orig.equals(dest)) throw new RuntimeException("orig == dest???");
+		if (orig.equals(dest))
+			throw new RuntimeException("orig == dest???");
 		PngReader pngr = FileHelper.createPngReader(new File(orig));
 		PngWriter pngw = FileHelper.createPngWriter(new File(dest), pngr.imgInfo, true);
 		System.out.println("Reading : " + pngr.toString());
@@ -107,31 +108,30 @@ public class SampleCustomChunk {
 		pngw.end();
 		System.out.printf("Done. Writen : " + dest);
 	}
-	
+
 	public static void readPropChunk(String ori) {
 		// to read the "unkwnon" chunk as our desired chunk, we must statically register it
 		PngChunk.factoryRegister(PngChunkPROP.ID, PngChunkPROP.class);
 		PngReader pngr = FileHelper.createPngReader(new File(ori));
 		System.out.println("Reading : " + pngr.toString());
-		pngr.getRow(pngr.imgInfo.rows-1); // get last line: this forces loading all chunks
+		pngr.getRow(pngr.imgInfo.rows - 1); // get last line: this forces loading all chunks
 		pngr.end(); // no necessary
-		// we know there can be at most one chunk of this type... 
+		// we know there can be at most one chunk of this type...
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
 		System.out.println(chunk);
 		// the following would fail if we had not register the chunk
 		PngChunkPROP chunkprop = (PngChunkPROP) chunk;
-		System.out.println(chunkprop!=null ? chunkprop.getProps() : " NO PROP CHUNK");
+		System.out.println(chunkprop != null ? chunkprop.getProps() : " NO PROP CHUNK");
 	}
 
-	
-	public static void testWrite(){
+	public static void testWrite() {
 		Properties prop = new Properties();
 		prop.setProperty("curtime", String.valueOf(System.currentTimeMillis()));
 		prop.setProperty("home", System.getenv("HOME"));
 		addPropChunk("/temp/x.png", "/temp/x2.png", prop);
 	}
 
-	public static void testRead(){
+	public static void testRead() {
 		readPropChunk("/temp/x2.png");
 	}
 

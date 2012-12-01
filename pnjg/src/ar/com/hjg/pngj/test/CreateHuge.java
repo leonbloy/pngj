@@ -21,7 +21,8 @@ public class CreateHuge {
 	 * if filename==null, the image is writen to a black hole (like a /dev/null
 	 */
 	public static void createHuge(String filename, final int cols, final int rows) throws Exception {
-		OutputStream os = filename == null ? new NullOutputStream() : new FileOutputStream(new File(filename));
+		OutputStream os = filename == null ? TestsHelper.createNullOutputStream() : new FileOutputStream(new File(
+				filename));
 		PngWriter png = new PngWriter(os, new ImageInfo(cols, rows, 8, false));
 		png.setFilterType(FilterType.FILTER_AVERAGE);
 		png.setIdatMaxSize(0x10000);

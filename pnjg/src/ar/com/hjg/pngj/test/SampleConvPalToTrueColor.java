@@ -13,14 +13,15 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 
 /**
- * This converts a paletted image to a True color image If the image has transparency (tRNS chunk) it generates
- * a RGBA image, elsewhere a RGB
+ * This converts a paletted image to a True color image If the image has transparency (tRNS chunk) it generates a RGBA
+ * image, elsewhere a RGB
  */
 public class SampleConvPalToTrueColor {
 
 	public static void convertToTc(File orig, File copy) {
 		PngReader pngr = FileHelper.createPngReader(orig);
-		if(!pngr.imgInfo.indexed) throw new RuntimeException("Not indexed image");
+		if (!pngr.imgInfo.indexed)
+			throw new RuntimeException("Not indexed image");
 		PngChunkPLTE plte = pngr.getMetadata().getPLTE();
 		PngChunkTRNS trns = pngr.getMetadata().getTRNS(); // this can be null
 		boolean alpha = trns != null;

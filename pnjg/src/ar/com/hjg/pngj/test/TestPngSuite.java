@@ -39,9 +39,9 @@ public class TestPngSuite {
 	 * 
 	 * IF the original was interlaced, compares with origni
 	 * */
-	public static void testmirror(File orig, File origni,File truecolor) {
-		File mirror = TestHelper.addSuffixToName(orig, "_mirror");
-		File recov = TestHelper.addSuffixToName(orig, "_recov");
+	public static void testmirror(File orig, File origni, File truecolor) {
+		File mirror = TestsHelper.addSuffixToName(orig, "_mirror");
+		File recov = TestsHelper.addSuffixToName(orig, "_recov");
 		long crc0 = 0;
 		boolean interlaced;
 		boolean palete;
@@ -91,13 +91,13 @@ public class TestPngSuite {
 		}
 		// now check
 		if (!interlaced)
-			TestHelper.testCrcEquals(recov, crc0);
+			TestsHelper.testCrcEquals(recov, crc0);
 		else
-			TestHelper.testEqual(recov, origni);
+			TestsHelper.testEqual(recov, origni);
 
 		if (interlaced)
 			additionalTestInterlaced(orig, origni);
-		
+
 		if (palete && truecolor.exists())
 			additionalTestPalette(orig, truecolor);
 	}
@@ -107,7 +107,7 @@ public class TestPngSuite {
 		PngReader pngr = FileHelper.createPngReader(orig);
 		PngChunkPLTE plte = pngr.getMetadata().getPLTE();
 		PngChunkTRNS trns = pngr.getMetadata().getTRNS();
-		File copy = TestHelper.addSuffixToName(orig, "_tccopy");
+		File copy = TestsHelper.addSuffixToName(orig, "_tccopy");
 		boolean alpha = trns != null;
 		ImageInfo im2 = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, alpha);
 		PngWriter pngw = FileHelper.createPngWriter(copy, im2, true);
@@ -115,12 +115,12 @@ public class TestPngSuite {
 		int[] buf = null;
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine line = pngr.readRowInt(row);
-			buf = ImageLineHelper.palette2rgb(line, plte, trns,buf);
+			buf = ImageLineHelper.palette2rgb(line, plte, trns, buf);
 			pngw.writeRowInt(buf, row);
 		}
 		pngr.end();
 		pngw.end();
-		TestHelper.testEqual(copy, truecolor);
+		TestsHelper.testEqual(copy, truecolor);
 		copy.delete();
 
 	}
@@ -128,7 +128,7 @@ public class TestPngSuite {
 	private static void additionalTestInterlaced(File orig, File origni) {
 		// tests also read/write in packed format
 		PngReader pngr = FileHelper.createPngReader(orig);
-		File copy = TestHelper.addSuffixToName(orig, "_icopy");
+		File copy = TestsHelper.addSuffixToName(orig, "_icopy");
 		pngr.setUnpackedMode(false);
 		PngWriter pngw = FileHelper.createPngWriter(copy, pngr.imgInfo, true);
 		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
@@ -145,7 +145,7 @@ public class TestPngSuite {
 		}
 		pngr.end();
 		pngw.end();
-		TestHelper.testEqual(copy, origni);
+		TestsHelper.testEqual(copy, origni);
 		copy.delete();
 	}
 
@@ -180,7 +180,7 @@ public class TestPngSuite {
 		int conterr = 0;
 		for (File im1 : dirsrc.listFiles()) {
 			String name = im1.getName();
-			if (maxfiles>1&& cont >= maxfiles)
+			if (maxfiles > 1 && cont >= maxfiles)
 				break;
 			if (!im1.isFile())
 				continue;
@@ -192,7 +192,7 @@ public class TestPngSuite {
 				File orig = new File(dirdest, name);
 				copyFile(im1, orig);
 				cont++;
-				testmirror(orig, TestHelper.addSuffixToName(im1, "_ni"),TestHelper.addSuffixToName(im1, "_tc"));
+				testmirror(orig, TestsHelper.addSuffixToName(im1, "_ni"), TestsHelper.addSuffixToName(im1, "_tc"));
 				if (name.startsWith("x")) {
 					System.err.println("this should have failed! " + name);
 					conterr++;
@@ -209,8 +209,10 @@ public class TestPngSuite {
 			}
 		}
 		System.out.println("Errors: " + conterr + "/" + cont + " images");
-		if(conterr==0) System.out.println("=========== SUCCESS ! ================");
-		else System.out.println("---- THERE WERE ERRORS!  :-((( ");
+		if (conterr == 0)
+			System.out.println("=========== SUCCESS ! ================");
+		else
+			System.out.println("---- THERE WERE ERRORS!  :-((( ");
 	}
 
 	private static void copyFile(File sourceFile, File destFile) {
@@ -239,7 +241,7 @@ public class TestPngSuite {
 
 	public static void main(String[] args) throws Exception {
 		testAllSuite(new File("resources/testsuite1/"), new File(outdir), -1);
-		//testmirror(new File(outdir,"basi0g01.png"),new File("resources/testsuite1/","basi0g01_ni.png"),null);
+		// testmirror(new File(outdir,"basi0g01.png"),new File("resources/testsuite1/","basi0g01_ni.png"),null);
 		System.out.println("Lines starting with 'ok error' are expected errors, they are ok.");
 		System.out.println("Output dir: " + outdir);
 

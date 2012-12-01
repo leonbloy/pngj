@@ -14,7 +14,6 @@ import ar.com.hjg.pngj.PngjException;
 public class PngChunkSBIT extends PngChunkSingle {
 	public final static String ID = ChunkHelper.sBIT;
 	// http://www.w3.org/TR/PNG/#11sBIT
-	
 
 	// significant bits
 	private int graysb, alphasb;

@@ -11,6 +11,8 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
  * Bunch of utility static methods to process/analyze an image line at the pixel level.
  * <p>
  * Not essential at all, some methods are probably to be removed if future releases.
+ * <p>
+ * WARNING: most methods for getting/setting values work currently only for integer base imageLines
  */
 public class ImageLineHelper {
 
@@ -44,7 +46,7 @@ public class ImageLineHelper {
 			pal.getEntryRgb(index, buf, c * channels);
 			if (isalpha) {
 				int alpha = index < nindexesWithAlpha ? trns.getPalletteAlpha()[index] : 255;
-				buf[c*channels+3]=alpha;
+				buf[c * channels + 3] = alpha;
 			}
 		}
 		return buf;

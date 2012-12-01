@@ -16,11 +16,11 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
  */
 public class SampleConvertToPalette {
 
-	public static void convertPal(String origFilename, String destFilename) {
+	public static void convertPal(File origFilename, File destFilename) {
 		if (origFilename.equals(destFilename))
 			throw new RuntimeException("source same as target!");
 		// first pass
-		PngReader pngr = FileHelper.createPngReader(new File(origFilename));
+		PngReader pngr = FileHelper.createPngReader(origFilename);
 		int channels = pngr.imgInfo.channels;
 		if (channels < 3 || pngr.imgInfo.bitDepth != 8)
 			throw new RuntimeException("This method is for RGB8/RGBA8 images");
@@ -30,11 +30,11 @@ public class SampleConvertToPalette {
 		cuant.setParReserveAlphaColor(useTransparency);
 		cuant.run();
 		pngr.end();
-		pngr = FileHelper.createPngReader(new File(origFilename));
+		pngr = FileHelper.createPngReader(origFilename);
 		ImageInfo imiw = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, false, false, true);
 		// second pass
-		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), imiw, true);
-		
+		PngWriter pngw = FileHelper.createPngWriter(destFilename, imiw, true);
+
 		PngChunkPLTE palette = pngw.getMetadata().createPLTEChunk();
 		int ncolors = cuant.getColorCount();
 		palette.setNentries(ncolors);
@@ -74,7 +74,7 @@ public class SampleConvertToPalette {
 			System.err.println("Arguments: [pngsrc] [pngdest]");
 			System.exit(1);
 		}
-		convertPal(args[0], args[1]);
+		convertPal(new File(args[0]), new File(args[1]));
 		System.out.println("Done: " + args[1]);
 	}
 }

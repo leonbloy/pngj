@@ -29,7 +29,7 @@ public class SamplePngReencode {
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL);
 		pngr.end();
 		pngw.end();
-		System.out.printf("Done. Compression: %.3f \n",pngw.computeCompressionRatio());
+		System.out.printf("Done. Compression: %.3f \n", pngw.computeCompressionRatio());
 	}
 
 	public static void fromCmdLineArgs(String[] args) {

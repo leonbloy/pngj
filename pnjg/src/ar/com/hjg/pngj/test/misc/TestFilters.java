@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.test;
+package ar.com.hjg.pngj.test.misc;
 
 import java.io.File;
 

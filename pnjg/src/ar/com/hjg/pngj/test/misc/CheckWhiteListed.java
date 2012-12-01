@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.test;
+package ar.com.hjg.pngj.test.misc;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -26,6 +26,7 @@ class CheckWhiteListed {
 	private Set<String> whiteList;
 
 	public void checkDir(File dir, boolean recurse) {
+		System.out.println("checking " + dir);
 		List<File> files = FindDependecies.getClassesFromDir(dir, recurse);
 		Map<String, List<File>> classes = FindDependecies.getReferencedClassesFromFiles(files);
 		List<String> cs = new ArrayList<String>(classes.keySet());
@@ -79,7 +80,6 @@ class CheckWhiteListed {
 		// this should include every directory except "nosandnbox" and "test"
 		checker.checkDir(new File("bin/ar/com/hjg/pngj"), false);
 		checker.checkDir(new File("bin/ar/com/hjg/pngj/chunks"), false);
-		checker.checkDir(new File("bin/ar/com/hjg/pngj/lossy"), false);
 		// checker.checkDir(new File("bin/ar/com/hjg/pngj/test"), false); // This fails, it's ok
 	}
 }

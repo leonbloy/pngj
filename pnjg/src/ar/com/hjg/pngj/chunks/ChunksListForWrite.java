@@ -78,6 +78,7 @@ public class ChunksListForWrite extends ChunksList {
 	 * Adds chunk to queue
 	 * 
 	 * Does not check for duplicated or anything
+	 * 
 	 * @param c
 	 */
 	public boolean queue(PngChunk c) {

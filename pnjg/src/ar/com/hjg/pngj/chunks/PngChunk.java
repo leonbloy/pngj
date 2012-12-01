@@ -225,9 +225,9 @@ public abstract class PngChunk {
 		return length;
 	}
 
-	/*public void setLength(int length) {
-		this.length = length;
-	}*/
+	/*
+	 * public void setLength(int length) { this.length = length; }
+	 */
 
 	public long getOffset() {
 		return offset;
@@ -237,7 +237,6 @@ public abstract class PngChunk {
 		this.offset = offset;
 	}
 
-	
 	/**
 	 * Creates the physical chunk. This is used when writing (serialization). Each particular chunk class implements its
 	 * own logic.
@@ -270,8 +269,7 @@ public abstract class PngChunk {
 
 	@Override
 	public String toString() {
-		return "chunk id= " + id + " (len=" + length + " offset=" + offset +") c=" + getClass().getSimpleName();
+		return "chunk id= " + id + " (len=" + length + " offset=" + offset + ") c=" + getClass().getSimpleName();
 	}
-
 
 }

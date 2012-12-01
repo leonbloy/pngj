@@ -7,6 +7,8 @@ import java.io.OutputStream;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
+import ar.com.hjg.pngj.test.TestsHelper.NullOutputStream;
+
 public class TestDeflater {
 	public static void main(String[] args) throws Exception {
 		int complevel = 6;
@@ -43,34 +45,32 @@ public class TestDeflater {
 		os.close();
 		return (int) (t1 - t0);
 	}
-	
+
 	public static int test2(String filename, int complevel, int deflaterStrat) throws Exception {
 		FileInputStream fin = new FileInputStream(new File(filename));
 		Deflater defl = new Deflater(complevel);
 		defl.setStrategy(deflaterStrat);
-		NullOutputStream pos = new NullOutputStream();
+		NullOutputStream pos = TestsHelper.createNullOutputStream();
 		DeflaterOutputStream dos = new DeflaterOutputStream(pos, defl);
 		OutputStream os = dos;
-		
+
 		byte[] buf = new byte[3000];
 		long t0 = System.currentTimeMillis();
 		int c = 0;
-        int total = 0;
-         for (int k = 0; k < 4; k++)
-         {
-             while ((c = fin.read(buf, 0, 3000)) > 0)
-             {
-                 os.write(buf, 0, c);
-                 total += c;
-             }
-     		fin.close();
-     		fin = new FileInputStream(new File(filename));
-         }
+		int total = 0;
+		for (int k = 0; k < 4; k++) {
+			while ((c = fin.read(buf, 0, 3000)) > 0) {
+				os.write(buf, 0, c);
+				total += c;
+			}
+			fin.close();
+			fin = new FileInputStream(new File(filename));
+		}
 		long t1 = System.currentTimeMillis();
 		os.close();
 		fin.close();
-		System.out.println(String.format("%.2f%%  %d msecs", (pos.getCont()* 100.0) / total, t1 - t0));
-          
+		System.out.println(String.format("%.2f%%  %d msecs", (pos.getCont() * 100.0) / total, t1 - t0));
+
 		return (int) (t1 - t0);
 	}
 }

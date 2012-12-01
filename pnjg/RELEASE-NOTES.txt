@@ -1,14 +1,23 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-Version 1.0
-   - Added int[][] readImage[]()
-   - Added readRow(byte[]) readRow(short[])  
-   - Implemented Interlacing (for reading)
-   - Several retouchings in PngReader. getRow is more efficient when skipping rows
-   - added crctest and PngReaderTest to implement better tests
+Version 1.1 (?)
+   - Interlaced PNG: full support for reading.
+   - Read/write can use INT or BYTE for sample storage now. The choice is explicit by the programmer
+      -- ImageLine have a "sampleType" and two buffers scanline (integer) and scanlineb (byte), only one is allocated
+      -- readRow/writeRow methods can specify the concrete type: readRowInt/readRowByte writeRowInt/writeRowByte   
+   - Several retouchings in PngReader. readRow can skip rows (getRow is deprecated now), and does it 
+    more efficiently (does not decode more than necessary)
+   - Read/Write can work with a set of lines: readRows writeRows
+      -- This is not a mere alias to a loop of readRow, and it's much efficient for interlaced PNG
+   - Much extensive and robust tests:
+     -- added crctest and PngReaderTest to implement better tests (internal use only)
+     -- PngSuiteTest does a double mirror of each image an compares with original (even with interlaced)
    - ImageLineHelper.pal2rgb  (renamed, corrected, supports alpha if TRNS passed). Added to TestSuite
-   - Added getMetadata().getPalette() getMetadata().createNewPalette()     
+   - Added getMetadata().getPalette() getMetadata().createNewPalette()
+   - Corrected several issues with textual chunks (texts with null bytes, empty texts). Added test.
+   - Exception handling polished : PngExceptionInternal added, no more plain RuntimeException thrown 
+           
 Version 0.97 (?)
   - Corrected typo in PngWriter: getChunkList() -> getChunksList()  
     

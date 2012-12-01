@@ -11,7 +11,7 @@ import ar.com.hjg.pngj.PngjException;
  * <p>
  * see http://www.w3.org/TR/PNG/#11IHDR
  * <p>
- * This is a special critical Chunk. 
+ * This is a special critical Chunk.
  */
 public class PngChunkIHDR extends PngChunkSingle {
 	public final static String ID = ChunkHelper.IHDR;

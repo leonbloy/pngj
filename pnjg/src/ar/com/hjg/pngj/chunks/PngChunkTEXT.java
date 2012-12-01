@@ -18,7 +18,7 @@ public class PngChunkTEXT extends PngChunkTextVar {
 
 	@Override
 	public ChunkRaw createRawChunk() {
-		if ( key.isEmpty())
+		if (key.isEmpty())
 			throw new PngjException("Text chunk key must be non empty");
 		byte[] b = (key + "\0" + val).getBytes(PngHelperInternal.charsetLatin1);
 		ChunkRaw chunk = createEmptyChunk(b.length, false);
@@ -32,7 +32,7 @@ public class PngChunkTEXT extends PngChunkTextVar {
 		for (i = 0; i < c.data.length; i++)
 			if (c.data[i] == 0)
 				break;
-		key = new String(c.data, 0, i , PngHelperInternal.charsetLatin1);
+		key = new String(c.data, 0, i, PngHelperInternal.charsetLatin1);
 		i++;
 		val = i < c.data.length ? new String(c.data, i, c.data.length - i, PngHelperInternal.charsetLatin1) : "";
 	}

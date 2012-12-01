@@ -16,7 +16,7 @@ public class ShowFilterInfo {
 		PngReader pngr = FileHelper.createPngReader(file);
 		FilterType[] types = new FilterType[pngr.imgInfo.rows];
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
-			ImageLine imline = pngr.readRow(row);
+			ImageLine imline = pngr.readRowByte(row);
 			types[row] = imline.getFilterUsed();
 		}
 		pngr.end();

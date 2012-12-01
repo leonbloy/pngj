@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.test;
+package ar.com.hjg.pngj.test.misc;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -34,6 +34,7 @@ class FindDependecies {
 		return f;
 	}
 
+	//
 	public static Map<String, List<File>> getReferencedClassesFromFiles(Collection<File> files) {
 		HashMap<String, List<File>> map = new HashMap<String, List<File>>();
 		for (File file : files) {
@@ -102,7 +103,7 @@ class FindDependecies {
 		Set<String> allclasses = new HashSet<String>();
 		for (Integer index : classes) {
 			String c = strings.get(index).replaceAll("/", ".");
-			if (c.startsWith("["))
+			while (c.startsWith("["))
 				c = c.substring(1);
 			if (c.length() < 2)
 				continue;

@@ -44,7 +44,7 @@ class PngDeinterlacer {
 		currRowSubimg = n;
 		currRowReal = n * dY + oY;
 		if (currRowReal < 0 || currRowReal >= imi.rows)
-			throw new RuntimeException("bad row");
+			throw new PngjExceptionInternal("bad row - this should not happen");
 	}
 
 	void setPass(int p) {
@@ -90,7 +90,7 @@ class PngDeinterlacer {
 			oY = 1;
 			break;
 		default:
-			throw new RuntimeException("bad interlace pass" + pass);
+			throw new PngjExceptionInternal("bad interlace pass" + pass);
 		}
 		rows = (imi.rows - oY) / dY + 1;
 		if ((rows - 1) * dY + oY >= imi.rows)
@@ -267,7 +267,7 @@ class PngDeinterlacer {
 			}
 		}
 		if (np != 0)
-			throw new RuntimeException("??" + ih.imi);
+			throw new PngjExceptionInternal("wtf??" + ih.imi);
 	}
 
 	public static void main(String[] args) {

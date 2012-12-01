@@ -2,6 +2,7 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
+import ar.com.hjg.pngj.PngjException;
 
 /**
  * iCCP chunk.
@@ -40,7 +41,7 @@ public class PngChunkICCP extends PngChunkSingle {
 		profileName = new String(chunk.data, 0, pos0, PngHelperInternal.charsetLatin1);
 		int comp = (chunk.data[pos0 + 1] & 0xff);
 		if (comp != 0)
-			throw new RuntimeException("bad compression for ChunkTypeICCP");
+			throw new PngjException("bad compression for ChunkTypeICCP");
 		int compdatasize = chunk.data.length - (pos0 + 2);
 		compressedProfile = new byte[compdatasize];
 		System.arraycopy(chunk.data, pos0 + 2, compressedProfile, 0, compdatasize);

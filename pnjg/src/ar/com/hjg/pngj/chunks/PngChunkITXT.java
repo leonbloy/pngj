@@ -34,7 +34,7 @@ public class PngChunkITXT extends PngChunkTextVar {
 			ba.write(0); // separator
 			ba.write(compressed ? 1 : 0);
 			ba.write(0); // compression method (always 0)
-			ba.write(ChunkHelper.toBytes(langTag)); 
+			ba.write(ChunkHelper.toBytes(langTag));
 			ba.write(0); // separator
 			ba.write(ChunkHelper.toBytesUTF8(translatedTag));
 			ba.write(0); // separator
@@ -82,7 +82,7 @@ public class PngChunkITXT extends PngChunkTextVar {
 			byte[] bytes = ChunkHelper.compressBytes(c.data, i, c.data.length - i, false);
 			val = ChunkHelper.toStringUTF8(bytes);
 		} else {
-			val =  ChunkHelper.toStringUTF8(c.data, i, c.data.length - i);
+			val = ChunkHelper.toStringUTF8(c.data, i, c.data.length - i);
 		}
 	}
 

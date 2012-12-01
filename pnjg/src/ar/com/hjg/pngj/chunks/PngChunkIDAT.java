@@ -13,10 +13,10 @@ public class PngChunkIDAT extends PngChunkMultiple {
 	public final static String ID = ChunkHelper.IDAT;
 
 	// http://www.w3.org/TR/PNG/#11IDAT
-	public PngChunkIDAT(ImageInfo i,int len, long offset) {
+	public PngChunkIDAT(ImageInfo i, int len, long offset) {
 		super(ID, i);
 		this.length = len;
-		this.offset = offset; 
+		this.offset = offset;
 	}
 
 	@Override

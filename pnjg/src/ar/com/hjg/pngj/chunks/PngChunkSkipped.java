@@ -8,7 +8,7 @@ import ar.com.hjg.pngj.PngjException;
  */
 public class PngChunkSkipped extends PngChunk {
 
-	public PngChunkSkipped(String id, ImageInfo info,int clen) {
+	public PngChunkSkipped(String id, ImageInfo info, int clen) {
 		super(id, info);
 		this.length = clen;
 	}

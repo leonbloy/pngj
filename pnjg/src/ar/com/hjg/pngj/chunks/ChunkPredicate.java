@@ -6,6 +6,7 @@ package ar.com.hjg.pngj.chunks;
 public interface ChunkPredicate {
 	/**
 	 * The other chunk matches with this one
+	 * 
 	 * @param chunk
 	 * @return
 	 */

@@ -37,6 +37,7 @@ public class ChunksList {
 
 	/**
 	 * Keys of processed (read or writen) chunks
+	 * 
 	 * @return key:chunk id, val: number of occurrences
 	 */
 	public HashMap<String, Integer> getChunksKeys() {
@@ -86,6 +87,7 @@ public class ChunksList {
 
 	/**
 	 * All chunks with this ID
+	 * 
 	 * @param id
 	 * @return List, empty if none
 	 */
@@ -95,6 +97,7 @@ public class ChunksList {
 
 	/**
 	 * If innerid!=null and the chunk is PngChunkTextVar or PngChunkSPLT, it's filtered by that id
+	 * 
 	 * @param id
 	 * @return innerid Only used for text and SPLT chunks
 	 * @return List, empty if none
@@ -102,26 +105,27 @@ public class ChunksList {
 	public List<? extends PngChunk> getById(final String id, final String innerid) {
 		return getXById(chunks, id, innerid);
 	}
-	
+
 	/**
-	 * Returns only one chunk 
+	 * Returns only one chunk
+	 * 
 	 * @param id
 	 * @return First chunk found, null if not found
 	 */
 	public PngChunk getById1(final String id) {
 		return getById1(id, false);
 	}
-	
+
 	/**
 	 * Returns only one chunk or null if nothing found - does not include queued
 	 * <p>
-	 * If more than one chunk is found, then an exception is thrown (failifMultiple=true
-	 * or chunk is single) or the last one is returned (failifMultiple=false)
+	 * If more than one chunk is found, then an exception is thrown (failifMultiple=true or chunk is single) or the last
+	 * one is returned (failifMultiple=false)
 	 **/
-	 public PngChunk getById1(final String id, final boolean failIfMultiple) {
+	public PngChunk getById1(final String id, final boolean failIfMultiple) {
 		return getById1(id, null, failIfMultiple);
 	}
-	
+
 	/**
 	 * Returns only one chunk or null if nothing found - does not include queued
 	 * <p>
@@ -139,6 +143,7 @@ public class ChunksList {
 
 	/**
 	 * Finds all chunks "equivalent" to this one
+	 * 
 	 * @param c2
 	 * @return Empty if nothing found
 	 */

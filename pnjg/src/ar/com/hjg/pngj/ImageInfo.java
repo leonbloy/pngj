@@ -29,8 +29,8 @@ public class ImageInfo {
 	public final int bitDepth;
 
 	/**
-	 * Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for
-	 * grayscale or indexed.
+	 * Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for grayscale or
+	 * indexed.
 	 */
 	public final int channels;
 

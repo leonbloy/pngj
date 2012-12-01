@@ -43,7 +43,7 @@ public class PngHelperInternal {
 		try {
 			return is.read();
 		} catch (IOException e) {
-			throw new PngjOutputException(e);
+			throw new PngjInputException("error reading byte", e);
 		}
 	}
 
@@ -136,7 +136,7 @@ public class PngHelperInternal {
 			while (read < len) {
 				int n = is.read(b, offset + read, len - read);
 				if (n < 1)
-					throw new RuntimeException("error reading bytes, " + n + " !=" + len);
+					throw new PngjInputException("error reading bytes, " + n + " !=" + len);
 				read += n;
 			}
 		} catch (IOException e) {
@@ -249,15 +249,15 @@ public class PngHelperInternal {
 		else
 			return c;
 	}
-	
+
 	/*
 	 * we put this methods here so as to not pollute the public interface of PngReader
 	 */
-	public final static void initCrcForTests(PngReader pngr){
+	public final static void initCrcForTests(PngReader pngr) {
 		pngr.initCrctest();
 	}
-	
-	public final static long getCrctestVal(PngReader pngr){
+
+	public final static long getCrctestVal(PngReader pngr) {
 		return pngr.getCrctestVal();
 	}
 

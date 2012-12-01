@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.test;
 
+import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngReader;
-
 
 /* NeuQuant Neural-Net Quantization Algorithm
  * ------------------------------------------
@@ -38,13 +38,13 @@ public class NeuQuant {
 		public int[] getPixel(int row, int col);
 	}
 
-	// parameters - do not change during running - naming convention: 
-	// parNcolors ... parameters setteable with set() 
-	// _parMmaxnetpos ... derived parameter, not seteable, computed at init()  
+	// parameters - do not change during running - naming convention:
+	// parNcolors ... parameters setteable with set()
+	// _parMmaxnetpos ... derived parameter, not seteable, computed at init()
 	private int parNcolors = 256; // number of colours used
 	private int parNcycles = 330; // no. of learning cycles
-	private int _parCutnetsize; //= ncolors;// 
-	private int _parMaxnetpos; //= ncolors - 1;
+	private int _parCutnetsize; // = ncolors;//
+	private int _parMaxnetpos; // = ncolors - 1;
 
 	private int _parInitrad;// = ncolors / 8; // for 256 cols, radius starts at 32
 	private int parRadiusbiasshift = 6;
@@ -59,20 +59,19 @@ public class NeuQuant {
 
 	private double parGamma = 1024.0;
 	private double parBeta = 1.0 / 1024.0;
-	private double _parGammaBetta ;//= beta * gamma;
+	private double _parGammaBetta;// = beta * gamma;
 	private boolean parReserveAlphaColor = false;
 
 	private int parMaxPixelsToSample = 30000;
 	private int _parSamplefac; // 1-30
-	
+
 	private double[][] network; // the network itself //WARNING: BGR
-	protected int[][] colormap;  // the network itself //WARNING: BGR
+	protected int[][] colormap; // the network itself //WARNING: BGR
 
 	private int[] netindex = new int[256]; // for network lookup - really 256
 
-	private double[] bias ;//= new double[parNcolors]; // bias and freq arrays for learning
-	private double[] freq ;//= new double[parNcolors];
-
+	private double[] bias;// = new double[parNcolors]; // bias and freq arrays for learning
+	private double[] freq;// = new double[parNcolors];
 
 	private final int width;
 
@@ -86,26 +85,31 @@ public class NeuQuant {
 		this.width = w;
 		this.height = h;
 		this.pixelGetter = pixelGetter;
-
 	}
 
 	public static PixelGetter createPixelGetterFromPngReader(final PngReader png) {
-		if (png.imgInfo.indexed || png.imgInfo.greyscale || png.imgInfo.bitDepth != 8)
+		if (png.imgInfo.indexed || png.imgInfo.greyscale || png.imgInfo.bitDepth < 8)
 			throw new RuntimeException("Bad image type " + png.imgInfo);
-		if(! png.imgInfo.alpha)
 		return new PixelGetter() {
-			public int[] getPixel(int row, int col) {
-				int[] line = png.readRowInt(row).scanline;
-				int off = col * png.imgInfo.channels;
-				return new int[] { line[off], line[off + 1], line[off + 2] };
+			private final ImageInfo imi;
+			{
+				imi = png.imgInfo;
 			}
-		};
-		else 
-			return new PixelGetter() {
+
 			public int[] getPixel(int row, int col) {
-				int[] line = png.getRow(row).scanline;
-				int off = col * png.imgInfo.channels;
-				return new int[] { line[off], line[off + 1], line[off + 2],line[off + 3] };
+				if (imi.bitDepth < 16) {
+					byte[] line = png.readRowByte(row).scanlineb;
+					int off = col * imi.channels;
+					return imi.alpha ? new int[] { line[off] & 0xFF, line[off + 1] & 0xFF, line[off + 2] & 0xFF,
+							line[off + 3] & 0xFF } : new int[] { line[off] & 0xFF, line[off + 1] & 0xFF,
+							line[off + 2] & 0xFF };
+				} else {
+					int[] line = png.readRowInt(row).scanline;
+					int off = col * imi.channels;
+					return imi.alpha ? new int[] { line[off], line[off + 1], line[off + 2], line[off + 3] }
+							: new int[] { line[off], line[off + 1], line[off + 2] };
+
+				}
 			}
 		};
 	}
@@ -113,7 +117,7 @@ public class NeuQuant {
 	public int getColorCount() { // includes transparent color if applicable
 		if (!done)
 			run();
-		return parReserveAlphaColor ? parNcolors +1 : parNcolors;
+		return parReserveAlphaColor ? parNcolors + 1 : parNcolors;
 	}
 
 	public int getTransparentIndex() { // -1 if not exists
@@ -122,49 +126,50 @@ public class NeuQuant {
 		return parReserveAlphaColor ? 0 : -1;
 	}
 
-	public int lookup(int r, int g, int b,int a ) {
+	public int lookup(int r, int g, int b, int a) {
 		if (!done)
 			run();
-		if(parReserveAlphaColor && a<parTransparencyThreshold) 
+		if (parReserveAlphaColor && a < parTransparencyThreshold)
 			return 0; // extra entry: transparent
 		int i = inxsearch(b, g, r);
-		return parReserveAlphaColor ? i+1:i;
+		return parReserveAlphaColor ? i + 1 : i;
 	}
 
 	public int lookup(int r, int g, int b) {
 		if (!done)
 			run();
-		int i =  inxsearch(b, g, r);
-		return parReserveAlphaColor ? i+1:i;
+		int i = inxsearch(b, g, r);
+		return parReserveAlphaColor ? i + 1 : i;
 	}
 
 	public int[] getColor(int i) {
 		if (!done)
 			run();
-		if(parReserveAlphaColor) {
-			i --;
-			if(i<0)	return new int[] {0,0,0,0};
+		if (parReserveAlphaColor) {
+			i--;
+			if (i < 0)
+				return new int[] { 0, 0, 0, 0 };
 		}
 		if (i < 0 || i >= parNcolors)
 			return null;
 		int bb = colormap[i][0];
 		int gg = colormap[i][1];
 		int rr = colormap[i][2];
-		return new int[] { rr, gg, bb , 255};
+		return new int[] { rr, gg, bb, 255 };
 	}
 
-	public int[] convert(int r, int g, int b,int a) {
+	public int[] convert(int r, int g, int b, int a) {
 		if (!done)
 			run();
-		if(parReserveAlphaColor && a<parTransparencyThreshold) 
-			return new int[] { 0, 0, 0, 0}; 
+		if (parReserveAlphaColor && a < parTransparencyThreshold)
+			return new int[] { 0, 0, 0, 0 };
 		int i = inxsearch(b, g, r);
 		int bb = colormap[i][0];
 		int gg = colormap[i][1];
 		int rr = colormap[i][2];
 		return new int[] { rr, gg, bb };
 	}
-	
+
 	public int[] convert(int r, int g, int b) {
 		if (!done)
 			run();
@@ -187,12 +192,12 @@ public class NeuQuant {
 	}
 
 	private void initParams() {
-		if(parReserveAlphaColor && (parNcolors % 2)==0)
-			parNcolors --;
-		_parGammaBetta =  parBeta * parGamma;
+		if (parReserveAlphaColor && (parNcolors % 2) == 0)
+			parNcolors--;
+		_parGammaBetta = parBeta * parGamma;
 		_parCutnetsize = parNcolors;//
 		_parMaxnetpos = parNcolors - 1;
-		_parInitrad = (parNcolors+7) / 8; // for 256 cols, radius starts at 32
+		_parInitrad = (parNcolors + 7) / 8; // for 256 cols, radius starts at 32
 		_parRadiusbias = 1 << parRadiusbiasshift;
 		_parInitBiasRadius = _parInitrad * _parRadiusbias;
 		_parIinitalpha = 1 << parAlphabiasshift; // biased by 10 bits
@@ -206,7 +211,7 @@ public class NeuQuant {
 	protected void setUpArrays() {
 		network = new double[parNcolors][3]; // the network itself //WARNING: BGR
 		colormap = new int[parNcolors][4]; // the network itself //WARNING: BGR
-		bias = new double[parNcolors]; 
+		bias = new double[parNcolors];
 		freq = new double[parNcolors];
 		network[0][0] = 0.0; // black
 		network[0][1] = 0.0;
@@ -322,13 +327,14 @@ public class NeuQuant {
 			delta = 1;
 		int alpha = _parIinitalpha;
 		int stepx = (int) (Math.sqrt(lengthcount / samplepixels) + 0.5);
-		int stepy = (int)((lengthcount / (samplepixels * (double)stepx)) + 0.5);
-		if(stepy<1) stepy=1;
+		int stepy = (int) ((lengthcount / (samplepixels * (double) stepx)) + 0.5);
+		if (stepy < 1)
+			stepy = 1;
 		int rad = biasRadius >> parRadiusbiasshift;
 		if (rad <= 1)
 			rad = 0;
 
-		//System.err.println("beginning 1D learning: samplepixels=" + samplepixels + "  rad=" + rad);
+		// System.err.println("beginning 1D learning: samplepixels=" + samplepixels + "  rad=" + rad);
 		int i = 1;
 		for (int row = 0; row < height; row += stepy) {
 			for (int col = 0; col < width; col += stepx) {
@@ -337,8 +343,9 @@ public class NeuQuant {
 				int red = rgb[0];
 				int green = rgb[1];
 				int blue = rgb[2];
-				int aaa = rgb.length==3? 255 : rgb[3]; // transparency
-				if(aaa < parTransparencyThreshold) continue;
+				int aaa = rgb.length == 3 ? 255 : rgb[3]; // transparency
+				if (aaa < parTransparencyThreshold)
+					continue;
 				double b = blue;
 				double g = green;
 				double r = red;
@@ -359,10 +366,9 @@ public class NeuQuant {
 				}
 			}
 		}
-		//System.err.println("finished 1D learning: final alpha=" + (1.0 * alpha) / initalpha + "!");
+		// System.err.println("finished 1D learning: final alpha=" + (1.0 * alpha) / initalpha + "!");
 	}
 
-	
 	private void fix() {
 		for (int i = 0; i < parNcolors; i++) {
 			for (int j = 0; j < 3; j++) {

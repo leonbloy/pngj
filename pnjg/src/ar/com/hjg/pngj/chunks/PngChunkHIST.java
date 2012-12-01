@@ -7,9 +7,8 @@ import ar.com.hjg.pngj.PngjException;
 /**
  * hIST chunk.
  * <p>
- * see http://www.w3.org/TR/PNG/#11hIST
- * <br>
- *  only for palette images
+ * see http://www.w3.org/TR/PNG/#11hIST <br>
+ * only for palette images
  */
 public class PngChunkHIST extends PngChunkSingle {
 	public final static String ID = ChunkHelper.hIST;

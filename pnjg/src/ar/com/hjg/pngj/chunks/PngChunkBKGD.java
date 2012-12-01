@@ -17,7 +17,7 @@ public class PngChunkBKGD extends PngChunkSingle {
 	private int gray;
 	private int red, green, blue;
 	private int paletteIndex;
-	
+
 	public PngChunkBKGD(ImageInfo info) {
 		super(ChunkHelper.bKGD, info);
 	}
