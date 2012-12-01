@@ -7,6 +7,8 @@ import java.util.Map;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
+import ar.com.hjg.pngj.PngjExceptionInternal;
+import ar.com.hjg.pngj.PngjInputException;
 
 /**
  * Represents a instance of a PNG chunk.
@@ -183,7 +185,7 @@ public abstract class PngChunk {
 	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
 		PngChunk cn = factoryFromId(chunk.id, info);
 		if (cn.getClass() != chunk.getClass())
-			throw new PngjException("bad class cloning chunk: " + cn.getClass() + " " + chunk.getClass());
+			throw new PngjExceptionInternal("bad class cloning chunk: " + cn.getClass() + " " + chunk.getClass());
 		cn.cloneDataFromRead(chunk);
 		return (T) cn;
 	}
@@ -215,7 +217,7 @@ public abstract class PngChunk {
 	final void write(OutputStream os) {
 		ChunkRaw c = createRawChunk();
 		if (c == null)
-			throw new PngjException("null chunk ! creation failed for " + this);
+			throw new PngjExceptionInternal("null chunk ! creation failed for " + this);
 		c.writeChunk(os);
 	}
 

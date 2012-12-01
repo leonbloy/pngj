@@ -22,8 +22,8 @@ public class PngChunkZTXT extends PngChunkTextVar {
 
 	@Override
 	public ChunkRaw createRawChunk() {
-		if (val.isEmpty() || key.isEmpty())
-			return null;
+		if (key.isEmpty())
+			throw new PngjException("Text chunk key must be non empty");
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
 			ba.write(key.getBytes(PngHelperInternal.charsetLatin1));

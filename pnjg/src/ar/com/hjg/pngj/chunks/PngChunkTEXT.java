@@ -2,6 +2,7 @@ package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
+import ar.com.hjg.pngj.PngjException;
 
 /**
  * tEXt chunk.
@@ -17,8 +18,8 @@ public class PngChunkTEXT extends PngChunkTextVar {
 
 	@Override
 	public ChunkRaw createRawChunk() {
-		if (val.isEmpty() || key.isEmpty())
-			return null;
+		if ( key.isEmpty())
+			throw new PngjException("Text chunk key must be non empty");
 		byte[] b = (key + "\0" + val).getBytes(PngHelperInternal.charsetLatin1);
 		ChunkRaw chunk = createEmptyChunk(b.length, false);
 		chunk.data = b;
@@ -27,9 +28,13 @@ public class PngChunkTEXT extends PngChunkTextVar {
 
 	@Override
 	public void parseFromRaw(ChunkRaw c) {
-		String[] k = (new String(c.data, PngHelperInternal.charsetLatin1)).split("\0");
-		key = k[0];
-		val = k[1];
+		int i;
+		for (i = 0; i < c.data.length; i++)
+			if (c.data[i] == 0)
+				break;
+		key = new String(c.data, 0, i , PngHelperInternal.charsetLatin1);
+		i++;
+		val = i < c.data.length ? new String(c.data, i, c.data.length - i, PngHelperInternal.charsetLatin1) : "";
 	}
 
 	@Override

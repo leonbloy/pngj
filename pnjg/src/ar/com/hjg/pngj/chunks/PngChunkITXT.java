@@ -26,15 +26,15 @@ public class PngChunkITXT extends PngChunkTextVar {
 
 	@Override
 	public ChunkRaw createRawChunk() {
-		if (val.isEmpty() || key.isEmpty())
-			return null;
+		if (key.isEmpty())
+			throw new PngjException("Text chunk key must be non empty");
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
 			ba.write(ChunkHelper.toBytes(key));
 			ba.write(0); // separator
 			ba.write(compressed ? 1 : 0);
 			ba.write(0); // compression method (always 0)
-			ba.write(ChunkHelper.toBytes(langTag));
+			ba.write(ChunkHelper.toBytes(langTag)); 
 			ba.write(0); // separator
 			ba.write(ChunkHelper.toBytesUTF8(translatedTag));
 			ba.write(0); // separator

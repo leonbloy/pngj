@@ -92,7 +92,7 @@ public class ChunksListForWrite extends ChunksList {
 		if (currentGroup == CHUNK_GROUP_2_PLTE)
 			return c.id.equals(ChunkHelper.PLTE);
 		if (currentGroup % 2 == 0)
-			throw new RuntimeException("?");
+			throw new PngjOutputException("bad chunk group?");
 		int minChunkGroup, maxChunkGroup;
 		if (c.getOrderingConstraint().mustGoBeforePLTE())
 			minChunkGroup = maxChunkGroup = ChunksList.CHUNK_GROUP_1_AFTERIDHR;
