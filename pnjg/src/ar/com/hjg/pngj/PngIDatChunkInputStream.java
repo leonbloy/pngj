@@ -15,7 +15,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
 class PngIDatChunkInputStream extends InputStream {
 	private final InputStream inputStream;
 	private final CRC32 crcEngine;
-	private boolean checkCrc=true;
+	private boolean checkCrc = true;
 	private int lenLastChunk;
 	private byte[] idLastChunk = new byte[4];
 	private int toReadThisChunk = 0;
@@ -54,7 +54,6 @@ class PngIDatChunkInputStream extends InputStream {
 			endChunkGoForNext(); // rare, but...
 	}
 
-
 	/**
 	 * does NOT close the associated stream!
 	 */
@@ -87,7 +86,8 @@ class PngIDatChunkInputStream extends InputStream {
 			ended = !Arrays.equals(idLastChunk, ChunkHelper.b_IDAT);
 			if (!ended) {
 				foundChunksInfo.add(new IdatChunkInfo(lenLastChunk, offset - 8));
-				if (checkCrc) crcEngine.update(idLastChunk, 0, 4);
+				if (checkCrc)
+					crcEngine.update(idLastChunk, 0, 4);
 			}
 			// PngHelper.logdebug("IDAT ended. next len= " + lenLastChunk + " idat?" +
 			// (!ended));
@@ -102,7 +102,8 @@ class PngIDatChunkInputStream extends InputStream {
 		if (!ended) {
 			byte[] dummy = new byte[toReadThisChunk];
 			PngHelperInternal.readBytes(inputStream, dummy, 0, toReadThisChunk);
-			if (checkCrc) crcEngine.update(dummy, 0, toReadThisChunk);
+			if (checkCrc)
+				crcEngine.update(dummy, 0, toReadThisChunk);
 			endChunkGoForNext();
 		}
 	}
@@ -114,11 +115,12 @@ class PngIDatChunkInputStream extends InputStream {
 	public int read(byte[] b, int off, int len) throws IOException {
 		if (toReadThisChunk == 0)
 			throw new PngjExceptionInternal("this should not happen");
-		if(ended)
+		if (ended)
 			return -1; // can happen only when raw reading, see Pngreader.readAndSkipsAllRows()
 		int n = inputStream.read(b, off, len >= toReadThisChunk ? toReadThisChunk : len);
 		if (n > 0) {
-			if (checkCrc) crcEngine.update(b, off, n);
+			if (checkCrc)
+				crcEngine.update(b, off, n);
 			this.offset += n;
 			toReadThisChunk -= n;
 		}

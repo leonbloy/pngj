@@ -67,7 +67,7 @@ public class PngReader {
 	private final boolean interlaced;
 	private final PngDeinterlacer deinterlacer;
 
-	private boolean crcEnabled=true;
+	private boolean crcEnabled = true;
 
 	// this only influences the 1-2-4 bitdepth format
 	private boolean unpackedMode = false;
@@ -87,7 +87,6 @@ public class PngReader {
 	protected PngIDatChunkInputStream iIdatCstream;
 
 	protected CRC32 crctest; // If set to non null, it gets a CRC of the unfiltered bytes, to check for images equality
-
 
 	/**
 	 * Constructs a PngReader from an InputStream.
@@ -295,7 +294,7 @@ public class PngReader {
 			throw new PngjInputException("first idat chunk not found!");
 		iIdatCstream = new PngIDatChunkInputStream(inputStream, idatLen, offset);
 		idatIstream = new InflaterInputStream(iIdatCstream);
-		if(! crcEnabled)
+		if (!crcEnabled)
 			iIdatCstream.disableCrcCheck();
 	}
 
@@ -347,7 +346,7 @@ public class PngReader {
 		if (skipChunkIdsSet == null && currentChunkGroup > ChunksList.CHUNK_GROUP_0_IDHR)
 			skipChunkIdsSet = new HashSet<String>(Arrays.asList(skipChunkIds));
 		String chunkidstr = ChunkHelper.toString(chunkid);
-		boolean critical=ChunkHelper.isCritical(chunkidstr);
+		boolean critical = ChunkHelper.isCritical(chunkidstr);
 		PngChunk pngChunk = null;
 		boolean skip = skipforced;
 		if (maxTotalBytesRead > 0 && clen + offset > maxTotalBytesRead)
@@ -365,7 +364,7 @@ public class PngReader {
 			pngChunk = new PngChunkSkipped(chunkidstr, imgInfo, clen);
 		} else {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
-			chunk.readChunkData(inputStream,crcEnabled||critical);
+			chunk.readChunkData(inputStream, crcEnabled || critical);
 			pngChunk = PngChunk.factory(chunk, imgInfo);
 			if (!pngChunk.crit)
 				bytesChunksLoaded += chunk.len;
@@ -712,7 +711,8 @@ public class PngReader {
 		if (nrow == 0 && firstChunksNotYetRead())
 			readFirstChunks();
 		if (nrow == 0 && interlaced)
-			Arrays.fill(rowb, (byte) 0); // new subimage: reset filters: this is enough, see the swap that happens lines below
+			Arrays.fill(rowb, (byte) 0); // new subimage: reset filters: this is enough, see the swap that happens lines
+											// below
 		int bytesRead = imgInfo.bytesPerRow; // NOT including the filter byte
 		if (interlaced) {
 			if (nrow < 0 || nrow > deinterlacer.getRows() || (nrow != 0 && nrow != deinterlacer.getCurrRowSubimg() + 1))
@@ -747,9 +747,8 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads all the (remaining) file, skipping the pixels data.
-	 * This is much more efficient that calling readRow(), specially for big files (about 10 times faster!),
-	 * because it doesn't even decompress the IDAT stream.
+	 * Reads all the (remaining) file, skipping the pixels data. This is much more efficient that calling readRow(),
+	 * specially for big files (about 10 times faster!), because it doesn't even decompress the IDAT stream.
 	 */
 	public void readSkippingAllRows() {
 		if (firstChunksNotYetRead())
@@ -772,7 +771,6 @@ public class PngReader {
 					+ " offset:" + offset);
 		readLastAndClose();
 	}
-
 
 	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
 		this.chunkLoadBehaviour = chunkLoadBehaviour;
@@ -884,13 +882,13 @@ public class PngReader {
 	}
 
 	/**
-	 * Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading speed for big files
+	 * Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading
+	 * speed for big files
 	 */
 	public void disableCrcCheck() {
 		crcEnabled = false;
 	}
 
-	
 	/**
 	 * Just for testing. TO be called after ending reading, only if initCrctest() was called before start
 	 * 
@@ -907,7 +905,6 @@ public class PngReader {
 		this.crctest = new CRC32();
 	}
 
-
 	/**
 	 * Basic info, for debugging.
 	 */
@@ -915,5 +912,4 @@ public class PngReader {
 		return "filename=" + filename + " " + imgInfo.toString();
 	}
 
-	
 }
