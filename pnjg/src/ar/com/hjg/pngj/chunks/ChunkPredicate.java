@@ -8,7 +8,7 @@ public interface ChunkPredicate {
 	 * The other chunk matches with this one
 	 * 
 	 * @param chunk
-	 * @return
+	 * @return true if match
 	 */
 	boolean match(PngChunk chunk);
 }

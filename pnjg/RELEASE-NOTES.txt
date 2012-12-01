@@ -1,7 +1,8 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-Version 1.1 (?)
+Version 1.1 (1 Dec 2012)   
+---------------------------
    - Interlaced PNG: full support for reading.
    - Read/write can use INT or BYTE for sample storage now. The choice is explicit by the programmer
       -- ImageLine have a "sampleType" and two buffers scanline (integer) and scanlineb (byte), only one is allocated
@@ -10,6 +11,7 @@ Version 1.1 (?)
     more efficiently (does not decode more than necessary)
    - Read/Write can work with a set of lines: readRows writeRows
       -- This is not a mere alias to a loop of readRow, and it's much efficient for interlaced PNG
+   - PngReader.readSkippingAllRows allows to skip entirely the pixel data, very efficiently
    - Much extensive and robust tests:
      -- added crctest and PngReaderTest to implement better tests (internal use only)
      -- PngSuiteTest does a double mirror of each image an compares with original (even with interlaced)
@@ -17,20 +19,29 @@ Version 1.1 (?)
    - Added getMetadata().getPalette() getMetadata().createNewPalette()
    - Corrected several issues with textual chunks (texts with null bytes, empty texts). Added test.
    - Exception handling polished : PngExceptionInternal added, no more plain RuntimeException thrown 
-           
+   - Lots of polishing and reordering of extra packages: lossy experimental package removed, new samples and tests
+
+Version 1.0 (?)
+---------------------------
+   [Not released. The version numbering can now be put in sync with the sibling project PngCS]
+              
 Version 0.97 (?)
+---------------------------
   - Corrected typo in PngWriter: getChunkList() -> getChunksList()  
     
 Version 0.96 (21 Oct 2012) 
+---------------------------
   - Fixed issue: PngWriter.init() not internally called when not passing row number
   - Fixed bad format in PngChunkTIME (thanks harvey.harrison) 
   - setMaxXXX() methods now accept zero, meaning unlimited (eg  PngReader.setMaxTotalBytesRead(0) = no limit)
   - PngHelper.getPngIdSignature is public now
   
 Version 0.95 (14 Aug 2012) 
+---------------------------
   - Little stupid bug with PngReader,  maxTotalBytesRead was not really checked
   
 Version 0.94 (12 Aug 2012) 
+---------------------------
   - Defensive limits and related tuning in PngReader 
    -- Added: maxTotalBytesRead (200MB), maxBytesMetadata (5MB), skipChunkMaxSize (2MB) skipChunkIds ( "fdAT" )
    -- APGN is now "rightly unsupported" :-)
@@ -42,6 +53,7 @@ Version 0.94 (12 Aug 2012)
   - Some fixes for very huge (more than 2GB) files - sample: CreateVeryHuge.java
   
 Version 0.93 (22 June 2012) 
+---------------------------
   - PngReader.getRow() allows non sequential reading  (useful for skipping lines)
   - PngReader.end() is no longer deprecated but recommended (related to the previous)
   - some more polishing and some renaming: ImageLine.tf_pack -> ImageLine.pack (what was I thinking?), FilterType.ALTERNATE -> CYCLIC
@@ -50,6 +62,7 @@ Version 0.93 (22 June 2012)
   - Added a Neural Network Color Quantizer in test package, see SampleConvertPalette for example of use
 
 Version 0.91  (?)
+---------------------------
   - Added 2 chunks from Extensions to the PNG 1.2 Specification: sTER and oFFs
   - Added PngChunks.factoryRegister() and some other minor chunks changes ( PngChunkXXX.ID) 
   - Some polishing of test package -  renamed sample classes to Sample* - added TestSpeed to compare with C# port

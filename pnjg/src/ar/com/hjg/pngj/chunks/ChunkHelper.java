@@ -9,7 +9,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.zip.DeflaterOutputStream;
@@ -45,9 +44,6 @@ public class ChunkHelper {
 
 	/**
 	 * Converts to bytes using Latin1 (ISO-8859-1)
-	 * 
-	 * @param x
-	 * @return
 	 */
 	public static byte[] toBytes(String x) {
 		return x.getBytes(PngHelperInternal.charsetLatin1);
@@ -55,9 +51,6 @@ public class ChunkHelper {
 
 	/**
 	 * Converts to String using Latin1 (ISO-8859-1)
-	 * 
-	 * @param x
-	 * @return
 	 */
 	public static String toString(byte[] x) {
 		return new String(x, PngHelperInternal.charsetLatin1);
@@ -65,11 +58,6 @@ public class ChunkHelper {
 
 	/**
 	 * Converts to String using Latin1 (ISO-8859-1)
-	 * 
-	 * @param x
-	 * @param offset
-	 * @param len
-	 * @return
 	 */
 	public static String toString(byte[] x, int offset, int len) {
 		return new String(x, offset, len, PngHelperInternal.charsetLatin1);
@@ -77,9 +65,6 @@ public class ChunkHelper {
 
 	/**
 	 * Converts to bytes using UTF-8
-	 * 
-	 * @param x
-	 * @return
 	 */
 	public static byte[] toBytesUTF8(String x) {
 		return x.getBytes(PngHelperInternal.charsetUTF8);
@@ -87,9 +72,6 @@ public class ChunkHelper {
 
 	/**
 	 * Converts to string using UTF-8
-	 * 
-	 * @param x
-	 * @return
 	 */
 	public static String toStringUTF8(byte[] x) {
 		return new String(x, PngHelperInternal.charsetUTF8);
@@ -97,11 +79,6 @@ public class ChunkHelper {
 
 	/**
 	 * Converts to string using UTF-8
-	 * 
-	 * @param x
-	 * @param offset
-	 * @param len
-	 * @return
 	 */
 	public static String toStringUTF8(byte[] x, int offset, int len) {
 		return new String(x, offset, len, PngHelperInternal.charsetUTF8);
@@ -109,9 +86,6 @@ public class ChunkHelper {
 
 	/**
 	 * critical chunk : first letter is uppercase
-	 * 
-	 * @param id
-	 * @return true/false
 	 */
 	public static boolean isCritical(String id) {
 		return (Character.isUpperCase(id.charAt(0)));
@@ -119,9 +93,6 @@ public class ChunkHelper {
 
 	/**
 	 * public chunk: second letter is uppercase
-	 * 
-	 * @param id
-	 * @return true/false
 	 */
 	public static boolean isPublic(String id) { //
 		return (Character.isUpperCase(id.charAt(1)));
@@ -129,9 +100,6 @@ public class ChunkHelper {
 
 	/**
 	 * Safe to copy chunk: fourth letter is lower case
-	 * 
-	 * @param id
-	 * @return
 	 */
 	public static boolean isSafeToCopy(String id) {
 		return (!Character.isUpperCase(id.charAt(3)));
@@ -140,10 +108,6 @@ public class ChunkHelper {
 	/**
 	 * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize
 	 * its id
-	 * 
-	 * @param c
-	 *            chunk
-	 * @return true/false
 	 */
 	public static boolean isUnknown(PngChunk c) {
 		return c instanceof PngChunkUNKNOWN;

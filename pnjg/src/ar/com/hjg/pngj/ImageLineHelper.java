@@ -1,8 +1,5 @@
 package ar.com.hjg.pngj;
 
-import java.awt.Image;
-import java.util.Arrays;
-
 import ar.com.hjg.pngj.ImageLine.SampleType;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;

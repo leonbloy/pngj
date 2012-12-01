@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
-import java.util.List;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
@@ -12,13 +11,9 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.PngHelperInternal;
-import ar.com.hjg.pngj.ImageLine.SampleType;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
-import ar.com.hjg.pngj.chunks.ChunkHelper;
-import ar.com.hjg.pngj.chunks.ChunkPredicate;
-import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 

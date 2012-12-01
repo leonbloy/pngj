@@ -73,8 +73,8 @@ public class ImageLine {
 	 *            Inmutable ImageInfo, basic parameter of the image we are reading or writing
 	 * @param stype
 	 *            INT or BYTE : this determines which scanline is the really used one
-	 * @param loadpacked
-	 *            If true, and the
+	 * @param unpackedFormat
+	 *            If true, we use unpacked format, even for packed original images
 	 * 
 	 */
 	public ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedFormat) {

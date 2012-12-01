@@ -6,9 +6,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.PngjExceptionInternal;
-import ar.com.hjg.pngj.PngjInputException;
 
 /**
  * Represents a instance of a PNG chunk.

@@ -8,7 +8,6 @@ import java.util.zip.CRC32;
 import java.util.zip.InflaterInputStream;
 
 import ar.com.hjg.pngj.ImageLine.SampleType;
-import ar.com.hjg.pngj.PngIDatChunkInputStream.IdatChunkInfo;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
@@ -24,12 +23,14 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * <p>
  * The reading sequence is as follows: <br>
  * 1. At construction time, the header and IHDR chunk are read (basic image info) <br>
- * 2. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, the chunks before IDAT are
- * automatically loaded <br>
- * 3. The rows are read in incresing sequence, from 0 to nrows-1 (you can skip rows but not go backwards)<br>
- * 4. Reading of the last row triggers the loading of trailing chunks, and ends the reader.<br>
- * 5. end() forcibly finishes/aborts the reading and closes the stream
- * 
+ * 2. Afterwards you can set some additional global options. Eg. {@link #setUnpackedMode(boolean)}, {@link #setCrcCheckDisabled()}.<br>
+ * 3. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, all the chunks before IDAT are
+ * automatically loaded and available <br>
+ * 4a. The rows are read onen by one of the <tt>readRowXXX</tt> methods: {@link #readRowInt(int)}, {@link PngReader#readRowByte(int)}, etc, in order, from 0 to nrows-1 (you can skip or repeat rows, but not go backwards)<br>
+ * 4b. Alternatively, you can read all rows, or a subset, in a single call: {@link #readRowsInt()}, {@link #readRowsByte()} ,etc. In general this consumes more memory,
+ * but for interlaced images this is equally efficient, and more so if reading a small subset of rows.<br>
+ * 5. Read of the last row auyomatically loads the trailing chunks, and ends the reader.<br>
+ * 6. end() forcibly finishes/aborts the reading and closes the stream
  */
 public class PngReader {
 	/**
@@ -386,15 +387,29 @@ public class PngReader {
 		System.err.println(warn);
 	}
 
+	/**
+	 * @see #setChunkLoadBehaviour(ChunkLoadBehaviour)
+	 */
 	public ChunkLoadBehaviour getChunkLoadBehaviour() {
 		return chunkLoadBehaviour;
 	}
+	
+	/**
+	 * Determines which ancillary chunks (metada) are to be loaded 
+	 * 	@param chunkLoadBehaviour  {@link ChunkLoadBehaviour}
+	 */
+	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
+		this.chunkLoadBehaviour = chunkLoadBehaviour;
+	}
+
 
 	/**
-	 * All loaded chunks.
+	 * All loaded chunks (metada). If we have not yet end reading the image, this will include only the chunks before the pixels data (IDAT) 
 	 * <p>
 	 * Critical chunks are included, except that all IDAT chunks appearance are replaced by a single dummy-marker IDAT
 	 * chunk. These might be copied to the PngWriter
+	 * <p>
+	 * @see #getMetadata()
 	 */
 	public ChunksList getChunksList() {
 		if (firstChunksNotYetRead())
@@ -402,12 +417,13 @@ public class PngReader {
 		return chunksList;
 	}
 
-	public int getCurrentChunkGroup() {
+	int getCurrentChunkGroup() {
 		return currentChunkGroup;
 	}
 
 	/**
 	 * High level wrapper over chunksList
+	 * @see #getChunksList()
 	 */
 	public PngMetadata getMetadata() {
 		if (firstChunksNotYetRead())
@@ -417,10 +433,10 @@ public class PngReader {
 
 	/**
 	 * If called for first time, calls readRowInt. Elsewhere, it calls the appropiate readRowInt/readRowByte
-	 * 
+	 * <p>
 	 * In general, specifying the concrete readRowInt/readRowByte is preferrable
 	 * 
-	 * @see #readRowInt(int)
+	 * @see #readRowInt(int) {@link #readRowByte(int)}
 	 */
 	public ImageLine readRow(int nrow) {
 		if (imgLine == null)
@@ -431,12 +447,11 @@ public class PngReader {
 	/**
 	 * Reads the row as INT, storing it in the {@link #imgLine} property and returning it.
 	 * 
-	 * The row must be greater or equal than the last read row. This method allows to pass the same row that was last
-	 * read.
+	 * The row must be greater or equal than the last read row.
 	 * 
 	 * @param nrow
 	 *            Row number, from 0 to rows-1. Increasing order.
-	 * @return ImageLine object, also available as field. Result is in Imageline.scanline (int) field.
+	 * @return ImageLine object, also available as field. Data is in {@link ImageLine#scanline} (int) field.
 	 */
 	public ImageLine readRowInt(int nrow) {
 		if (imgLine == null)
@@ -457,7 +472,7 @@ public class PngReader {
 	 * 
 	 * @param nrow
 	 *            Row number, from 0 to rows-1. Increasing order.
-	 * @return ImageLine object, also available as field. Result is in Imageline.scanlineb (byte) field.
+	 * @return ImageLine object, also available as field. Data is in {@link ImageLine#scanlineb} (byte) field.
 	 */
 	public ImageLine readRowByte(int nrow) {
 		if (imgLine == null)
@@ -468,14 +483,6 @@ public class PngReader {
 		imgLine.setFilterUsed(FilterType.getByVal(rowbfilter[0]));
 		imgLine.setRown(nrow);
 		return imgLine;
-	}
-
-	/**
-	 * @param nrow
-	 * @deprecated Now readRow() implements the same funcion. This will be removed in future releases
-	 */
-	public ImageLine getRow(int nrow) {
-		return readRow(nrow);
 	}
 
 	/**
@@ -551,6 +558,14 @@ public class PngReader {
 					: imgInfo.samplesPerRowPacked);
 		}
 		return buffer;
+	}
+
+	/**
+	 * @param nrow
+	 * @deprecated Now {@link #readRow(int)} implements the same funcion. This method will be removed in future releases
+	 */
+	public ImageLine getRow(int nrow) {
+		return readRow(nrow);
 	}
 
 	private void decodeLastReadRowToInt(int[] buffer, int bytesRead) {
@@ -748,7 +763,8 @@ public class PngReader {
 
 	/**
 	 * Reads all the (remaining) file, skipping the pixels data. This is much more efficient that calling readRow(),
-	 * specially for big files (about 10 times faster!), because it doesn't even decompress the IDAT stream.
+	 * specially for big files (about 10 times faster!), because it doesn't even decompress the IDAT stream and disables CRC check
+	 * Use this if you are not interested in reading pixels,only metadata.
 	 */
 	public void readSkippingAllRows() {
 		if (firstChunksNotYetRead())
@@ -772,9 +788,6 @@ public class PngReader {
 		readLastAndClose();
 	}
 
-	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
-		this.chunkLoadBehaviour = chunkLoadBehaviour;
-	}
 
 	/**
 	 * Set total maximum bytes to read (0: unlimited; default: 200MB). <br>
@@ -848,7 +861,8 @@ public class PngReader {
 	}
 
 	/**
-	 * Normally this does nothing, but it can be used to force a premature closing
+	 * Normally this does nothing, but it can be used to force a premature closing.
+	 * Its recommended practice to call it after reading the image pixels.
 	 */
 	public void end() {
 		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
@@ -863,12 +877,13 @@ public class PngReader {
 	}
 
 	/**
+	 * set/unset "unpackedMode"<br>
 	 * If false (default) packed types (bitdepth=1,2 or 4) will keep several samples packed in one element (byte or int) <br>
-	 * If true, samples are unpacked on reading, and each element in the scanline is a sample. This implies more
+	 * If true, samples will be unpacked on reading, and each element in the scanline will be sample. This implies more
 	 * processing and memory, but it's the most efficient option if you intend to read individual pixels. <br>
-	 * This option should only be set before starting reading.
+	 * This option should only be set before start reading.
 	 * 
-	 * @param usePackedFormat
+	 * @param unPackedMode
 	 */
 	public void setUnpackedMode(boolean unPackedMode) {
 		this.unpackedMode = unPackedMode;
@@ -885,7 +900,7 @@ public class PngReader {
 	 * Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading
 	 * speed for big files
 	 */
-	public void disableCrcCheck() {
+	public void setCrcCheckDisabled() {
 		crcEnabled = false;
 	}
 

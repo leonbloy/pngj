@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj;
 
 import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +17,48 @@ import java.lang.reflect.Constructor;
  */
 public class FileHelper {
 
+	/**
+	 * Creates a PngWriter from a file. The object is ready to start writing chunks or image rows.
+	 * This is essentially equivalent to
+	 *          
+	 *  <code>
+	 *         new PngWriter(new FileOutputStream(file), imgInfo, file.getName) 
+	 *  </code>
+	 * 
+	 * WARNING: This will throw exception if run in a sandboxed environment (as Google App Engine) that does not permit
+	 * to use Java class java.io.FileOutputStream. You can always use the PngWriter constructor with an arbitrary
+	 * OutputStream
+	 * 
+	 * @param file
+	 *            File to be writen
+	 * @param imgInfo
+	 *            Target image basic info
+	 * @param allowOverwrite
+	 *            if true, file will be overwriten if it already exists.
+	 *            
+	 * @return a new PngWriter - see constructor doc
+	 */
+	public static PngWriter createPngWriter(File file, ImageInfo imgInfo, boolean allowOverwrite) {
+		return new PngWriter(openFileForWriting(file, allowOverwrite), imgInfo, file.getName());
+	}
+
+	/**
+	 * Creates a PngReader from a File. This is esentially the same as
+	 * 
+	 *  <code>
+	 *         new PngReader(new FileinputStream(file), imgInfo, file.getName) 
+	 *  </code>
+	 * 
+	 * @param file
+	 * @return A new PngReader object, ready for starting reading image rows
+	 */
+	public static PngReader createPngReader(File file) {
+		return new PngReader(openFileForReading(file), file.getName());
+	}
+
+	/**
+	 * Utility method to open a file for reading, with buffering and some checks.
+	 */
 	public static InputStream openFileForReading(File file) {
 		InputStream isx = null;
 		if (file == null || !file.exists() || !file.canRead())
@@ -29,14 +72,16 @@ public class FileHelper {
 	}
 
 	/***
+	 * Utility method to open a file for writing.
+	 * <p>
 	 * WARNING: This method will throw exception if run in a sandboxed environment (as Google App Engine) that does not
 	 * permit to use Java class java.io.FileOutputStream
-	 * 
+	 * <br>
 	 * We use reflection to be sure that this just throw run time exception in that case, but that the class is loadable
 	 * 
 	 * @param file
-	 * @param allowOverwrite
-	 * @return outputStream (should be of type FileOutputStream)
+	 * @param allowOverwrite  if true, and the file exists, it will be overwriten; elswhere, an exception is thrown
+	 * @return outputStream 
 	 */
 	public static OutputStream openFileForWriting(File file, boolean allowOverwrite) {
 		if (file.exists() && !allowOverwrite)
@@ -59,25 +104,5 @@ public class FileHelper {
 		return os;
 	}
 
-	/**
-	 * WARNING: This will throw exception if run in a sandboxed environment (as Google App Engine) that does not permit
-	 * to use Java class java.io.FileOutputStream. You can always use the PngWriter constructor with an arbitrary
-	 * OutputStream
-	 * 
-	 * @param file
-	 *            File to be writen
-	 * @param imgInfo
-	 *            Target image basic info
-	 * @param allowOverwrite
-	 *            if true, file will be overwriten if it already exists.
-	 * @return a new PngWriter - see constructor doc
-	 */
-	public static PngWriter createPngWriter(File file, ImageInfo imgInfo, boolean allowOverwrite) {
-		return new PngWriter(openFileForWriting(file, allowOverwrite), imgInfo, file.getName());
-	}
-
-	public static PngReader createPngReader(File file) {
-		return new PngReader(openFileForReading(file), file.getName());
-	}
 
 }

@@ -75,10 +75,14 @@ public class ImageInfo {
 	public final int samplesPerRow;
 
 	/**
-	 * For internal use only. Samples available for the packed scanline. Equals samplesPerRow if not packed. Elsewhere,
-	 * it's lower
+	 * Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4) they are counted
+	 * as one "packed sample". This is less that samplesPerRow only when bitdepth is 1-2-4 (flag packed = true)
+	 * <p>
+	 * This equals the number of elements in the scanline array if working with packedMode=true
+	 * <p>
+	 * For internal use, client code should rarely access this.
 	 */
-	final int samplesPerRowPacked;
+	public final int samplesPerRowPacked;
 
 	/**
 	 * Short constructor: assumes truecolor (RGB/RGBA)
@@ -157,16 +161,11 @@ public class ImageInfo {
 		int result = 1;
 		result = prime * result + (alpha ? 1231 : 1237);
 		result = prime * result + bitDepth;
-		result = prime * result + bitspPixel;
-		result = prime * result + bytesPerRow;
-		result = prime * result + bytesPixel;
 		result = prime * result + channels;
 		result = prime * result + cols;
 		result = prime * result + (greyscale ? 1231 : 1237);
 		result = prime * result + (indexed ? 1231 : 1237);
-		result = prime * result + (packed ? 1231 : 1237);
 		result = prime * result + rows;
-		result = prime * result + samplesPerRow;
 		return result;
 	}
 
@@ -183,12 +182,6 @@ public class ImageInfo {
 			return false;
 		if (bitDepth != other.bitDepth)
 			return false;
-		if (bitspPixel != other.bitspPixel)
-			return false;
-		if (bytesPerRow != other.bytesPerRow)
-			return false;
-		if (bytesPixel != other.bytesPixel)
-			return false;
 		if (channels != other.channels)
 			return false;
 		if (cols != other.cols)
@@ -197,12 +190,9 @@ public class ImageInfo {
 			return false;
 		if (indexed != other.indexed)
 			return false;
-		if (packed != other.packed)
-			return false;
 		if (rows != other.rows)
-			return false;
-		if (samplesPerRow != other.samplesPerRow)
 			return false;
 		return true;
 	}
+
 }

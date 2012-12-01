@@ -20,7 +20,7 @@ import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
- * Writes a PNG image, line by line.
+ * Writes a PNG image
  */
 public class PngWriter {
 
@@ -480,11 +480,12 @@ public class PngWriter {
 		}
 	}
 
+	/**
+	 * returns the chunks list (queued and writen chunks)
+	 */
 	public ChunksListForWrite getChunksList() {
 		return chunksList;
 	}
-
-	// /// several getters / setters - all this setters are optional
 
 	/**
 	 * Filename or description, from the optional constructor argument.
@@ -493,6 +494,9 @@ public class PngWriter {
 		return filename;
 	}
 
+	/**
+	 * High level wrapper over chunksList for metadata handling
+	 */
 	public PngMetadata getMetadata() {
 		return metadata;
 	}
@@ -624,7 +628,7 @@ public class PngWriter {
 
 	/**
 	 * Same semantics as writeRowInt but using bytes. Each byte is still a sample. If 16bitdepth, we are passing only
-	 * the most significant byte (and hence losing info)
+	 * the most significant byte (and hence losing some info)
 	 * 
 	 * @see PngWriter#writeRowInt(int[], int)
 	 */
@@ -655,12 +659,12 @@ public class PngWriter {
 	}
 
 	/**
-	 * If true (default), and image has bitdepth 1-2-4, the scanlines passed are assumed to be already packed.
+	 * If false (default), and image has bitdepth 1-2-4, the scanlines passed are assumed to be already packed.
 	 * <p>
-	 * If false, each element is a sample, and the writer must perform the packing.
+	 * If true, each element is a sample, the writer will perform the packing if necessary.
 	 * <p>
 	 * Warning: when using {@link #writeRow(ImageLine, int)} (recommended) the <tt>packed</tt> flag of the ImageLine
-	 * object overrides (and overwrites!) this
+	 * object overrides (and overwrites!) this field.
 	 */
 	public void setUseUnPackedMode(boolean useUnpackedMode) {
 		this.unpackedMode = useUnpackedMode;
