@@ -14,7 +14,7 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
  */
 public class SampleMirrorImage {
 
-	public static void mirror(File orig, File dest, boolean overwrite) throws Exception {
+	public static void mirror(File orig, File dest, boolean overwrite) {
 		PngReader pngr = FileHelper.createPngReader(orig);
 		PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, overwrite);
 		pngr.setUnpackedMode(true); // we dont want to do the unpacking ourselves, we want a sample per array element
@@ -31,11 +31,10 @@ public class SampleMirrorImage {
 	}
 
 	private static void mirrorLineInt(ImageInfo imgInfo, int[] line) { // unpacked line
-		int aux;
 		int channels = imgInfo.channels;
 		for (int c1 = 0, c2 = imgInfo.cols - 1; c1 < c2; c1++, c2--) { // swap pixels (not samples!)
 			for (int i = 0; i < channels; i++) {
-				aux = line[c1 * channels + i];
+				int aux = line[c1 * channels + i];
 				line[c1 * channels + i] = line[c2 * channels + i];
 				line[c2 * channels + i] = aux;
 			}

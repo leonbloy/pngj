@@ -1,6 +1,10 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 1.1.1 (2 Dec 2012)   
+---------------------------
+   - Added ImageLines to wrap the matrix that returns readRowsInt() This is more consistent and makes some code more compact and elegant 
+   
 Version 1.1 (1 Dec 2012)   
 ---------------------------
    - Interlaced PNG: full support for reading.
@@ -9,7 +13,7 @@ Version 1.1 (1 Dec 2012)
       -- readRow/writeRow methods can specify the concrete type: readRowInt/readRowByte writeRowInt/writeRowByte   
    - Several retouchings in PngReader. readRow can skip rows (getRow is deprecated now), and does it 
     more efficiently (does not decode more than necessary)
-   - Read/Write can work with a set of lines: readRows writeRows
+   - Read/Write can work with a set of lines: readRows writeRows, returns a matrix
       -- This is not a mere alias to a loop of readRow, and it's much efficient for interlaced PNG
    - PngReader.readSkippingAllRows allows to skip entirely the pixel data, very efficiently
    - Much extensive and robust tests:

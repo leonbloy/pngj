@@ -4,6 +4,7 @@ import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.ImageLines;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
@@ -19,11 +20,11 @@ public class SampleReadEvenLines {
 		ImageInfo imr = pngr.imgInfo;
 
 		ImageInfo imw = new ImageInfo(imr.cols, imr.rows / 2, imr.bitDepth, imr.alpha, imr.greyscale, imr.indexed);
-		int[][] rows = pngr.readRowsInt(0, imw.rows, 2); // half of the lines
+		ImageLines imlines = pngr.readRowsInt(0, imw.rows, 2); // half of the lines
 		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), imw, true);
 		pngr.setUnpackedMode(true);
 		pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL); // all chunks are queued
-		pngw.writeRowsInt(rows);
+		pngw.writeRowsInt(imlines.scanlines);
 		pngw.end();
 		pngr.end();
 	}

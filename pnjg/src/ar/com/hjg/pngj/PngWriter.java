@@ -579,7 +579,7 @@ public class PngWriter {
 	 * @see #writeRowInt(int[], int)
 	 */
 	public void writeRow(ImageLine imgline, int rownumber) {
-		unpackedMode = imgline.unpackedMode;
+		unpackedMode = imgline.samplesUnpacked;
 		if (imgline.sampleType == SampleType.INT)
 			writeRowInt(imgline.scanline, rownumber);
 		else

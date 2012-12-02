@@ -25,7 +25,7 @@ public class ImageLine {
 	 * <code>R G B A R G B A...</tt> 
 	 * or <code>g g g ...</code> or <code>i i i</code> (palette index)
 	 * <p>
-	 * For bitdepth=1/2/4 , and if unpackedFormat=false, each value is a PACKED byte!
+	 * For bitdepth=1/2/4 , and if samplesUnpacked=false, each value is a PACKED byte!
 	 * <p>
 	 * To convert a indexed line to RGB balues, see <code>ImageLineHelper.palIdx2RGB()</code> (you can't do the reverse)
 	 */
@@ -58,7 +58,7 @@ public class ImageLine {
 	 * false: if the original image was of packed type (bit depth less than 8) we keep samples packed in a single array
 	 * element
 	 */
-	public final boolean unpackedMode;
+	public final boolean samplesUnpacked;
 
 	/**
 	 * default mode: INT packed
@@ -73,30 +73,37 @@ public class ImageLine {
 	 *            Inmutable ImageInfo, basic parameter of the image we are reading or writing
 	 * @param stype
 	 *            INT or BYTE : this determines which scanline is the really used one
-	 * @param unpackedFormat
+	 * @param unpackedMode
 	 *            If true, we use unpacked format, even for packed original images
 	 * 
 	 */
-	public ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedFormat) {
+	public ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode) {
+		this(imgInfo,stype,unpackedMode,null,null);
+	}
+
+	/**
+	 * If a preallocated array is passed, the copy is shallow
+	 */
+	ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode,int[] sci,byte[] scb) {
 		this.imgInfo = imgInfo;
 		channels = imgInfo.channels;
 		bitDepth = imgInfo.bitDepth;
 		filterUsed = FilterType.FILTER_UNKNOWN;
 		this.sampleType = stype;
-		this.unpackedMode = unpackedFormat || !imgInfo.packed;
-		elementsPerRow = unpackedFormat ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked;
+		this.samplesUnpacked = unpackedMode || !imgInfo.packed;
+		elementsPerRow = this.samplesUnpacked ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked;
 		if (stype == SampleType.INT) {
-			scanline = new int[elementsPerRow];
+			scanline = sci!=null ?sci:new int[elementsPerRow];
 			scanlineb = null;
 		} else if (stype == SampleType.BYTE) {
-			scanlineb = new byte[elementsPerRow];
+			scanlineb = scb!=null ?scb:new byte[elementsPerRow];
 			scanline = null;
-		} else {
-			throw new PngjExceptionInternal("not implemented");
-		}
+		} else 
+			throw new PngjExceptionInternal("bad ImageLine initialization");
 		this.rown = -1;
 	}
 
+	
 	/** This row number inside the image (0 is top) */
 	public int getRown() {
 		return rown;
@@ -286,6 +293,15 @@ public class ImageLine {
 		filterUsed = ft;
 	}
 
+	public int[] getScanlineInt() {
+		return scanline;
+	}
+
+	public byte[] getScanlineByte() {
+		return scanlineb;
+	}
+	
+	
 	/**
 	 * Basic info
 	 */

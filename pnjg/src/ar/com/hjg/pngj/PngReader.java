@@ -518,7 +518,7 @@ public class PngReader {
 			decodeLastReadRowToInt(buffer, bytesread);
 		} else { // interlaced
 			if (deinterlacer.getImageInt() == null)
-				deinterlacer.setImageInt(readRowsInt()); // read all image and store it in deinterlacer
+				deinterlacer.setImageInt(readRowsInt().scanlines); // read all image and store it in deinterlacer
 			System.arraycopy(deinterlacer.getImageInt()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
 					: imgInfo.samplesPerRowPacked);
 		}
@@ -553,7 +553,7 @@ public class PngReader {
 			decodeLastReadRowToByte(buffer, bytesread);
 		} else { // interlaced
 			if (deinterlacer.getImageByte() == null)
-				deinterlacer.setImageByte(readRowsByte()); // read all image and store it in deinterlacer
+				deinterlacer.setImageByte(readRowsByte().scanlinesb); // read all image and store it in deinterlacer
 			System.arraycopy(deinterlacer.getImageByte()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
 					: imgInfo.samplesPerRowPacked);
 		}
@@ -590,7 +590,7 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads a set of lines and returns it as a int[][] matrix. Internally it reads all lines, but decodes and stores
+	 * Reads a set of lines and returns it as a ImageLines object, which wraps matrix. Internally it reads all lines, but decodes and stores
 	 * only the wanted ones. This starts and ends the reading, and cannot be combined with other reading methods.
 	 * <p>
 	 * This it's more efficient (speed an memory) that doing calling readRowInt() for each desired line only if the
@@ -606,20 +606,20 @@ public class PngReader {
 	 *            Total number of rows to be read. -1: read all available
 	 * @param rowStep
 	 *            Row increment. If 1, we read consecutive lines; if 2, we read even/odd lines, etc
-	 * @return Set of lines as a matrix
+	 * @return Set of lines as a ImageLines, which wraps a matrix
 	 */
-	public int[][] readRowsInt(int rowOffset, int nRows, int rowStep) {
+	public ImageLines readRowsInt(int rowOffset, int nRows, int rowStep) {
 		if (nRows < 0)
 			nRows = (imgInfo.rows - rowOffset) / rowStep;
 		if (rowStep < 1 || rowOffset < 0 || nRows * rowStep + rowOffset > imgInfo.rows)
 			throw new PngjInputException("bad args");
-		int[][] im = new int[nRows][unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
+		ImageLines imlines = new ImageLines(imgInfo, SampleType.INT, unpackedMode, rowOffset, nRows, rowStep);
 		if (!interlaced) {
 			for (int j = 0; j < imgInfo.rows; j++) {
 				int bytesread = readRowRaw(j); // read and perhaps discards
-				int k = (j - rowOffset) / rowStep;
-				if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0))
-					decodeLastReadRowToInt(im[k], bytesread);
+				int mrow = imlines.imageRowToMatrixRowStrict(j);
+				if(mrow>=0)
+					decodeLastReadRowToInt(imlines.scanlines[mrow], bytesread);
 			}
 		} else { // and now, for something completely different (interlaced)
 			int[] buf = new int[unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
@@ -628,16 +628,16 @@ public class PngReader {
 				for (int i = 0; i < deinterlacer.getRows(); i++) {
 					int bytesread = readRowRaw(i);
 					int j = deinterlacer.getCurrRowReal();
-					int k = (j - rowOffset) / rowStep;
-					if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0)) {
+					int mrow = imlines.imageRowToMatrixRowStrict(j);
+					if (mrow>=0) {
 						decodeLastReadRowToInt(buf, bytesread);
-						deinterlacer.deinterlaceInt(buf, im[k], !unpackedMode);
+						deinterlacer.deinterlaceInt(buf,imlines.scanlines[mrow], !unpackedMode);
 					}
 				}
 			}
 		}
 		end();
-		return im;
+		return imlines;
 	}
 
 	/**
@@ -645,12 +645,12 @@ public class PngReader {
 	 * 
 	 * @see #readRowsInt(int, int, int)
 	 */
-	public int[][] readRowsInt() {
+	public ImageLines readRowsInt() {
 		return readRowsInt(0, imgInfo.rows, 1);
 	}
 
 	/**
-	 * Reads a set of lines and returns it as a byte[][] matrix. Internally it reads all lines, but decodes and stores
+	 * Reads a set of lines and returns it as a ImageLines object, which wrapas a byte[][] matrix. Internally it reads all lines, but decodes and stores
 	 * only the wanted ones. This starts and ends the reading, and cannot be combined with other reading methods.
 	 * <p>
 	 * This it's more efficient (speed an memory) that doing calling readRowByte() for each desired line only if the
@@ -669,18 +669,18 @@ public class PngReader {
 	 *            Row increment. If 1, we read consecutive lines; if 2, we read even/odd lines, etc
 	 * @return Set of lines as a matrix
 	 */
-	public byte[][] readRowsByte(int rowOffset, int nRows, int rowStep) {
+	public ImageLines readRowsByte(int rowOffset, int nRows, int rowStep) {
 		if (nRows < 0)
 			nRows = (imgInfo.rows - rowOffset) / rowStep;
 		if (rowStep < 1 || rowOffset < 0 || nRows * rowStep + rowOffset > imgInfo.rows)
 			throw new PngjInputException("bad args");
-		byte[][] im = new byte[nRows][unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
+		ImageLines imlines = new ImageLines(imgInfo, SampleType.BYTE, unpackedMode, rowOffset, nRows, rowStep);
 		if (!interlaced) {
 			for (int j = 0; j < imgInfo.rows; j++) {
 				int bytesread = readRowRaw(j); // read and perhaps discards
-				int k = (j - rowOffset) / rowStep;
-				if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0))
-					decodeLastReadRowToByte(im[k], bytesread);
+				int mrow = imlines.imageRowToMatrixRowStrict(j);
+				if(mrow>=0)
+					decodeLastReadRowToByte(imlines.scanlinesb[mrow], bytesread);
 			}
 		} else { // and now, for something completely different (interlaced)
 			byte[] buf = new byte[unpackedMode ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked];
@@ -689,16 +689,16 @@ public class PngReader {
 				for (int i = 0; i < deinterlacer.getRows(); i++) {
 					int bytesread = readRowRaw(i);
 					int j = deinterlacer.getCurrRowReal();
-					int k = (j - rowOffset) / rowStep;
-					if (j >= rowOffset && k < nRows && (rowStep == 1 || ((j - rowOffset) % rowStep) == 0)) {
+					int mrow = imlines.imageRowToMatrixRowStrict(j);
+					if(mrow>=0) {
 						decodeLastReadRowToByte(buf, bytesread);
-						deinterlacer.deinterlaceByte(buf, im[k], !unpackedMode);
+						deinterlacer.deinterlaceByte(buf, imlines.scanlinesb[mrow], !unpackedMode);
 					}
 				}
 			}
 		}
 		end();
-		return im;
+		return imlines;
 	}
 
 	/**
@@ -706,7 +706,7 @@ public class PngReader {
 	 * 
 	 * @see #readRowsByte(int, int, int)
 	 */
-	public byte[][] readRowsByte() {
+	public ImageLines readRowsByte() {
 		return readRowsByte(0, imgInfo.rows, 1);
 	}
 

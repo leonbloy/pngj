@@ -9,10 +9,13 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
+import ar.com.hjg.pngj.ImageLine.SampleType;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLines;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
@@ -52,15 +55,15 @@ public class TestPngSuite {
 			pngw.setUseUnPackedMode(true);
 			for (int row = 0; row < pngr.imgInfo.rows; row++) {
 				ImageLine line = pngr.readRowInt(row);
-				mirrorLineInt(pngr.imgInfo, line.scanline);
+				mirrorLine(line);
 				pngw.writeRow(line, row);
 			}
 			pngr.end();
 			crc0 = PngHelperInternal.getCrctestVal(pngr);
 			pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
 			pngw.end();
-			// mirror again, now with BYTE (if depth<16) and loading all
 		}
+		// mirror again, now with BYTE (if depth<16) and loading all rows
 		{
 			PngReader pngr2 = FileHelper.createPngReader(mirror);
 			pngr2.setUnpackedMode(true);
@@ -68,18 +71,11 @@ public class TestPngSuite {
 			pngw.setFilterType(FilterType.FILTER_AGGRESSIVE);
 			pngw.copyChunksFirst(pngr2, ChunkCopyBehaviour.COPY_ALL);
 			pngw.setUseUnPackedMode(true);
-			if (pngr2.imgInfo.bitDepth < 16) {
-				byte[][] im = pngr2.readRowsByte();
-				for (int row = 0; row < pngr2.imgInfo.rows; row++) {
-					mirrorLineByte(pngr2.imgInfo, im[row]);
-					pngw.writeRowByte(im[row], row);
-				}
-			} else {
-				int[][] im = pngr2.readRowsInt();
-				for (int row = 0; row < pngr2.imgInfo.rows; row++) {
-					mirrorLineInt(pngr2.imgInfo, im[row]);
-					pngw.writeRowInt(im[row], row);
-				}
+			ImageLines lines = pngr2.imgInfo.bitDepth < 16 ? pngr2.readRowsByte() : pngr2.readRowsInt();
+			for (int row = 0; row < pngr2.imgInfo.rows; row++) {
+				ImageLine line = lines.getImageLineAtMatrixRow(row);
+				mirrorLine(line);
+				pngw.writeRow(line, row);
 			}
 			pngr2.end();
 			pngw.end();
@@ -144,26 +140,23 @@ public class TestPngSuite {
 		copy.delete();
 	}
 
-	public static void mirrorLineInt(ImageInfo imgInfo, int[] line) { // unpacked line
-		int aux;
-		int channels = imgInfo.channels;
-		for (int c1 = 0, c2 = imgInfo.cols - 1; c1 < c2; c1++, c2--) {
+	public static void mirrorLine(ImageLine imline) { // unpacked line
+		if (!imline.samplesUnpacked)
+			throw new PngjException("this requires unpacked lines");
+		int channels = imline.imgInfo.channels;
+		for (int c1 = 0, c2 = imline.imgInfo.cols - 1; c1 < c2; c1++, c2--) {
 			for (int i = 0; i < channels; i++) {
-				aux = line[c1 * channels + i];
-				line[c1 * channels + i] = line[c2 * channels + i];
-				line[c2 * channels + i] = aux;
-			}
-		}
-	}
-
-	public static void mirrorLineByte(ImageInfo imgInfo, byte[] line) { // unpacked line
-		byte aux;
-		int channels = imgInfo.channels;
-		for (int c1 = 0, c2 = imgInfo.cols - 1; c1 < c2; c1++, c2--) {
-			for (int i = 0; i < channels; i++) {
-				aux = line[c1 * channels + i];
-				line[c1 * channels + i] = line[c2 * channels + i];
-				line[c2 * channels + i] = aux;
+				int s1 = c1 * channels + i; // sample left
+				int s2 = c2 * channels + i; // sample right
+				if (imline.sampleType == SampleType.INT) {
+					int aux = imline.scanline[s1]; // swap
+					imline.scanline[s1] = imline.scanline[s2];
+					imline.scanline[s2] = aux;
+				} else {
+					byte auxb = imline.scanlineb[s1]; // swap
+					imline.scanlineb[s1] = imline.scanlineb[s2];
+					imline.scanlineb[s2] = auxb;
+				}
 			}
 		}
 	}
@@ -198,7 +191,7 @@ public class TestPngSuite {
 				} else { // real error
 					System.err.println("error with " + name + " " + e.getMessage());
 					conterr++;
-					// throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
+					throw e instanceof RuntimeException ? (RuntimeException) e : new RuntimeException(e);
 				}
 			} finally {
 			}

@@ -34,7 +34,7 @@ public class ImageLineHelper {
 		int nsamples = line.imgInfo.cols * channels;
 		if (buf == null || buf.length < nsamples)
 			buf = new int[nsamples];
-		if (!line.unpackedMode)
+		if (!line.samplesUnpacked)
 			line = line.unpackToNewImageLine();
 		boolean isbyte = line.sampleType == SampleType.BYTE;
 		int nindexesWithAlpha = trns != null ? trns.getPalletteAlpha().length : 0;

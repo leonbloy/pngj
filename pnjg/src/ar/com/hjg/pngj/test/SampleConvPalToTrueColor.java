@@ -23,7 +23,7 @@ public class SampleConvPalToTrueColor {
 		if (!pngr.imgInfo.indexed)
 			throw new RuntimeException("Not indexed image");
 		PngChunkPLTE plte = pngr.getMetadata().getPLTE();
-		PngChunkTRNS trns = pngr.getMetadata().getTRNS(); // this can be null
+		PngChunkTRNS trns = pngr.getMetadata().getTRNS(); // transparency metadata, can be null
 		boolean alpha = trns != null;
 		ImageInfo im2 = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, alpha);
 		PngWriter pngw = FileHelper.createPngWriter(copy, im2, false);
