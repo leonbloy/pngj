@@ -23,12 +23,16 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * <p>
  * The reading sequence is as follows: <br>
  * 1. At construction time, the header and IHDR chunk are read (basic image info) <br>
- * 2. Afterwards you can set some additional global options. Eg. {@link #setUnpackedMode(boolean)}, {@link #setCrcCheckDisabled()}.<br>
- * 3. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, all the chunks before IDAT are
- * automatically loaded and available <br>
- * 4a. The rows are read onen by one of the <tt>readRowXXX</tt> methods: {@link #readRowInt(int)}, {@link PngReader#readRowByte(int)}, etc, in order, from 0 to nrows-1 (you can skip or repeat rows, but not go backwards)<br>
- * 4b. Alternatively, you can read all rows, or a subset, in a single call: {@link #readRowsInt()}, {@link #readRowsByte()} ,etc. In general this consumes more memory,
- * but for interlaced images this is equally efficient, and more so if reading a small subset of rows.<br>
+ * 2. Afterwards you can set some additional global options. Eg. {@link #setUnpackedMode(boolean)},
+ * {@link #setCrcCheckDisabled()}.<br>
+ * 3. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, all the chunks before IDAT
+ * are automatically loaded and available <br>
+ * 4a. The rows are read onen by one of the <tt>readRowXXX</tt> methods: {@link #readRowInt(int)},
+ * {@link PngReader#readRowByte(int)}, etc, in order, from 0 to nrows-1 (you can skip or repeat rows, but not go
+ * backwards)<br>
+ * 4b. Alternatively, you can read all rows, or a subset, in a single call: {@link #readRowsInt()},
+ * {@link #readRowsByte()} ,etc. In general this consumes more memory, but for interlaced images this is equally
+ * efficient, and more so if reading a small subset of rows.<br>
  * 5. Read of the last row auyomatically loads the trailing chunks, and ends the reader.<br>
  * 6. end() forcibly finishes/aborts the reading and closes the stream
  */
@@ -393,22 +397,25 @@ public class PngReader {
 	public ChunkLoadBehaviour getChunkLoadBehaviour() {
 		return chunkLoadBehaviour;
 	}
-	
+
 	/**
-	 * Determines which ancillary chunks (metada) are to be loaded 
-	 * 	@param chunkLoadBehaviour  {@link ChunkLoadBehaviour}
+	 * Determines which ancillary chunks (metada) are to be loaded
+	 * 
+	 * @param chunkLoadBehaviour
+	 *            {@link ChunkLoadBehaviour}
 	 */
 	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
 		this.chunkLoadBehaviour = chunkLoadBehaviour;
 	}
 
-
 	/**
-	 * All loaded chunks (metada). If we have not yet end reading the image, this will include only the chunks before the pixels data (IDAT) 
+	 * All loaded chunks (metada). If we have not yet end reading the image, this will include only the chunks before
+	 * the pixels data (IDAT)
 	 * <p>
 	 * Critical chunks are included, except that all IDAT chunks appearance are replaced by a single dummy-marker IDAT
 	 * chunk. These might be copied to the PngWriter
 	 * <p>
+	 * 
 	 * @see #getMetadata()
 	 */
 	public ChunksList getChunksList() {
@@ -423,6 +430,7 @@ public class PngReader {
 
 	/**
 	 * High level wrapper over chunksList
+	 * 
 	 * @see #getChunksList()
 	 */
 	public PngMetadata getMetadata() {
@@ -590,8 +598,9 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads a set of lines and returns it as a ImageLines object, which wraps matrix. Internally it reads all lines, but decodes and stores
-	 * only the wanted ones. This starts and ends the reading, and cannot be combined with other reading methods.
+	 * Reads a set of lines and returns it as a ImageLines object, which wraps matrix. Internally it reads all lines,
+	 * but decodes and stores only the wanted ones. This starts and ends the reading, and cannot be combined with other
+	 * reading methods.
 	 * <p>
 	 * This it's more efficient (speed an memory) that doing calling readRowInt() for each desired line only if the
 	 * image is interlaced.
@@ -618,7 +627,7 @@ public class PngReader {
 			for (int j = 0; j < imgInfo.rows; j++) {
 				int bytesread = readRowRaw(j); // read and perhaps discards
 				int mrow = imlines.imageRowToMatrixRowStrict(j);
-				if(mrow>=0)
+				if (mrow >= 0)
 					decodeLastReadRowToInt(imlines.scanlines[mrow], bytesread);
 			}
 		} else { // and now, for something completely different (interlaced)
@@ -629,9 +638,9 @@ public class PngReader {
 					int bytesread = readRowRaw(i);
 					int j = deinterlacer.getCurrRowReal();
 					int mrow = imlines.imageRowToMatrixRowStrict(j);
-					if (mrow>=0) {
+					if (mrow >= 0) {
 						decodeLastReadRowToInt(buf, bytesread);
-						deinterlacer.deinterlaceInt(buf,imlines.scanlines[mrow], !unpackedMode);
+						deinterlacer.deinterlaceInt(buf, imlines.scanlines[mrow], !unpackedMode);
 					}
 				}
 			}
@@ -650,8 +659,9 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads a set of lines and returns it as a ImageLines object, which wrapas a byte[][] matrix. Internally it reads all lines, but decodes and stores
-	 * only the wanted ones. This starts and ends the reading, and cannot be combined with other reading methods.
+	 * Reads a set of lines and returns it as a ImageLines object, which wrapas a byte[][] matrix. Internally it reads
+	 * all lines, but decodes and stores only the wanted ones. This starts and ends the reading, and cannot be combined
+	 * with other reading methods.
 	 * <p>
 	 * This it's more efficient (speed an memory) that doing calling readRowByte() for each desired line only if the
 	 * image is interlaced.
@@ -679,7 +689,7 @@ public class PngReader {
 			for (int j = 0; j < imgInfo.rows; j++) {
 				int bytesread = readRowRaw(j); // read and perhaps discards
 				int mrow = imlines.imageRowToMatrixRowStrict(j);
-				if(mrow>=0)
+				if (mrow >= 0)
 					decodeLastReadRowToByte(imlines.scanlinesb[mrow], bytesread);
 			}
 		} else { // and now, for something completely different (interlaced)
@@ -690,7 +700,7 @@ public class PngReader {
 					int bytesread = readRowRaw(i);
 					int j = deinterlacer.getCurrRowReal();
 					int mrow = imlines.imageRowToMatrixRowStrict(j);
-					if(mrow>=0) {
+					if (mrow >= 0) {
 						decodeLastReadRowToByte(buf, bytesread);
 						deinterlacer.deinterlaceByte(buf, imlines.scanlinesb[mrow], !unpackedMode);
 					}
@@ -763,8 +773,8 @@ public class PngReader {
 
 	/**
 	 * Reads all the (remaining) file, skipping the pixels data. This is much more efficient that calling readRow(),
-	 * specially for big files (about 10 times faster!), because it doesn't even decompress the IDAT stream and disables CRC check
-	 * Use this if you are not interested in reading pixels,only metadata.
+	 * specially for big files (about 10 times faster!), because it doesn't even decompress the IDAT stream and disables
+	 * CRC check Use this if you are not interested in reading pixels,only metadata.
 	 */
 	public void readSkippingAllRows() {
 		if (firstChunksNotYetRead())
@@ -787,7 +797,6 @@ public class PngReader {
 					+ " offset:" + offset);
 		readLastAndClose();
 	}
-
 
 	/**
 	 * Set total maximum bytes to read (0: unlimited; default: 200MB). <br>
@@ -861,8 +870,8 @@ public class PngReader {
 	}
 
 	/**
-	 * Normally this does nothing, but it can be used to force a premature closing.
-	 * Its recommended practice to call it after reading the image pixels.
+	 * Normally this does nothing, but it can be used to force a premature closing. Its recommended practice to call it
+	 * after reading the image pixels.
 	 */
 	public void end() {
 		if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)

@@ -1,7 +1,6 @@
 package ar.com.hjg.pngj;
 
 import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -18,10 +17,10 @@ import java.lang.reflect.Constructor;
 public class FileHelper {
 
 	/**
-	 * Creates a PngWriter from a file. The object is ready to start writing chunks or image rows.
-	 * This is essentially equivalent to
-	 *          
-	 *  <code>
+	 * Creates a PngWriter from a file. The object is ready to start writing chunks or image rows. This is essentially
+	 * equivalent to
+	 * 
+	 * <code>
 	 *         new PngWriter(new FileOutputStream(file), imgInfo, file.getName) 
 	 *  </code>
 	 * 
@@ -35,7 +34,7 @@ public class FileHelper {
 	 *            Target image basic info
 	 * @param allowOverwrite
 	 *            if true, file will be overwriten if it already exists.
-	 *            
+	 * 
 	 * @return a new PngWriter - see constructor doc
 	 */
 	public static PngWriter createPngWriter(File file, ImageInfo imgInfo, boolean allowOverwrite) {
@@ -45,7 +44,7 @@ public class FileHelper {
 	/**
 	 * Creates a PngReader from a File. This is esentially the same as
 	 * 
-	 *  <code>
+	 * <code>
 	 *         new PngReader(new FileinputStream(file), imgInfo, file.getName) 
 	 *  </code>
 	 * 
@@ -75,13 +74,13 @@ public class FileHelper {
 	 * Utility method to open a file for writing.
 	 * <p>
 	 * WARNING: This method will throw exception if run in a sandboxed environment (as Google App Engine) that does not
-	 * permit to use Java class java.io.FileOutputStream
-	 * <br>
+	 * permit to use Java class java.io.FileOutputStream <br>
 	 * We use reflection to be sure that this just throw run time exception in that case, but that the class is loadable
 	 * 
 	 * @param file
-	 * @param allowOverwrite  if true, and the file exists, it will be overwriten; elswhere, an exception is thrown
-	 * @return outputStream 
+	 * @param allowOverwrite
+	 *            if true, and the file exists, it will be overwriten; elswhere, an exception is thrown
+	 * @return outputStream
 	 */
 	public static OutputStream openFileForWriting(File file, boolean allowOverwrite) {
 		if (file.exists() && !allowOverwrite)
@@ -103,6 +102,5 @@ public class FileHelper {
 		}
 		return os;
 	}
-
 
 }

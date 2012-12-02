@@ -78,13 +78,13 @@ public class ImageLine {
 	 * 
 	 */
 	public ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode) {
-		this(imgInfo,stype,unpackedMode,null,null);
+		this(imgInfo, stype, unpackedMode, null, null);
 	}
 
 	/**
 	 * If a preallocated array is passed, the copy is shallow
 	 */
-	ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode,int[] sci,byte[] scb) {
+	ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode, int[] sci, byte[] scb) {
 		this.imgInfo = imgInfo;
 		channels = imgInfo.channels;
 		bitDepth = imgInfo.bitDepth;
@@ -93,17 +93,16 @@ public class ImageLine {
 		this.samplesUnpacked = unpackedMode || !imgInfo.packed;
 		elementsPerRow = this.samplesUnpacked ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked;
 		if (stype == SampleType.INT) {
-			scanline = sci!=null ?sci:new int[elementsPerRow];
+			scanline = sci != null ? sci : new int[elementsPerRow];
 			scanlineb = null;
 		} else if (stype == SampleType.BYTE) {
-			scanlineb = scb!=null ?scb:new byte[elementsPerRow];
+			scanlineb = scb != null ? scb : new byte[elementsPerRow];
 			scanline = null;
-		} else 
+		} else
 			throw new PngjExceptionInternal("bad ImageLine initialization");
 		this.rown = -1;
 	}
 
-	
 	/** This row number inside the image (0 is top) */
 	public int getRown() {
 		return rown;
@@ -300,8 +299,7 @@ public class ImageLine {
 	public byte[] getScanlineByte() {
 		return scanlineb;
 	}
-	
-	
+
 	/**
 	 * Basic info
 	 */

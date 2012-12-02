@@ -16,16 +16,16 @@ import ar.com.hjg.pngj.PngjException;
 
 public class TestsHelper {
 
-	public static final String tempDir; // either /tmp or the property "java.io.tmpdir" 
-	
+	public static final String tempDir; // either /tmp or the property "java.io.tmpdir"
+
 	static {
 		String tempDirX = "/tmp";
-		if( !(new File(tempDirX)).isDirectory()) 
-			tempDirX=System.getProperty("java.io.tmpdir"); 
+		if (!(new File(tempDirX)).isDirectory())
+			tempDirX = System.getProperty("java.io.tmpdir");
 		tempDir = tempDirX;
-		if( !(new File(tempDir)).isDirectory()) throw new RuntimeException("Could not set valid temp dir " + tempDir);
+		if (!(new File(tempDir)).isDirectory())
+			throw new RuntimeException("Could not set valid temp dir " + tempDir);
 	}
-	
 
 	public static void testEqual(File image1, File image2) {
 		PngReader png1 = FileHelper.createPngReader(image1);

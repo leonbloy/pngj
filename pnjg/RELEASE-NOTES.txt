@@ -3,7 +3,7 @@ PNGJ:  Release Notes  & History
 
 Version 1.1.1 (2 Dec 2012)   
 ---------------------------
-   - Added ImageLines to wrap the matrix that returns readRowsInt() This is more consistent and makes some code more compact and elegant 
+   - Added ImageLines to wrap the matrix that returns readRows() This is more consistent and makes some code more compact and elegant 
    
 Version 1.1 (1 Dec 2012)   
 ---------------------------
@@ -11,6 +11,7 @@ Version 1.1 (1 Dec 2012)
    - Read/write can use INT or BYTE for sample storage now. The choice is explicit by the programmer
       -- ImageLine have a "sampleType" and two buffers scanline (integer) and scanlineb (byte), only one is allocated
       -- readRow/writeRow methods can specify the concrete type: readRowInt/readRowByte writeRowInt/writeRowByte   
+   - packed formats (bit depth 1-2-4) can now be unpacked on the fly when reading/writing  See eg PngReader.setUnpackedMode()s
    - Several retouchings in PngReader. readRow can skip rows (getRow is deprecated now), and does it 
     more efficiently (does not decode more than necessary)
    - Read/Write can work with a set of lines: readRows writeRows, returns a matrix

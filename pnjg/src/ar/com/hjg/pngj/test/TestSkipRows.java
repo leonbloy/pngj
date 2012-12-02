@@ -19,23 +19,24 @@ public class TestSkipRows {
 		{
 			long t0 = System.currentTimeMillis();
 			PngWriter png = TestsHelper.prepareFileTmp(suffix, imi);
-		ImageLine[] lines = new ImageLine[3];
-		lines[0] = TestsHelper.generateNoiseLine(imi);
-		lines[1] = TestsHelper.generateNoiseLine(imi);
-		lines[2] = TestsHelper.generateNoiseLine(imi);
-		png.setFilterType(FilterType.FILTER_NONE);
-		// add two text chunks, one before IDAT, onther after
-		png.getMetadata().setText("chunk1", "test1").setPriority(true);
-		png.getMetadata().setText("chunk2", "test2").setPriority(false);
-		Random r = new Random();
-		for (int i = 0; i < imi.rows; i++) {
-			png.writeRow(lines[r.nextInt(3)], i);
-		}
-		png.end();
-		t0 = System.currentTimeMillis()-t0;
+			ImageLine[] lines = new ImageLine[3];
+			lines[0] = TestsHelper.generateNoiseLine(imi);
+			lines[1] = TestsHelper.generateNoiseLine(imi);
+			lines[2] = TestsHelper.generateNoiseLine(imi);
+			png.setFilterType(FilterType.FILTER_NONE);
+			// add two text chunks, one before IDAT, onther after
+			png.getMetadata().setText("chunk1", "test1").setPriority(true);
+			png.getMetadata().setText("chunk2", "test2").setPriority(false);
+			Random r = new Random();
+			for (int i = 0; i < imi.rows; i++) {
+				png.writeRow(lines[r.nextInt(3)], i);
+			}
+			png.end();
+			t0 = System.currentTimeMillis() - t0;
 
-		if (verbose)
-			System.out.println("Created " + f + " (" + f.length() / (1024) + " KB) will be removed . " +t0+ " msecs");
+			if (verbose)
+				System.out.println("Created " + f + " (" + f.length() / (1024) + " KB) will be removed . " + t0
+						+ " msecs");
 		}
 		String chunks1, chunks2;
 		// skipping read
