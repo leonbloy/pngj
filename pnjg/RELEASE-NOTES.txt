@@ -1,6 +1,11 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+
+Version 1.1.2 (3 Dec 2012)   
+---------------------------
+   - Fix silly bug that in PngIDatChunkInputStream that caused errors with readSkippingAllRows() for small files 
+
 Version 1.1.1 (2 Dec 2012)   
 ---------------------------
    - Added ImageLines to wrap the matrix that returns readRows() This is more consistent and makes some code more compact and elegant 

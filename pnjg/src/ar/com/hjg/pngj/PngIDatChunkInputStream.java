@@ -77,8 +77,6 @@ class PngIDatChunkInputStream extends InputStream {
 				crcEngine.reset();
 			}
 			lenLastChunk = PngHelperInternal.readInt4(inputStream);
-			if (lenLastChunk < 0)
-				throw new PngjInputException("invalid len for chunk: " + lenLastChunk);
 			toReadThisChunk = lenLastChunk;
 			PngHelperInternal.readBytes(inputStream, idLastChunk, 0, 4);
 			offset += 8;
@@ -113,10 +111,10 @@ class PngIDatChunkInputStream extends InputStream {
 	 */
 	@Override
 	public int read(byte[] b, int off, int len) throws IOException {
-		if (toReadThisChunk == 0)
-			throw new PngjExceptionInternal("this should not happen");
 		if (ended)
 			return -1; // can happen only when raw reading, see Pngreader.readAndSkipsAllRows()
+		if (toReadThisChunk == 0)
+			throw new PngjExceptionInternal("this should not happen");
 		int n = inputStream.read(b, off, len >= toReadThisChunk ? toReadThisChunk : len);
 		if (n > 0) {
 			if (checkCrc)

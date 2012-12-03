@@ -18,6 +18,6 @@ public class SampleShowChunks {
 	}
 
 	public static void main(String[] args) throws Exception {
-		showChunks(args.length > 0 ? args[0] : "/temp/testpal.png");
+		showChunks(args.length > 0 ? args[0] : "/temp/buttonred.png");
 	}
 }
