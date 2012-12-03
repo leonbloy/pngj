@@ -6,16 +6,13 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.PngReader;
 
 /**
- * prints all chunks (remember that IDAT is shown as only one pseudo zero-length chunk)
+ * prints chunks list (remember that IDAT is shown as only one pseudo zero-length chunk)
  */
 public class SampleShowChunks {
-
 	public static void showChunks(String file) {
 		PngReader pngr = FileHelper.createPngReader(new File(file));
 		pngr.setMaxTotalBytesRead(1024 * 1024 * 1024L * 3); // 3Gb!
-		for (int row = 0; row < pngr.imgInfo.rows; row++)
-			pngr.readRow(row);
-		pngr.end();
+		pngr.readSkippingAllRows();
 		System.out.println(pngr.toString());
 		System.out.println(pngr.getChunksList().toStringFull());
 	}
