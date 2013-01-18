@@ -756,10 +756,10 @@ public class PngReader {
 	 */
 	private int readRowRaw(final int nrow) {
 		if (nrow == 0) {
-			if(! firstChunksNotYetRead())
+			if (firstChunksNotYetRead())
 				readFirstChunks();
 			allocateBuffers();
-			if(interlaced)
+			if (interlaced)
 				Arrays.fill(rowb, (byte) 0); // new subimage: reset filters: this is enough, see the swap that happens lines
 		}
 		// below
@@ -812,7 +812,7 @@ public class PngReader {
 		try {
 			int r;
 			do {
-				r = iIdatCstream.read(rowbfilter, 0, buffersLen); 
+				r = iIdatCstream.read(rowbfilter, 0, buffersLen);
 			} while (r >= 0);
 		} catch (IOException e) {
 			throw new PngjInputException("error in raw read of IDAT", e);
@@ -944,12 +944,12 @@ public class PngReader {
 	 * Tries to reuse the allocated buffers from other already used PngReader
 	 * object
 	 * 
-	 * This will have no effect if the buffers
+	 * This will have no effect if the buffers are smaller than necessary
 	 */
 	public void reuseBuffersFrom(PngReader other) {
-		if (other == null || other.rowbfilter == null || other.currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
-			throw new PngjInputException("PngReader to reuse must be non null and ended reading pixels");
-		if (other.rowbfilter.length >= buffersLen) {
+		if (other != null && other.rowbfilter != null && other.rowbfilter.length >= buffersLen) {
+			if (other.currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
+				throw new PngjInputException("PngReader to reuse must be non null and ended reading pixels");
 			rowbfilter = other.rowbfilter;
 			rowb = other.rowb;
 			rowbprev = other.rowbprev;
