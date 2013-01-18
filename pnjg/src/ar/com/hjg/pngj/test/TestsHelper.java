@@ -61,7 +61,8 @@ public class TestsHelper {
 	}
 
 	/**
-	 * Creates a dummy temp png You should call endFileTmp after adding chunks, etc
+	 * Creates a dummy temp png You should call endFileTmp after adding chunks,
+	 * etc
 	 * */
 	public static PngWriter prepareFileTmp(String suffix, ImageInfo imi) {
 		PngWriter png = FileHelper.createPngWriter(getTmpFile(suffix), imi, true);

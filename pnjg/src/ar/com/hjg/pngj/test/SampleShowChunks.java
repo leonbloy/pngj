@@ -6,7 +6,8 @@ import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.PngReader;
 
 /**
- * prints chunks list (remember that IDAT is shown as only one pseudo zero-length chunk)
+ * prints chunks list (remember that IDAT is shown as only one pseudo
+ * zero-length chunk)
  */
 public class SampleShowChunks {
 	public static void showChunks(String file) {

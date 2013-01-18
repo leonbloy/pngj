@@ -1,7 +1,11 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-
+Version 1.1.5? (?)  
+    - PngReader.reuseBuffersFrom() - supports bigger-than-needed buffers
+    - PngHelperInternal.skip() now doesn't allocate buffer now
+    - Small efficiency improvement in FilterType.getByVal
+    
 Version 1.1.2 (3 Dec 2012)   
 ---------------------------
    - Fix silly bug that in PngIDatChunkInputStream that caused errors with readSkippingAllRows() for small files 

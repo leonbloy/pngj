@@ -106,8 +106,8 @@ public class ChunkHelper {
 	}
 
 	/**
-	 * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize
-	 * its id
+	 * "Unknown" just means that our chunk factory (even when it has been
+	 * augmented by client code) did not recognize its id
 	 */
 	public static boolean isUnknown(PngChunk c) {
 		return c instanceof PngChunkUNKNOWN;
@@ -218,10 +218,13 @@ public class ChunkHelper {
 	}
 
 	/**
-	 * MY adhoc criteria: two chunks are "equivalent" ("practically equal") if they have same id and (perhaps, if
-	 * multiple are allowed) if the match also in some "internal key" (eg: key for string values, palette for sPLT, etc)
+	 * MY adhoc criteria: two chunks are "equivalent" ("practically equal") if
+	 * they have same id and (perhaps, if multiple are allowed) if the match
+	 * also in some "internal key" (eg: key for string values, palette for sPLT,
+	 * etc)
 	 * 
-	 * Notice that the use of this is optional, and that the PNG standard allows Text chunks that have same key
+	 * Notice that the use of this is optional, and that the PNG standard allows
+	 * Text chunks that have same key
 	 * 
 	 * @return true if "equivalent"
 	 */

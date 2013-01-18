@@ -10,7 +10,8 @@ import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 
 /**
- * Mirrors an image, along the rows. This works for ALL image types, see also TestPngSuite
+ * Mirrors an image, along the rows. This works for ALL image types, see also
+ * TestPngSuite
  */
 public class SampleMirrorImage {
 

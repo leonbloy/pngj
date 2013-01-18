@@ -12,13 +12,15 @@ import ar.com.hjg.pngj.PngjOutputException;
 /**
  * Raw (physical) chunk.
  * <p>
- * Short lived object, to be created while serialing/deserializing Do not reuse it for different chunks. <br>
+ * Short lived object, to be created while serialing/deserializing Do not reuse
+ * it for different chunks. <br>
  * See http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
  */
 public class ChunkRaw {
 	/**
-	 * The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length.
-	 * Although encoders and decoders should treat the length as unsigned, its value must not exceed 231-1 bytes.
+	 * The length counts only the data field, not itself, the chunk type code,
+	 * or the CRC. Zero is a valid length. Although encoders and decoders should
+	 * treat the length as unsigned, its value must not exceed 231-1 bytes.
 	 */
 	public final int len;
 
@@ -28,12 +30,14 @@ public class ChunkRaw {
 	public final byte[] idbytes = new byte[4];
 
 	/**
-	 * The data bytes appropriate to the chunk type, if any. This field can be of zero length. Does not include crc
+	 * The data bytes appropriate to the chunk type, if any. This field can be
+	 * of zero length. Does not include crc
 	 */
 	public byte[] data = null;
 	/**
-	 * A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type
-	 * code and chunk data fields, but not including the length field.
+	 * A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes
+	 * in the chunk, including the chunk type code and chunk data fields, but
+	 * not including the length field.
 	 */
 	private int crcval = 0;
 
@@ -70,7 +74,8 @@ public class ChunkRaw {
 	}
 
 	/**
-	 * Computes the CRC and writes to the stream. If error, a PngjOutputException is thrown
+	 * Computes the CRC and writes to the stream. If error, a
+	 * PngjOutputException is thrown
 	 */
 	public void writeChunk(OutputStream os) {
 		if (idbytes.length != 4)
@@ -84,8 +89,8 @@ public class ChunkRaw {
 	}
 
 	/**
-	 * position before: just after chunk id. positon after: after crc Data should be already allocated. Checks CRC
-	 * Return number of byte read.
+	 * position before: just after chunk id. positon after: after crc Data
+	 * should be already allocated. Checks CRC Return number of byte read.
 	 */
 	public int readChunkData(InputStream is, boolean checkCrc) {
 		PngHelperInternal.readBytes(is, data, 0, len);
