@@ -1,4 +1,4 @@
-PNGJ : A Java library for PNG images IO
+PNGJ : A high performance Java library for reading/writing PNG images
 
 See the RELEASE-NOTES for history and last news.
 
