@@ -11,7 +11,9 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
+import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -41,6 +43,23 @@ public class ChunkHelper {
 	public static final String iTXt = "iTXt";
 	public static final String tEXt = "tEXt";
 	public static final String zTXt = "zTXt";
+
+	private static final ThreadLocal<Inflater> inflaterProvider = new ThreadLocal<Inflater>() {
+		protected Inflater initialValue() {
+			return new Inflater();
+		}
+	};
+
+	private static final ThreadLocal<Deflater> deflaterProvider = new ThreadLocal<Deflater>() {
+		protected Deflater initialValue() {
+			return new Deflater();
+		}
+	};
+
+	/*
+	 * static auxiliary buffer. any method that uses this should synchronize against this 
+	 */
+	private static byte[] tmpbuffer = new byte[4096];
 
 	/**
 	 * Converts to bytes using Latin1 (ISO-8859-1)
@@ -157,7 +176,7 @@ public class ChunkHelper {
 	public static byte[] compressBytes(byte[] ori, int offset, int len, boolean compress) {
 		try {
 			ByteArrayInputStream inb = new ByteArrayInputStream(ori, offset, len);
-			InputStream in = compress ? inb : new InflaterInputStream(inb);
+			InputStream in = compress ? inb : new InflaterInputStream(inb, getInflater());
 			ByteArrayOutputStream outb = new ByteArrayOutputStream();
 			OutputStream out = compress ? new DeflaterOutputStream(outb) : outb;
 			shovelInToOut(in, out);
@@ -173,10 +192,11 @@ public class ChunkHelper {
 	 * Shovels all data from an input stream to an output stream.
 	 */
 	private static void shovelInToOut(InputStream in, OutputStream out) throws IOException {
-		byte[] buffer = new byte[1024];
-		int len;
-		while ((len = in.read(buffer)) > 0) {
-			out.write(buffer, 0, len);
+		synchronized (tmpbuffer) {
+			int len;
+			while ((len = in.read(tmpbuffer)) > 0) {
+				out.write(tmpbuffer, 0, len);
+			}
 		}
 	}
 
@@ -250,6 +270,26 @@ public class ChunkHelper {
 
 	public static boolean isText(PngChunk c) {
 		return c instanceof PngChunkTextVar;
+	}
+
+	/**
+	 * thread-local inflater, just reset : this should be only used for short
+	 * individual chunks compression
+	 */
+	public static Inflater getInflater() {
+		Inflater inflater = inflaterProvider.get();
+		inflater.reset();
+		return inflater;
+	}
+
+	/**
+	 * thread-local deflater, just reset : this should be only used for short
+	 * individual chunks decompression
+	 */
+	public static Deflater getDeflater() {
+		Deflater deflater = deflaterProvider.get();
+		deflater.reset();
+		return deflater;
 	}
 
 }

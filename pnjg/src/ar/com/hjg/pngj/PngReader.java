@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.zip.CRC32;
+import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
 import ar.com.hjg.pngj.ImageLine.SampleType;
@@ -72,6 +73,7 @@ public class PngReader {
 	private boolean crcEnabled = true;
 	// this only influences the 1-2-4 bitdepth format
 	private boolean unpackedMode = false;
+	private Inflater inflater = null;	// can be reused among several objects. see reuseBuffersFrom()
 	/**
 	 * Current chunk group, (0-6) already read or reading
 	 * <p>
@@ -302,7 +304,12 @@ public class PngReader {
 		if (idatLen < 0)
 			throw new PngjInputException("first idat chunk not found!");
 		iIdatCstream = new PngIDatChunkInputStream(inputStream, idatLen, offset);
-		idatIstream = new InflaterInputStream(iIdatCstream);
+		if(inflater == null) {
+			inflater = new Inflater();
+		} else {
+		inflater.reset();
+		}
+		idatIstream = new InflaterInputStream(iIdatCstream, inflater);
 		if (!crcEnabled)
 			iIdatCstream.disableCrcCheck();
 	}
@@ -942,18 +949,21 @@ public class PngReader {
 
 	/**
 	 * Tries to reuse the allocated buffers from other already used PngReader
-	 * object
+	 * object. This will have no effect if the buffers are smaller than necessary.
+	 * It also reuses the inflater.
 	 * 
-	 * This will have no effect if the buffers are smaller than necessary
+	 * @param other A PngReader that has already finished reading pixels. Can be null.
 	 */
 	public void reuseBuffersFrom(PngReader other) {
-		if (other != null && other.rowbfilter != null && other.rowbfilter.length >= buffersLen) {
-			if (other.currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
-				throw new PngjInputException("PngReader to reuse must be non null and ended reading pixels");
+		if(other==null) return;
+		if (other.currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
+			throw new PngjInputException("PngReader to be reused have not yet ended reading pixels");
+		if (other.rowbfilter != null && other.rowbfilter.length >= buffersLen) {
 			rowbfilter = other.rowbfilter;
 			rowb = other.rowb;
 			rowbprev = other.rowbprev;
 		}
+		inflater = other.inflater;
 	}
 
 	/**
