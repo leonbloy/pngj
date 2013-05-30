@@ -8,6 +8,9 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.Constructor;
 
+import ar.com.hjg.pngj.chunks.PngChunkPLTE;
+import ar.com.hjg.pngj.chunks.PngChunkTRNS;
+
 /**
  * A few static utility methods related with PngReader/PngWriter that
  * read/writes to files.
@@ -107,6 +110,19 @@ public class FileHelper {
 					+ "Check that you have permission to write and that this is not a sandboxed environment", e);
 		}
 		return os;
+	}
+	
+	public static int[][] readAsARGB32(PngReader pngr,	int[][] img) {
+		pngr.setUnpackedMode(false); // we unpack in the conversion method
+		if(img==null) img=new int[pngr.imgInfo.rows][pngr.imgInfo.cols];
+		PngChunkPLTE pal = pngr.getMetadata().getPLTE();
+		PngChunkTRNS trns = pngr.getMetadata().getTRNS();
+		for(int r=0;r<pngr.imgInfo.rows;r++) {
+			ImageLine line=pngr.readRowByte(r);
+			ImageLineHelper.lineToARGB32(line, pal, trns, img[r]);
+		}
+		pngr.end();
+		return img;
 	}
 
 }

@@ -131,14 +131,15 @@ public class ImageLine {
 	 * 
 	 * If not, you should only call this only when necesary (bitdepth <8)
 	 * 
-	 * If <code>scale==true<code>, it scales the value (just a bit shift) towards 0-255.
+	 * If <code>scale==true<code>, and if image is not indexed, it scales the value towards 0-255.
 	 */
-	static void unpackInplaceInt(final ImageInfo iminfo, final int[] src, final int[] dst, final boolean scale) {
+	static void unpackInplaceInt(final ImageInfo iminfo, final int[] src, final int[] dst, boolean scale) {
 		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
 			return; // nothing to do
+		if(scale && iminfo.indexed) scale=false;
 		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
-		final int scalefactor = 8 - bitDepth;
+		final int[] unpackArray = bitDepth==1 ? ImageLineHelper.DEPTH_UNPACK_1 : (bitDepth==4 ? ImageLineHelper.DEPTH_UNPACK_4 : ImageLineHelper.DEPTH_UNPACK_2);
 		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
 		int mask, offset, v;
 		if (offset0 != 8) {
@@ -151,7 +152,7 @@ public class ImageLine {
 		for (int j = iminfo.samplesPerRow - 1, i = iminfo.samplesPerRowPacked - 1; j >= 0; j--) {
 			v = (src[i] & mask) >> offset;
 			if (scale)
-				v <<= scalefactor;
+				v = unpackArray[v];
 			dst[j] = v;
 			mask <<= bitDepth;
 			offset += bitDepth;
@@ -210,7 +211,7 @@ public class ImageLine {
 		if (bitDepth >= 8)
 			return; // nothing to do
 		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
-		final int scalefactor = 8 - bitDepth;
+		final int[] unpackArray = ImageLineHelper.DEPTH_UNPACK[bitDepth];
 		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
 		int mask, offset, v;
 		if (offset0 != 8) {
@@ -223,7 +224,7 @@ public class ImageLine {
 		for (int j = iminfo.samplesPerRow - 1, i = iminfo.samplesPerRowPacked - 1; j >= 0; j--) {
 			v = (src[i] & mask) >> offset;
 			if (scale)
-				v <<= scalefactor;
+				v = unpackArray[v];
 			dst[j] = (byte) v;
 			mask <<= bitDepth;
 			offset += bitDepth;

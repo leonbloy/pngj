@@ -123,10 +123,10 @@ public class PngReader {
 			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
 		offset += 4;
 		PngChunkIHDR ihdr = (PngChunkIHDR) readChunk(chunkid, clen, false);
-		boolean alpha = (ihdr.getColormodel() & 0x04) != 0;
+		boolean alpha = (ihdr.getColormodel()& 0x04) != 0;
 		boolean palette = (ihdr.getColormodel() & 0x01) != 0;
 		boolean grayscale = (ihdr.getColormodel() == 0 || ihdr.getColormodel() == 4);
-		// creates ImgInfo and imgLine, and allocates buffers
+		// creates imginfo and imgline, and allocates buffers
 		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getRows(), ihdr.getBitspc(), alpha, grayscale, palette);
 		interlaced = ihdr.getInterlaced() == 1;
 		deinterlacer = interlaced ? new PngDeinterlacer(imgInfo) : null;
@@ -600,7 +600,7 @@ public class PngReader {
 		return readRow(nrow);
 	}
 
-	private void decodeLastReadRowToInt(int[] buffer, int bytesRead) {
+	protected void decodeLastReadRowToInt(int[] buffer, int bytesRead) {
 		if (imgInfo.bitDepth <= 8)
 			for (int i = 0, j = 1; i < bytesRead; i++)
 				buffer[i] = (rowb[j++] & 0xFF); // http://www.libpng.org/pub/png/spec/1.2/PNG-DataRep.html
@@ -611,7 +611,7 @@ public class PngReader {
 			ImageLine.unpackInplaceInt(imgInfo, buffer, buffer, false);
 	}
 
-	private void decodeLastReadRowToByte(byte[] buffer, int bytesRead) {
+	protected void decodeLastReadRowToByte(byte[] buffer, int bytesRead) {
 		if (imgInfo.bitDepth <= 8)
 			System.arraycopy(rowb, 1, buffer, 0, bytesRead);
 		else

@@ -5,6 +5,7 @@ import java.io.ByteArrayInputStream;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
+import ar.com.hjg.pngj.PngjInputException;
 
 /**
  * IHDR chunk.
@@ -132,5 +133,44 @@ public class PngChunkIHDR extends PngChunkSingle {
 
 	public void setInterlaced(int interlaced) {
 		this.interlaced = interlaced;
+	}
+
+	public boolean isInterlaced() {
+		return getInterlaced() == 1;
+	}
+
+	/** throws PngInputException if unexpected values */
+	public ImageInfo createImageInfo() {
+		check();
+		boolean alpha = (getColormodel() & 0x04) != 0;
+		boolean palette = (getColormodel() & 0x01) != 0;
+		boolean grayscale = (getColormodel() == 0 || getColormodel() == 4);
+		// creates ImgInfo and imgLine, and allocates buffers
+		return new ImageInfo(getCols(), getRows(), getBitspc(), alpha, grayscale, palette);
+	}
+
+	public void check() {
+		if (cols < 1 || rows < 1 || compmeth != 0 || filmeth != 0)
+			throw new PngjInputException("bad IHDR: col/row/compmethod/filmethod invalid");
+		if (bitspc != 1 && bitspc != 2 && bitspc != 4 && bitspc != 8 && bitspc != 16)
+			throw new PngjInputException("bad IHDR: bitdepth invalid");
+		if(interlaced <0 || interlaced>1)
+			throw new PngjInputException("bad IHDR: interlace invalid");
+		switch (colormodel) {
+		case 0:
+			break;
+		case 3:
+			if (bitspc == 16)
+				throw new PngjInputException("bad IHDR: bitdepth invalid");
+			break;
+		case 2:
+		case 4:
+		case 6:
+			if (bitspc != 8 && bitspc != 16)
+				throw new PngjInputException("bad IHDR: bitdepth invalid");
+			break;
+		default:
+			throw new PngjInputException("bad IHDR: invalid colormodel");
+		}
 	}
 }

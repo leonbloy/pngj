@@ -20,6 +20,23 @@ public class ImageLineHelper {
 
 	private final static double BIG_VALUE_NEG = Double.MAX_VALUE * (-0.5);
 
+	static int[] DEPTH_UNPACK_1 = new int[2];
+	static int[] DEPTH_UNPACK_2 = new int[4];
+	static int[] DEPTH_UNPACK_4 = new int[16];
+	static int[][] DEPTH_UNPACK = new int[5][];
+
+	static {
+		for (int i = 0; i < 2; i++)
+			DEPTH_UNPACK_1[i] = i * 255;
+		for (int i = 0; i < 4; i++)
+			DEPTH_UNPACK_2[i] = (i * 255) / 3;
+		for (int i = 0; i < 16; i++)
+			DEPTH_UNPACK_2[i] = (i * 255) / 15;
+		DEPTH_UNPACK[1] = DEPTH_UNPACK_1;
+		DEPTH_UNPACK[2] = DEPTH_UNPACK_2;
+		DEPTH_UNPACK[4] = DEPTH_UNPACK_2;
+	}
+
 	/**
 	 * Given an indexed line with a palette, unpacks as a RGB array, or RGBA if
 	 * a non nul PngChunkTRNS chunk is passed
@@ -28,12 +45,45 @@ public class ImageLineHelper {
 	 *            ImageLine as returned from PngReader
 	 * @param pal
 	 *            Palette chunk
+	 * @param trns
+	 *            Transparency chunk, can be null (absent)
 	 * @param buf
 	 *            Preallocated array, optional
 	 * @return R G B (A), one sample 0-255 per array element. Ready for
 	 *         pngw.writeRowInt()
 	 */
+	public static int[] palette2rgbx(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
+		return palette2rgb(line, pal, trns, buf, false);
+	}
+
+	@Deprecated
 	public static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
+		return palette2rgb(line, pal, trns, buf, false);
+	}
+
+	/**
+	 * Same as palette2rgbx , but returns rgba always, even if trns is null
+	 * 
+	 * @param line
+	 *            ImageLine as returned from PngReader
+	 * @param pal
+	 *            Palette chunk
+	 * @param trns
+	 *            Transparency chunk, can be null (absent)
+	 * @param buf
+	 *            Preallocated array, optional
+	 * @return R G B (A), one sample 0-255 per array element. Ready for
+	 *         pngw.writeRowInt()
+	 */
+	public static int[] palette2rgba(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
+		return palette2rgb(line, pal, trns, buf, true);
+	}
+
+	public static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, int[] buf) {
+		return palette2rgb(line, pal, null, buf, false);
+	}
+
+	private static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf, boolean alphaForced) {
 		boolean isalpha = trns != null;
 		int channels = isalpha ? 4 : 3;
 		int nsamples = line.imgInfo.cols * channels;
@@ -54,8 +104,179 @@ public class ImageLineHelper {
 		return buf;
 	}
 
-	public static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, int[] buf) {
-		return palette2rgb(line, pal, null, buf);
+	static void scaleUp(ImageLine line) {
+		if (line.imgInfo.indexed || line.imgInfo.bitDepth > 4)
+			return;
+		if (!line.samplesUnpacked)
+			throw new PngjException("packed line");
+		final int[] unpackArray = ImageLineHelper.DEPTH_UNPACK[line.imgInfo.bitDepth];
+		if (line.sampleType == SampleType.BYTE) {
+			for (int i = 0; i < line.elementsPerRow; i++)
+				line.scanlineb[i] = (byte) unpackArray[line.scanlineb[i]];
+		} else {
+			for (int i = 0; i < line.elementsPerRow; i++)
+				line.scanline[i] = unpackArray[line.scanline[i]];
+		}
+	}
+
+	static void scaleDown(ImageLine line) {
+		if (line.imgInfo.indexed || line.imgInfo.bitDepth > 4)
+			return;
+		if (!line.samplesUnpacked)
+			throw new PngjException("packed line");
+		final int scalefactor = 8 - line.imgInfo.bitDepth;
+		if (line.sampleType == SampleType.BYTE) {
+			for (int i = 0; i < line.elementsPerRow; i++)
+				line.scanlineb[i] = (byte) ((line.scanlineb[i] & 0xFF) >> scalefactor);
+		} else {
+			for (int i = 0; i < line.elementsPerRow; i++)
+				line.scanline[i] = line.scanline[i] >> scalefactor;
+		}
+	}
+
+	/**
+	 * warning: this only works with byte format, and alters ImageLine! For
+	 * packed formats, the line should be unpacked,
+	 */
+	static int[] lineToARGB32(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
+		if (line.sampleType != SampleType.BYTE)
+			throw new PngjException("This method is only for BYTE image lines");
+		boolean alphachannel = line.imgInfo.alpha;
+		int cols = line.imgInfo.cols;
+		if (line.imgInfo.packed)
+			if (line.samplesUnpacked) // unpacking with scale (unless it's indexed!)
+				scaleUp(line);
+			else
+				throw new PngjException("This method requires UnpackedMode");
+		if (buf == null || buf.length < cols)
+			buf = new int[cols];
+		int index, rgb, alpha, ga, g;
+		if (line.imgInfo.indexed) {// palette
+			int nindexesWithAlpha = trns != null ? trns.getPalletteAlpha().length : 0;
+			for (int c = 0; c < cols; c++) {
+				index = line.scanlineb[c] & 0xFF;
+				rgb = pal.getEntry(index);
+				alpha = index < nindexesWithAlpha ? trns.getPalletteAlpha()[index] : 255;
+				buf[c] = (alpha << 24) | rgb;
+			}
+		} else if (line.imgInfo.greyscale) { //
+			ga = trns != null ? trns.getGray() : -1;
+			for (int c = 0, c2 = 0; c < cols; c++) {
+				g = (line.scanlineb[c2++] & 0xFF);
+				alpha = alphachannel ? line.scanlineb[c2++] & 0xFF : (g != ga ? 255 : 0);
+				buf[c] = (alpha << 24) | g | (g << 8) | (g << 16);
+			}
+		} else { // true color
+			ga = trns != null ? trns.getRGB888() : -1;
+			for (int c = 0, c2 = 0; c < cols; c++) {
+				rgb = ((line.scanlineb[c2++] & 0xFF) << 16) | ((line.scanlineb[c2++] & 0xFF) << 8)
+						| (line.scanlineb[c2++] & 0xFF);
+				alpha = alphachannel ? line.scanlineb[c2++] & 0xFF : (rgb != ga ? 255 : 0);
+				buf[c] = (alpha << 24) | rgb;
+			}
+		}
+		return buf;
+	}
+
+	/**
+	 * warning: this only works with byte format, and alters ImageLine! For
+	 * packed formats, the line should be unpacked,
+	 */
+	static byte[] lineToRGBA8888(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, byte[] buf) {
+		if (line.sampleType != SampleType.BYTE)
+			throw new PngjException("This method is only for BYTE image lines");
+		boolean alphachannel = line.imgInfo.alpha;
+		int cols = line.imgInfo.cols;
+		if (line.imgInfo.packed)
+			if (line.samplesUnpacked) // unpacking with scale (unless it's indexed!)
+				scaleUp(line);
+			else
+				throw new PngjException("This method requires UnpackedMode");
+		int bytes = cols * 4;
+		if (buf == null || buf.length < bytes)
+			buf = new byte[bytes];
+		int index, rgb, ga;
+		byte val;
+		if (line.imgInfo.indexed) {// palette
+			int nindexesWithAlpha = trns != null ? trns.getPalletteAlpha().length : 0;
+			for (int c = 0, b = 0; c < cols; c++) {
+				index = line.scanlineb[c] & 0xFF;
+				rgb = pal.getEntry(index);
+				buf[b++] = (byte) ((rgb >> 16) & 0xFF);
+				buf[b++] = (byte) ((rgb >> 8) & 0xFF);
+				buf[b++] = (byte) (rgb & 0xFF);
+				buf[b++] = (byte) (index < nindexesWithAlpha ? trns.getPalletteAlpha()[index] : 255);
+			}
+		} else if (line.imgInfo.greyscale) { //
+			ga = trns != null ? trns.getGray() : -1;
+			for (int c = 0, b = 0; b < bytes;) {
+				val = line.scanlineb[c++];
+				buf[b++] = val;
+				buf[b++] = val;
+				buf[b++] = val;
+				buf[b++] = alphachannel ? line.scanlineb[c++] : ((int) (val & 0xFF) == ga) ? (byte) 0 : (byte) 255;
+			}
+		} else { // true color
+			if (alphachannel) // same format!
+				System.arraycopy(line.scanlineb, 0, buf, 0, bytes);
+			else {
+				for (int c = 0, b = 0; b < bytes;) {
+					buf[b++] = line.scanlineb[c++];
+					buf[b++] = line.scanlineb[c++];
+					buf[b++] = line.scanlineb[c++];
+					buf[b++] = (byte) (255); // tentative (probable)
+					if (trns != null && buf[b - 3] == (byte) trns.getRGB()[0] && buf[b - 2] == (byte) trns.getRGB()[1]
+							&& buf[b - 1] == (byte) trns.getRGB()[2]) // not very efficient, but not frecuent
+						buf[b - 1] = 0;
+				}
+			}
+		}
+		return buf;
+	}
+
+	static byte[] lineToRGB888(ImageLine line, PngChunkPLTE pal, byte[] buf) {
+		if (line.sampleType != SampleType.BYTE)
+			throw new PngjException("This method is only for BYTE image lines");
+		boolean alphachannel = line.imgInfo.alpha;
+		int cols = line.imgInfo.cols;
+		int bytes = cols * 3;
+		if (!line.samplesUnpacked) // unpacking with scale (unless it's indexed!)
+			ImageLine.unpackInplaceByte(line.imgInfo, line.scanlineb, line.scanlineb, !line.imgInfo.indexed);
+		else if (line.imgInfo.packed)
+			throw new PngjException("This method requires UnpackedMode=false");
+		if (buf == null || buf.length < bytes)
+			buf = new byte[bytes];
+		byte val;
+		int[] rgb = new int[3];
+		if (line.imgInfo.indexed) {// palette
+			for (int c = 0, b = 0; c < cols; c++) {
+				pal.getEntryRgb(line.scanlineb[c] & 0xFF, rgb);
+				buf[b++] = (byte) rgb[0];
+				buf[b++] = (byte) rgb[1];
+				buf[b++] = (byte) rgb[2];
+			}
+		} else if (line.imgInfo.greyscale) { //
+			for (int c = 0, b = 0; b < bytes;) {
+				val = line.scanlineb[c++];
+				buf[b++] = val;
+				buf[b++] = val;
+				buf[b++] = val;
+				if (alphachannel)
+					c++; // skip alpha
+			}
+		} else { // true color
+			if (!alphachannel) // same format!
+				System.arraycopy(line.scanlineb, 0, buf, 0, bytes);
+			else {
+				for (int c = 0, b = 0; b < bytes;) {
+					buf[b++] = line.scanlineb[c++];
+					buf[b++] = line.scanlineb[c++];
+					buf[b++] = line.scanlineb[c++];
+					c++;// skip alpha
+				}
+			}
+		}
+		return buf;
 	}
 
 	/**

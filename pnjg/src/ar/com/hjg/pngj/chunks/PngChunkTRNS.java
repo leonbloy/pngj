@@ -98,6 +98,12 @@ public class PngChunkTRNS extends PngChunkSingle {
 		return new int[] { red, green, blue };
 	}
 
+	public int getRGB888() {
+		if (imgInfo.greyscale || imgInfo.indexed)
+			throw new PngjException("only rgb or rgba images support this");
+		return (red << 16) | (green << 8) | blue;
+	}
+
 	public void setGray(int g) {
 		if (!imgInfo.greyscale)
 			throw new PngjException("only grayscale images support this");

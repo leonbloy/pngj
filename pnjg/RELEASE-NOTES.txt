@@ -2,8 +2,9 @@ PNGJ:  Release Notes  & History
 ==============================================================================
 
 Version 1.1.5? (?)  
-    - PngReader.reuseBuffersFrom() - supports bigger-than-needed buffers
-    - PngHelperInternal.skip() now doesn't allocate buffer now
+    - PngReader.reuseBuffersFrom() - allows to reuse buffers (supports bigger-than-needed buffers) and Inflater
+    - ChunkHelper has internally ThreadLocal inflater and deflater to improve ztxt compression/decompression
+    - PngHelperInternal.skip() doesn't allocate buffer now
     - Small efficiency improvement in FilterType.getByVal
     
 Version 1.1.2 (3 Dec 2012)   
