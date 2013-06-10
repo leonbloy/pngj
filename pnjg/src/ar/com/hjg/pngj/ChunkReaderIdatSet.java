@@ -1,122 +1,142 @@
 package ar.com.hjg.pngj;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.DataFormatException;
-import java.util.zip.Inflater;
+import java.util.Arrays;
 
-/**
- * A set of IDAT like chunks that are concatenated
- */
-public class ChunkReaderIdatSet {
+public class ChunkReaderIdatSet extends ChunkReaderDeflatedSet {
 
-	final Inflater inf;
-	String chunkid = null; // all chunks must be of the same type
-	byte[] row;
-	int rowsize = 0; // what amount of bytes is to be interpreted as a "row". this should equals inflated.length ; can change (for interlaced)
-	int rowfilled = 0; //  should grow until rowsize
-	int rown = -1; // only coincide with image row if non-interlaced 
-	public final boolean asyncMode;
-	boolean weAreDone = false;
+	protected byte rowUnfiltered[];
+	protected byte rowUnfilteredPrev[];
+	protected final ImageInfo imgInfo;
+	protected final PngDeinterlacer deinterlacer;
 
-	List<Integer> chunksLenghts = new ArrayList<Integer>(); // informational
-	List<Long> chunksOffsets = new ArrayList<Long>(); // informational
-
-	public boolean isDone() {
-		return weAreDone;
+	public ChunkReaderIdatSet(ImageInfo iminfo, PngDeinterlacer deinterlacer) {
+		super(deinterlacer != null ? deinterlacer.getBytesToRead() + 1 : iminfo.bytesPerRow + 1, iminfo.bytesPerRow + 1);
+		this.imgInfo = iminfo;
+		this.deinterlacer = deinterlacer;
 	}
 
-	IdatProcessRow callbackRow; // only for asyncmode
-
-	public ChunkReaderIdatSet() {
-		this(true);
-	}
-
-	public ChunkReaderIdatSet(boolean async) {
-		this.inf = new Inflater();
-		this.asyncMode = async;
-	}
-
-	public void setCallbackRow(IdatProcessRow callbackRow) {
-		this.callbackRow = callbackRow;
-	}
-
-	public boolean filled() {
-		return rowfilled == rowsize;
-	}
-
-	public int getRowsize() {
-		return rowsize;
-	}
-
-	void process() { // this does never block  - in async mode, a single call to this method can result in processing more than one row
-		if (rowsize == 0)
-			throw new PngjException("ChunkProcessorIdat error: rowsize not set?");
-		if (inf.finished() && !weAreDone)
-			throw new PngjInputException("ChunkProcessorIdat error: compressed stream ended prematurely ?");
-		if (asyncMode) { // 
-			while (!(inf.needsInput() || weAreDone || inf.finished())) {
-				trytofillrow();
-				if (filled()) {
-					int n = callbackRow.processRow(row, 0, rowsize, rown);
-					setNextRowSize(n);
-				}
-			}
-		} else { // sync mode
-			while (!(inf.finished() || inf.needsInput() || filled())) {
-				trytofillrow();
-			}
-		}
-		if (weAreDone)
-			inf.end();
-	}
-
-	//To be used in sync mode- you should call setNextRowSize after
-	public byte[] getRow() {
-		if (!filled())
-			throw new PngjExceptionInternal("getRow should only be called when filled==true");
-		return row;
-	}
-
-	/* 0 or negative if done if done - should be called before start processing */
-	public void setNextRowSize(int size) {
-		rowfilled = 0;
-		rown++;
-		if (size > 0) {
-			rowsize = size;
-			if (row == null || row.length != rowsize)
-				row = new byte[rowsize];
-		} else {
-			weAreDone = true;
-			if (!inf.finished()) // TODO: how to deal with this?
-				System.err.println("IDAT set ended but still the inflater has data??");
-		}
-	}
-
-	private void trytofillrow() {
-		int n;
-		try {
-			n = inf.inflate(row, rowfilled, rowsize - rowfilled);
-		} catch (DataFormatException e) {
-			throw new PngjInputException("error decompressing ", e);
-		}
-		rowfilled += n;
-	}
-
-	public void reportNewChunk(String id, int len, long offsetInPng) {
-		if (this.chunkid != null && !chunkid.equals(id))
-			throw new PngjInputException("Bad chunk id " + id + " expected " + chunkid);
-		this.chunkid = id;
-		chunksLenghts.add(len);
-		chunksOffsets.add(offsetInPng);
+	protected void postProcessRow() {
 	}
 
 	@Override
-	public String toString() {
-		StringBuilder sb = new StringBuilder("idatSet : " + chunkid + " done=" + weAreDone + " rows=" + rown);
-		for (int i = 0; i < chunksLenghts.size(); i++) {
-			sb.append("\n[").append(chunksLenghts.get(i)).append(",").append(chunksOffsets.get(i)).append("]\n");
-		}
-		return sb.toString();
+	protected boolean isAsyncMode() {
+		return false; // sync mode
 	}
+
+	public byte[] getUnfilteredRow() {
+		if (rowUnfiltered == null || rowUnfiltered.length < row.length) {
+			rowUnfiltered = new byte[row.length];
+			rowUnfilteredPrev = new byte[row.length];
+		}
+		if (currentRow() == 0)
+			Arrays.fill(rowUnfiltered, (byte) 0); // see swap that follows
+		// swap
+		byte[] tmp = rowUnfiltered;
+		rowUnfiltered = rowUnfilteredPrev;
+		rowUnfilteredPrev = tmp;
+		unfilterRow(currentBytes());
+		return rowUnfiltered;
+	}
+
+	public void advanceToNextRow() {
+		int bytesNextRow = imgInfo.bytesPerRow + 1;
+		if (deinterlacer != null) {
+			deinterlacer.nextRow();
+			bytesNextRow = deinterlacer.getBytesToRead() + 1;
+		}
+		setNextRowLen(bytesNextRow);
+	}
+
+	public int currentRow() { // 
+		return deinterlacer == null ? getRown() : deinterlacer.getCurrRowReal();
+	}
+
+	public int currentOffsetX() { // if interlaced this is in pixels
+		return deinterlacer == null ? 0 : deinterlacer.getoX();
+	}
+
+	public int currentdX() { // in pixels
+		return deinterlacer == null ? 1 : deinterlacer.getdX();
+	}
+
+	/**
+	 * not including first byte! (filter)
+	 * 
+	 * @return
+	 */
+	public int currentBytes() {
+		return deinterlacer == null ? imgInfo.bytesPerRow : deinterlacer.getBytesToRead();
+	}
+
+	// nbytes: NOT including the filter byte. leaves result in rowb
+	protected void unfilterRow(int nbytes) {
+		int ftn = row[0];
+		FilterType ft = FilterType.getByVal(ftn);
+		if (ft == null)
+			throw new PngjInputException("Filter type " + ftn + " invalid");
+		switch (ft) {
+		case FILTER_NONE:
+			unfilterRowNone(nbytes);
+			break;
+		case FILTER_SUB:
+			unfilterRowSub(nbytes);
+			break;
+		case FILTER_UP:
+			unfilterRowUp(nbytes);
+			break;
+		case FILTER_AVERAGE:
+			unfilterRowAverage(nbytes);
+			break;
+		case FILTER_PAETH:
+			unfilterRowPaeth(nbytes);
+			break;
+		default:
+			throw new PngjInputException("Filter type " + ftn + " not implemented");
+		}
+	}
+
+	private void unfilterRowAverage(final int nbytes) {
+		int i, j, x;
+		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= nbytes; i++, j++) {
+			x = j > 0 ? (rowUnfiltered[j] & 0xff) : 0;
+			rowUnfiltered[i] = (byte) (row[i] + (x + (rowUnfilteredPrev[i] & 0xFF)) / 2);
+		}
+	}
+
+	private void unfilterRowNone(final int nbytes) {
+		for (int i = 1; i <= nbytes; i++) {
+			rowUnfiltered[i] = (byte) (row[i]);
+		}
+	}
+
+	private void unfilterRowPaeth(final int nbytes) {
+		int i, j, x, y;
+		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= nbytes; i++, j++) {
+			x = j > 0 ? (rowUnfiltered[j] & 0xFF) : 0;
+			y = j > 0 ? (rowUnfilteredPrev[j] & 0xFF) : 0;
+			rowUnfiltered[i] = (byte) (row[i] + PngHelperInternal.filterPaethPredictor(x, rowUnfilteredPrev[i] & 0xFF,
+					y));
+		}
+	}
+
+	private void unfilterRowSub(final int nbytes) {
+		int i, j;
+		for (i = 1; i <= imgInfo.bytesPixel; i++) {
+			rowUnfiltered[i] = (byte) (row[i]);
+		}
+		for (j = 1, i = imgInfo.bytesPixel + 1; i <= nbytes; i++, j++) {
+			rowUnfiltered[i] = (byte) (row[i] + rowUnfiltered[j]);
+		}
+	}
+
+	private void unfilterRowUp(final int nbytes) {
+		for (int i = 1; i <= nbytes; i++) {
+			rowUnfiltered[i] = (byte) (row[i] + rowUnfilteredPrev[i]);
+		}
+	}
+
+	public PngDeinterlacer getDeinterlacer() {
+		return deinterlacer;
+	}
+
 }

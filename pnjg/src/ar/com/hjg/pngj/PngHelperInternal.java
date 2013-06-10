@@ -265,5 +265,38 @@ public class PngHelperInternal {
 	public final static long getCrctestVal(PngReader pngr) {
 		return pngr.getCrctestVal();
 	}
+	
+	/**
+	 * Prits a debug message (prints class name, method and line number)
+	 * @param obj : Object to print
+	 */
+	public static void debug(Object obj) {
+		debug(obj, 1, true);
+	}
+
+	/**
+	 * Prits a debug message (prints class name, method and line number)
+	 * @param obj : Object to print
+	 * @param offset : Offset N lines from stacktrace
+	 */
+	public static void debug(Object obj, int offset) {
+		debug(obj, offset, true);
+	}
+
+	/**
+	 * Prits a debug message (prints class name, method and line number)
+	 * to stderr and logFile
+	 * @param obj : Object to print
+	 * @param offset : Offset N lines from stacktrace
+	 * @param newLine : Print a newline char at the end ('\n')
+	 */
+	public static void debug(Object obj, int offset, boolean newLine) {
+		StackTraceElement ste = new Exception().getStackTrace()[1 + offset];
+		String steStr = ste.getClassName();
+		int ind = steStr.lastIndexOf('.');
+		steStr = steStr.substring(ind + 1);
+		steStr += "." + ste.getMethodName() + "(" + ste.getLineNumber() + "): " + (obj == null ? null : obj.toString());
+		System.out.println(steStr);
+	}
 
 }

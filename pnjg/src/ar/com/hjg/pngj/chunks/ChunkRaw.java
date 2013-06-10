@@ -38,6 +38,10 @@ public class ChunkRaw {
 	 * data is ot available
 	 */
 	public byte[] data = null;
+	/**
+	 * offset in the full PNG stream, only informational, for read (0=NA)
+	 */
+	private long offset = 0;
 
 	/**
 	 * A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes
@@ -46,30 +50,24 @@ public class ChunkRaw {
 	 */
 	public byte[] crcval = new byte[4];
 
-	/**
-	 * offset in the full PNG stream, only informational, for read
-	 */
-	private long offset = 0;
+	private CRC32 crcengine; // lazily instantiated
 
-	
-	private CRC32 crcengine;
-	
-	public  ChunkRaw(int len, String id, boolean alloc) {
+	public ChunkRaw(int len, String id, boolean alloc) {
 		this.len = len;
 		this.id = id;
 		this.idbytes = ChunkHelper.toBytes(id);
-		for(int i=0;i<4;i++) {
-			if( idbytes[i] <65 || idbytes[i]>122 || (idbytes[i]>90&&idbytes[i]<97)) throw new PngjException("Bad id chunk: must be ascii letters " + id);
+		for (int i = 0; i < 4; i++) {
+			if (idbytes[i] < 65 || idbytes[i] > 122 || (idbytes[i] > 90 && idbytes[i] < 97))
+				throw new PngjException("Bad id chunk: must be ascii letters " + id);
 		}
 		if (alloc)
 			allocData();
 	}
-	
-	public  ChunkRaw(int len, byte[] idbytes, boolean alloc) {
-		this(len,ChunkHelper.toString(idbytes),alloc);
+
+	public ChunkRaw(int len, byte[] idbytes, boolean alloc) {
+		this(len, ChunkHelper.toString(idbytes), alloc);
 	}
-	
-	
+
 	public void allocData() { // TODO: not public
 		if (data == null || data.length < len)
 			data = new byte[len];
@@ -79,7 +77,7 @@ public class ChunkRaw {
 	 * this is called after setting data, before writing to os
 	 */
 	private void computeCrcForWriting() {
-		crcengine =new CRC32();
+		crcengine = new CRC32();
 		crcengine.update(idbytes, 0, 4);
 		if (len > 0)
 			crcengine.update(data, 0, len); //
@@ -89,6 +87,8 @@ public class ChunkRaw {
 	/**
 	 * Computes the CRC and writes to the stream. If error, a
 	 * PngjOutputException is thrown
+	 * 
+	 * Note that this is only used for non
 	 */
 	public void writeChunk(OutputStream os) {
 		if (idbytes.length != 4)
@@ -102,14 +102,13 @@ public class ChunkRaw {
 	}
 
 	public void checkCrc() {
-		if(crcengine==null) crcengine = new CRC32();
 		int crcComputed = (int) crcengine.getValue();
 		int crcExpected = PngHelperInternal.readInt4fromBytes(crcval, 0);
 		if (crcComputed != crcExpected)
 			throw new PngjBadCrcException("chunk: " + this.toString() + " expected=" + crcExpected + " read="
 					+ crcComputed);
 	}
-	
+
 	ByteArrayInputStream getAsByteStream() { // only the data
 		return new ByteArrayInputStream(data);
 	}
@@ -127,7 +126,8 @@ public class ChunkRaw {
 	}
 
 	public void updateCrc(byte[] buf, int off, int len) {
-		if(crcengine==null) crcengine = new CRC32();
+		if (crcengine == null)
+			crcengine = new CRC32();
 		crcengine.update(buf, off, len);
 	}
 

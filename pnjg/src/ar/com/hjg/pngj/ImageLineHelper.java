@@ -31,7 +31,7 @@ public class ImageLineHelper {
 		for (int i = 0; i < 4; i++)
 			DEPTH_UNPACK_2[i] = (i * 255) / 3;
 		for (int i = 0; i < 16; i++)
-			DEPTH_UNPACK_2[i] = (i * 255) / 15;
+			DEPTH_UNPACK_4[i] = (i * 255) / 15;
 		DEPTH_UNPACK[1] = DEPTH_UNPACK_1;
 		DEPTH_UNPACK[2] = DEPTH_UNPACK_2;
 		DEPTH_UNPACK[4] = DEPTH_UNPACK_2;

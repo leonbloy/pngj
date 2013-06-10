@@ -16,7 +16,7 @@ import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
-import ar.com.hjg.pngj.chunks.PngChunkSkipped;
+import ar.com.hjg.pngj.chunks.PngChunkUnbuffered;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
@@ -123,11 +123,8 @@ public class PngReader {
 			throw new PngjInputException("IHDR not found as first chunk??? [" + ChunkHelper.toString(chunkid) + "]");
 		offset += 4;
 		PngChunkIHDR ihdr = (PngChunkIHDR) readChunk(chunkid, clen, false);
-		boolean alpha = (ihdr.getColormodel()& 0x04) != 0;
-		boolean palette = (ihdr.getColormodel() & 0x01) != 0;
-		boolean grayscale = (ihdr.getColormodel() == 0 || ihdr.getColormodel() == 4);
 		// creates imginfo and imgline, and allocates buffers
-		imgInfo = new ImageInfo(ihdr.getCols(), ihdr.getRows(), ihdr.getBitspc(), alpha, grayscale, palette);
+		imgInfo = ihdr.createImageInfo();
 		interlaced = ihdr.getInterlaced() == 1;
 		deinterlacer = interlaced ? new PngDeinterlacer(imgInfo) : null;
 		buffersLen = imgInfo.bytesPerRow + 1;
@@ -377,7 +374,7 @@ public class PngReader {
 			PngHelperInternal.skipBytes(inputStream, clen);
 			PngHelperInternal.readInt4(inputStream); // skip - we dont call PngHelperInternal.skipBytes(inputStream,
 			// clen + 4) for risk of overflow
-			pngChunk = new PngChunkSkipped(chunkidstr, imgInfo, clen);
+			pngChunk = new PngChunkUnbuffered(chunkidstr, imgInfo, clen);
 		} else {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
 			chunk.readChunkData(inputStream, crcEnabled || critical);
@@ -767,9 +764,9 @@ public class PngReader {
 				readFirstChunks();
 			allocateBuffers();
 			if (interlaced)
-				Arrays.fill(rowb, (byte) 0); // new subimage: reset filters: this is enough, see the swap that happens lines
+				Arrays.fill(rowb, (byte) 0); // new subimage: reset filters: this is enough, see the swap that happens below
 		}
-		// below
+		
 		int bytesRead = imgInfo.bytesPerRow; // NOT including the filter byte
 		if (interlaced) {
 			if (nrow < 0 || nrow > deinterlacer.getRows() || (nrow != 0 && nrow != deinterlacer.getCurrRowSubimg() + 1))

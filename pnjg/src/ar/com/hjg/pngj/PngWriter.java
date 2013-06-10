@@ -15,7 +15,7 @@ import ar.com.hjg.pngj.chunks.ChunksListForWrite;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
-import ar.com.hjg.pngj.chunks.PngChunkSkipped;
+import ar.com.hjg.pngj.chunks.PngChunkUnbuffered;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
@@ -407,7 +407,7 @@ public class PngWriter {
 						&& !(ChunkHelper.isUnknown(chunk) || text || chunk.id.equals(ChunkHelper.hIST) || chunk.id
 								.equals(ChunkHelper.tIME)))
 					copy = true;
-				if (chunk instanceof PngChunkSkipped)
+				if (chunk instanceof PngChunkUnbuffered)
 					copy = false;
 			}
 			if (copy) {
@@ -685,5 +685,7 @@ public class PngWriter {
 	public void setUseUnPackedMode(boolean useUnpackedMode) {
 		this.unpackedMode = useUnpackedMode;
 	}
+	
+
 
 }

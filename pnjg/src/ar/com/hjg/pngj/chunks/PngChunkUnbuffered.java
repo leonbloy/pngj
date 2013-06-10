@@ -4,11 +4,11 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * Pseudo chunk type, for chunks that were skipped on reading
+ * Pseudo chunk type, for chunks that were not buffered on reading (skip or idat-like)
  */
-public class PngChunkSkipped extends PngChunk {
+public class PngChunkUnbuffered extends PngChunk {
 
-	public PngChunkSkipped(String id, ImageInfo info, int clen) {
+	public PngChunkUnbuffered(String id, ImageInfo info, int clen) {
 		super(id, info);
 		this.length = clen;
 	}

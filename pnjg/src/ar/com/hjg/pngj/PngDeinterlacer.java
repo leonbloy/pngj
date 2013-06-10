@@ -3,11 +3,12 @@ package ar.com.hjg.pngj;
 import java.util.Random;
 
 // you really dont' want to peek inside this
-class PngDeinterlacer {
+public class PngDeinterlacer {
 	private final ImageInfo imi;
 	private int pass; // 1-7
 	private int rows, cols, dY, dX, oY, oX, oXsamples, dXsamples; // at current pass
-	// current row in the virtual subsampled image; this incrementes from 0 to cols/dy 7 times
+
+	// current row in the virtual subsampled image; this increments (by 1) from 0 to rows/dy 7 times
 	private int currRowSubimg = -1;
 	// in the real image, this will cycle from 0 to im.rows in different steps, 7 times
 	private int currRowReal = -1;
@@ -16,8 +17,7 @@ class PngDeinterlacer {
 	private final int packedMask;
 	private final int packedShift;
 
-	private int[][] imageInt; // FULL image -only used for PngWriter as temporary storage
-	private short[][] imageShort;
+	private int[][] imageInt; // FULL image -only used for PngReader as temporary storage
 	private byte[][] imageByte;
 
 	PngDeinterlacer(ImageInfo iminfo) {
@@ -45,6 +45,21 @@ class PngDeinterlacer {
 		currRowReal = n * dY + oY;
 		if (currRowReal < 0 || currRowReal >= imi.rows)
 			throw new PngjExceptionInternal("bad row - this should not happen");
+	}
+
+	/** return false is no more rows  */
+	boolean nextRow() {
+		if (getCols() == 0|| currRowSubimg >= rows-1) {
+			if (pass == 7)
+				return false;
+			setPass(pass + 1);
+			if (getCols() == 0 || getRows()==0)
+				return nextRow();
+			setRow(0);
+		} else {
+			setRow(currRowSubimg + 1);
+		}
+		return true;
 	}
 
 	void setPass(int p) {
@@ -226,20 +241,16 @@ class PngDeinterlacer {
 		return getCols();
 	}
 
+	public int getBytesToRead() { // not including filter byte
+		return (imi.bitspPixel * getPixelsToRead() + 7) / 8;
+	}
+
 	int[][] getImageInt() {
 		return imageInt;
 	}
 
 	void setImageInt(int[][] imageInt) {
 		this.imageInt = imageInt;
-	}
-
-	short[][] getImageShort() {
-		return imageShort;
-	}
-
-	void setImageShort(short[][] imageShort) {
-		this.imageShort = imageShort;
 	}
 
 	byte[][] getImageByte() {
@@ -268,6 +279,27 @@ class PngDeinterlacer {
 		}
 		if (np != 0)
 			throw new PngjExceptionInternal("wtf??" + ih.imi);
+	}
+
+	public int getdY() {
+		return dY;
+	}
+
+	/*
+	 * in pixels 
+	 */
+	public int getdX() {
+		return dX;
+	}
+
+	public int getoY() {
+		return oY;
+	}
+	/*
+	 * in pixels 
+	 */
+	public int getoX() {
+		return oX;
 	}
 
 	public static void main(String[] args) {

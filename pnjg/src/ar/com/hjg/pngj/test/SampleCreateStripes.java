@@ -22,6 +22,7 @@ public class SampleCreateStripes {
 		png.getMetadata().setText(PngChunkTextVar.KEY_Software, "pngj test");
 		double t1 = (cols + rows) / 16.0; // typical period
 		ImageLine iline = new ImageLine(png.imgInfo);
+		png.setIdatMaxSize(2000);
 		for (int i = 0; i < rows; i++) {
 			double fase = Math.sin(1.3 * i / t1);
 			for (int j = 0; j < cols; j++) {
