@@ -48,7 +48,6 @@ public class ImageLine {
 
 	public enum SampleType {
 		INT, // 4 bytes per sample
-		// SHORT, // 2 bytes per sample
 		BYTE // 1 byte per sample
 	}
 
@@ -137,9 +136,11 @@ public class ImageLine {
 		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
 			return; // nothing to do
-		if(scale && iminfo.indexed) scale=false;
+		if (scale && iminfo.indexed)
+			scale = false;
 		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
-		final int[] unpackArray = bitDepth==1 ? ImageLineHelper.DEPTH_UNPACK_1 : (bitDepth==4 ? ImageLineHelper.DEPTH_UNPACK_4 : ImageLineHelper.DEPTH_UNPACK_2);
+		final int[] unpackArray = bitDepth == 1 ? ImageLineHelper.DEPTH_UNPACK_1
+				: (bitDepth == 4 ? ImageLineHelper.DEPTH_UNPACK_4 : ImageLineHelper.DEPTH_UNPACK_2);
 		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
 		int mask, offset, v;
 		if (offset0 != 8) {
@@ -318,6 +319,41 @@ public class ImageLine {
 	 */
 	public String toString() {
 		return "row=" + rown + " cols=" + imgInfo.cols + " bpc=" + imgInfo.bitDepth + " size=" + scanline.length;
+	}
+
+	/*
+	 * only for non-interlaced - len doesn't include inital filterbyte
+	 * does not unpack
+	 */
+	public void fromPngRaw(byte[] raw, int len) { //  
+		setFilterUsed(FilterType.getByVal(raw[0]));
+		if (len != imgInfo.bytesPerRow)
+			throw new PngjException("Bad line len");// should not happen
+		if (sampleType == SampleType.BYTE) {
+			if (imgInfo.bitDepth <= 8)
+				System.arraycopy(raw, 1, scanlineb, 0, imgInfo.bytesPerRow);
+			else
+				for (int i = 0, j = 1; j < imgInfo.bytesPerRow; i++, j += 2)
+					scanlineb[i] = raw[j];// 16 bits in 1 byte: this discards the LSB!!!
+			/*if (imgInfo.packed && samplesUnpacked)
+				ImageLine.unpackInplaceByte(imgInfo, scanlineb, scanlineb, false);*/
+		} else {
+			throw new RuntimeException("not implemented"); //TODO
+		}
+	}
+
+	// nbytes does not include filter byte, offset and step are in bytes, only for interlaced; this doesn't unpack!
+	public void fromPngRaw(byte[] raw, int pixels, int offset, int step) {
+		setFilterUsed(FilterType.getByVal(raw[0]));
+		if (sampleType == SampleType.INT) {
+			throw new RuntimeException("not implemented"); //TODO
+		} else {
+			throw new RuntimeException("not implemented"); //TODO
+		}
+	}
+
+	public void toPngRaw(byte[] raw, int len) { // only for non-interlaced 
+		throw new RuntimeException("not implemented"); //TODO
 	}
 
 	/**

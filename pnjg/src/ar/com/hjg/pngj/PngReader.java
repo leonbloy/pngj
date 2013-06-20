@@ -377,7 +377,7 @@ public class PngReader {
 			pngChunk = new PngChunkUnbuffered(chunkidstr, imgInfo, clen);
 		} else {
 			ChunkRaw chunk = new ChunkRaw(clen, chunkid, true);
-			chunk.readChunkData(inputStream, crcEnabled || critical);
+		//!!	chunk.readChunkData(inputStream, crcEnabled || critical);
 			pngChunk = PngChunk.factory(chunk, imgInfo);
 			if (!pngChunk.crit)
 				bytesChunksLoaded += chunk.len;
@@ -542,10 +542,11 @@ public class PngReader {
 				bytesread = readRowRaw(rowNum + 1); // read rows, perhaps skipping if necessary
 			decodeLastReadRowToInt(buffer, bytesread);
 		} else { // interlaced
-			if (deinterlacer.getImageInt() == null)
+		/*	if (deinterlacer.getImageInt() == null)
 				deinterlacer.setImageInt(readRowsInt().scanlines); // read all image and store it in deinterlacer
 			System.arraycopy(deinterlacer.getImageInt()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
 					: imgInfo.samplesPerRowPacked);
+					*/
 		}
 		return buffer;
 	}
@@ -580,10 +581,11 @@ public class PngReader {
 				bytesread = readRowRaw(rowNum + 1); // read rows, perhaps skipping if necessary
 			decodeLastReadRowToByte(buffer, bytesread);
 		} else { // interlaced
-			if (deinterlacer.getImageByte() == null)
+		/*	if (deinterlacer.getImageByte() == null)
 				deinterlacer.setImageByte(readRowsByte().scanlinesb); // read all image and store it in deinterlacer
 			System.arraycopy(deinterlacer.getImageByte()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
 					: imgInfo.samplesPerRowPacked);
+					*/
 		}
 		return buffer;
 	}
@@ -608,7 +610,7 @@ public class PngReader {
 			ImageLine.unpackInplaceInt(imgInfo, buffer, buffer, false);
 	}
 
-	protected void decodeLastReadRowToByte(byte[] buffer, int bytesRead) {
+	protected void decodeLastReadRowToByte(byte[] buffer, int bytesRead) { //bytesRead does not inlcude the filter byte
 		if (imgInfo.bitDepth <= 8)
 			System.arraycopy(rowb, 1, buffer, 0, bytesRead);
 		else

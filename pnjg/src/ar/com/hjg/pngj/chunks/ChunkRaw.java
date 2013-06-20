@@ -109,6 +109,12 @@ public class ChunkRaw {
 					+ crcComputed);
 	}
 
+	public void updateCrc(byte[] buf, int off, int len) {
+		if (crcengine == null)
+			crcengine = new CRC32();
+		crcengine.update(buf, off, len);
+	}
+
 	ByteArrayInputStream getAsByteStream() { // only the data
 		return new ByteArrayInputStream(data);
 	}
@@ -125,10 +131,32 @@ public class ChunkRaw {
 		return "chunkid=" + ChunkHelper.toString(idbytes) + " len=" + len;
 	}
 
-	public void updateCrc(byte[] buf, int off, int len) {
-		if (crcengine == null)
-			crcengine = new CRC32();
-		crcengine.update(buf, off, len);
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((id == null) ? 0 : id.hashCode());
+		result = prime * result + (int) (offset ^ (offset >>> 32));
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ChunkRaw other = (ChunkRaw) obj;
+		if (id == null) {
+			if (other.id != null)
+				return false;
+		} else if (!id.equals(other.id))
+			return false;
+		if (offset != other.offset)
+			return false;
+		return true;
 	}
 
 }

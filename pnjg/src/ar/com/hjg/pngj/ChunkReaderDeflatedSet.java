@@ -146,6 +146,12 @@ public class ChunkReaderDeflatedSet {
 		return allDone;
 	}
 
+	public void end() {
+		if(inf!=null && !inf.finished())
+			inf.end();
+		allDone=true;
+	}
+
 	public boolean isDataPendingForConsumer() {
 		return dataPendingForConsumer;
 	}

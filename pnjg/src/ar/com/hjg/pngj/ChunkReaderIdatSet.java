@@ -24,17 +24,6 @@ public class ChunkReaderIdatSet extends ChunkReaderDeflatedSet {
 	}
 
 	public byte[] getUnfilteredRow() {
-		if (rowUnfiltered == null || rowUnfiltered.length < row.length) {
-			rowUnfiltered = new byte[row.length];
-			rowUnfilteredPrev = new byte[row.length];
-		}
-		if (currentRow() == 0)
-			Arrays.fill(rowUnfiltered, (byte) 0); // see swap that follows
-		// swap
-		byte[] tmp = rowUnfiltered;
-		rowUnfiltered = rowUnfilteredPrev;
-		rowUnfilteredPrev = tmp;
-		unfilterRow(currentBytes());
 		return rowUnfiltered;
 	}
 
@@ -67,9 +56,24 @@ public class ChunkReaderIdatSet extends ChunkReaderDeflatedSet {
 	public int currentBytes() {
 		return deinterlacer == null ? imgInfo.bytesPerRow : deinterlacer.getBytesToRead();
 	}
+	
+	public void unfilterRow() {
+		unfilterRow(currentBytes());
+	}
 
 	// nbytes: NOT including the filter byte. leaves result in rowb
-	protected void unfilterRow(int nbytes) {
+	public void unfilterRow(int nbytes) {
+		if (rowUnfiltered == null || rowUnfiltered.length < row.length) {
+			rowUnfiltered = new byte[row.length];
+			rowUnfilteredPrev = new byte[row.length];
+		}
+		if (currentRow() == 0)
+			Arrays.fill(rowUnfiltered, (byte) 0); // see swap that follows
+		// swap
+		byte[] tmp = rowUnfiltered;
+		rowUnfiltered = rowUnfilteredPrev;
+		rowUnfilteredPrev = tmp;
+		
 		int ftn = row[0];
 		FilterType ft = FilterType.getByVal(ftn);
 		if (ft == null)

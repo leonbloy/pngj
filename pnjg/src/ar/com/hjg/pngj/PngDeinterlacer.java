@@ -6,7 +6,9 @@ import java.util.Random;
 public class PngDeinterlacer {
 	private final ImageInfo imi;
 	private int pass; // 1-7
-	private int rows, cols, dY, dX, oY, oX, oXsamples, dXsamples; // at current pass
+	private int rows, cols; 
+	int dY, dX, oY, oX; // current step and offset (in pixles)
+	int oXsamples, dXsamples; // step in samples
 
 	// current row in the virtual subsampled image; this increments (by 1) from 0 to rows/dy 7 times
 	private int currRowSubimg = -1;
@@ -16,9 +18,6 @@ public class PngDeinterlacer {
 	private final int packedValsPerPixel;
 	private final int packedMask;
 	private final int packedShift;
-
-	private int[][] imageInt; // FULL image -only used for PngReader as temporary storage
-	private byte[][] imageByte;
 
 	PngDeinterlacer(ImageInfo iminfo) {
 		this.imi = iminfo;
@@ -243,22 +242,6 @@ public class PngDeinterlacer {
 
 	public int getBytesToRead() { // not including filter byte
 		return (imi.bitspPixel * getPixelsToRead() + 7) / 8;
-	}
-
-	int[][] getImageInt() {
-		return imageInt;
-	}
-
-	void setImageInt(int[][] imageInt) {
-		this.imageInt = imageInt;
-	}
-
-	byte[][] getImageByte() {
-		return imageByte;
-	}
-
-	void setImageByte(byte[][] imageByte) {
-		this.imageByte = imageByte;
 	}
 
 	static void test() {

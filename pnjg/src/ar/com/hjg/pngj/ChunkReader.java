@@ -113,6 +113,31 @@ public abstract class ChunkReader {
 		throw new PngjException("processData not implemented");
 	}
 
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((chunkRaw == null) ? 0 : chunkRaw.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) { // delegates to chunkraw
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		ChunkReader other = (ChunkReader) obj;
+		if (chunkRaw == null) {
+			if (other.chunkRaw != null)
+				return false;
+		} else if (!chunkRaw.equals(other.chunkRaw))
+			return false;
+		return true;
+	}
+
 	/** will be called when full chunk, including crc, is read (for all modes) */
 	protected abstract void chunkDone();
 }

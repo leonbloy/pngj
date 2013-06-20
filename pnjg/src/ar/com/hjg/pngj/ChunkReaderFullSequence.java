@@ -12,17 +12,10 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 	protected boolean signatureDone = false;
 	protected boolean done = false; // for end chunk, or error
 
-	protected long readBytes = 0;
+	protected long bytesRead = 0;
 	protected ChunkReader curChunkReader;
-	public ChunkReader getCurChunkReader() {
-		return curChunkReader;
-	}
 
-	public ChunkReaderDeflatedSet getCurIdatSetReader() {
-		return curIdatSetReader;
-	}
-
-	protected ChunkReaderDeflatedSet curIdatSetReader;
+	protected ChunkReaderDeflatedSet curReaderDeflatedSet;
 	protected IChunkProcessor chunkProcessor=null; // non null for callback mode
 
 	public ChunkReaderFullSequence() {
@@ -42,30 +35,28 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 			throw new PngjInputException("Bad len: " + len);
 		int processed = 0;
 		if (signatureDone) {
-			if (curChunkReader == null || curChunkReader.isDone()) { // new chunk: read 8 bytes
-				int t = 8 - buf0len;
-				if (t > len)
-					t = len;
-				System.arraycopy(buf, off, buf0, buf0len, t);
-				buf0len += t;
-				processed += t;
-				len -= t;
-				off += t;
+			if (curChunkReader == null || curChunkReader.isDone()) { // new chunk: read first 8 bytes
+				int read0 = 8 - buf0len;
+				if (read0 > len)
+					read0 = len;
+				System.arraycopy(buf, off, buf0, buf0len, read0);
+				buf0len += read0;
+				processed += read0;
+				len -= read0;
+				off += read0;
 				if (buf0len == 8) {
 					startNewChunk(PngHelperInternal.readInt4fromBytes(buf0, 0), ChunkHelper.toString(buf0, 4, 4));
 					buf0len = 0;
 				}
-				return processed + feed(buf, off, len);
 			} 
-			// reading chunk 
-			processed += curChunkReader.feedBytes(buf, off, len);
-		} else { // parsing signature
+			else	// reading chunk, delegate to curChunkReader
+				processed += curChunkReader.feedBytes(buf, off, len);
+		} else { // reading signature
 			int read = 8 - buf0len;
 			if (read > len)
 				read = len;
 			System.arraycopy(buf, off, buf0, buf0len, read);
 			buf0len += read;
-			readBytes += read;
 			if (buf0len == 8) {
 				processSignature(buf0);
 				buf0len = 0;
@@ -73,6 +64,7 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 			}
 			processed += read;
 		}
+		bytesRead += processed;
 		return processed;
 	}
 
@@ -104,21 +96,21 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 		boolean skip = chunkProcessor.shouldSkipContent(len, id);
 		boolean isIdatType = chunkProcessor.isIdatLike(id);
 		if (isIdatType && !skip) {
-			if (curIdatSetReader == null || curIdatSetReader.isAllDone()) {
-				curIdatSetReader = chunkProcessor.createNewIdatSetReader(id);
+			if (curReaderDeflatedSet == null || curReaderDeflatedSet.isAllDone()) {
+				curReaderDeflatedSet = chunkProcessor.createNewIdatSetReader(id);
 			}
-			curChunkReader = new ChunkReaderDeflated(len, id, checkCrc, readBytes, curIdatSetReader) {
+			curChunkReader = new ChunkReaderDeflated(len, id, checkCrc, bytesRead, curReaderDeflatedSet) {
 				@Override
 				protected void chunkDone() {
 					processChunk(this);
 				}
 			};
-			curIdatSetReader.newChunk((ChunkReaderDeflated) curChunkReader);
+			curReaderDeflatedSet.newChunk((ChunkReaderDeflated) curChunkReader);
 		} else {
-			if (curIdatSetReader != null && !curIdatSetReader.isAllDone()
-					&& !curIdatSetReader.allowOtherChunksInBetween())
+			if (curReaderDeflatedSet != null && !curReaderDeflatedSet.isAllDone()
+					&& !curReaderDeflatedSet.allowOtherChunksInBetween())
 				throw new PngjInputException("chunks interleaved with IDAT not supported");
-			curChunkReader = new ChunkReader(len, id, readBytes, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
+			curChunkReader = new ChunkReader(len, id, bytesRead, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
 				@Override
 				protected void chunkDone() {
 					processChunk(this);
@@ -135,7 +127,7 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 	 * the start or end of signature, or we are done
 	 */
 	public boolean isAtChunkBoundary() {
-		return readBytes == 0 || readBytes == 8 || done || curChunkReader.isDone();
+		return bytesRead == 0 || bytesRead == 8 || done || curChunkReader.isDone();
 	}
 
 	protected void processSignature(byte[] buf) {
@@ -152,7 +144,19 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 	}
 
 	public long getReadBytes() {
-		return readBytes;
+		return bytesRead;
 	}
 
+	public ChunkReader getCurChunkReader() {
+		return curChunkReader;
+	}
+
+	public ChunkReaderDeflatedSet getCurReaderDeflatedSet() {
+		return curReaderDeflatedSet;
+	}
+	
+	public void close() { // forced closing
+		if(curReaderDeflatedSet!=null) 
+			curReaderDeflatedSet.end();
+	}
 }

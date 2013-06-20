@@ -85,6 +85,8 @@ public class ImageLines {
 	public int matrixRowToImageRow(int mrow) {
 		return mrow * rowStep + rowOffset;
 	}
+	
+
 
 	/**
 	 * Returns a ImageLine is backed by the matrix, no allocation done
@@ -104,4 +106,6 @@ public class ImageLines {
 		imline.setRown(matrixRowToImageRow(mrow));
 		return imline;
 	}
+
+
 }
