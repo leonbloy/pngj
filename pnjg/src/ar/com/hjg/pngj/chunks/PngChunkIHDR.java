@@ -17,6 +17,7 @@ import ar.com.hjg.pngj.PngjInputException;
 public class PngChunkIHDR extends PngChunkSingle {
 	public final static String ID = ChunkHelper.IHDR;
 
+	
 	private int cols;
 	private int rows;
 	private int bitspc;
@@ -27,7 +28,7 @@ public class PngChunkIHDR extends PngChunkSingle {
 
 	// http://www.w3.org/TR/PNG/#11IHDR
 	//
-	public PngChunkIHDR(ImageInfo info) {
+	public PngChunkIHDR(ImageInfo info) { // argument is normally null here, not used
 		super(ID, info);
 	}
 
@@ -172,5 +173,11 @@ public class PngChunkIHDR extends PngChunkSingle {
 		default:
 			throw new PngjInputException("bad IHDR: invalid colormodel");
 		}
+	}
+	
+	public static ImageInfo createImageInfoFromRaw(ChunkRaw c){
+		PngChunkIHDR ch = new PngChunkIHDR(null);
+		ch.parseFromRaw(c);
+		return ch.createImageInfo();
 	}
 }

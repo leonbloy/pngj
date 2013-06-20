@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj;
 
 public interface IChunkProcessor {
+	
 	public void processChunkEnd(ChunkReader chunkReader);
 
 	public void processChunkStart(ChunkReader chunkReader);
@@ -9,7 +10,7 @@ public interface IChunkProcessor {
 
 	public boolean shouldSkipContent(int len, String id);
 
-	public boolean isIdatLike(String id);
+	public boolean isIdatKind(String id);
 
 	public ChunkReaderDeflatedSet createNewIdatSetReader(String id);
 }

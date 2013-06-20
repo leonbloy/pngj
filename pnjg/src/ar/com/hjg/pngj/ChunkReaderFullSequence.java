@@ -6,6 +6,14 @@ import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 
+/**
+ * Consumes a stream of bytes from a PNG image.
+ * 
+ * It can operate in callback (async, nonblocking) mode, or in polling (sync) mode
+ *  
+ * 
+ *
+ */
 public class ChunkReaderFullSequence implements IBytesConsumer {
 	private byte[] buf0 = new byte[8]; // for signature or chunk starts
 	private int buf0len = 0;
@@ -94,8 +102,8 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 	protected void startNewChunk(int len, String id) { // this creates the ChunkReader
 		boolean checkCrc = chunkProcessor.shouldCheckCrc(len, id);
 		boolean skip = chunkProcessor.shouldSkipContent(len, id);
-		boolean isIdatType = chunkProcessor.isIdatLike(id);
-		if (isIdatType && !skip) {
+		boolean isIdatType = chunkProcessor.isIdatKind(id);
+		if (isIdatType && !skip) { // IDAT with HOT PROCESS mode
 			if (curReaderDeflatedSet == null || curReaderDeflatedSet.isAllDone()) {
 				curReaderDeflatedSet = chunkProcessor.createNewIdatSetReader(id);
 			}
@@ -106,14 +114,18 @@ public class ChunkReaderFullSequence implements IBytesConsumer {
 				}
 			};
 			curReaderDeflatedSet.newChunk((ChunkReaderDeflated) curChunkReader);
-		} else {
+		} else { // BUFFER or SKIP (might include skipped Idat like chunks)
 			if (curReaderDeflatedSet != null && !curReaderDeflatedSet.isAllDone()
 					&& !curReaderDeflatedSet.allowOtherChunksInBetween())
-				throw new PngjInputException("chunks interleaved with IDAT not supported");
+				throw new PngjInputException("chunks interleaved with IDAT-like chunks not allowed");
 			curChunkReader = new ChunkReader(len, id, bytesRead, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
 				@Override
 				protected void chunkDone() {
 					processChunk(this);
+				}
+				@Override
+				protected void processData(byte[] buf, int off, int len) {
+					throw new PngjExceptionInternal("should never happen");
 				}
 			};
 			if (!checkCrc)

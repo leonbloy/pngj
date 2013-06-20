@@ -85,7 +85,7 @@ public class TestPngReaderAsync {
 				return false;
 			}
 
-			public boolean isIdatLike(String id) {
+			public boolean isIdatKind(String id) {
 				return false;
 			}
 
@@ -119,7 +119,7 @@ public class TestPngReaderAsync {
 				return false;
 			}
 
-			public boolean isIdatLike(String id) {
+			public boolean isIdatKind(String id) {
 				return id.equals(PngChunkIDAT.ID);
 			}
 

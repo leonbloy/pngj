@@ -111,7 +111,7 @@ public class ChunkReaderFullSequence2 extends ChunkReaderFullSequence implements
 		return false;
 	}
 
-	public boolean isIdatLike(String id) {
+	public boolean isIdatKind(String id) {
 		return id.equals(PngChunkIDAT.ID);
 	}
 

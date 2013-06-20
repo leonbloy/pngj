@@ -9,19 +9,41 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
 public abstract class ChunkReader {
 
 	protected final ChunkReaderMode mode;
-	private boolean crcCheck; // default: false for SKIP, true elsewhere
-
 	private final ChunkRaw chunkRaw;
 
-	private int read = 0; // bytes read, data only
+	private boolean crcCheck; // by default, this is false for SKIP, true elsewhere
+
+	/**
+	 * How many bytes have been read for this chunk, data only
+	 */
+	protected int read = 0; 
 	private int crcn = 0; // how many bytes have been read from crc 
 
+	/**
+	 * Modes of ChunkReader chunk processing. 
+	 */
 	public enum ChunkReaderMode {
-		HOT_PROCESS, // does not store content, calls processData 
-		BUFFER, // stores full content in buffer, calls chunkDone at the end
-		SKIP; // does not store nor process - implies crcCheck=false (default). it calls chunkDone
+		/**
+		 * Stores full chunk data in buffer
+		 */
+		BUFFER, 
+		/**
+		 * Does not store content, processes on the fly, calling processData() for each partial read
+		 */
+		HOT_PROCESS, 
+		/**
+		 * Does not store nor process - implies crcCheck=false (by default). 
+		 */
+		SKIP;  
 	}
 
+	/**
+	 * The constructor creates also a chunkRaw, preallocated if mode = ChunkReaderMode.BUFFER
+	 * @param clen
+	 * @param id
+	 * @param offsetInPng Informational, is stored in chunkRaw
+	 * @param mode
+	 */
 	public ChunkReader(int clen, String id, long offsetInPng, ChunkReaderMode mode) {
 		if (mode == null || id.length() != 4 || clen < 0)
 			throw new PngjExceptionInternal("Bad chunk paramenters: " + mode);
@@ -32,32 +54,35 @@ public abstract class ChunkReader {
 	}
 
 	/**
+	 * Consumes data for the chunk (data and CRC). This never consumes more bytes than for this chunk.
 	 * 
+	 * In HOT_PROCESS can call processData()  (not more than once)
+	 * 
+	 * If this ends the chunk (included CRC) it checks CRC (if checking) and calls chunkDone()
 	 * 
 	 * @param buf 
-	 *            
 	 * @param off
 	 * @param len
-	 * @return
+	 * @return How many bytes have been consumed
 	 */
 	public final int feedBytes(byte[] buf, int off, int len) {
 		if(len==0) return 0;
 		if(len<0) throw new PngjException("negative length??");
 		if (read == 0 && crcn == 0 && crcCheck)
-			chunkRaw.updateCrc(chunkRaw.idbytes, 0, 4);
-		int dataRead = chunkRaw.len - read;
+			chunkRaw.updateCrc(chunkRaw.idbytes, 0, 4); // initializes crc calculation with the Chunk ID
+		int dataRead = chunkRaw.len - read; // dataRead : bytes to be actually read from chunk data
 		if (dataRead > len)
 			dataRead = len;
 		if (dataRead > 0) { // read some data
 			if (crcCheck && mode != ChunkReaderMode.BUFFER) // in buffer mode we compute the CRC at the end
 				chunkRaw.updateCrc(buf, off, dataRead);
 			if (mode == ChunkReaderMode.BUFFER) { // just copy the contents to the internal buffer
-				if (chunkRaw.data != buf) // if the buffer passed if the same as this one, we don't copy 
+				if (chunkRaw.data != buf) // if the buffer passed if the same as this one, we don't copy  (the caller should know what he's doing
 					System.arraycopy(buf, off, chunkRaw.data, read, dataRead);
 			} else if (mode == ChunkReaderMode.HOT_PROCESS) {
 				processData(buf, off, dataRead);
-			} else if (mode == ChunkReaderMode.SKIP) {
-				// nothing to do
+			} else  {
+				//mode == ChunkReaderMode.SKIP; nothing to do
 			}
 			read += dataRead;
 			off += dataRead;
@@ -89,30 +114,36 @@ public abstract class ChunkReader {
 		return crcn == 4; // has read all 4 bytes from the crc
 	}
 
-	@Override
-	public String toString() {
-		return chunkRaw.toString();
-	}
-
 	public ChunkRaw getChunkRaw() {
 		return chunkRaw;
 	}
 
+	/**
+	 * Determines if CRC should be checked.
+	 * 
+	 * @param crcCheck
+	 */
 	public void setCrcCheck(boolean crcCheck) {
-		if (read != 0 && crcCheck)
-			throw new PngjInputException("cannot change this flag while reading!");
+		if (read != 0 && crcCheck && ! this.crcCheck)
+			throw new PngjException("too late!");
 		this.crcCheck = crcCheck;
 	}
 
 	/**
-	 * guaranteed: the length to read is positive and corresponds only to data
-	 * (no other chunks, no crc) Warning: if bufferFullContent==true this will
-	 * not be called, parsing should be done in chunkDone()
+	 * This method will only be called in HOT_PROCESS mode.
+	 * 
+	 * If bufferFullContent==true this will not be called, processing should be done in chunkDone()
+	 * 
+	 * It's guaranteed that the data to read has non-zero length and it corresponds only to own chunk data
+	 * (no other chunks, no crc) 
 	 */
-	protected void processData(byte[] buf, int off, int len) {
-		throw new PngjException("processData not implemented");
-	}
-
+	protected abstract void processData(byte[] buf, int off, int len);
+	
+	/** 
+	 * This method will be called (in all modes) when the full chunk -including crc- has been read 
+	 */
+	protected abstract void chunkDone();
+	
 	@Override
 	public int hashCode() {
 		final int prime = 31;
@@ -138,6 +169,9 @@ public abstract class ChunkReader {
 		return true;
 	}
 
-	/** will be called when full chunk, including crc, is read (for all modes) */
-	protected abstract void chunkDone();
+	@Override
+	public String toString() {
+		return chunkRaw.toString();
+	}
+
 }
