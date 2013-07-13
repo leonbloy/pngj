@@ -8,9 +8,8 @@ import ar.com.hjg.pngj.PngjException;
  */
 public class PngChunkUnbuffered extends PngChunk {
 
-	public PngChunkUnbuffered(String id, ImageInfo info, int clen) {
+	public PngChunkUnbuffered(String id, ImageInfo info) {
 		super(id, info);
-		this.length = clen;
 	}
 
 	@Override
@@ -29,7 +28,7 @@ public class PngChunkUnbuffered extends PngChunk {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		throw new PngjException("Non supported for a skipped chunk");
 	}
 

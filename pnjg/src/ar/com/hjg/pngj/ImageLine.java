@@ -1,7 +1,5 @@
 package ar.com.hjg.pngj;
 
-import ar.com.hjg.pngj.ImageLineHelper.ImageLineStats;
-
 /**
  * Lightweight wrapper for an image scanline, used for read and write.
  * <p>
@@ -9,14 +7,11 @@ import ar.com.hjg.pngj.ImageLineHelper.ImageLineStats;
  * lines.
  * <p>
  * See <code>scanline</code> field, to understand the format.
+ * 
+ * FOrmat: int (one integer by sample),
  */
-public class ImageLine {
+public class ImageLine implements IImageLine, IImageLineArray {
 	public final ImageInfo imgInfo;
-
-	/**
-	 * tracks the current row number (from 0 to rows-1)
-	 */
-	private int rown = 0;
 
 	/**
 	 * The 'scanline' is an array of integers, corresponds to an image line
@@ -34,43 +29,10 @@ public class ImageLine {
 	 * To convert a indexed line to RGB balues, see
 	 * <code>ImageLineHelper.palIdx2RGB()</code> (you can't do the reverse)
 	 */
-	public final int[] scanline;
-	/**
-	 * Same as {@link #scanline}, but with one byte per sample. Only one of
-	 * scanline and scanlineb is valid - this depends on {@link #sampleType}
-	 */
-	public final byte[] scanlineb;
+	protected final int[] scanline;
+	protected final int size;
 
-	protected FilterType filterUsed; // informational ; only filled by the reader
-	final int channels; // copied from imgInfo, more handy
-	final int bitDepth; // copied from imgInfo, more handy
-	final int elementsPerRow; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
-
-	public enum SampleType {
-		INT, // 4 bytes per sample
-		BYTE // 1 byte per sample
-	}
-
-	/**
-	 * tells if we are using BYTE or INT to store the samples.
-	 */
-	public final SampleType sampleType;
-
-	/**
-	 * true: each element of the scanline array represents a sample always, even
-	 * for internally packed PNG formats
-	 * 
-	 * false: if the original image was of packed type (bit depth less than 8)
-	 * we keep samples packed in a single array element
-	 */
-	public final boolean samplesUnpacked;
-
-	/**
-	 * default mode: INT packed
-	 */
-	public ImageLine(ImageInfo imgInfo) {
-		this(imgInfo, SampleType.INT, false);
-	}
+	protected FilterType filterUsed; // informational ; only filled by the reader. not significant for interlaced
 
 	/**
 	 * 
@@ -85,40 +47,23 @@ public class ImageLine {
 	 *            images
 	 * 
 	 */
-	public ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode) {
-		this(imgInfo, stype, unpackedMode, null, null);
+	public ImageLine(ImageInfo imgInfo) {
+		this(imgInfo, null);
 	}
 
-	/**
-	 * If a preallocated array is passed, the copy is shallow
-	 */
-	ImageLine(ImageInfo imgInfo, SampleType stype, boolean unpackedMode, int[] sci, byte[] scb) {
+	public ImageLine(ImageInfo imgInfo, int[] sci) {
 		this.imgInfo = imgInfo;
-		channels = imgInfo.channels;
-		bitDepth = imgInfo.bitDepth;
 		filterUsed = FilterType.FILTER_UNKNOWN;
-		this.sampleType = stype;
-		this.samplesUnpacked = unpackedMode || !imgInfo.packed;
-		elementsPerRow = this.samplesUnpacked ? imgInfo.samplesPerRow : imgInfo.samplesPerRowPacked;
-		if (stype == SampleType.INT) {
-			scanline = sci != null ? sci : new int[elementsPerRow];
-			scanlineb = null;
-		} else if (stype == SampleType.BYTE) {
-			scanlineb = scb != null ? scb : new byte[elementsPerRow];
-			scanline = null;
-		} else
-			throw new PngjExceptionInternal("bad ImageLine initialization");
-		this.rown = -1;
+		size = imgInfo.samplesPerRow;
+		scanline = sci != null && sci.length >= size ? sci : new int[size];
 	}
 
-	/** This row number inside the image (0 is top) */
-	public int getRown() {
-		return rown;
-	}
-
-	/** Sets row number (0 : Rows-1) */
-	public void setRown(int n) {
-		this.rown = n;
+	public static IImageLineFactory<ImageLine> getFactory(ImageInfo iminfo) {
+		return new IImageLineFactory<ImageLine>() {
+			public ImageLine createImageLine(ImageInfo iminfo) {
+				return new ImageLine(iminfo);
+			}
+		};
 	}
 
 	/*
@@ -276,11 +221,8 @@ public class ImageLine {
 	 * The caller must be sure that the original was really packed
 	 */
 	public ImageLine unpackToNewImageLine() {
-		ImageLine newline = new ImageLine(imgInfo, sampleType, true);
-		if (sampleType == SampleType.INT)
-			unpackInplaceInt(imgInfo, scanline, newline.scanline, false);
-		else
-			unpackInplaceByte(imgInfo, scanlineb, newline.scanlineb, false);
+		ImageLine newline = new ImageLine(imgInfo);
+		unpackInplaceInt(imgInfo, scanline, newline.scanline, false);
 		return newline;
 	}
 
@@ -290,11 +232,8 @@ public class ImageLine {
 	 * The caller must be sure that the original was really unpacked
 	 */
 	public ImageLine packToNewImageLine() {
-		ImageLine newline = new ImageLine(imgInfo, sampleType, false);
-		if (sampleType == SampleType.INT)
-			packInplaceInt(imgInfo, scanline, newline.scanline, false);
-		else
-			packInplaceByte(imgInfo, scanlineb, newline.scanlineb, false);
+		ImageLine newline = new ImageLine(imgInfo);
+		packInplaceInt(imgInfo, scanline, newline.scanline, false);
 		return newline;
 	}
 
@@ -310,60 +249,107 @@ public class ImageLine {
 		return scanline;
 	}
 
-	public byte[] getScanlineByte() {
-		return scanlineb;
-	}
-
 	/**
 	 * Basic info
 	 */
 	public String toString() {
-		return "row=" + rown + " cols=" + imgInfo.cols + " bpc=" + imgInfo.bitDepth + " size=" + scanline.length;
+		return " cols=" + imgInfo.cols + " bpc=" + imgInfo.bitDepth + " size=" + scanline.length;
 	}
 
-	/*
-	 * only for non-interlaced - len doesn't include inital filterbyte
-	 * does not unpack
-	 */
-	public void fromPngRaw(byte[] raw, int len) { //  
+	public void fromPngRaw(byte[] raw, final int len, final int offset, final int step) {
 		setFilterUsed(FilterType.getByVal(raw[0]));
-		if (len != imgInfo.bytesPerRow)
-			throw new PngjException("Bad line len");// should not happen
-		if (sampleType == SampleType.BYTE) {
-			if (imgInfo.bitDepth <= 8)
-				System.arraycopy(raw, 1, scanlineb, 0, imgInfo.bytesPerRow);
-			else
-				for (int i = 0, j = 1; j < imgInfo.bytesPerRow; i++, j += 2)
-					scanlineb[i] = raw[j];// 16 bits in 1 byte: this discards the LSB!!!
-			/*if (imgInfo.packed && samplesUnpacked)
-				ImageLine.unpackInplaceByte(imgInfo, scanlineb, scanlineb, false);*/
-		} else {
-			throw new RuntimeException("not implemented"); //TODO
+		int len1 = len - 1;
+		int step1 = (step - 1) * imgInfo.channels;
+		if (imgInfo.bitDepth == 8) {
+			if (step == 1) {// 8bispp non-interlaced: most important case, should be optimized
+				for (int i = 0; i < size; i++) {
+					scanline[i] = (raw[i + 1] & 0xff);
+				}
+			} else {// 8bispp interlaced
+				for (int s = 1, c = 0, i = offset * imgInfo.channels; s <= len1; s++, i++) {
+					scanline[i] = (raw[s] & 0xff);
+					c++;
+					if (c == imgInfo.channels) {
+						c = 0;
+						i += step1;
+					}
+				}
+			}
+		} else if (imgInfo.bitDepth == 16) {
+			if (step == 1) {// 16bispp non-interlaced
+				for (int i = 0, s = 1; i < size; i++) {
+					scanline[i] = ((raw[s++] & 0xFF) << 8) | (raw[s++] & 0xFF); // 16 bitspc
+				}
+			} else {
+				for (int s = 1, c = 0, i = offset != 0 ? offset * imgInfo.channels : 0; s <= len1; s++, i++) {
+					scanline[i] = ((raw[s++] & 0xFF) << 8) | (raw[s] & 0xFF); // 16 bitspc
+					c++;
+					if (c == imgInfo.channels) {
+						c = 0;
+						i += step1;
+					}
+				}
+			}
+		} else { // packed formats
+			int mask0, mask, shi, bd;
+			bd = imgInfo.bitDepth;
+			mask0 = ImageLineHelperNg.getMaskForPackedFormats(bd);
+			for (int i = offset * imgInfo.channels, r = 1, c = 0; r < len; r++) {
+				mask = mask0;
+				shi = 8 - bd;
+				do {
+					scanline[i] = (raw[r] & mask) >> shi;
+					mask >>= bd;
+					shi -= bd;
+					i++;
+					c++;
+					if (c == imgInfo.channels) {
+						c = 0;
+						i += step1;
+					}
+				} while (mask != 0 && i < size);
+			}
 		}
 	}
 
-	// nbytes does not include filter byte, offset and step are in bytes, only for interlaced; this doesn't unpack!
-	public void fromPngRaw(byte[] raw, int pixels, int offset, int step) {
-		setFilterUsed(FilterType.getByVal(raw[0]));
-		if (sampleType == SampleType.INT) {
-			throw new RuntimeException("not implemented"); //TODO
-		} else {
-			throw new RuntimeException("not implemented"); //TODO
+	public void toPngRaw(byte[] raw) {
+		if (imgInfo.bitDepth == 8) {
+			for (int i = 0; i < size; i++) {
+				raw[i + 1] = (byte) scanline[i];
+			}
+		} else if (imgInfo.bitDepth == 16) {
+			for (int i = 0, s = 1; i < imgInfo.samplesPerRow; i++) {
+				scanline[i] = ((raw[s++] & 0xFF) << 8) | (raw[s++] & 0xFF);
+			}
+		} else { // packed formats
+			int shi, bd, v;
+			bd = imgInfo.bitDepth;
+			shi = 8 - bd;
+			v = 0;
+			for (int i = 0, r = 1; i < size; i++) {
+				v |= (scanline[i] << shi);
+				shi += bd;
+				if (shi >= 8 || i == size - 1) {
+					raw[r++] = (byte) v;
+					shi = 8 - bd;
+				}
+			}
 		}
 	}
 
-	public void toPngRaw(byte[] raw, int len) { // only for non-interlaced 
-		throw new RuntimeException("not implemented"); //TODO
+	public void end() { // nothing to do here
 	}
 
-	/**
-	 * Prints some statistics - just for debugging
-	 */
-	public static void showLineInfo(ImageLine line) {
-		System.out.println(line);
-		ImageLineStats stats = new ImageLineHelper.ImageLineStats(line);
-		System.out.println(stats);
-		System.out.println(ImageLineHelper.infoFirstLastPixels(line));
+	public int getSize() {
+		return size;
+	}
+
+	public int getElem(int i) {
+		return scanline[i];
+	}
+
+	public int[] getScanline() {
+		return scanline;
 	}
 
 }

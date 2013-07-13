@@ -155,15 +155,13 @@ public class ChunkHelper {
 	public static boolean shouldLoad(String id, ChunkLoadBehaviour behav) {
 		if (isCritical(id))
 			return true;
-		boolean kwown = PngChunk.isKnown(id);
+		//boolean kwown = PngChunk.isKnown(id);
 		switch (behav) {
 		case LOAD_CHUNK_ALWAYS:
 			return true;
 		case LOAD_CHUNK_IF_SAFE:
-			return kwown || isSafeToCopy(id);
-		case LOAD_CHUNK_KNOWN:
-			return kwown;
-		case LOAD_CHUNK_NEVER:
+			return isSafeToCopy(id);
+			case LOAD_CHUNK_NEVER:
 			return false;
 		}
 		return false; // should not reach here

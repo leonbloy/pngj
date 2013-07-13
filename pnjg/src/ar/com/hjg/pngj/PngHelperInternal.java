@@ -1,9 +1,14 @@
 package ar.com.hjg.pngj;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
+import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 /**
@@ -12,7 +17,10 @@ import java.util.zip.CRC32;
  * Client code should not normally use this class
  * <p>
  */
-public class PngHelperInternal {
+public final class PngHelperInternal {
+
+	public static Logger LOGGER = Logger.getLogger("pngj");
+
 	/**
 	 * Default charset, used internally by PNG for several things
 	 */
@@ -89,7 +97,7 @@ public class PngHelperInternal {
 		return ((b[offset] & 0xff) << 16) | ((b[offset + 1] & 0xff));
 	}
 
-	public static int readInt4fromBytes(byte[] b, int offset) {
+	public static final int readInt4fromBytes(byte[] b, int offset) {
 		return ((b[offset] & 0xff) << 24) | ((b[offset + 1] & 0xff) << 16) | ((b[offset + 2] & 0xff) << 8)
 				| (b[offset + 3] & 0xff);
 	}
@@ -97,6 +105,14 @@ public class PngHelperInternal {
 	public static void writeByte(OutputStream os, byte b) {
 		try {
 			os.write(b);
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
+		}
+	}
+
+	public static void writeByte(OutputStream os, byte[] bs) {
+		try {
+			os.write(bs);
 		} catch (IOException e) {
 			throw new PngjOutputException(e);
 		}
@@ -258,17 +274,23 @@ public class PngHelperInternal {
 	/*
 	 * we put this methods here so as to not pollute the public interface of PngReader
 	 */
-	public final static void initCrcForTests(PngReader pngr) {
-		pngr.initCrctest();
+	public final static void initCrcForTests(PngReaderNg pngr) {
+		pngr.chunkseq.getIdatSet().enableCrcTest();
 	}
 
-	public final static long getCrctestVal(PngReader pngr) {
-		return pngr.getCrctestVal();
+	public final static long getCrctestVal(PngReaderNg pngr) {
+		return pngr.chunkseq.getIdatSet().getCrctestVal();
 	}
-	
+
+	public void logToStderr() {
+
+	}
+
 	/**
 	 * Prits a debug message (prints class name, method and line number)
-	 * @param obj : Object to print
+	 * 
+	 * @param obj
+	 *            : Object to print
 	 */
 	public static void debug(Object obj) {
 		debug(obj, 1, true);
@@ -276,19 +298,52 @@ public class PngHelperInternal {
 
 	/**
 	 * Prits a debug message (prints class name, method and line number)
-	 * @param obj : Object to print
-	 * @param offset : Offset N lines from stacktrace
+	 * 
+	 * @param obj
+	 *            : Object to print
+	 * @param offset
+	 *            : Offset N lines from stacktrace
 	 */
 	public static void debug(Object obj, int offset) {
 		debug(obj, offset, true);
 	}
 
+	public static InputStream istreamFromFile(File f) {
+		FileInputStream is;
+		try {
+			is = new FileInputStream(f);
+		} catch (Exception e) {
+			throw new PngjInputException("Could not open " + f, e);
+		}
+		return is;
+	}
+
+	public static OutputStream ostreamFromFile(File f) {
+		return ostreamFromFile(f, true);
+	}
+
+	public static OutputStream ostreamFromFile(File f, boolean allowoverwrite) {
+		FileOutputStream os;
+		if (f.exists() && !allowoverwrite)
+			throw new PngjOutputException("File already exists: " + f);
+		try {
+			os = new FileOutputStream(f);
+		} catch (Exception e) {
+			throw new PngjInputException("Could not open for write" + f, e);
+		}
+		return os;
+	}
+
 	/**
-	 * Prits a debug message (prints class name, method and line number)
-	 * to stderr and logFile
-	 * @param obj : Object to print
-	 * @param offset : Offset N lines from stacktrace
-	 * @param newLine : Print a newline char at the end ('\n')
+	 * Prits a debug message (prints class name, method and line number) to
+	 * stderr and logFile
+	 * 
+	 * @param obj
+	 *            : Object to print
+	 * @param offset
+	 *            : Offset N lines from stacktrace
+	 * @param newLine
+	 *            : Print a newline char at the end ('\n')
 	 */
 	public static void debug(Object obj, int offset, boolean newLine) {
 		StackTraceElement ste = new Exception().getStackTrace()[1 + offset];

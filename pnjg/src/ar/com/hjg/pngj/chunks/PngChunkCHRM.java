@@ -57,20 +57,23 @@ public class PngChunkCHRM extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkCHRM otherx = (PngChunkCHRM) other;
-		whitex = otherx.whitex;
-		whitey = otherx.whitex;
-		redx = otherx.redx;
-		redy = otherx.redy;
-		greenx = otherx.greenx;
-		greeny = otherx.greeny;
-		bluex = otherx.bluex;
-		bluey = otherx.bluey;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkCHRM other = new PngChunkCHRM(imgInfo);
+		other.raw = raw;
+		other.whitex = whitex;
+		other.whitey = whitex;
+		other.redx = redx;
+		other.redy = redy;
+		other.greenx = greenx;
+		other.greeny = greeny;
+		other.bluex = bluex;
+		other.bluey = bluey;
+		return other;
 	}
 
 	public void setChromaticities(double whitex, double whitey, double redx, double redy, double greenx, double greeny,
 			double bluex, double bluey) {
+		invalidateRaw();
 		this.whitex = whitex;
 		this.redx = redx;
 		this.greenx = greenx;

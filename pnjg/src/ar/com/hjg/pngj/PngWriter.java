@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Arrays;
@@ -78,8 +79,21 @@ public class PngWriter {
 	// this only influences the 1-2-4 bitdepth format - and if we pass a ImageLine to writeRow, this is ignored
 	private boolean unpackedMode = false;
 
-	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
-		this(outputStream, imgInfo, "[NO FILENAME AVAILABLE]");
+	public PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite) {
+		this(PngHelperInternal.ostreamFromFile(file, allowoverwrite), imgInfo);
+		setShouldCloseStream(true);
+	}
+
+	public PngWriter(File file, ImageInfo imgInfo) {
+		this(file, imgInfo, true);
+	}
+
+	public PngWriter(String filename, ImageInfo imgInfo) {
+		this(new File(filename), imgInfo);
+	}
+
+	public PngWriter(String filename, ImageInfo imgInfo, boolean allowOverwrite) {
+		this(new File(filename), imgInfo, allowOverwrite);
 	}
 
 	/**
@@ -96,8 +110,8 @@ public class PngWriter {
 	 * @param filenameOrDescription
 	 *            Optional, just for error/debug messages
 	 */
-	public PngWriter(OutputStream outputStream, ImageInfo imgInfo, String filenameOrDescription) {
-		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
+	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
+		this.filename = "";
 		this.os = outputStream;
 		this.imgInfo = imgInfo;
 		// prealloc
@@ -372,11 +386,9 @@ public class PngWriter {
 	 * <p>
 	 * TODO: this should be more customizable
 	 */
-	private void copyChunks(PngReader reader, int copy_mask, boolean onlyAfterIdat) {
+	private void copyChunks(ChunksList reader, int copy_mask, boolean onlyAfterIdat) {
 		boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
-		if (onlyAfterIdat && reader.getCurrentChunkGroup() < ChunksList.CHUNK_GROUP_6_END)
-			throw new PngjExceptionInternal("tried to copy last chunks but reader has not ended");
-		for (PngChunk chunk : reader.getChunksList().getChunks()) {
+		for (PngChunk chunk : reader.getChunks()) {
 			int group = chunk.getChunkGroup();
 			if (group < ChunksList.CHUNK_GROUP_4_IDAT && idatDone)
 				continue;
@@ -411,7 +423,7 @@ public class PngWriter {
 					copy = false;
 			}
 			if (copy) {
-				chunksList.queue(PngChunk.cloneChunk(chunk, imgInfo));
+				chunksList.queue(chunk.cloneForWrite(imgInfo));
 			}
 		}
 	}
@@ -429,7 +441,7 @@ public class PngWriter {
 	 *            : Mask bit (OR), see <code>ChunksToWrite.COPY_XXX</code>
 	 *            constants
 	 */
-	public void copyChunksFirst(PngReader reader, int copy_mask) {
+	public void copyChunksFirst(ChunksList reader, int copy_mask) {
 		copyChunks(reader, copy_mask, false);
 	}
 
@@ -446,7 +458,7 @@ public class PngWriter {
 	 *            : Mask bit (OR), see <code>ChunksToWrite.COPY_XXX</code>
 	 *            constants
 	 */
-	public void copyChunksLast(PngReader reader, int copy_mask) {
+	public void copyChunksLast(ChunksList reader, int copy_mask) {
 		copyChunks(reader, copy_mask, true);
 	}
 
@@ -685,7 +697,5 @@ public class PngWriter {
 	public void setUseUnPackedMode(boolean useUnpackedMode) {
 		this.unpackedMode = useUnpackedMode;
 	}
-	
-
 
 }

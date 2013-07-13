@@ -87,13 +87,15 @@ public class PngChunkITXT extends PngChunkTextVar {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkITXT otherx = (PngChunkITXT) other;
-		key = otherx.key;
-		val = otherx.val;
-		compressed = otherx.compressed;
-		langTag = otherx.langTag;
-		translatedTag = otherx.translatedTag;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkITXT other = new PngChunkITXT(imgInfo);
+		other.raw = raw;
+		other.key = key;
+		other.val = val;
+		other.compressed = compressed;
+		other.langTag = langTag;
+		other.translatedTag = translatedTag;
+		return other;
 	}
 
 	public boolean isCompressed() {

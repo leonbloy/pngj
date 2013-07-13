@@ -3,8 +3,16 @@ package ar.com.hjg.pngj;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * This object should be short lived -although the buffer content can be passed
- * to the long-live chunk object
+ * Parses a chunk, consuming bytes in one of three modes (BUFFER,HOT_PROCESS,SKIP).
+ * 
+ * It calls chunkDone() when done, and processData() if HOT_PROCESS
+ * Apart from this, it's totally agnostic (does not know about IDAT chunks,
+ * or PNG general structure)
+ * 
+ * It wraps a ChunkRaw instance (content filled only if BUFFER mode)
+ * 
+ * This object should be short lived (one instance created for each chunk, and discarded
+ * after reading), but the wrapped chunkRaw can be long lived.
  */
 public abstract class ChunkReader {
 

@@ -68,7 +68,7 @@ public class ImageInfo {
 	public final int bytesPixel;
 
 	/**
-	 * ceil(bitspp*cols/8)
+	 * ceil(bitspp*cols/8) - does not include filter
 	 */
 	public final int bytesPerRow;
 

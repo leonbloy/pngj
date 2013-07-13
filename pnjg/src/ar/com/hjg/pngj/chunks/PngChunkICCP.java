@@ -48,12 +48,13 @@ public class PngChunkICCP extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkICCP otherx = (PngChunkICCP) other;
-		profileName = otherx.profileName;
-		compressedProfile = new byte[otherx.compressedProfile.length];
-		System.arraycopy(otherx.compressedProfile, 0, compressedProfile, 0, otherx.compressedProfile.length); // deep
-																												// copy
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkICCP other = new PngChunkICCP(imgInfo);
+		other.raw = raw;
+		other.profileName = profileName;
+		other.compressedProfile = new byte[compressedProfile.length];
+		System.arraycopy(compressedProfile, 0, other.compressedProfile, 0, compressedProfile.length); // deep
+		return other;																												// copy
 	}
 
 	/**

@@ -51,14 +51,16 @@ public class PngChunkTIME extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkTIME x = (PngChunkTIME) other;
-		year = x.year;
-		mon = x.mon;
-		day = x.day;
-		hour = x.hour;
-		min = x.min;
-		sec = x.sec;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkTIME other = new PngChunkTIME(imgInfo);
+		other.raw = raw;
+		other.year =year;
+		other.mon = mon;
+		other.day = day;
+		other.hour =hour;
+		other.min = min;
+		other.sec = sec;
+		return other;
 	}
 
 	public void setNow(int secsAgo) {

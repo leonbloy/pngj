@@ -3,14 +3,17 @@ package ar.com.hjg.pngj;
 import java.io.IOException;
 import java.io.InputStream;
 
+/**
+ * Reads bytes from an input stream and feeds a IBytesConsumer
+ */
 public class BufferedStreamFeeder {
 	private InputStream is;
 	private byte[] buf;
-	private int pendinglen;
+	private int pendinglen; // bytes read and stored in buf that have not yet still been fed to IBytesConsumer
 	private int offset;
 	private boolean eof = false;
 	private boolean closeOnEof = true;
-
+	private boolean failIfNoFeed=false;
 	public BufferedStreamFeeder(InputStream is) {
 		this(is, 8192);
 	}
@@ -28,48 +31,58 @@ public class BufferedStreamFeeder {
 		return feed(c, -1);
 	}
 
+	/**
+	 * Returns bytes feeded
+	 * 
+	 * This should return 0 only if the stream is EOF or the consumer is done
+	 */
 	public int feed(IBytesConsumer c, int maxbytes) {
+		int n=0;
 		if (pendinglen == 0) {
 			refillBuffer();
 		}
-		int toread = maxbytes > 1 && maxbytes < pendinglen ? maxbytes : pendinglen;
-		if (toread > 0) {
-			int n = c.feed(buf, offset, toread);
+		int tofeed = maxbytes > 1 && maxbytes < pendinglen ? maxbytes : pendinglen;
+		if (tofeed > 0) {
+			n = c.feed(buf, offset, tofeed);
 			if (n > 0) {
 				offset += n;
 				pendinglen -= n;
-			}
-			return n;
-		} else
-			return 0;
+			} 
+		}
+		if(n<1 && failIfNoFeed) throw new PngjInputException("failed feed bytes");
+		return n;
+	}
+	
+	public boolean feedFixed(IBytesConsumer c, int bytes) {
+		int remain=bytes;
+		while(remain>0) {
+			int n=feed(c,remain);
+			if(n<1) return false;
+			remain-=n;
+		}
+		return true;
 	}
 
-	public void feedAll(IBytesConsumer c) {
-		while (hasMoreToFeed())
-			feed(c);
-	}
-
-	private int refillBuffer() {
-		if (pendinglen > 0 && eof)
-			return 0; // only if not pending data
+	protected void refillBuffer() {
+		if (pendinglen > 0 || eof)
+			return; // only if not pending data
 		try {
 			// try to read
 			offset = 0;
 			pendinglen = is.read(buf);
 			if (pendinglen < 0) {
 				end();
-				return -1;
+				return;
 			} else
-				return pendinglen;
+				return;
 		} catch (IOException e) {
 			throw new PngjInputException(e);
 		}
-
 	}
 
 	public boolean hasMoreToFeed() {
 		if (eof)
-			return true;
+			return pendinglen > 0;
 		else
 			refillBuffer();
 		return pendinglen > 0;
@@ -82,11 +95,11 @@ public class BufferedStreamFeeder {
 	/** sets EOF=true, and closes the stream if closeOnEof */
 	public void end() {
 		try {
-			eof=true;
-			buf=null;
-			is=null;
-			if(closeOnEof)
+			eof = true;
+			buf = null;
+			if (closeOnEof)
 				is.close();
+			is = null;
 		} catch (Exception e) {
 		}
 	}
@@ -104,5 +117,9 @@ public class BufferedStreamFeeder {
 
 	public void setEof(boolean eof) {
 		this.eof = eof;
+	}
+
+	public void setFailIfNoFeed(boolean failIfNoFeed) {
+		this.failIfNoFeed = failIfNoFeed;
 	}
 }

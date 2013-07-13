@@ -1,21 +1,25 @@
-package ar.com.hjg.pngj.test;
+package ar.com.hjg.pngj.pngsuitetest;
 
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 
+import test.TestsHelper;
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLine.SampleType;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineByte;
 import ar.com.hjg.pngj.ImageLines;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
+import ar.com.hjg.pngj.PngReaderInt;
+import ar.com.hjg.pngj.PngReaderNg;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngjException;
+import ar.com.hjg.pngj.TestSupport;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
@@ -33,7 +37,6 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
  * 
  */
 public class TestPngSuite {
-	static final String outdir = "C:/temp/test";
 
 	/**
 	 * Takes a image, mirrors it using row-per-row int reading, mirror it again
@@ -42,38 +45,40 @@ public class TestPngSuite {
 	 * IF the original was interlaced, compares with origni
 	 * */
 	public static void testmirror(File orig, File origni, File truecolor) {
-		File mirror = TestsHelper.addSuffixToName(orig, "_mirror");
-		File recov = TestsHelper.addSuffixToName(orig, "_recov");
+		File mirror = TestSupport.addSuffixToName(orig, "_mirror");
+		File recov = TestSupport.addSuffixToName(orig, "_recov");
 		long crc0 = 0;
 		boolean interlaced;
 		boolean palete;
+		boolean useByteFirst = 
 		{
-			PngReader pngr = FileHelper.createPngReader(orig);
+			PngReaderInt pngr = new PngReaderInt(orig);
 			palete = pngr.imgInfo.indexed;
 			PngHelperInternal.initCrcForTests(pngr);
-			pngr.setUnpackedMode(true);
 			interlaced = pngr.isInterlaced();
-			PngWriter pngw = FileHelper.createPngWriter(mirror, pngr.imgInfo, true);
+			PngWriter pngw = new PngWriter(mirror, pngr.imgInfo, true);
 			pngw.setFilterType(FilterType.FILTER_CYCLIC); // just to test all filters
-			pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
+			pngr.readFirstChunks();
+			pngw.copyChunksFirst(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 			pngw.setUseUnPackedMode(true);
 			for (int row = 0; row < pngr.imgInfo.rows; row++) {
-				ImageLine line = pngr.readRowInt(row);
-				mirrorLine(line);
+				ImageLine line = pngr.readRow(row);
+				mirrorLine(line,pngr.imgInfo);
 				pngw.writeRow(line, row);
 			}
 			pngr.end();
 			crc0 = PngHelperInternal.getCrctestVal(pngr);
-			pngw.copyChunksFirst(pngr, ChunkCopyBehaviour.COPY_ALL);
+			pngw.copyChunksLast(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 			pngw.end();
 		}
 		// mirror again, now with BYTE (if depth<16) and loading all rows
 		{
-			PngReader pngr2 = FileHelper.createPngReader(mirror);
+			PngReaderNg pngr2 = new PngReaderByte(mirror);
 			pngr2.setUnpackedMode(true);
-			PngWriter pngw = FileHelper.createPngWriter(recov, pngr2.imgInfo, true);
+			PngWriter pngw = new PngWriter(recov, pngr2.imgInfo, true);
 			pngw.setFilterType(FilterType.FILTER_AGGRESSIVE);
-			pngw.copyChunksFirst(pngr2, ChunkCopyBehaviour.COPY_ALL);
+			pngr2.readFirstChunks();
+			pngw.copyChunksFirst(pngr2.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 			pngw.setUseUnPackedMode(true);
 			ImageLines lines = pngr2.imgInfo.bitDepth < 16 ? pngr2.readRowsByte() : pngr2.readRowsInt();
 			for (int row = 0; row < pngr2.imgInfo.rows; row++) {
@@ -144,22 +149,27 @@ public class TestPngSuite {
 		copy.delete();
 	}
 
-	public static void mirrorLine(ImageLine imline) { // unpacked line
-		if (!imline.samplesUnpacked)
-			throw new PngjException("this requires unpacked lines");
-		int channels = imline.imgInfo.channels;
-		for (int c1 = 0, c2 = imline.imgInfo.cols - 1; c1 < c2; c1++, c2--) {
+	public static void mirrorLine(IImageLine imline,ImageInfo iminfo) { // unpacked line
+		int channels = iminfo.channels;
+		int[] imlinei=null;
+		byte[] imlineb=null;
+		if (imline instanceof ImageLine) { // INT
+			imlinei = ((ImageLine)imline).getScanline();
+		}else if (imline instanceof ImageLineByte) { // BYTE
+			imlineb =((ImageLineByte)imline).getScanline();
+		} 
+		for (int c1 = 0, c2 = iminfo.cols - 1; c1 < c2; c1++, c2--) {
 			for (int i = 0; i < channels; i++) {
 				int s1 = c1 * channels + i; // sample left
 				int s2 = c2 * channels + i; // sample right
-				if (imline.sampleType == SampleType.INT) {
-					int aux = imline.scanline[s1]; // swap
-					imline.scanline[s1] = imline.scanline[s2];
-					imline.scanline[s2] = aux;
+				if (imlinei!=null) { // INT
+					int aux = imlinei[s1];
+					imlinei[s1] = imlinei[s2];
+					imlinei[s2] = aux;
 				} else {
-					byte auxb = imline.scanlineb[s1]; // swap
-					imline.scanlineb[s1] = imline.scanlineb[s2];
-					imline.scanlineb[s2] = auxb;
+					byte aux = imlineb[s1];
+					imlineb[s1] = imlineb[s2];
+					imlineb[s2] = aux;
 				}
 			}
 		}

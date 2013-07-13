@@ -1,10 +1,8 @@
 package ar.com.hjg.pngj;
 
+import java.io.File;
 import java.io.InputStream;
-import java.util.HashSet;
-import java.util.zip.CRC32;
 
-import ar.com.hjg.pngj.ImageLine.SampleType;
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
@@ -32,41 +30,32 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * reader.<br>
  * 6. end() forcibly finishes/aborts the reading and closes the stream
  */
-public class PngReaderNg {
+public abstract class PngReaderNg<T extends IImageLine> {
 
 	/**
 	 * Basic image info - final and inmutable.
 	 */
 	public final ImageInfo imgInfo;
-	/**
-	 * not necesarily a filename, can be a description - merely informative
-	 */
-	protected final String filename;
+	final ChunkSeqReaderPng chunkseq;
+	final BufferedStreamFeeder streamFeeder;
+
 	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS; // see setter/getter
 	// some performance/defensive limits
-	private long maxTotalBytesRead = 200 * 1024 * 1024; // 200MB
-	private int maxBytesMetadata = 5 * 1024 * 1024; // for ancillary chunks - see setter/getter
-	private int skipChunkMaxSize = 2 * 1024 * 1024; // chunks exceeding this size will be skipped (nor even CRC checked)
-	private String[] skipChunkIds = { "fdAT" }; // chunks with these ids will be skipped (nor even CRC checked)
-	private HashSet<String> skipChunkIdsSet; // lazily created from skipChunksById
+	private static final int maxTotalBytesReadDefault = 2010203; // ~ 200MB
+	private static final int maxBytesMetadataDefault = 5024024; // for ancillary chunks 
+	private static final int skipChunkMaxSizeDefault = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
+
 	protected final PngMetadata metadata; // this a wrapper over chunks
-	protected final ChunksList chunksList;
-	protected ImageLine imgLine;
+
+	protected T imgLine;
+	protected ImageLinesN<T> imgLines; // only for interlaced mode
+
 	// line as bytes, counting from 1 (index 0 is reserved for filter type)
 	// only set for interlaced PNG
 	private final boolean interlaced;
-	private boolean crcEnabled = true;
 	// this only influences the 1-2-4 bitdepth format
 	private boolean unpackedMode = false;
-	/**
-	 * Current chunk group, (0-6) already read or reading
-	 * <p>
-	 * see {@link ChunksList}
-	 */
-	protected CRC32 crctest; // If set to non null, it gets a CRC of the unfiltered bytes, to check for images equality
-	private final ChunkReaderFullSequence2 chunkseq;
-	private final BufferedStreamFeeder streamFeeder;
-	private int rowNum;
+	private int rowNum; // current row number (already read)
 
 	/**
 	 * Constructs a PngReader from an InputStream.
@@ -80,16 +69,28 @@ public class PngReaderNg {
 	 *            error/debug messages
 	 * 
 	 */
-	public PngReaderNg(InputStream inputStream, String filenameOrDescription) {
-		this.filename = filenameOrDescription == null ? "" : filenameOrDescription;
-		this.chunksList = new ChunksList(null);
-		this.metadata = new PngMetadata(chunksList);
-		this.chunkseq = new ChunkReaderFullSequence2();
+	public PngReaderNg(InputStream inputStream) {
+		this.chunkseq = new ChunkSeqReaderPng(false); // this works only in polled mode
 		streamFeeder = new BufferedStreamFeeder(inputStream);
-		if (streamFeeder.feed(chunkseq, 21) != 21) // 8+13: signature+IHDR
+		streamFeeder.setFailIfNoFeed(true);
+		if (!streamFeeder.feedFixed(chunkseq, 36)) // 8+13+12: signature+IHDR
 			throw new PngjInputException("error reading first 21 bytes");
 		imgInfo = chunkseq.imageInfo;
 		interlaced = chunkseq.getDeinterlacer() != null;
+		setMaxBytesMetadata(maxBytesMetadataDefault);
+		setMaxTotalBytesRead(maxTotalBytesReadDefault);
+		setSkipChunkMaxSize(skipChunkMaxSizeDefault);
+		this.metadata = new PngMetadata(chunkseq.chunksList);
+		rowNum = -1;
+	}
+
+	public PngReaderNg(File file) {
+		this(PngHelperInternal.istreamFromFile(file));
+		setShouldCloseStream(true);
+	}
+
+	public PngReaderNg(String filename) {
+		this(new File(filename));
 	}
 
 	/**
@@ -127,7 +128,7 @@ public class PngReaderNg {
 	 * called explicitly but is also called implicititly in some methods
 	 * (getMetatada(), getChunksList())
 	 */
-	private final void readFirstChunks() {
+	public void readFirstChunks() {
 		while (chunkseq.currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT)
 			streamFeeder.feed(chunkseq);
 	}
@@ -135,15 +136,9 @@ public class PngReaderNg {
 	/**
 	 * Reads (and processes) chunks after last IDAT.
 	 **/
-	void readLastChunks() {
-		while (chunkseq.currentChunkGroup < ChunksList.CHUNK_GROUP_6_END && !streamFeeder.isEof())
+	public void readLastChunks() {
+		while (!chunkseq.isDone())
 			streamFeeder.feed(chunkseq);
-	}
-
-	protected ChunkReaderFullSequence2 chunkReaderFullSequence2Factory() {
-		return new ChunkReaderFullSequence2() {
-
-		};
 	}
 
 	/**
@@ -154,7 +149,7 @@ public class PngReaderNg {
 	 * This happens rarely - most errors are fatal.
 	 */
 	protected void logWarn(String warn) {
-		System.err.println(warn);
+		PngHelperInternal.LOGGER.warning(warn);
 	}
 
 	/**
@@ -188,7 +183,7 @@ public class PngReaderNg {
 	public ChunksList getChunksList() {
 		if (chunkseq.firstChunksNotYetRead())
 			readFirstChunks();
-		return chunksList;
+		return chunkseq.chunksList;
 	}
 
 	int getCurrentChunkGroup() {
@@ -205,136 +200,62 @@ public class PngReaderNg {
 			readFirstChunks();
 		return metadata;
 	}
-	
-	protected ImageLine createImageLine() {
-		return new ImageLine(imgInfo, SampleType.INT, unpackedMode);
-	}
-	
+
 	/**
-	 * If called for first time, calls readRowInt. Elsewhere, it calls the
-	 * appropiate readRowInt/readRowByte
-	 * <p>
-	 * In general, specifying the concrete readRowInt/readRowByte is preferrable
-	 * 
-	 * @see #readRowInt(int) {@link #readRowByte(int)}
+	 * This must be called in order
 	 */
-	public ImageLine readRow(int nrow) {
-		if (imgLine == null)
-			imgLine = createImageLine();
-		if (imgLine.getRown() == nrow) // already read
-			return imgLine;
-		if (!interlaced) {
-			if (nrow <= rowNum)
-				throw new PngjInputException("rows must be read in increasing order: " + nrow);
-			int bytesread = 0;
-			while (rowNum < nrow)
-				bytesread = readRowRaw(rowNum + 1); // read rows, perhaps skipping if necessary
-			imgLine.fromPngRaw(chunkseq.getCurReaderIdatSet().getUnfilteredRow(),bytesread);
-			return imgLine;
-		} else { // interlaced
-			/*if (deinterlacer.getImageInt() == null)
-			deinterlacer.setImageInt(readRowsInt().scanlines); // read all image and store it in deinterlacer
-		System.arraycopy(deinterlacer.getImageInt()[nrow], 0, buffer, 0, unpackedMode ? imgInfo.samplesPerRow
-				: imgInfo.samplesPerRowPacked);
-				*/
-		throw new RuntimeException("interlaced not implemented");
+	public T readRow(int nrow) {
+		if (nrow == 0) {
+			if (chunkseq.firstChunksNotYetRead())
+				readFirstChunks();
 		}
+		if (!interlaced) {
+			if (imgLine == null)
+				imgLine = getImageLineFactory().createImageLine(imgInfo);
+			if (nrow == rowNum)
+				return imgLine;
+			else if (nrow < rowNum)
+				throw new PngjInputException("rows must be read in increasing order: " + nrow);
+			while (rowNum < nrow) {
+				while (!chunkseq.getIdatSet().isRowReady()) { 
+					streamFeeder.feed(chunkseq);
+				}
+				rowNum++;
+				if (rowNum == nrow) {
+					imgLine.fromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(), imgInfo.bytesPerRow + 1, 0, 1);
+					imgLine.end();
+				}
+				chunkseq.getIdatSet().advanceToNextRow();
+			}
+			return imgLine;
+		} else { // and now, for something completely different (interlaced!)
+			if (imgLines == null) {
+				imgLines = new ImageLinesN<T>(imgInfo.rows, 0, 1, getImageLineFactory(), imgInfo);
+				loadAllInterlaced();
+			}
+			rowNum = nrow;
+			return imgLines.getImageLine(nrow);
+		}
+		
 	}
 
-	
+	abstract IImageLineFactory<T> getImageLineFactory();
 
-	/**
-	 * Reads the row as INT, storing it in the {@link #imgLine} property and
-	 * returning it.
-	 * 
-	 * The row must be greater or equal than the last read row.
-	 * 
-	 * @param nrow
-	 *            Row number, from 0 to rows-1. Increasing order.
-	 * @return ImageLine object, also available as field. Data is in
-	 *         {@link ImageLine#scanline} (int) field.
-	 */
-	public ImageLine readRowInt(int nrow) {
-		if (imgLine == null)
-			imgLine = new ImageLine(imgInfo, SampleType.INT, unpackedMode);
-		if(imgLine.sampleType!=SampleType.INT) throw new PngjException("cannot mix int and byte reading");
-		return readRow(nrow);
-	}
-
-	/**
-	 * Reads the row as BYTES, storing it in the {@link #imgLine} property and
-	 * returning it.
-	 * 
-	 * The row must be greater or equal than the last read row. This method
-	 * allows to pass the same row that was last read.
-	 * 
-	 * @param nrow
-	 *            Row number, from 0 to rows-1. Increasing order.
-	 * @return ImageLine object, also available as field. Data is in
-	 *         {@link ImageLine#scanlineb} (byte) field.
-	 */
-	public ImageLine readRowByte(int nrow) {
-		if (imgLine == null)
-			imgLine = new ImageLine(imgInfo, SampleType.BYTE, unpackedMode);
-		if(imgLine.sampleType!=SampleType.BYTE) throw new PngjException("cannot mix int and byte reading");
-		return readRow(nrow);
-	}
-
-	/**
-	 * @see #readRowInt(int[], int)
-	 */
-	public final int[] readRow(int[] buffer, final int nrow) {
-		return readRowInt(buffer, nrow);
-	}
-
-	/**
-	 * Reads a line and returns it as a int[] array.
-	 * <p>
-	 * You can pass (optionally) a prealocatted buffer.
-	 * <p>
-	 * If the bitdepth is less than 8, the bytes are packed - unless
-	 * {@link #unpackedMode} is true.
-	 * 
-	 * @param buffer
-	 *            Prealocated buffer, or null.
-	 * @param nrow
-	 *            Row number (0 is top). Most be strictly greater than the last
-	 *            read row.
-	 * 
-	 * @return The scanline in the same passwd buffer if it was allocated, a
-	 *         newly allocated one otherwise
-	 */
-	public final int[] readRowInt(int[] buffer, final int nrow) {
-		if(imgLine==null) imgLine = new ImageLine(imgInfo, SampleType.INT, unpackedMode ,buffer,null);
-		return readRowInt(nrow).scanline;
-	}
-
-	/**
-	 * Reads a line and returns it as a byte[] array.
-	 * <p>
-	 * You can pass (optionally) a prealocatted buffer.
-	 * <p>
-	 * If the bitdepth is less than 8, the bytes are packed - unless
-	 * {@link #unpackedMode} is true. <br>
-	 * If the bitdepth is 16, the least significant byte is lost.
-	 * <p>
-	 * 
-	 * @param buffer
-	 *            Prealocated buffer, or null.
-	 * @param nrow
-	 *            Row number (0 is top). Most be strictly greater than the last
-	 *            read row.
-	 * 
-	 * @return The scanline in the same passwd buffer if it was allocated, a
-	 *         newly allocated one otherwise
-	 */
-	public final byte[] readRowByte(byte[] buffer, final int nrow) {
-		if(imgLine==null) imgLine = new ImageLine(imgInfo, SampleType.BYTE, unpackedMode ,null,buffer);
-		return readRowByte(nrow).scanlineb;
+	protected void loadAllInterlaced() {
+		IdatSet idat = chunkseq.getIdatSet();
+		do {
+			while (!chunkseq.getIdatSet().isRowReady())
+				streamFeeder.feed(chunkseq);
+			int i = idat.rowinfo.rowNreal;
+			imgLines.getImageLine(i).fromPngRaw(idat.getUnfilteredRow(), idat.rowinfo.buflen, idat.rowinfo.oX, idat.rowinfo.dX);
+			chunkseq.getIdatSet().advanceToNextRow();
+		} while (!idat.isDone());
+		for(int i=0;i<imgLines.size();i++) 
+			imgLines.getImageLine(i).end();
 	}
 
 	/*
-	 * For the interlaced case, nrow indicates the subsampled image - the pass must be set already.
+	 * 
 	 * 
 	 * This must be called in strict order, both for interlaced or no interlaced.
 	 * 
@@ -344,50 +265,17 @@ public class PngReaderNg {
 	 * 
 	 * Returns bytes actually read (not including the filter byte)
 	 */
-	private int readRowRaw(final int nrow) {
-		if (nrow == 0) {
-			if (chunkseq.firstChunksNotYetRead())
-				readFirstChunks();
-		}
-		int bytesRead = imgInfo.bytesPerRow; // NOT including the filter byte
-		if (interlaced) {/*
-			if (nrow < 0 || nrow > deinterlacer.getRows() || (nrow != 0 && nrow != deinterlacer.getCurrRowSubimg() + 1))
-				throw new PngjInputException("invalid row in interlaced mode: " + nrow);
-			deinterlacer.setRow(nrow);
-			bytesRead = (imgInfo.bitspPixel * deinterlacer.getPixelsToRead() + 7) / 8;
-			if (bytesRead < 1)
-				throw new PngjExceptionInternal("wtf??");
-				*/
-			throw new PngjExceptionInternal("itnerlaced not done");
-			
-		} else { // check for non interlaced
-			if (nrow < 0 || nrow >= imgInfo.rows || nrow != rowNum + 1)
-				throw new PngjInputException("invalid row: " + nrow);
-		}
-		rowNum = nrow;
-		ChunkReaderIdatSet idat = chunkseq.getCurReaderIdatSet();
-		boolean ok=readNextRowFromIdat();
-		if(!ok) throw new PngjInputException("error reading row " +rowNum);
-		if(idat.getRowFilled()!=bytesRead+1) throw new PngjInputException("error reading row " +rowNum + ", read  " + idat.getRowFilled() + " bytes");
-		if ((rowNum == imgInfo.rows - 1 && !interlaced) || (interlaced && chunkseq.deinterlacer.isAtLastRow()))
-			readLastAndClose();
-		return bytesRead;
+	private byte[] readRowRaw(final int nrow) {
+		if (nrow < 0 || nrow >= imgInfo.rows || nrow != rowNum + 1)
+			throw new PngjInputException("invalid row: " + nrow);
+		rowNum++;
+		while (!chunkseq.getIdatSet().isRowReady()) 
+			streamFeeder.feed(chunkseq);
+		if (chunkseq.getIdatSet().rowinfo.rowNreal != nrow) // check
+			throw new PngjInputException("inconsistent row: " + nrow);
+		return chunkseq.getIdatSet().getUnfilteredRow();
 	}
 
-	/**
-	 * if returns true, a new row is available in idat.
-	 * @return
-	 */
-	private boolean readNextRowFromIdat() {
-		while (!chunkseq.getCurReaderIdatSet().isDataPendingForConsumer() && !chunkseq.getCurReaderIdatSet().isAllDone()) {
-			if(streamFeeder.feed(chunkseq)<1) return false;
-		}
-		if(chunkseq.getCurReaderIdatSet().isDataPendingForConsumer()) {
-			return true;
-		} 
-		else return false;
-	}
-	
 	/**
 	 * Reads all the (remaining) file, skipping the pixels data. This is much
 	 * more efficient that calling readRow(), specially for big files (about 10
@@ -408,14 +296,7 @@ public class PngReaderNg {
 	 * an exception will be thrown.
 	 */
 	public void setMaxTotalBytesRead(long maxTotalBytesToRead) {
-		this.maxTotalBytesRead = maxTotalBytesToRead;
-	}
-
-	/**
-	 * @return Total maximum bytes to read.
-	 */
-	public long getMaxTotalBytesRead() {
-		return maxTotalBytesRead;
+		chunkseq.setMaxTotalBytesRead(maxTotalBytesToRead);
 	}
 
 	/**
@@ -423,15 +304,8 @@ public class PngReaderNg {
 	 * default: 5Mb).<br>
 	 * If exceeded, some chunks will be skipped
 	 */
-	public void setMaxBytesMetadata(int maxBytesChunksToLoad) {
-		this.maxBytesMetadata = maxBytesChunksToLoad;
-	}
-
-	/**
-	 * @return Total maximum bytes to load from ancillary ckunks.
-	 */
-	public int getMaxBytesMetadata() {
-		return maxBytesMetadata;
+	public void setMaxBytesMetadata(long maxBytesMetadata) {
+		chunkseq.setMaxBytesMetadata(maxBytesMetadata);
 	}
 
 	/**
@@ -441,15 +315,8 @@ public class PngReaderNg {
 	 * checked) and the chunk will be saved as a PngChunkSkipped object. See
 	 * also setSkipChunkIds
 	 */
-	public void setSkipChunkMaxSize(int skipChunksBySize) {
-		this.skipChunkMaxSize = skipChunksBySize;
-	}
-
-	/**
-	 * @return maximum size in bytes for individual ancillary chunks.
-	 */
-	public int getSkipChunkMaxSize() {
-		return skipChunkMaxSize;
+	public void setSkipChunkMaxSize(long skipChunkMaxSize) {
+		chunkseq.setSkipChunkMaxSize(skipChunkMaxSize);
 	}
 
 	/**
@@ -457,15 +324,12 @@ public class PngReaderNg {
 	 * These chunks will be skipped (the CRC will not be checked) and the chunk
 	 * will be saved as a PngChunkSkipped object. See also setSkipChunkMaxSize
 	 */
-	public void setSkipChunkIds(String[] skipChunksById) {
-		this.skipChunkIds = skipChunksById == null ? new String[] {} : skipChunksById;
+	public void setChunksToSkip(String... chunksToSkip) {
+		chunkseq.setChunksToSkip(chunksToSkip);
 	}
 
-	/**
-	 * @return Chunk-IDs to be skipped.
-	 */
-	public String[] getSkipChunkIds() {
-		return skipChunkIds;
+	public void addChunkToSkip(String chunkToSkip) {
+		chunkseq.addChunkToSkip(chunkToSkip);
 	}
 
 	/**
@@ -484,7 +348,9 @@ public class PngReaderNg {
 	 */
 	public void end() {
 		if (chunkseq.currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
-			close();
+			readLastAndClose();
+		imgLine=null;
+		imgLines=null;
 	}
 
 	/**
@@ -495,69 +361,17 @@ public class PngReaderNg {
 	}
 
 	/**
-	 * set/unset "unpackedMode"<br>
-	 * If false (default) packed types (bitdepth=1,2 or 4) will keep several
-	 * samples packed in one element (byte or int) <br>
-	 * If true, samples will be unpacked on reading, and each element in the
-	 * scanline will be sample. This implies more processing and memory, but
-	 * it's the most efficient option if you intend to read individual pixels. <br>
-	 * This option should only be set before start reading.
-	 * 
-	 * @param unPackedMode
-	 */
-	public void setUnpackedMode(boolean unPackedMode) {
-		this.unpackedMode = unPackedMode;
-	}
-
-	/**
-	 * @see PngReaderNg#setUnpackedMode(boolean)
-	 */
-	public boolean isUnpackedMode() {
-		return unpackedMode;
-	}
-
-	/**
-	 * Tries to reuse the allocated buffers from other already used PngReader
-	 * object. This will have no effect if the buffers are smaller than
-	 * necessary. It also reuses the inflater.
-	 * 
-	 * @param other
-	 *            A PngReader that has already finished reading pixels. Can be
-	 *            null.
-	 */
-	public void reuseBuffersFrom(PngReaderNg other) {
-		throw new RuntimeException("not implemenetd");
-	}
-
-	/**
 	 * Disables the CRC integrity check in IDAT chunks and ancillary chunks,
 	 * this gives a slight increase in reading speed for big files
 	 */
 	public void setCrcCheckDisabled() {
-		crcEnabled = false;
-	}
-
-	/**
-	 * Just for testing. TO be called after ending reading, only if
-	 * initCrctest() was called before start
-	 * 
-	 * @return CRC of the raw pixels values
-	 */
-	long getCrctestVal() {
-		return crctest.getValue();
-	}
-
-	/**
-	 * Inits CRC object and enables CRC calculation
-	 */
-	void initCrctest() {
-		this.crctest = new CRC32();
+		chunkseq.setCheckCrc(false);
 	}
 
 	/**
 	 * Basic info, for debugging.
 	 */
 	public String toString() { // basic info
-		return "filename=" + filename + " " + imgInfo.toString();
+		return imgInfo.toString() + " interlaced=" + interlaced;
 	}
 }

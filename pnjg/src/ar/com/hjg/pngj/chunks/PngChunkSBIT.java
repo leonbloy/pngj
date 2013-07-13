@@ -28,7 +28,7 @@ public class PngChunkSBIT extends PngChunkSingle {
 		return ChunkOrderingConstraint.BEFORE_PLTE_AND_IDAT;
 	}
 
-	private int getLen() {
+	private int getCLen() {
 		int len = imgInfo.greyscale ? 1 : 3;
 		if (imgInfo.alpha)
 			len += 1;
@@ -37,7 +37,7 @@ public class PngChunkSBIT extends PngChunkSingle {
 
 	@Override
 	public void parseFromRaw(ChunkRaw c) {
-		if (c.len != getLen())
+		if (c.len != getCLen())
 			throw new PngjException("bad chunk length " + c);
 		if (imgInfo.greyscale) {
 			graysb = PngHelperInternal.readInt1fromByte(c.data, 0);
@@ -55,7 +55,7 @@ public class PngChunkSBIT extends PngChunkSingle {
 	@Override
 	public ChunkRaw createRawChunk() {
 		ChunkRaw c = null;
-		c = createEmptyChunk(getLen(), true);
+		c = createEmptyChunk(getCLen(), true);
 		if (imgInfo.greyscale) {
 			c.data[0] = (byte) graysb;
 			if (imgInfo.alpha)
@@ -71,13 +71,15 @@ public class PngChunkSBIT extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkSBIT otherx = (PngChunkSBIT) other;
-		graysb = otherx.graysb;
-		redsb = otherx.redsb;
-		greensb = otherx.greensb;
-		bluesb = otherx.bluesb;
-		alphasb = otherx.alphasb;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkSBIT other = new PngChunkSBIT(imgInfo);
+		other.raw = raw;
+		other.graysb = graysb;
+		other.redsb = redsb;
+		other.greensb = greensb;
+		other.bluesb = bluesb;
+		other.alphasb = alphasb;
+		return other;
 	}
 
 	public void setGraysb(int gray) {

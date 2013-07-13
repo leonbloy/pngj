@@ -69,15 +69,17 @@ public class PngChunkIHDR extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkIHDR otherx = (PngChunkIHDR) other;
-		cols = otherx.cols;
-		rows = otherx.rows;
-		bitspc = otherx.bitspc;
-		colormodel = otherx.colormodel;
-		compmeth = otherx.compmeth;
-		filmeth = otherx.filmeth;
-		interlaced = otherx.interlaced;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkIHDR other = new PngChunkIHDR(imgInfo);
+		other.raw = raw;
+		other.cols = cols;
+		other.rows = rows;
+		other.bitspc = bitspc;
+		other.colormodel = colormodel;
+		other.compmeth = compmeth;
+		other.filmeth = filmeth;
+		other.interlaced = interlaced;
+		return other;
 	}
 
 	public int getCols() {
@@ -175,9 +177,4 @@ public class PngChunkIHDR extends PngChunkSingle {
 		}
 	}
 	
-	public static ImageInfo createImageInfoFromRaw(ChunkRaw c){
-		PngChunkIHDR ch = new PngChunkIHDR(null);
-		ch.parseFromRaw(c);
-		return ch.createImageInfo();
-	}
 }

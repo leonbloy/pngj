@@ -38,9 +38,11 @@ public class PngChunkSTER extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkSTER otherx = (PngChunkSTER) other;
-		this.mode = otherx.mode;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkSTER other = new PngChunkSTER(imgInfo);
+		other.raw = raw;
+		other.mode = mode;
+		return other;
 	}
 
 	/**

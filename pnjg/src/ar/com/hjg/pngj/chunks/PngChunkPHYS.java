@@ -49,11 +49,13 @@ public class PngChunkPHYS extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkPHYS otherx = (PngChunkPHYS) other;
-		this.pixelsxUnitX = otherx.pixelsxUnitX;
-		this.pixelsxUnitY = otherx.pixelsxUnitY;
-		this.units = otherx.units;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkPHYS other = new PngChunkPHYS(imgInfo);
+		other.raw = raw;
+		other.pixelsxUnitX = pixelsxUnitX;
+		other.pixelsxUnitY = pixelsxUnitY;
+		other.units = units;
+		return other;
 	}
 
 	public long getPixelsxUnitX() {

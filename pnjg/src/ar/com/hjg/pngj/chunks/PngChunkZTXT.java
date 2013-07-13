@@ -60,9 +60,11 @@ public class PngChunkZTXT extends PngChunkTextVar {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkZTXT otherx = (PngChunkZTXT) other;
-		key = otherx.key;
-		val = otherx.val;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkZTXT other = new PngChunkZTXT(imgInfo);
+		other.raw = raw;
+		other.key = key;
+		other.val = val;
+		return other;
 	}
 }

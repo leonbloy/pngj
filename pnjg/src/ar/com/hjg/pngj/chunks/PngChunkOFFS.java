@@ -49,11 +49,13 @@ public class PngChunkOFFS extends PngChunkSingle {
 	}
 
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkOFFS otherx = (PngChunkOFFS) other;
-		this.posX = otherx.posX;
-		this.posY = otherx.posY;
-		this.units = otherx.units;
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkOFFS other = new PngChunkOFFS(imgInfo);
+		other.raw = raw;
+		other.posX = posX;
+		other.posY = posY;
+		other.units = units;
+		return other;
 	}
 
 	/**

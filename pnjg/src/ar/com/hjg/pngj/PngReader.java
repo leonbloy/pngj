@@ -69,7 +69,7 @@ public class PngReader {
 	protected byte[] rowbfilter = null; // current line 'filtered': exactly as in uncompressed stream
 	// only set for interlaced PNG
 	private final boolean interlaced;
-	private final PngDeinterlacer deinterlacer;
+	private final Deinterlacer deinterlacer;
 	private boolean crcEnabled = true;
 	// this only influences the 1-2-4 bitdepth format
 	private boolean unpackedMode = false;
@@ -126,7 +126,7 @@ public class PngReader {
 		// creates imginfo and imgline, and allocates buffers
 		imgInfo = ihdr.createImageInfo();
 		interlaced = ihdr.getInterlaced() == 1;
-		deinterlacer = interlaced ? new PngDeinterlacer(imgInfo) : null;
+		deinterlacer = interlaced ? new Deinterlacer(imgInfo) : null;
 		buffersLen = imgInfo.bytesPerRow + 1;
 		// some checks
 		if (ihdr.getFilmeth() != 0 || ihdr.getCompmeth() != 0 || (ihdr.getInterlaced() & 0xFFFE) != 0)

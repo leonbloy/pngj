@@ -47,11 +47,14 @@ public class PngChunkHIST extends PngChunkSingle {
 		return c;
 	}
 
+	
 	@Override
-	public void cloneDataFromRead(PngChunk other) {
-		PngChunkHIST otherx = (PngChunkHIST) other;
-		hist = new int[otherx.hist.length];
-		System.arraycopy(otherx.hist, 0, hist, 0, otherx.hist.length);
+	public PngChunk cloneForWrite(ImageInfo imgInfo) {
+		PngChunkHIST other = new PngChunkHIST(imgInfo);
+		other.raw = raw;
+		other.hist = new int[hist.length];
+		System.arraycopy(hist, 0, hist, 0, other.hist.length);
+		return other;
 	}
 
 	public int[] getHist() {

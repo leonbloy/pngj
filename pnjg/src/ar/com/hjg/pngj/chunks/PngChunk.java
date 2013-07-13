@@ -1,9 +1,6 @@
 package ar.com.hjg.pngj.chunks;
 
 import java.io.OutputStream;
-import java.lang.reflect.Constructor;
-import java.util.HashMap;
-import java.util.Map;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjExceptionInternal;
@@ -36,6 +33,8 @@ public abstract class PngChunk {
 	public final boolean crit, pub, safe;
 
 	protected final ImageInfo imgInfo;
+
+	protected ChunkRaw raw;
 
 	/**
 	 * Possible ordering constraint for a PngChunk type -only relevant for
@@ -75,73 +74,25 @@ public abstract class PngChunk {
 		public boolean mustGoAfterPLTE() {
 			return this == AFTER_PLTE_BEFORE_IDAT;
 		}
+
+		public boolean isOk(int currentChunkGroup, boolean hasplte) {
+			if (this == BEFORE_IDAT)
+				return currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT;
+			else if (this == BEFORE_PLTE_AND_IDAT)
+				return currentChunkGroup < ChunksList.CHUNK_GROUP_2_PLTE;
+			else if (this == AFTER_PLTE_BEFORE_IDAT)
+				return hasplte ? currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT
+						: (currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT && currentChunkGroup > ChunksList.CHUNK_GROUP_2_PLTE);
+			return false;
+		}
 	}
 
 	private boolean priority = false; // For writing. Queued chunks with high priority will be written as soon as
 										// possible
 
 	protected int chunkGroup = -1; // chunk group where it was read or writen
-	protected int length = -1; // merely informational, for read chunks
-	protected long offset = 0; // merely informational, for read chunks
 
-	/**
-	 * This static map defines which PngChunk class correspond to which ChunkID
-	 * <p>
-	 * The client can add other chunks to this map statically, before reading an
-	 * image, calling PngChunk.factoryRegister(id,class)
-	 */
-	private final static Map<String, Class<? extends PngChunk>> factoryMap = new HashMap<String, Class<? extends PngChunk>>();
-	static {
-		factoryMap.put(ChunkHelper.IDAT, PngChunkIDAT.class);
-		factoryMap.put(ChunkHelper.IHDR, PngChunkIHDR.class);
-		factoryMap.put(ChunkHelper.PLTE, PngChunkPLTE.class);
-		factoryMap.put(ChunkHelper.IEND, PngChunkIEND.class);
-		factoryMap.put(ChunkHelper.tEXt, PngChunkTEXT.class);
-		factoryMap.put(ChunkHelper.iTXt, PngChunkITXT.class);
-		factoryMap.put(ChunkHelper.zTXt, PngChunkZTXT.class);
-		factoryMap.put(ChunkHelper.bKGD, PngChunkBKGD.class);
-		factoryMap.put(ChunkHelper.gAMA, PngChunkGAMA.class);
-		factoryMap.put(ChunkHelper.pHYs, PngChunkPHYS.class);
-		factoryMap.put(ChunkHelper.iCCP, PngChunkICCP.class);
-		factoryMap.put(ChunkHelper.tIME, PngChunkTIME.class);
-		factoryMap.put(ChunkHelper.tRNS, PngChunkTRNS.class);
-		factoryMap.put(ChunkHelper.cHRM, PngChunkCHRM.class);
-		factoryMap.put(ChunkHelper.sBIT, PngChunkSBIT.class);
-		factoryMap.put(ChunkHelper.sRGB, PngChunkSRGB.class);
-		factoryMap.put(ChunkHelper.hIST, PngChunkHIST.class);
-		factoryMap.put(ChunkHelper.sPLT, PngChunkSPLT.class);
-		// extended
-		factoryMap.put(PngChunkOFFS.ID, PngChunkOFFS.class);
-		factoryMap.put(PngChunkSTER.ID, PngChunkSTER.class);
-	}
-
-	/**
-	 * Registers a chunk-id (4 letters) to be associated with a PngChunk class
-	 * <p>
-	 * This method should be called by user code that wants to add some chunks
-	 * (not implmemented in this library) to the factory, so that the PngReader
-	 * knows about it.
-	 */
-	public static void factoryRegister(String chunkId, Class<? extends PngChunk> chunkClass) {
-		factoryMap.put(chunkId, chunkClass);
-	}
-
-	/**
-	 * True if the chunk-id type is known.
-	 * <p>
-	 * A chunk is known if we recognize its class, according with
-	 * <code>factoryMap</code>
-	 * <p>
-	 * This is not necessarily the same as being "STANDARD", or being
-	 * implemented in this library
-	 * <p>
-	 * Unknown chunks will be parsed as instances of {@link PngChunkUNKNOWN}
-	 */
-	public static boolean isKnown(String id) {
-		return factoryMap.containsKey(id);
-	}
-
-	protected PngChunk(String id, ImageInfo imgInfo) {
+	public PngChunk(String id, ImageInfo imgInfo) {
 		this.id = id;
 		this.imgInfo = imgInfo;
 		this.crit = ChunkHelper.isCritical(id);
@@ -149,52 +100,9 @@ public abstract class PngChunk {
 		this.safe = ChunkHelper.isSafeToCopy(id);
 	}
 
-	/**
-	 * This factory creates the corresponding chunk and parses the raw chunk.
-	 * This is used when reading.
-	 */
-	public static PngChunk factory(ChunkRaw chunk, ImageInfo info) {
-		PngChunk c = factoryFromId(ChunkHelper.toString(chunk.idbytes), info);
-		c.length = chunk.len;
-		c.parseFromRaw(chunk);
-		return c;
-	}
-
-	/**
-	 * Creates one new blank chunk of the corresponding type, according to
-	 * factoryMap (PngChunkUNKNOWN if not known)
-	 */
-	public static PngChunk factoryFromId(String cid, ImageInfo info) {
-		PngChunk chunk = null;
-		try {
-			Class<? extends PngChunk> cla = factoryMap.get(cid);
-			if (cla != null) {
-				Constructor<? extends PngChunk> constr = cla.getConstructor(ImageInfo.class);
-				chunk = constr.newInstance(info);
-			}
-		} catch (Exception e) {
-			// this can happen for unkown chunks
-		}
-		if (chunk == null)
-			chunk = new PngChunkUNKNOWN(cid, info);
-		return chunk;
-	}
-
 	protected final ChunkRaw createEmptyChunk(int len, boolean alloc) {
 		ChunkRaw c = new ChunkRaw(len, ChunkHelper.toBytes(id), alloc);
 		return c;
-	}
-
-	/**
-	 * Makes a clone (deep copy) calling {@link #cloneDataFromRead(PngChunk)}
-	 */
-	@SuppressWarnings("unchecked")
-	public static <T extends PngChunk> T cloneChunk(T chunk, ImageInfo info) {
-		PngChunk cn = factoryFromId(chunk.id, info);
-		if (cn.getClass() != chunk.getClass())
-			throw new PngjExceptionInternal("bad class cloning chunk: " + cn.getClass() + " " + chunk.getClass());
-		cn.cloneDataFromRead(chunk);
-		return (T) cn;
 	}
 
 	/**
@@ -229,22 +137,6 @@ public abstract class PngChunk {
 		c.writeChunk(os);
 	}
 
-	public int getLength() {
-		return length;
-	}
-
-	/*
-	 * public void setLength(int length) { this.length = length; }
-	 */
-
-	public long getOffset() {
-		return offset;
-	}
-
-	public void setOffset(long offset) {
-		this.offset = offset;
-	}
-
 	/**
 	 * Creates the physical chunk. This is used when writing (serialization).
 	 * Each particular chunk class implements its own logic.
@@ -267,9 +159,25 @@ public abstract class PngChunk {
 	 * It should normally be a deep copy, and after the cloning
 	 * this.equals(other) should return true
 	 */
-	public abstract void cloneDataFromRead(PngChunk other);
+	public abstract PngChunk cloneForWrite(ImageInfo imgInfo);
 
 	public abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
+
+	public ChunkRaw getRaw() {
+		return raw;
+	}
+
+	public void setRaw(ChunkRaw raw) {
+		this.raw = raw;
+	}
+
+	public int getLen() {
+		return raw != null ? raw.len : -1;
+	}
+
+	public long getOffset() {
+		return raw != null ? raw.getOffset() : -1;
+	}
 
 	/**
 	 * see {@link ChunkOrderingConstraint}
@@ -278,7 +186,15 @@ public abstract class PngChunk {
 
 	@Override
 	public String toString() {
-		return "chunk id= " + id + " (len=" + length + " offset=" + offset + ") c=" + getClass().getSimpleName();
+		return "chunk id= " + id + " (len=" + getLen() + " offset=" + getOffset() + ")";
+	}
+	
+	/**
+	 * This should be called obligatorily by the setters of the Chunk "high level" fields (so that the chunk is serialized and not reused)
+	 * or optionally by some reader (after parseFromRaw) that wants hard to minimize memory 
+	 */
+	public void invalidateRaw() {
+		raw = null;
 	}
 
 }
