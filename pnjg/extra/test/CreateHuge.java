@@ -7,7 +7,7 @@ import java.io.OutputStream;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngWriter;
 
 /**
@@ -31,8 +31,8 @@ public class CreateHuge {
 		ImageLine iline2 = new ImageLine(png.imgInfo);
 		ImageLine iline = iline1;
 		for (int j = 0; j < cols; j++) {
-			ImageLineHelper.setPixelRGB8(iline1, j, ((j & 0xFF) << 16) | (((j * 3) & 0xFF) << 8) | (j * 2) & 0xFF);
-			ImageLineHelper.setPixelRGB8(iline2, j, (j * 13) & 0xFFFFFF);
+			ImageLineHelperOld.setPixelRGB8(iline1, j, ((j & 0xFF) << 16) | (((j * 3) & 0xFF) << 8) | (j * 2) & 0xFF);
+			ImageLineHelperOld.setPixelRGB8(iline2, j, (j * 13) & 0xFFFFFF);
 		}
 		long t0 = System.currentTimeMillis();
 		for (int row = 0; row < rows; row++) {

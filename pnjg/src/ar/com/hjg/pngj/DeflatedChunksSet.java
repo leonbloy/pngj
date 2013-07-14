@@ -31,37 +31,44 @@ public class DeflatedChunksSet {
 	 * processBytes() is externally called, prohibited in  S_READY
 	 * (in DONE/DONE_ABORTED it's ignored)
 	 * 
+	 * WARNING: inflater.finished() != DONE (not enough, not neccesary)
+	 *  DONE means that we have already uncompressed all the data of interest.
+	 *  
 	 * In non-callback mode, prepareForNextRow() is also externally called, in NORMAL_MODE
 	 * 
 	 * Flow:
 	 *   - processBytes() calls inflateData()
-	 *   - inflateData() goes to READY if buffer is filled or inf.finished, 
-	 *            elsewhere to WAITING
+	 *   - inflateData() : if buffer is filled goes to READY  
+	 *                     else if ! inf.finished goes to WAITING
+	 *                     else if any data goes to READY (incomplete data to be read)
+	 *                     else goes to DONE      
 	 *   - in Callback mode, after going to READY, n=processCallback() is called
 	 *    and then prepareForNextRow(n) is called.
 	 *   - in Polled mode,  prepareForNextRow(n) must be called from outside (after checking state=READY)
-	 *   - prepareForNextRow(n) goes to DONE if n==0, to ABORTED if inf.finished, elsewhere
+	 *   - prepareForNextRow(n) goes to DONE if n==0 
 	 *   calls inflateData() again
-	 *   - end() goes to ABORTED (unless already in DONE)
+	 *   - end() goes to  DONE
 	 */
 	private enum State {
 		WAITING, // waiting for more input
 		READY, // ready for consumption (might be less than fully filled), ephemeral for CALLBACK mode
-		DONE, ABORTED;
-		public boolean isCompleted() {
-			return this == DONE || this == ABORTED;
-		}
+		DONE;
+
+		public boolean isFinished() {
+			return this==DONE;
+		} // the caller has already uncompressed all the data of interest or EOF  
 	}
 
-	private State state;
+	State state;
 
-	private final Inflater inf;
+	final Inflater inf;
 	private final boolean infOwn; // true if the inflater is our own 
 
 	private DeflatedChunkReader curChunk;
 
 	private boolean callbackMode = true;
 	public final String chunkid;
+	private int nFedBytes = 0; // count the total compressed bytes that have been fed
 
 	/**
 	 * @param initialRowLen
@@ -111,22 +118,23 @@ public class DeflatedChunksSet {
 	 * @param len
 	 */
 	protected void processBytes(byte[] buf, int off, int len) {
+		nFedBytes += len;
 		//PngHelperInternal.LOGGER.info("processing compressed bytes in chunkreader : " + len);
-		if (len < 1 || state.isCompleted())
+		if (len < 1 || state.isFinished())
 			return;
 		if (state == State.READY)
 			throw new PngjInputException("this should only be called if waitingForMoreInput");
 		if (inf.needsDictionary() || !inf.needsInput())
 			throw new RuntimeException("should not happen");
 		inf.setInput(buf, off, len);
-		inflateData1();
+		inflateData();
 	}
 
 	/* 
 	 * This never inflates more than one row
 	 * (but it can recurse!) 
 	 **/
-	private void inflateData1() {
+	private void inflateData() {
 		int ninflated = 0;
 		if (row == null || row.length < rowlen)
 			row = new byte[rowlen]; // should not happen
@@ -138,19 +146,22 @@ public class DeflatedChunksSet {
 			}
 			rowfilled += ninflated;
 		}
-		if (rowfilled == rowlen || inf.finished()) {
-			if (getRowLen() > -1) {
-				state = State.READY;
-				preProcessRow();
-				if (isCallbackMode()) { // callback mode
-					int nextRowLen = processRowCallback();
-					prepareForNextRow(nextRowLen);
-				}
-			} else {
-
+		State nextstate = null;
+		if (rowfilled == rowlen)
+			nextstate = State.READY; // complete row, process it
+		else if (!inf.finished())
+			nextstate = State.WAITING;
+		else if (rowfilled > 0)
+			nextstate = State.READY; // complete row, process it
+		else
+			nextstate = State.DONE; // eof, no more data
+		state = nextstate;
+		if (state == State.READY) {
+			preProcessRow();
+			if (isCallbackMode()) { // callback mode
+				int nextRowLen = processRowCallback();
+				prepareForNextRow(nextRowLen);
 			}
-		} else {
-			state = State.WAITING;
 		}
 	}
 
@@ -190,7 +201,7 @@ public class DeflatedChunksSet {
 			state = State.DONE;
 		} else {
 			rowlen = len;
-			inflateData1();
+			inflateData();
 		}
 	}
 
@@ -203,13 +214,13 @@ public class DeflatedChunksSet {
 	}
 
 	public boolean isDone() {
-		return state.isCompleted();
+		return state.isFinished();
 	}
 
 	/** this should be called only when discarding this object */
 	public void end() {
-		if (!state.isCompleted())
-			state = State.ABORTED;
+		if (!state.isFinished())
+			state = State.DONE;
 		if (infOwn)
 			inf.end();// we end the Inflater only if we created it
 	}
@@ -253,6 +264,10 @@ public class DeflatedChunksSet {
 		StringBuilder sb = new StringBuilder("idatSet : " + curChunk.getChunkRaw().id + " state=" + state + " rows="
 				+ rown);
 		return sb.toString();
+	}
+
+	public int getnFedBytes() {
+		return nFedBytes;
 	}
 
 }

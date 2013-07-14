@@ -18,8 +18,6 @@ public class IdatSet extends DeflatedChunksSet {
 	protected final Deinterlacer deinterlacer;
 	final RowInfo rowinfo; // info for the last processed row
 	
-	private CRC32 crctest; // mostly for testing. if not null (see enableCrcTest) a CRC is compute at the unfilter pixels level
-	
 	public IdatSet(String id, ImageInfo iminfo, Deinterlacer deinterlacer) {
 		this(id, iminfo, deinterlacer, null, null);
 	}
@@ -72,28 +70,8 @@ public class IdatSet extends DeflatedChunksSet {
 		default:
 			throw new PngjInputException("Filter type " + ftn + " not implemented");
 		}
-		if (crctest != null)
-			crctest.update(rowUnfiltered, 1, nbytes);
-		
 	}
 	
-	/**
-	 * Just for testing. TO be called after ending reading, only if
-	 * initCrctest() was called before start
-	 * 
-	 * @return CRC of the raw pixels values
-	 */
-	long getCrctestVal() {
-		return crctest.getValue();
-	}
-
-	/**
-	 * Inits CRC object and enables CRC calculation
-	 */
-	void enableCrcTest() {
-		this.crctest = new CRC32();
-	}
-
 	private void unfilterRowAverage(final int nbytes) {
 		int i, j, x;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= nbytes; i++, j++) {
@@ -189,6 +167,11 @@ public class IdatSet extends DeflatedChunksSet {
 
 	public Deinterlacer getDeinterlacer() {
 		return deinterlacer;
+	}
+
+	void updateCrc(CRC32 idatCrc) {
+		if(idatCrc!=null)// just for testing
+			idatCrc.update(getUnfilteredRow(), 1, getRowFilled()-1);
 	}
 
 

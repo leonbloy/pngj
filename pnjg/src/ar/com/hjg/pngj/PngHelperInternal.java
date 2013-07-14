@@ -274,12 +274,15 @@ public final class PngHelperInternal {
 	/*
 	 * we put this methods here so as to not pollute the public interface of PngReader
 	 */
-	public final static void initCrcForTests(PngReaderNg pngr) {
-		pngr.chunkseq.getIdatSet().enableCrcTest();
+	public final static void initCrcForTests(PngReader pngr) {
+		if (pngr.idatCrc == null)
+			pngr.idatCrc = new CRC32();
 	}
 
-	public final static long getCrctestVal(PngReaderNg pngr) {
-		return pngr.chunkseq.getIdatSet().getCrctestVal();
+	public final static long getCrctestVal(PngReader pngr) {
+		if (pngr.idatCrc != null)
+			return pngr.idatCrc.getValue();
+		else return -1;
 	}
 
 	public void logToStderr() {

@@ -45,7 +45,7 @@ public class TestSupport {
 			if (bf.feed(as) == 0)
 				break;
 		}
-		bf.end();
+		bf.close();
 	}
 
 	public static String showChunk(PngChunk chunk) {
@@ -149,9 +149,9 @@ public class TestSupport {
 	}
 
 	public static void testSameCrc(File image1, File image2) {
-		PngReaderInt png1 = new PngReaderInt(image1);
+		PngReader png1 = new PngReader(image1);
 		PngHelperInternal.initCrcForTests(png1);
-		PngReaderInt png2 = new PngReaderInt(image2);
+		PngReader png2 = new PngReader(image2);
 		PngHelperInternal.initCrcForTests(png2);
 		TestCase.assertEquals("Cannot compare, one is interlaced, the other not:", png1.isInterlaced(),
 				png2.isInterlaced());
@@ -165,6 +165,17 @@ public class TestSupport {
 		TestCase.assertEquals("different crcs " + image1 + "=" + crc1 + " " + image2 + "=" + crc2, crc1, crc2);
 	}
 
+	
+	
+	public static void testCrcEquals(File image1, long crc) {
+		PngReader png1 = new PngReader(image1);
+		PngHelperInternal.initCrcForTests(png1);
+		png1.readRow(png1.imgInfo.rows - 1);
+		png1.end();
+		long crc1 = PngHelperInternal.getCrctestVal(png1);
+		TestCase.assertEquals(crc1, crc);
+	}
+	
 	public static File addSuffixToName(File orig, String suffix) {
 		String x = orig.getPath();
 		x = x.replaceAll("\\.png$", "");
@@ -172,12 +183,5 @@ public class TestSupport {
 	}
 
 	
-	public static void testCrcEquals(File image1, long crc) {
-		PngReaderInt png1 = new PngReaderInt(image1);
-		PngHelperInternal.initCrcForTests(png1);
-		png1.readRow(png1.imgInfo.rows - 1);
-		png1.end();
-		long crc1 = PngHelperInternal.getCrctestVal(png1);
-		TestCase.assertEquals(crc1, crc);
-	}
+	
 }

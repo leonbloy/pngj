@@ -53,7 +53,7 @@ public class TestSuiteCrcsByte {
 		PngReaderByte png = new PngReaderByte(f);
 		CRC32 crc = new CRC32();
 		for (int i = 0; i < png.imgInfo.rows; i++) {
-			ImageLineByte line = png.readRow(i);
+			ImageLineByte line = (ImageLineByte) png.readRow(i);
 			for (int j = 0; j < line.getSize(); j++) {
 				int x = (byte)(line.getElem(j));
 				crc.update(x);

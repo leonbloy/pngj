@@ -2,8 +2,9 @@ package ar.com.hjg.pngj;
 
 /**
  * Packs information of current row.
+ * Only used internally
  */
-public class RowInfo {
+class RowInfo {
 	public final ImageInfo imgInfo;
 	public final Deinterlacer deinterlacer;
 	public final boolean imode; // Interlaced

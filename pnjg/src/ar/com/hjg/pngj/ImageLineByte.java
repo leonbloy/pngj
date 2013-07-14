@@ -17,9 +17,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 	final byte[] scanline;
 
 	protected FilterType filterUsed; // informational ; only filled by the reader. not significant for interlaced
-	final int channels; // copied from imgInfo, more handy
-	final int bitDepth; // copied from imgInfo, more handy
-	final int elementsPerRow; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
+	final int size; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
 
 	public ImageLineByte(ImageInfo imgInfo) {
 		this(imgInfo, null);
@@ -27,11 +25,9 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 
 	public ImageLineByte(ImageInfo imgInfo, byte[] sci) {
 		this.imgInfo = imgInfo;
-		channels = imgInfo.channels;
-		bitDepth = imgInfo.bitDepth;
 		filterUsed = FilterType.FILTER_UNKNOWN;
-		elementsPerRow = imgInfo.samplesPerRow ;
-		scanline = sci != null && sci.length >= elementsPerRow ? sci : new byte[elementsPerRow];
+		size = imgInfo.samplesPerRow ;
+		scanline = sci != null && sci.length >= size ? sci : new byte[size];
 	}
 
 	public static IImageLineFactory<ImageLineByte> getFactory(ImageInfo iminfo) {
@@ -91,40 +87,66 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 				}
 			}
 		} else { // packed formats
-			int mask0, mask, shi;
-			mask0 = ImageLineHelperNg.getMaskForPackedFormats(bitDepth);
+			int mask0, mask, shi,bd;
+			bd = imgInfo.bitDepth;
+			mask0 = ImageLineHelper.getMaskForPackedFormats(bd);
 			for (int i = offset * imgInfo.channels, r = 1, c = 0; r < len; r++) {
 				mask = mask0;
-				shi = 8 - bitDepth;
+				shi = 8 - bd;
 				do {
 					scanline[i] = (byte)((raw[r] & mask) >> shi);
-					mask >>= bitDepth;
-					shi -= bitDepth;
+					mask >>= bd;
+					shi -= bd;
 					i++;
 					c++;
 					if (c == imgInfo.channels) {
 						c = 0;
 						i += step1;
 					}
-				} while (mask != 0 && i < elementsPerRow);
+				} while (mask != 0 && i < size);
 			}
 		}
 	}
 
+	public void toPngRaw(byte[] raw) {
+		if (imgInfo.bitDepth == 8) {
+			System.arraycopy(scanline, 0, raw, 1, size);
+			for (int i = 0; i < size; i++) {
+				raw[i + 1] = (byte) scanline[i];
+			}
+		} else if (imgInfo.bitDepth == 16) {
+			for (int i = 0, s = 1; i < size; i++) {
+				raw[s++] =scanline[i] ;
+				raw[s++] =0;
+			}
+		} else { // packed formats
+			int shi, bd, v;
+			bd = imgInfo.bitDepth;
+			shi = 8 - bd;
+			v = 0;
+			for (int i = 0, r = 1; i < size; i++) {
+				v |= (scanline[i] << shi);
+				shi -= bd;
+				if (shi < 0  || i == size - 1) {
+					raw[r++] = (byte) v;
+					shi = 8 - bd;
+					v=0;
+				}
+			}		
+		}
+	}
+	
 	public void end() { // nothing to do here
 	}
 
 	public int getSize() {
-		return elementsPerRow;
+		return size;
 	}
 
 	public int getElem(int i) {
 		return scanline[i];
 	}
 
-	public void toPngRaw(byte[] raw) {
-		throw new RuntimeException("not implemented"); //TODO
-	}
 
 	public byte[] getScanline() {
 		return scanline;

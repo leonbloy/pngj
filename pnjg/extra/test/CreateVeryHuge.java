@@ -8,7 +8,7 @@ import java.util.Random;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngWriter;
 
 /**
@@ -27,7 +27,7 @@ public class CreateVeryHuge {
 		ImageLine iline1 = new ImageLine(png.imgInfo);
 		Random r = new Random();
 		for (int j = 0; j < cols; j++) { // pure noise line
-			ImageLineHelper.setPixelRGB8(iline1, j, r.nextInt(256), r.nextInt(256), r.nextInt(256));
+			ImageLineHelperOld.setPixelRGB8(iline1, j, r.nextInt(256), r.nextInt(256), r.nextInt(256));
 		}
 		long t0 = System.currentTimeMillis();
 		for (int row = 0; row < rows; row++) {

@@ -5,7 +5,7 @@ import java.io.File;
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
@@ -27,7 +27,7 @@ public class SampleCreateStripes {
 			double fase = Math.sin(1.3 * i / t1);
 			for (int j = 0; j < cols; j++) {
 				double sin = Math.sin((i + j) * Math.PI / t1 + fase);
-				iline.scanline[j] = ImageLineHelper.clampTo_0_255((int) ((sin + 1) * 127 + 0.5));
+				iline.scanline[j] = ImageLineHelperOld.clampTo_0_255((int) ((sin + 1) * 127 + 0.5));
 			}
 			png.writeRow(iline, i);
 		}

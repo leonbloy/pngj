@@ -5,7 +5,7 @@ import java.io.File;
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
@@ -31,7 +31,7 @@ public class SampleConvPalToTrueColor {
 		int[] buf = null;
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine line = pngr.readRowInt(row);
-			buf = ImageLineHelper.palette2rgb(line, plte, trns, buf);
+			buf = ImageLineHelperOld.palette2rgb(line, plte, trns, buf);
 			pngw.writeRowInt(buf, row);
 		}
 		pngw.copyChunksLast(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);

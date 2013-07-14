@@ -13,7 +13,8 @@ public class BufferedStreamFeeder {
 	private int offset;
 	private boolean eof = false;
 	private boolean closeOnEof = true;
-	private boolean failIfNoFeed=false;
+	private boolean failIfNoFeed = false;
+
 	public BufferedStreamFeeder(InputStream is) {
 		this(is, 8192);
 	}
@@ -37,7 +38,7 @@ public class BufferedStreamFeeder {
 	 * This should return 0 only if the stream is EOF or the consumer is done
 	 */
 	public int feed(IBytesConsumer c, int maxbytes) {
-		int n=0;
+		int n = 0;
 		if (pendinglen == 0) {
 			refillBuffer();
 		}
@@ -47,18 +48,20 @@ public class BufferedStreamFeeder {
 			if (n > 0) {
 				offset += n;
 				pendinglen -= n;
-			} 
+			}
 		}
-		if(n<1 && failIfNoFeed) throw new PngjInputException("failed feed bytes");
+		if (n < 1 && failIfNoFeed)
+			throw new PngjInputException("failed feed bytes");
 		return n;
 	}
-	
+
 	public boolean feedFixed(IBytesConsumer c, int bytes) {
-		int remain=bytes;
-		while(remain>0) {
-			int n=feed(c,remain);
-			if(n<1) return false;
-			remain-=n;
+		int remain = bytes;
+		while (remain > 0) {
+			int n = feed(c, remain);
+			if (n < 1)
+				return false;
+			remain -= n;
 		}
 		return true;
 	}
@@ -71,7 +74,7 @@ public class BufferedStreamFeeder {
 			offset = 0;
 			pendinglen = is.read(buf);
 			if (pendinglen < 0) {
-				end();
+				close();
 				return;
 			} else
 				return;
@@ -92,16 +95,19 @@ public class BufferedStreamFeeder {
 		this.closeOnEof = closeOnEof;
 	}
 
-	/** sets EOF=true, and closes the stream if closeOnEof */
-	public void end() {
+	/**
+	 * sets EOF=true, and closes the stream if closeOnEof Idempotent, secure,
+	 * never throws exception
+	 * */
+	public void close() {
+		eof = true;
+		buf = null;
 		try {
-			eof = true;
-			buf = null;
-			if (closeOnEof)
+			if (is != null && closeOnEof)
 				is.close();
-			is = null;
 		} catch (Exception e) {
 		}
+		is = null;
 	}
 
 	public void setInputStream(InputStream is) { // to reuse this object

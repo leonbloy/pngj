@@ -120,7 +120,7 @@ public class ChunkSeqReader implements IBytesConsumer {
 		}
 		if (isIdatType && !skip) { // IDAT with HOT PROCESS mode
 			if (curReaderDeflatedSet == null)
-				curReaderDeflatedSet = createIdatSet(id); // new 
+				curReaderDeflatedSet = createIdatSet(id); // new
 			curChunkReader = new DeflatedChunkReader(len, id, checkCrc, offset, curReaderDeflatedSet) {
 				@Override
 				protected void chunkDone() {
@@ -204,6 +204,9 @@ public class ChunkSeqReader implements IBytesConsumer {
 		return curReaderDeflatedSet;
 	}
 
+	/**
+	 * 
+	 */
 	public void close() { // forced closing
 		if (curReaderDeflatedSet != null)
 			curReaderDeflatedSet.end();

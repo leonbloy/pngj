@@ -18,7 +18,7 @@ import javax.imageio.ImageIO;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngjException;
@@ -75,9 +75,9 @@ public class SampleBufferedImage {
 					System.out.println(row + " " + ((p >> 24) & 0xFF) + " " + ((p >> 16) & 0xFF) + "-"
 							+ ((p >> 8) & 0xFF) + " -" + (p & 0xFF));
 				if (!alpha)
-					ImageLineHelper.setPixelRGB8(line, col, p);
+					ImageLineHelperOld.setPixelRGB8(line, col, p);
 				else
-					ImageLineHelper.setPixelRGBA8(line, col, p);
+					ImageLineHelperOld.setPixelRGBA8(line, col, p);
 			}
 			pngw.writeRow(line, row);
 
@@ -99,9 +99,9 @@ public class SampleBufferedImage {
 					System.out.println(row + " " + ((p >> 24) & 0xFF) + " " + ((p >> 16) & 0xFF) + "-"
 							+ ((p >> 8) & 0xFF) + " -" + (p & 0xFF));
 				if (!alpha)
-					ImageLineHelper.setPixelRGB8(line, col, p);
+					ImageLineHelperOld.setPixelRGB8(line, col, p);
 				else
-					ImageLineHelper.setPixelRGBA8(line, col, p);
+					ImageLineHelperOld.setPixelRGBA8(line, col, p);
 			}
 			pngw.writeRow(line, row);
 		}

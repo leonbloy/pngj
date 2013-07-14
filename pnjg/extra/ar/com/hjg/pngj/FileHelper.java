@@ -43,7 +43,7 @@ public class FileHelper {
 	 * @return a new PngWriter - see constructor doc
 	 */
 	public static PngWriter createPngWriter(File file, ImageInfo imgInfo, boolean allowOverwrite) {
-		return new PngWriter(openFileForWriting(file, allowOverwrite), imgInfo, file.getName());
+		return new PngWriter(openFileForWriting(file, allowOverwrite), imgInfo);
 	}
 
 	/**
@@ -57,7 +57,7 @@ public class FileHelper {
 	 * @return A new PngReader object, ready for starting reading image rows
 	 */
 	public static PngReader createPngReader(File file) {
-		return new PngReader(openFileForReading(file), file.getName());
+		return new PngReader(openFileForReading(file));
 	}
 
 	/**
@@ -112,17 +112,17 @@ public class FileHelper {
 		return os;
 	}
 	
-	public static int[][] readAsARGB32(PngReader pngr,	int[][] img) {
+	/*public static int[][] readAsARGB32(PngReader pngr,	int[][] img) {
 		pngr.setUnpackedMode(false); // we unpack in the conversion method
 		if(img==null) img=new int[pngr.imgInfo.rows][pngr.imgInfo.cols];
 		PngChunkPLTE pal = pngr.getMetadata().getPLTE();
 		PngChunkTRNS trns = pngr.getMetadata().getTRNS();
 		for(int r=0;r<pngr.imgInfo.rows;r++) {
 			ImageLine line=pngr.readRowByte(r);
-			ImageLineHelper.lineToARGB32(line, pal, trns, img[r]);
+			ImageLineHelperOld.lineToARGB32(line, pal, trns, img[r]);
 		}
 		pngr.end();
 		return img;
-	}
+	}*/
 
 }

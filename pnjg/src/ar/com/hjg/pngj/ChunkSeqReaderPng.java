@@ -236,5 +236,6 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	public Set<String> getChunksToSkip() {
 		return chunksToSkip;
 	}
+
 	
 }

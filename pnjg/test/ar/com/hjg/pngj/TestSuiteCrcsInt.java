@@ -49,10 +49,10 @@ public class TestSuiteCrcsInt {
 	
 	protected long calcCrc(String file) {
 		File f = new File(TestSupport.getPngTestSuiteDir(),file);
-		PngReaderInt png = new PngReaderInt(f);
+		PngReader png = new PngReader(f);
 		CRC32 crc = new CRC32();
 		for (int i = 0; i < png.imgInfo.rows; i++) {
-			ImageLine line = png.readRow(i);
+			ImageLine line = (ImageLine) png.readRow(i);
 			for (int j = 0; j < line.getSize(); j++) {
 				int x = line.getElem(j);
 				crc.update(x);

@@ -83,9 +83,9 @@ public class ImageLine implements IImageLine, IImageLineArray {
 			return; // nothing to do
 		if (scale && iminfo.indexed)
 			scale = false;
-		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
-		final int[] unpackArray = bitDepth == 1 ? ImageLineHelper.DEPTH_UNPACK_1
-				: (bitDepth == 4 ? ImageLineHelper.DEPTH_UNPACK_4 : ImageLineHelper.DEPTH_UNPACK_2);
+		final int mask0 = ImageLineHelperOld.getMaskForPackedFormatsLs(bitDepth);
+		final int[] unpackArray = bitDepth == 1 ? ImageLineHelperOld.DEPTH_UNPACK_1
+				: (bitDepth == 4 ? ImageLineHelperOld.DEPTH_UNPACK_4 : ImageLineHelperOld.DEPTH_UNPACK_2);
 		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
 		int mask, offset, v;
 		if (offset0 != 8) {
@@ -127,7 +127,7 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
 			return; // nothing to do
-		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
+		final int mask0 = ImageLineHelperOld.getMaskForPackedFormatsLs(bitDepth);
 		final int scalefactor = 8 - bitDepth;
 		final int offset0 = 8 - bitDepth;
 		int v, v0;
@@ -156,8 +156,8 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
 			return; // nothing to do
-		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
-		final int[] unpackArray = ImageLineHelper.DEPTH_UNPACK[bitDepth];
+		final int mask0 = ImageLineHelperOld.getMaskForPackedFormatsLs(bitDepth);
+		final int[] unpackArray = ImageLineHelperOld.DEPTH_UNPACK[bitDepth];
 		final int offset0 = 8 * iminfo.samplesPerRowPacked - bitDepth * iminfo.samplesPerRow;
 		int mask, offset, v;
 		if (offset0 != 8) {
@@ -190,7 +190,7 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		final int bitDepth = iminfo.bitDepth;
 		if (bitDepth >= 8)
 			return; // nothing to do
-		final int mask0 = ImageLineHelper.getMaskForPackedFormatsLs(bitDepth);
+		final int mask0 = ImageLineHelperOld.getMaskForPackedFormatsLs(bitDepth);
 		final int scalefactor = 8 - bitDepth;
 		final int offset0 = 8 - bitDepth;
 		int v, v0;
@@ -245,10 +245,6 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		filterUsed = ft;
 	}
 
-	public int[] getScanlineInt() {
-		return scanline;
-	}
-
 	/**
 	 * Basic info
 	 */
@@ -293,7 +289,7 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		} else { // packed formats
 			int mask0, mask, shi, bd;
 			bd = imgInfo.bitDepth;
-			mask0 = ImageLineHelperNg.getMaskForPackedFormats(bd);
+			mask0 = ImageLineHelper.getMaskForPackedFormats(bd);
 			for (int i = offset * imgInfo.channels, r = 1, c = 0; r < len; r++) {
 				mask = mask0;
 				shi = 8 - bd;
@@ -318,8 +314,9 @@ public class ImageLine implements IImageLine, IImageLineArray {
 				raw[i + 1] = (byte) scanline[i];
 			}
 		} else if (imgInfo.bitDepth == 16) {
-			for (int i = 0, s = 1; i < imgInfo.samplesPerRow; i++) {
-				scanline[i] = ((raw[s++] & 0xFF) << 8) | (raw[s++] & 0xFF);
+			for (int i = 0, s = 1; i < size; i++) {
+				raw[s++] = (byte)(scanline[i]>>8);
+				raw[s++] = (byte)(scanline[i]&0xff);
 			}
 		} else { // packed formats
 			int shi, bd, v;
@@ -328,10 +325,11 @@ public class ImageLine implements IImageLine, IImageLineArray {
 			v = 0;
 			for (int i = 0, r = 1; i < size; i++) {
 				v |= (scanline[i] << shi);
-				shi += bd;
-				if (shi >= 8 || i == size - 1) {
+				shi -= bd;
+				if (shi < 0 || i == size - 1) {
 					raw[r++] = (byte) v;
 					shi = 8 - bd;
+					v=0;
 				}
 			}
 		}

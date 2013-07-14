@@ -4,7 +4,7 @@ import java.io.File;
 
 import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
@@ -30,7 +30,7 @@ public class SampleDecreaseRed {
 			ImageLine l1 = pngr.readRow(row);
 			for (int j = 0; j < pngr.imgInfo.cols; j++) {
 				l1.scanline[j * channels] /= 2;
-				l1.scanline[j * channels + 1] = ImageLineHelper.clampTo_0_255(l1.scanline[j * channels + 1] + 20);
+				l1.scanline[j * channels + 1] = ImageLineHelperOld.clampTo_0_255(l1.scanline[j * channels + 1] + 20);
 			}
 			pngw.writeRow(l1, row);
 		}

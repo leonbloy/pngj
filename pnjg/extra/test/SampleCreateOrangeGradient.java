@@ -6,7 +6,7 @@ import java.io.OutputStream;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
-import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineHelperOld;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
@@ -26,7 +26,7 @@ public class SampleCreateOrangeGradient {
 			int r = 255;
 			int g = 127;
 			int b = 255 * col / imi.cols;
-			ImageLineHelper.setPixelRGB8(iline, col, r, g, b); // orange-ish gradient
+			ImageLineHelperOld.setPixelRGB8(iline, col, r, g, b); // orange-ish gradient
 		}
 		for (int row = 0; row < png.imgInfo.rows; row++) {
 			png.writeRow(iline, row);

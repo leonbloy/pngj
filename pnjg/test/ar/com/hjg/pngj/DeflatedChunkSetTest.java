@@ -1,6 +1,10 @@
 package ar.com.hjg.pngj;
 
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.util.Arrays;
+import java.util.zip.Deflater;
+import java.util.zip.Inflater;
 
 import junit.framework.TestCase;
 
@@ -14,6 +18,7 @@ import org.junit.Test;
  */
 public class DeflatedChunkSetTest {
 
+	
 	public static class ChunkSetReaderIdatRawCb extends ChunkSeqReader { // callback
 		final int rowsize;
 		private int nrows;
@@ -98,7 +103,7 @@ public class DeflatedChunkSetTest {
 				if (bf.feed(this) < 1)
 					break;
 			}
-			bf.end();
+			bf.close();
 		}
 	}
 
@@ -177,5 +182,17 @@ public class DeflatedChunkSetTest {
 	public void tearDown() {
 		TestSupport.cleanAll();
 	}
+	
+	
 
+	public static void main(String[] args) throws Exception{
+		byte[] data= new byte[]{0,42,43,0,44,41};
+		byte[] compressed = new byte[20];
+		Deflater def1 = new Deflater(Deflater.DEFAULT_COMPRESSION);
+		def1.setInput(data);
+		def1.finish();
+		int n = def1.deflate(compressed);
+		System.out.println(n);
+		System.out.println(Arrays.toString(compressed));
+	}
 }
