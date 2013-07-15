@@ -6,7 +6,9 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-public class DeinterlacerTest {
+import ar.com.hjg.pngj.test.PngjTest;
+
+public class DeinterlacerTest extends PngjTest {
 	Random rand = new Random();
 
 	void test1(int cols, int rows) {

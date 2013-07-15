@@ -11,11 +11,13 @@ import org.junit.rules.ExpectedException;
 
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTIME;
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  *   
  */
-public class ChunkSeqPngTest {
+public class ChunkSeqPngTest extends PngjTest{
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
@@ -109,7 +111,7 @@ public class ChunkSeqPngTest {
 		ChunkSeqPngCb c = new ChunkSeqPngCb();
 		c.setIncludeNonBufferedChunks(true);
 		TestSupport.feedFromStreamTest(c, TestSupport.PNG_TEST_TESTG2);
-		TestCase.assertEquals("r=0[  0|  0   1   2]r=1[  0|112 192 105]r=2[  0|255 238 220]", c.summary.toString());
+		TestCase.assertEquals("r=0[  1|  0   1   2]r=1[  3|112 192 105]r=2[  1|255 238 220]", c.summary.toString());
 	}
 	
 	private static String readRowsPoll(ChunkSeqReaderPng c,String file) {
@@ -142,7 +144,7 @@ public class ChunkSeqPngTest {
 		ChunkSeqReaderPng c = new ChunkSeqReaderPng(false);
 		c.setIncludeNonBufferedChunks(true);
 		String res = readRowsPoll(c, TestSupport.PNG_TEST_TESTG2);
-		TestCase.assertEquals("r=0[  0|  0   1   2] r=1[  0|112 192 105] r=2[  0|255 238 220] ", 
+		TestCase.assertEquals("r=0[  1|  0   1   2] r=1[  3|112 192 105] r=2[  1|255 238 220] ", 
 				res);
 		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ",
 				TestSupport.showChunks(c.getChunks()));
@@ -154,7 +156,7 @@ public class ChunkSeqPngTest {
 		ChunkSeqReaderPng c = new ChunkSeqReaderPng(false);
 		c.setIncludeNonBufferedChunks(true);
 		String res = readRowsPoll(c, TestSupport.PNG_TEST_TESTG2I);
-		TestCase.assertEquals("r=0[  0|  0] r=1[  0|  2] r=2[  0|255 220] r=3[  0|  1] r=4[  0|238] r=5[  0|112 192 105] ", 
+		TestCase.assertEquals("r=0[  0|  0] r=1[  0|  2] r=2[  1|255 220] r=3[  0|  1] r=4[  0|238] r=5[  3|112 192 105] ", 
 				res);
 		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[70] IDAT[23] IEND[0] ",
 				TestSupport.showChunks(c.getChunks()));

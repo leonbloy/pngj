@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 
@@ -25,12 +24,14 @@ public class SampleImgDiff {
 		int maxDifCol = -1;
 		double dif;
 		int channels = l1.imgInfo.channels;
+		int[] scanline1 = l1.getScanline();
+		int[] scanline2 = l2.getScanline();
 		for (int col = 0; col < l1.imgInfo.cols; col++) {
-			dif = Math.abs(l1.scanline[col * channels] - l2.scanline[col * channels])
-					+ Math.abs(l1.scanline[col * channels + 1] - l2.scanline[col * channels + 1])
-					+ Math.abs(l1.scanline[col * channels + 2] - l2.scanline[col * channels + 2]);
+			dif = Math.abs(scanline1[col * channels] - scanline2[col * channels])
+					+ Math.abs(scanline1[col * channels + 1] - scanline2[col * channels + 1])
+					+ Math.abs(scanline1[col * channels + 2] - scanline2[col * channels + 2]);
 			if (channels == 4)
-				dif += Math.abs(l1.scanline[col * channels + 3] - l2.scanline[col * channels + 3]);
+				dif += Math.abs(scanline1[col * channels + 3] - scanline2[col * channels + 3]);
 			if (dif > maxDif) {
 				maxDif = dif;
 				maxDifCol = col;
@@ -43,8 +44,8 @@ public class SampleImgDiff {
 		int maxDif = -1;
 		int maxDifCol = -1;
 		int maxDifRow = -1;
-		PngReader i1 = FileHelper.createPngReader(new File(f1));
-		PngReader i2 = FileHelper.createPngReader(new File(f2));
+		PngReader i1 = new PngReader(new File(f1));
+		PngReader i2 = new PngReader(new File(f2));
 		System.out.println(i1.toString());
 		System.out.println(i2.toString());
 		if (i1.imgInfo.channels < 3)
@@ -53,8 +54,8 @@ public class SampleImgDiff {
 			throw new RuntimeException("Images must be comparable (same sizes and type) ");
 		int rows = i1.imgInfo.rows;
 		for (int row = 0; row < rows; row++) {
-			ImageLine l1 = i1.readRow(row);
-			ImageLine l2 = i2.readRow(row);
+			ImageLine l1 = (ImageLine) i1.readRow(row);
+			ImageLine l2 = (ImageLine) i2.readRow(row);
 			int[] res = computeDiffLine(l1, l2);
 			if (res[0] > maxDif) {
 				maxDif = res[0];

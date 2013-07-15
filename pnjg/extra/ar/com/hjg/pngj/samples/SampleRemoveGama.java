@@ -2,54 +2,35 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.FileHelper;
-import ar.com.hjg.pngj.FilterType;
-import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
-import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkGAMA;
 
 /**
  * Remove GAMA chunk, if present
+ * 
+ * These could be done more efficienty, by treating IDAT chunks as ancillary chunks
+ * See ChunkSeqBasicTest for an example
+ * 
  */
 public class SampleRemoveGama {
 
 	public static void convert(String origFilename, String destFilename) {
-		PngReader pngr = FileHelper.createPngReader(new File(origFilename));
-		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), pngr.imgInfo, false);
-		pngw.setFilterType(FilterType.FILTER_AGGRESSIVE);
-		pngw.queueChunksBeforeIdat(pngr, ChunkCopyBehaviour.COPY_ALL); // all chunks are queued
-		removeGama2(pngw);
+		PngReader pngr = new PngReader(new File(origFilename));
+		PngWriter pngw = new PngWriter(new File(destFilename), pngr.imgInfo, false);
+		pngw.setFilterPreserve(true);
+		pngw.copyChunksFrom(pngr.getChunksList(), new ChunkPredicate() {
+			public boolean match(PngChunk chunk) {
+				return chunk.id.equals(PngChunkGAMA.ID);
+			}
+		}); 
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
-			ImageLine l1 = pngr.readRow(row);
-			pngw.writeRow(l1, row);
+			pngw.writeRow(pngr.readRow(row));
 		}
-		pngw.queueChunksAfterIdat(pngr, ChunkCopyBehaviour.COPY_ALL); // in case some new metadata has been read
 		pngw.end();
 		pngr.end();
-	}
-
-	public static void removeGama(PngWriter pngw) {
-		PngChunkGAMA gama = (PngChunkGAMA) pngw.getChunksList().getQueuedById1(ChunkHelper.gAMA);
-		if (gama != null) {
-			System.out.println("removing gama chunk gamma=" + gama.getGamma());
-			pngw.getChunksList().removeChunk(gama);
-		}
-	}
-
-	// another way
-	public static void removeGama2(PngWriter pngw) {
-		int n = ChunkHelper.trimList(pngw.getChunksList().getQueuedChunks(), new ChunkPredicate() {
-			public boolean match(PngChunk c) {
-				return c.id.equals(ChunkHelper.gAMA);
-			}
-		});
-		if (n > 0)
-			System.out.println("removed gama chunk");
 	}
 
 	public static void main(String[] args) throws Exception {

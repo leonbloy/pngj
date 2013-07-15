@@ -95,6 +95,22 @@ public class ChunkSeqReader implements IBytesConsumer {
 		return processed;
 	}
 
+	/** Feeds all <tt>len</tt> bytes, retrying if necessary.
+	 * Returns true if succces.
+	 * 
+	 * This can only be used in callback mode */
+	public boolean feedAll(byte[] buf, int off, int len) {
+		while (len > 0) {
+			int n = feed(buf,off,len);
+			if (n < 1)
+				return false;
+			len -= n;
+			off += n;
+		}
+		return true;
+	}
+
+	
 	/**
 	 * Called when a chunk start has been read, before the chunk data itself is
 	 * read.

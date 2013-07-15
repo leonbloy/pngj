@@ -7,11 +7,13 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ar.com.hjg.pngj.chunks.ChunkRaw;
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  * Very basic reading  
  */
-public class ChunkSequenceSkipTest {
+public class ChunkSequenceSkipTest extends PngjTest  {
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();

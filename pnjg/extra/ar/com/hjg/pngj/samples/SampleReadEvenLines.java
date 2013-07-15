@@ -2,9 +2,8 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLinesOld;
+import ar.com.hjg.pngj.ImageLines;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
@@ -15,16 +14,14 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 public class SampleReadEvenLines {
 
 	public static void convert(String origFilename, String destFilename) {
-		PngReader pngr = FileHelper.createPngReader(new File(origFilename));
-		pngr.setUnpackedMode(true);
+		PngReader pngr = new PngReader(new File(origFilename));
 		ImageInfo imr = pngr.imgInfo;
 
 		ImageInfo imw = new ImageInfo(imr.cols, imr.rows / 2, imr.bitDepth, imr.alpha, imr.greyscale, imr.indexed);
-		ImageLinesOld imlines = pngr.readRowsInt(0, imw.rows, 2); // half of the lines
-		PngWriter pngw = FileHelper.createPngWriter(new File(destFilename), imw, true);
-		pngr.setUnpackedMode(true);
-		pngw.queueChunksBeforeIdat(pngr, ChunkCopyBehaviour.COPY_ALL); // all chunks are queued
-		pngw.writeRowsInt(imlines.scanlines);
+		ImageLines imlines = pngr.readRows(0, imw.rows, 2); // half of the lines
+		PngWriter pngw = new PngWriter(new File(destFilename), imw, true);
+		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL); // all chunks are queued
+		pngw.writeRows(imlines);
 		pngw.end();
 		pngr.end();
 	}

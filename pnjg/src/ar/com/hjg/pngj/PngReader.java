@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
@@ -10,19 +11,24 @@ import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
- * Reads a PNG image, line by line.
- * <p>
+ * Reads a PNG image (pixels and/or metadata) from a file or stream. Each row is
+ * read as an {@link ImageLine} object (one int per sample), but this can be
+ * changed by setting a different ImageLineFactory
+ * 
+ * Internally, this wraps a {@link ChunkSeqReaderPng} with a
+ * {@link BufferedStreamFeeder}
+ * 
  * The reading sequence is as follows: <br>
  * 1. At construction time, the header and IHDR chunk are read (basic image
  * info) <br>
  * 2. Afterwards you can set some additional global options. Eg.
- * {@link #setUnpackedMode(boolean)}, {@link #setCrcCheckDisabled()}.<br>
+ * {@link #setCrcCheckDisabled()}.<br>
  * 3. Optional: If you call getMetadata() or getChunksLisk() before start
  * reading the rows, all the chunks before IDAT are automatically loaded and
  * available <br>
  * 4a. The rows are read onen by one of the <tt>readRowXXX</tt> methods:
- * {@link #readRowInt(int)}, {@link PngReader#readRowByte(int)}, etc, in
- * order, from 0 to nrows-1 (you can skip or repeat rows, but not go backwards)<br>
+ * {@link #readRow(int)}, {@link PngReader#readRowByte(int)}, etc, in order,
+ * from 0 to nrows-1 (you can skip or repeat rows, but not go backwards)<br>
  * 4b. Alternatively, you can read all rows, or a subset, in a single call:
  * {@link #readRowsInt()}, {@link #readRowsByte()} ,etc. In general this
  * consumes more memory, but for interlaced images this is equally efficient,
@@ -32,71 +38,81 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * 6. end() forcibly finishes/aborts the reading and closes the stream
  */
 public class PngReader {
+	// some performance/defensive limits
+	private static final long maxTotalBytesReadDefault = 901001001L; // ~ 900MB
+	private static final long maxBytesMetadataDefault = 5024024; // for ancillary chunks 
+	private static final long skipChunkMaxSizeDefault = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
 
 	/**
 	 * Basic image info - final and inmutable.
 	 */
 	public final ImageInfo imgInfo;
-	private final boolean interlaced;
-	private ChunkSeqReaderPng chunkseq;
-	private BufferedStreamFeeder streamFeeder;
+	public final boolean interlaced;
+
+	protected ChunkSeqReaderPng chunkseq;
+	protected BufferedStreamFeeder streamFeeder;
 
 	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS; // see setter/getter
-	// some performance/defensive limits
-	private static final long maxTotalBytesReadDefault = 901001001L; // ~ 900MB
-	private static final long maxBytesMetadataDefault = 5024024; // for ancillary chunks 
-	private static final long skipChunkMaxSizeDefault = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
-	CRC32 idatCrc;//for testing
 	protected final PngMetadata metadata; // this a wrapper over chunks
+	protected int rowNum; // current row number (already read)
 
-	protected IImageLine imgLine;  // storage for each line, in non-interlaced mode 
-	protected ImageLines imgLines; // storage for set of lines, in interlaced mode (or groupal reading)
+	protected IImageLine imgLine; // auxiliary storage for each line, in non-interlaced mode 
+	protected ImageLines imgLines; // auxiliary storage for set of lines, in interlaced mode (or groupal reading)
 
-	private int rowNum; // current row number (already read)
+	CRC32 idatCrc;//for testing
 
 	/**
-	 * factory to be used to create new lines. This is used in the default 
+	 * factory to be used to create new lines. This is used in the default
 	 */
 	protected IImageLineFactory<? extends IImageLine> imageLineFactory;
 
 	/**
-	 * Constructs a PngReader from an InputStream.
-	 * <p>
-	 * See also <code>FileHelper.createPngReader(File f)</code> if available.
+	 * Construct a PngReader object from a stream, with default options. This
+	 * reads the signature and the first IHDR chunk only.
 	 * 
-	 * Reads only the signature and first chunk (IDHR)
+	 * Warning: In case of exception the stream is NOT closed.
 	 * 
-	 * @param filenameOrDescription
-	 *            : Optional, can be a filename or a description. Just for
-	 *            error/debug messages
-	 * 
+	 * @param inputStream
+	 *            PNG stream
 	 */
 	public PngReader(InputStream inputStream) {
+		this(inputStream, false);
+	}
+
+	/**
+	 * Constructs a PngReader opening a file. If it succeeds, it sets
+	 * <tt>setShouldCloseStream(true)</tt> In case of exception the file stream is closed
+	 * 
+	 * @param file
+	 *            PNG image file
+	 */
+	public PngReader(File file) {
+		this(PngHelperInternal.istreamFromFile(file), true);
+		setShouldCloseStream(true);
+	}
+
+	private PngReader(InputStream inputStream, boolean closeStreamIfError) {
 		try {
 			this.chunkseq = new ChunkSeqReaderPng(false); // this works only in polled mode
 			streamFeeder = new BufferedStreamFeeder(inputStream);
 			streamFeeder.setFailIfNoFeed(true);
-			if (!streamFeeder.feedFixed(chunkseq, 36)) // 8+13+12: signature+IHDR
+			if (!streamFeeder.feedFixed(chunkseq, 36)) // 8+13+12=36 PNG signature+IHDR chunk
 				throw new PngjInputException("error reading first 21 bytes");
-			imgInfo = chunkseq.imageInfo;
+			imgInfo = chunkseq.getImageInfo();
 			interlaced = chunkseq.getDeinterlacer() != null;
 			setMaxBytesMetadata(maxBytesMetadataDefault);
 			setMaxTotalBytesRead(maxTotalBytesReadDefault);
 			setSkipChunkMaxSize(skipChunkMaxSizeDefault);
 			this.metadata = new PngMetadata(chunkseq.chunksList);
 			rowNum = -1;
-		} catch (RuntimeException e) { // in case of exception in constructor, we close the input stream (seems reasonable)
-			try {
-				inputStream.close();
-			} catch (Exception ee) {
-			}
+		} catch (RuntimeException e) {
+			if (closeStreamIfError)
+				try {
+					inputStream.close();
+				} catch (IOException e1) {
+				}
 			throw e;
 		}
-	}
-
-	public PngReader(File file) {
-		this(PngHelperInternal.istreamFromFile(file));
-		setShouldCloseStream(true);
 	}
 
 	/**
@@ -115,30 +131,9 @@ public class PngReader {
 	 * called explicitly but is also called implicititly in some methods
 	 * (getMetatada(), getChunksList())
 	 */
-	public void readFirstChunks() {
+	protected void readFirstChunks() {
 		while (chunkseq.currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT)
 			streamFeeder.feed(chunkseq);
-	}
-
-	/**
-	 * Reads (and processes) chunks after last IDAT.
-	 **/
-	public void readLastChunks() {
-		while (chunkseq.getIdatSet() != null && !chunkseq.getIdatSet().isDone())
-			streamFeeder.feed(chunkseq);
-		while (!chunkseq.isDone())
-			streamFeeder.feed(chunkseq);
-	}
-
-	/**
-	 * Logs/prints a warning.
-	 * <p>
-	 * The default behaviour is print to stderr, but it can be overriden.
-	 * <p>
-	 * This happens rarely - most errors are fatal.
-	 */
-	protected void logWarn(String warn) {
-		PngHelperInternal.LOGGER.warning(warn);
 	}
 
 	/**
@@ -213,8 +208,8 @@ public class PngReader {
 				rowNum++;
 				chunkseq.getIdatSet().updateCrc(idatCrc);
 				if (rowNum == nrow) {
-					imgLine.fromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(), imgInfo.bytesPerRow + 1, 0, 1);
-					imgLine.end();
+					imgLine.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(), imgInfo.bytesPerRow + 1, 0, 1);
+					imgLine.endReadFromPngRaw();
 				}
 				chunkseq.getIdatSet().advanceToNextRow();
 			}
@@ -254,9 +249,9 @@ public class PngReader {
 				chunkseq.getIdatSet().updateCrc(idatCrc);
 				m = (rowNum - rowOffset) / rowStep;
 				if (rowNum >= rowOffset && rowStep * m + rowOffset == rowNum) {
-					imgLines.getImageLine(m).fromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(),
+					imgLines.getImageLine(m).readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(),
 							imgInfo.bytesPerRow + 1, 0, 1);
-					imgLines.getImageLine(m).end();
+					imgLines.getImageLine(m).endReadFromPngRaw();
 				}
 				chunkseq.getIdatSet().advanceToNextRow();
 			}
@@ -301,13 +296,13 @@ public class PngReader {
 			int i = idat.rowinfo.rowNreal;
 			int m = imgLines.imageRowToMatrixRowStrict(i);
 			if (m >= 0) {
-				imgLines.getImageLine(m).fromPngRaw(idat.getUnfilteredRow(), idat.rowinfo.buflen, idat.rowinfo.oX,
+				imgLines.getImageLine(m).readFromPngRaw(idat.getUnfilteredRow(), idat.rowinfo.buflen, idat.rowinfo.oX,
 						idat.rowinfo.dX);
 			}
 			chunkseq.getIdatSet().advanceToNextRow();
 		} while (!idat.isDone());
 		for (int i = 0; i < imgLines.size(); i++)
-			imgLines.getImageLine(i).end();
+			imgLines.getImageLine(i).endReadFromPngRaw();
 	}
 
 	/**
@@ -376,14 +371,26 @@ public class PngReader {
 	}
 
 	/**
+	 * Reads till end of PNG stream and call <tt>close()</tt>
 	 * 
-	 * Normally this does nothing, but it can be used to force a premature
-	 * closing. Its recommended practice to call it after reading the image
-	 * pixels.
+	 * This should normally be called after reading the pixel data, to read the
+	 * trailing chunks and close the stream. But it can be called at anytime.
+	 * This will also read the first chunks if not still read, and skip pixels
+	 * (IDAT) if still pending.
+	 * 
+	 * If you want to read all metadata skipping pixels, readSkippingAllRows()
+	 * is a little more efficient.
+	 * 
+	 * If you want to abort immediately, call instead <tt>close()</tt>
 	 */
 	public void end() {
 		try {
-			readLastChunks();
+			if (chunkseq.firstChunksNotYetRead())
+				readFirstChunks();
+			if (chunkseq.getIdatSet() != null && !chunkseq.getIdatSet().isDone())
+				chunkseq.getIdatSet().end();
+			while (!chunkseq.isDone())
+				streamFeeder.feed(chunkseq);
 		} finally {
 			close();
 		}

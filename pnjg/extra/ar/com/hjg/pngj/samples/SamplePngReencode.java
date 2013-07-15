@@ -2,9 +2,8 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.FilterType;
-import ar.com.hjg.pngj.ImageLine;
+import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
@@ -14,19 +13,18 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
  */
 public class SamplePngReencode {
 	public static void reencode(String orig, String dest, FilterType filterType, int cLevel) {
-		PngReader pngr = FileHelper.createPngReader(new File(orig));
-		PngWriter pngw = FileHelper.createPngWriter(new File(dest), pngr.imgInfo, true);
+		PngReader pngr = new PngReader(new File(orig));
+		PngWriter pngw = new PngWriter(new File(dest), pngr.imgInfo, true);
 		System.out.println(pngr.toString());
-		System.out.printf("Creating Image %s  filter=%s compLevel=%d \n", pngw.getFilename(), filterType.toString(),
+		System.out.printf("Creating Image %s  filter=%s compLevel=%d \n", dest, filterType.toString(),
 				cLevel);
 		pngw.setFilterType(filterType);
 		pngw.setCompLevel(cLevel);
-		pngw.queueChunksBeforeIdat(pngr, ChunkCopyBehaviour.COPY_ALL);
+		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
-			ImageLine l1 = pngr.readRow(row);
-			pngw.writeRow(l1, row);
+			IImageLine l1 = pngr.readRow();
+			pngw.writeRow(l1);
 		}
-		pngw.queueChunksAfterIdat(pngr, ChunkCopyBehaviour.COPY_ALL);
 		pngr.end();
 		pngw.end();
 		System.out.printf("Done. Compression: %.3f \n", pngw.computeCompressionRatio());

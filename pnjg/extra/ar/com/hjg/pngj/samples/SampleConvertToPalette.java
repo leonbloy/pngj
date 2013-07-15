@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
@@ -49,7 +48,7 @@ public class SampleConvertToPalette {
 			transparent.setIndexEntryAsTransparent(transparentIndex);
 			pngw.getChunksList().queue(transparent);
 		}
-		pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
+		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 		ImageLine linew = new ImageLine(imiw);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			ImageLine l1 = (ImageLine) pngr.readRow(row);
@@ -65,7 +64,6 @@ public class SampleConvertToPalette {
 			pngw.writeRow(linew, row);
 
 		}
-		pngw.queueChunksAfterIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.end();
 		pngr.end();
 		System.out.println("colours: " + ncolors);

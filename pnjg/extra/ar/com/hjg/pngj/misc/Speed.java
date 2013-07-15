@@ -11,7 +11,7 @@ import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.TestSupport;
+import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  * Creates a huge image

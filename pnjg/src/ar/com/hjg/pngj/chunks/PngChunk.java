@@ -153,13 +153,13 @@ public abstract class PngChunk {
 	 * 
 	 * @return A newly allocated and filled raw chunk
 	 */
-	abstract ChunkRaw createRawChunk();
+	protected abstract ChunkRaw createRawChunk();
 
 	/**
 	 * Parses raw chunk and fill inside data. This is used when reading
 	 * (deserialization). Each particular chunk class implements its own logic.
 	 */
-	abstract void parseFromRaw(ChunkRaw c);
+	protected abstract void parseFromRaw(ChunkRaw c);
 
 	/**
 	 * Makes a copy of the chunk.
@@ -169,9 +169,9 @@ public abstract class PngChunk {
 	 * This is usually a (shallow) copy, and after the cloning
 	 * this.equals(other) should return true
 	 */
-	abstract PngChunk cloneForWrite(ImageInfo imgInfo);
+	protected abstract PngChunk cloneForWrite(ImageInfo imgInfo);
 
-	abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
+	protected abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
 
 	public ChunkRaw getRaw() {
 		return raw;

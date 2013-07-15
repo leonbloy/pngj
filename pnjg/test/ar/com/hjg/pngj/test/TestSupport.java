@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.test;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -8,16 +8,31 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import junit.framework.TestCase;
+import ar.com.hjg.pngj.BufferedStreamFeeder;
+import ar.com.hjg.pngj.ChunkSeqReader;
+import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.IImageLine;
+import ar.com.hjg.pngj.IImageLineArray;
+import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.ImageLine;
+import ar.com.hjg.pngj.ImageLineByte;
+import ar.com.hjg.pngj.PngHelperInternal;
+import ar.com.hjg.pngj.PngReader;
+import ar.com.hjg.pngj.PngReaderByte;
+import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
+/**
+ * Methods of this class are designed for debug and testing, they are not optimized
+ */
 public class TestSupport {
 
 	// WARNING: showXXXX methods are also for machine consumption
@@ -26,10 +41,10 @@ public class TestSupport {
 
 	public static final String PNG_TEST_STRIPES = "resources/test/stripes.png";
 	public static final String PNG_TEST_TESTG2 = "resources/test/testg2.png";
-	public static final String PNG_TEST_TESTG2I= "resources/test/testg2i.png";
+	public static final String PNG_TEST_TESTG2I = "resources/test/testg2i.png";
 
-	public static final String PNG_TEST_BAD_MISSINGIDAT ="resources/test/bad_missingidat.png";
-	
+	public static final String PNG_TEST_BAD_MISSINGIDAT = "resources/test/bad_missingidat.png";
+
 	public static String showChunks(List<PngChunk> chunks) {
 		StringBuilder sb = new StringBuilder();
 		for (PngChunk chunk : chunks) {
@@ -75,6 +90,35 @@ public class TestSupport {
 		return chunk == null ? "null" : chunk.id + "[" + chunk.len + "]";
 	}
 
+	public static String showFilters(File pngr, int maxgroups,boolean usenewlines) {
+		PngReaderByte png = new PngReaderByte(pngr);
+		StringBuilder sb=new StringBuilder();
+		FilterType ft1, ft0 =null;
+		int contgroups=0;
+		int r1=-1;
+		for (int r = 0; r < png.imgInfo.rows ; r++) {
+			ft1 = ((IImageLineArray) png.readRow()).getFilterType();
+			if ( r==0 || ft1 != ft0) {
+				if(r>0) {
+					contgroups++;
+					sb.append(String.format("[%d:%d]=%s",r1,r-1,ft0)).append(usenewlines?"\n":" ");
+				}
+				r1 = r;
+				ft0=ft1;
+			}
+			if(r==png.imgInfo.rows -1) {
+				sb.append(String.format("[%d:%d]=%s",r1,r,ft0)).append(usenewlines?"\n":" ");
+			}
+			if(contgroups>=maxgroups) {
+				sb.append("...");
+				break;
+			}
+		}
+		png.end();
+		return sb.toString().trim().replaceAll("FILTER_", "");
+	}
+
+	
 	/**
 	 * First byte is the filter type, nbytes is the valid content (including
 	 * filter byte) This shows at most 9 bytes
@@ -176,8 +220,6 @@ public class TestSupport {
 		TestCase.assertEquals("different crcs " + image1 + "=" + crc1 + " " + image2 + "=" + crc2, crc1, crc2);
 	}
 
-	
-	
 	public static void testCrcEquals(File image1, long crc) {
 		PngReader png1 = new PngReader(image1);
 		PngHelperInternal.initCrcForTests(png1);
@@ -186,7 +228,7 @@ public class TestSupport {
 		long crc1 = PngHelperInternal.getCrctestVal(png1);
 		TestCase.assertEquals(crc1, crc);
 	}
-	
+
 	public static File addSuffixToName(File orig, String suffix) {
 		String x = orig.getPath();
 		x = x.replaceAll("\\.png$", "");
@@ -222,14 +264,16 @@ public class TestSupport {
 		return new NullOutputStream();
 	}
 
-	public static List<PngChunk> getChunkById(String id,Collection<PngChunk> chunks) {
+	public static List<PngChunk> getChunkById(String id, Collection<PngChunk> chunks) {
 		ArrayList<PngChunk> list = new ArrayList<PngChunk>();
-		for(PngChunk c:chunks) if(c.id.equals(id)) list.add(c);
+		for (PngChunk c : chunks)
+			if (c.id.equals(id))
+				list.add(c);
 		return list;
 	}
-	
+
 	/** does not include IDAT */
-	public static ChunksList readAllChunks(File file,boolean includeIdat) {
+	public static ChunksList readAllChunks(File file, boolean includeIdat) {
 		PngReader pngr = new PngReader(file);
 		pngr.setChunksToSkip();
 		pngr.getChunkseq().setIncludeNonBufferedChunks(includeIdat);
@@ -238,5 +282,36 @@ public class TestSupport {
 		return pngr.getChunksList();
 	}
 
-	
+	public static File getTmpFile(String suffix) {
+		return new File(getTempDir(), "temp" + suffix + ".png");
+	}
+
+	public static PngWriter prepareFileTmp(File f, ImageInfo imi) {
+		PngWriter png = new PngWriter(f, imi, true);
+		return png;
+	}
+
+	public static PngWriter prepareFileTmp(File f, boolean palette) {
+		return prepareFileTmp(f, new ImageInfo(32, 32, 8, false, false, palette));
+	}
+
+	public static IImageLine generateNoiseLine(ImageInfo imi) { // byte format!
+		ImageLineByte line = new ImageLineByte(imi);
+		Random r = new Random();
+		byte[] scanline=line.getScanline();
+		r.nextBytes(scanline);
+		return line;
+	}
+
+	public static PngWriter prepareFileTmp(File f) {
+		return prepareFileTmp(f, false);
+	}
+
+	public static void endFileTmp(PngWriter png) { // writes dummy data
+		ImageLine imline = new ImageLine(png.imgInfo);
+		for (int i = 0; i < png.imgInfo.rows; i++)
+			png.writeRow(imline);
+		png.end();
+	}
+
 }

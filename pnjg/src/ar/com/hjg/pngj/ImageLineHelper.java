@@ -83,14 +83,10 @@ public class ImageLineHelper {
 	 * @return R G B (A), one sample 0-255 per array element. Ready for
 	 *         pngw.writeRowInt()
 	 */
-	public static int[] palette2rgbx(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
-		return palette2rgb(line, pal, trns, buf, false);
-	}
-
-	@Deprecated
 	public static int[] palette2rgb(ImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
 		return palette2rgb(line, pal, trns, buf, false);
 	}
+
 	
 	/**
 	 * warning: this only works with byte format, and alters ImageLine! 

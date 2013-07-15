@@ -16,7 +16,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 
 	final byte[] scanline;
 
-	protected FilterType filterUsed; // informational ; only filled by the reader. not significant for interlaced
+	protected FilterType filterType; // informational ; only filled by the reader. not significant for interlaced
 	final int size; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
 
 	public ImageLineByte(ImageInfo imgInfo) {
@@ -25,7 +25,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 
 	public ImageLineByte(ImageInfo imgInfo, byte[] sci) {
 		this.imgInfo = imgInfo;
-		filterUsed = FilterType.FILTER_UNKNOWN;
+		filterType = FilterType.FILTER_UNKNOWN;
 		size = imgInfo.samplesPerRow ;
 		scanline = sci != null && sci.length >= size ? sci : new byte[size];
 	}
@@ -39,7 +39,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 	}
 
 	public FilterType getFilterUsed() {
-		return filterUsed;
+		return filterType;
 	}
 
 	public byte[] getScanlineByte() {
@@ -54,8 +54,8 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 	}
 
 
-	public void fromPngRaw(byte[] raw, final int len, final int offset, final int step) {
-		filterUsed=FilterType.getByVal(raw[0]);
+	public void readFromPngRaw(byte[] raw, final int len, final int offset, final int step) {
+		filterType=FilterType.getByVal(raw[0]); // only for non interlaced line the filter is significative
 		int len1 = len - 1;
 		int step1 = (step - 1) * imgInfo.channels;
 		if (imgInfo.bitDepth == 8) {
@@ -108,7 +108,8 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 		}
 	}
 
-	public void toPngRaw(byte[] raw) {
+	public void writeToPngRaw(byte[] raw) {
+		raw[0] = (byte) filterType.val;
 		if (imgInfo.bitDepth == 8) {
 			System.arraycopy(scanline, 0, raw, 1, size);
 			for (int i = 0; i < size; i++) {
@@ -136,7 +137,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 		}
 	}
 	
-	public void end() { // nothing to do here
+	public void endReadFromPngRaw() {
 	}
 
 	public int getSize() {
@@ -155,5 +156,10 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 	public ImageInfo getImageInfo() {
 		return imgInfo;
 	}
+
+	public FilterType getFilterType() {
+		return filterType;
+	}
+
 
 }

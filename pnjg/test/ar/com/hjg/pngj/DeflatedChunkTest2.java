@@ -5,13 +5,15 @@ import java.util.zip.Inflater;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
+
 /**
  */
-public class DeflatedChunkTest2{
+public class DeflatedChunkTest2 extends PngjTest {
 
 	public static final byte[] inflated=new byte[]{0,42,43,0,44,41};
 	public static final byte[] compressed=new byte[]{120, -100, 99, -48, -46, 102, -48, -47, 4, 0, 2, 5, 0, -85};
@@ -78,13 +80,7 @@ public class DeflatedChunkTest2{
 
 	}
 
-	/**
-	 * Tears down the test fixture. (Called after every test case method.)
-	 */
-	@After
-	public void tearDown() {
-		
-	}
+
 	
 	
 

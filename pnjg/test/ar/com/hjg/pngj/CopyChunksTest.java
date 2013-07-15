@@ -2,29 +2,28 @@ package ar.com.hjg.pngj;
 
 import java.io.File;
 import java.util.Arrays;
-import java.util.List;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
+import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.ChunksList;
-import ar.com.hjg.pngj.chunks.ChunksListForWrite;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTIME;
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  *   
  */
-public class CopyChunksTest {
+public class CopyChunksTest extends PngjTest {
 
 	@Rule
 	public ExpectedException expectedEx = ExpectedException.none();
-	private boolean clearTempFiles = false; // change to false so that the images are not removed, and you can check them visually 
 
 	/**
 	 * copy all chunks
@@ -77,22 +76,17 @@ public class CopyChunksTest {
 			PngReader pngr = new PngReader(new File(TestSupport.PNG_TEST_STRIPES));
 			pngr.getChunkseq().setIncludeNonBufferedChunks(false); // to no store IDAT chunks in list, so as to compare later
 			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
-			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
-			int queued = pngw.getChunksList().getQueuedChunks().size();
-			int written = pngw.getChunksList().getChunks().size();
+			pngw.copyChunksFrom(pngr.getChunksList(), new ChunkPredicate() {
+				public boolean match(PngChunk chunk) {
+					return ! chunk.id.equals(PngChunkTIME.ID); // copy unles it's time
+				}
+			});
 			pngw.writeRows(pngr.readRows());
-			queued = pngw.getChunksList().getQueuedChunks().size();
-			written = pngw.getChunksList().getChunks().size();
-			TestCase.assertEquals(0, queued);
-			TestCase.assertEquals(2, written); // IHDR + queued
-			System.out.println(queued + " " + written);
 			pngr.end();
 			// REMOVE TIME chunk (expected after IDAT)
-			boolean ok = pngw.getChunksList().removeChunk(pngw.getChunksList().getQueuedById1(PngChunkTIME.ID));
-			TestCase.assertTrue("could not remove TIME chunk?", ok);
 			pngw.end();
-			queued = pngw.getChunksList().getQueuedChunks().size();
-			written = pngw.getChunksList().getChunks().size();
+			int queued = pngw.getChunksList().getQueuedChunks().size();
+			int written = pngw.getChunksList().getChunks().size();
 			TestCase.assertEquals(0, queued);
 			TestCase.assertEquals(4, written); // not including IDAT
 
@@ -182,14 +176,9 @@ public class CopyChunksTest {
 		ChunksList cdest = TestSupport.readAllChunks(dest, false);
 		PngChunkTIME time = (PngChunkTIME) cdest.getById1("tIME");
 		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
-		TestCase.assertEquals("IHDR[13] pHYs[9] iTXt[30] tIME[7] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
+		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
 	}
 
-	@After
-	public void tearDown() {
-		if (clearTempFiles) {
-			TestSupport.cleanAll();
-		}
-	}
+
 
 }

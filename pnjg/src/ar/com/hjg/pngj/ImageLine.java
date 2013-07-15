@@ -8,7 +8,7 @@ package ar.com.hjg.pngj;
  * <p>
  * See <code>scanline</code> field, to understand the format.
  * 
- * FOrmat: int (one integer by sample),
+ * Format: int (one integer by sample),
  */
 public class ImageLine implements IImageLine, IImageLineArray {
 	public final ImageInfo imgInfo;
@@ -32,7 +32,7 @@ public class ImageLine implements IImageLine, IImageLineArray {
 	protected final int[] scanline;
 	protected final int size;
 
-	protected FilterType filterUsed; // informational ; only filled by the reader. not significant for interlaced
+	protected FilterType filterType =FilterType.FILTER_UNKNOWN; // informational ; only filled by the reader. not significant for interlaced
 
 	/**
 	 * 
@@ -53,7 +53,7 @@ public class ImageLine implements IImageLine, IImageLineArray {
 
 	public ImageLine(ImageInfo imgInfo, int[] sci) {
 		this.imgInfo = imgInfo;
-		filterUsed = FilterType.FILTER_UNKNOWN;
+		filterType = FilterType.FILTER_UNKNOWN;
 		size = imgInfo.samplesPerRow;
 		scanline = sci != null && sci.length >= size ? sci : new int[size];
 	}
@@ -67,12 +67,12 @@ public class ImageLine implements IImageLine, IImageLineArray {
 	}
 
 
-	public FilterType getFilterUsed() {
-		return filterUsed;
+	public FilterType getFilterType() {
+		return filterType;
 	}
 
-	public void setFilterUsed(FilterType ft) {
-		filterUsed = ft;
+	public void setFilterType(FilterType ft) {
+		filterType = ft;
 	}
 
 	/**
@@ -82,8 +82,8 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		return " cols=" + imgInfo.cols + " bpc=" + imgInfo.bitDepth + " size=" + scanline.length;
 	}
 
-	public void fromPngRaw(byte[] raw, final int len, final int offset, final int step) {
-		setFilterUsed(FilterType.getByVal(raw[0]));
+	public void readFromPngRaw(byte[] raw, final int len, final int offset, final int step) {
+		setFilterType(FilterType.getByVal(raw[0]));
 		int len1 = len - 1;
 		int step1 = (step - 1) * imgInfo.channels;
 		if (imgInfo.bitDepth == 8) {
@@ -138,7 +138,8 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		}
 	}
 
-	public void toPngRaw(byte[] raw) {
+	public void writeToPngRaw(byte[] raw) {
+		raw[0] = (byte) filterType.val;
 		if (imgInfo.bitDepth == 8) {
 			for (int i = 0; i < size; i++) {
 				raw[i + 1] = (byte) scanline[i];
@@ -165,7 +166,8 @@ public class ImageLine implements IImageLine, IImageLineArray {
 		}
 	}
 
-	public void end() { // nothing to do here
+	public void endReadFromPngRaw() {
+	
 	}
 
 	public int getSize() {
@@ -183,5 +185,6 @@ public class ImageLine implements IImageLine, IImageLineArray {
 	public ImageInfo getImageInfo() {
 		return imgInfo;
 	}
+
 
 }

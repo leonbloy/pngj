@@ -6,13 +6,14 @@ import java.io.OutputStream;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
 
-public class ChunkSeqBasicTest {
+public class ChunkSeqBasicTest extends PngjTest {
 
 	private static final String TEXT_TO_ADD_KEY = "Test";
 	private static final String TEXT_TO_ADD = "Hi! testing";
@@ -98,13 +99,5 @@ public class ChunkSeqBasicTest {
      
     }
 
-    /**
-     * Tears down the test fixture. 
-     * (Called after every test case method.)
-     */
-    @After
-    public void tearDown() {
-        TestSupport.cleanAll();
-    }
 
 }

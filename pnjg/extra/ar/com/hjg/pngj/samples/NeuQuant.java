@@ -3,7 +3,6 @@ package ar.com.hjg.pngj.samples;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineByte;
 import ar.com.hjg.pngj.PngReader;
-import ar.com.hjg.pngj.PngReaderByte;
 
 /* NeuQuant Neural-Net Quantization Algorithm
  * ------------------------------------------

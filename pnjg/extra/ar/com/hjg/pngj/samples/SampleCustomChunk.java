@@ -6,13 +6,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Properties;
 
-import ar.com.hjg.pngj.FileHelper;
+import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
+import ar.com.hjg.pngj.chunks.ChunkFactory;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkSingle;
@@ -69,14 +69,6 @@ public class SampleCustomChunk {
 		}
 
 		@Override
-		public void cloneDataFromRead(PngChunk other) {
-			// make a copy - preferably deep - this is only used
-			PngChunkPROP x = (PngChunkPROP) other;
-			props.clear();
-			props.putAll(x.props);
-		}
-
-		@Override
 		public ChunkOrderingConstraint getOrderingConstraint() {
 			// change this if you don't require this chunk to be before IDAT, etc
 			return ChunkOrderingConstraint.BEFORE_IDAT;
@@ -86,36 +78,52 @@ public class SampleCustomChunk {
 			return props;
 		}
 
+		@Override
+		protected PngChunk cloneForWrite(ImageInfo imgInfo) {
+			PngChunkPROP chunk = new PngChunkPROP(imgInfo);
+			chunk.props.clear();
+			chunk.props.putAll(this.props);
+			return chunk;
+		}
+
 	}
 
 	public static void addPropChunk(String orig, String dest, Properties p) {
 		if (orig.equals(dest))
 			throw new RuntimeException("orig == dest???");
-		PngReader pngr = FileHelper.createPngReader(new File(orig));
-		PngWriter pngw = FileHelper.createPngWriter(new File(dest), pngr.imgInfo, true);
+		PngReader pngr = new PngReader(new File(orig));
+		PngWriter pngw = new PngWriter(new File(dest), pngr.imgInfo, true);
 		System.out.println("Reading : " + pngr.toString());
-		pngw.queueChunksBeforeIdat(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
+		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 		PngChunkPROP mychunk = new PngChunkPROP(pngw.imgInfo);
 		mychunk.getProps().putAll(p);
 		mychunk.setPriority(true); // if we want it to be written as soon as possible
 		pngw.getChunksList().queue(mychunk);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
-			ImageLine l1 = pngr.readRow(row);
-			pngw.writeRow(l1, row);
+			IImageLine l1 = pngr.readRow();
+			pngw.writeRow(l1);
 		}
-		pngw.queueChunksAfterIdat(pngr, ChunkCopyBehaviour.COPY_ALL);
 		pngr.end();
 		pngw.end();
 		System.out.printf("Done. Writen : " + dest);
 	}
 
+	static class MyCustomChunkFactory extends ChunkFactory { // this could also be an anonymous class
+		@Override
+		protected PngChunk createEmptyChunkExtended(String id, ImageInfo imgInfo) {
+			if (id.equals(PngChunkPROP.ID))
+				return new PngChunkPROP(imgInfo);
+			return super.createEmptyChunkExtended(id, imgInfo);
+		}
+	}
+
 	public static void readPropChunk(String ori) {
 		// to read the "unkwnon" chunk as our desired chunk, we must statically register it
-		PngChunk.factoryRegister(PngChunkPROP.ID, PngChunkPROP.class);
-		PngReader pngr = FileHelper.createPngReader(new File(ori));
+		PngReader pngr = new PngReader(new File(ori));
+		pngr.getChunkseq().setChunkFactory(new MyCustomChunkFactory());
 		System.out.println("Reading : " + pngr.toString());
-		pngr.getRow(pngr.imgInfo.rows - 1); // get last line: this forces loading all chunks
-		pngr.end(); // no necessary
+		pngr.readSkippingAllRows();
+		pngr.end(); 
 		// we know there can be at most one chunk of this type...
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
 		System.out.println(chunk);

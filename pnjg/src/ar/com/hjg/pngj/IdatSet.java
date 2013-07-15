@@ -17,7 +17,7 @@ public class IdatSet extends DeflatedChunksSet {
 	protected final ImageInfo imgInfo;
 	protected final Deinterlacer deinterlacer;
 	final RowInfo rowinfo; // info for the last processed row
-	
+
 	public IdatSet(String id, ImageInfo iminfo, Deinterlacer deinterlacer) {
 		this(id, iminfo, deinterlacer, null, null);
 	}
@@ -27,7 +27,7 @@ public class IdatSet extends DeflatedChunksSet {
 				iminfo.bytesPerRow + 1, inf, buffer);
 		this.imgInfo = iminfo;
 		this.deinterlacer = deinterlacer;
-		this.rowinfo=new RowInfo(iminfo, deinterlacer);
+		this.rowinfo = new RowInfo(iminfo, deinterlacer);
 	}
 
 	public void unfilterRow() {
@@ -49,6 +49,7 @@ public class IdatSet extends DeflatedChunksSet {
 
 		int ftn = row[0];
 		FilterType ft = FilterType.getByVal(ftn);
+		rowUnfiltered[0] = row[0]; // we copy the filter type, can be useful 
 		if (ft == null)
 			throw new PngjInputException("Filter type " + ftn + " invalid");
 		switch (ft) {
@@ -71,7 +72,7 @@ public class IdatSet extends DeflatedChunksSet {
 			throw new PngjInputException("Filter type " + ftn + " not implemented");
 		}
 	}
-	
+
 	private void unfilterRowAverage(final int nbytes) {
 		int i, j, x;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= nbytes; i++, j++) {
@@ -117,7 +118,7 @@ public class IdatSet extends DeflatedChunksSet {
 		super.preProcessRow();
 		rowinfo.update(getRown());
 		unfilterRow();
-		rowinfo.updateBuf(rowUnfiltered, rowinfo.bytesRow+1);
+		rowinfo.updateBuf(rowUnfiltered, rowinfo.bytesRow + 1);
 	}
 
 	/**
@@ -144,7 +145,7 @@ public class IdatSet extends DeflatedChunksSet {
 			bytesNextRow = getRown() >= imgInfo.rows - 1 ? 0 : imgInfo.bytesPerRow + 1;
 		} else {
 			boolean more = deinterlacer.nextRow();
-			bytesNextRow = more? deinterlacer.getBytesToRead() + 1 :0;
+			bytesNextRow = more ? deinterlacer.getBytesToRead() + 1 : 0;
 		}
 		if (!isCallbackMode()) // in callback mode, setNextRowLen() is called internally
 			prepareForNextRow(bytesNextRow);
@@ -170,9 +171,8 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	void updateCrc(CRC32 idatCrc) {
-		if(idatCrc!=null)// just for testing
-			idatCrc.update(getUnfilteredRow(), 1, getRowFilled()-1);
+		if (idatCrc != null)// just for testing
+			idatCrc.update(getUnfilteredRow(), 1, getRowFilled() - 1);
 	}
-
 
 }

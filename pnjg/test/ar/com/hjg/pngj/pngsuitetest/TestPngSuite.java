@@ -22,10 +22,10 @@ import ar.com.hjg.pngj.ImageLines;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.TestSupport;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
+import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  * To test all images in PNG test suite doing a horizontal mirror on all them
@@ -69,8 +69,7 @@ public class TestPngSuite {
 				interlaced = pngr.isInterlaced();
 				pngw = new PngWriter(mirror, pngr.imgInfo, true);
 				pngw.setFilterType(FilterType.FILTER_CYCLIC); // just to test all filters
-				pngr.readFirstChunks();
-				pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+				pngw.copyChunksFrom(pngr.getChunksList());
 				ImageLines lines = pngr.readRows();
 				for (int row = 0; row < pngr.imgInfo.rows; row++) {
 					mirrorLine(lines.getImageLine(row), pngr.imgInfo);
@@ -78,7 +77,6 @@ public class TestPngSuite {
 				}
 				pngr.end();
 				crc0 = PngHelperInternal.getCrctestVal(pngr);
-				pngw.queueChunksAfterIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 				pngw.end();
 			} finally {
 				pngr.close();
@@ -95,8 +93,7 @@ public class TestPngSuite {
 					pngr2.setImageLineFactory(ImageLineByte.getFactory(pngr2.imgInfo));
 				pngw = new PngWriter(recov, pngr2.imgInfo, true);
 				pngw.setFilterType(FilterType.FILTER_AGGRESSIVE);
-				pngr2.readFirstChunks();
-				pngw.queueChunksBeforeIdat(pngr2.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+				pngw.copyChunksFrom(pngr2.getChunksList());
 				for (int row = 0; row < pngr2.imgInfo.rows; row++) {
 					IImageLine line = pngr2.readRow();
 					mirrorLine(line, pngr2.imgInfo);
@@ -135,7 +132,7 @@ public class TestPngSuite {
 			boolean alpha = trns != null;
 			ImageInfo im2 = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, alpha);
 			pngw = new PngWriter(copy, im2, true);
-			pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
+			pngw.copyChunksFrom(pngr.getChunksList(),ChunkCopyBehaviour.COPY_ALL_SAFE);
 			int[] buf = null;
 			for (int row = 0; row < pngr.imgInfo.rows; row++) {
 				ImageLine line = (ImageLine) pngr.readRow();
@@ -160,7 +157,7 @@ public class TestPngSuite {
 		PngReader pngr = new PngReader(orig);
 		PngWriter pngw = new PngWriter(copy, pngr.imgInfo, true);
 		try {
-			pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+			pngw.copyChunksFrom(pngr.getChunksList());
 			boolean useByte = rand.nextBoolean() && pngr.imgInfo.bitDepth < 16;
 			if (useByte)
 				pngr.setImageLineFactory(ImageLineByte.getFactory(pngr.imgInfo));
@@ -279,10 +276,13 @@ public class TestPngSuite {
 		File dir = TestSupport.getPngTestSuiteDir();
 		File outdir = TestSupport.getTempDir();
 		System.out.println("Lines starting with 'ok error' are expected errors, they are ok.");
+		if(clearTempFiles)
+			System.out.print("Output files removed, to see them set clearTempFiles=false. ");
 		System.out.println("Output dir: " + outdir);
 		int err = testAllSuite(dir, outdir, imagesToCheck);
 		TestCase.assertEquals("The suite returner " + err + " unexpected errors", 0, err);
 		long t1 = System.currentTimeMillis();
+		
 		System.out.println("Time: " +(t1-t0) + " msecs");
 		
 	}

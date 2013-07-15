@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.FileHelper;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLine;
 import ar.com.hjg.pngj.PngReader;
@@ -16,17 +15,14 @@ import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 public class SampleMirrorImage {
 
 	public static void mirror(File orig, File dest, boolean overwrite) {
-		PngReader pngr = FileHelper.createPngReader(orig);
-		PngWriter pngw = FileHelper.createPngWriter(dest, pngr.imgInfo, overwrite);
-		pngr.setUnpackedMode(true); // we dont want to do the unpacking ourselves, we want a sample per array element
-		pngw.setUseUnPackedMode(true); // not really necesary here, as we pass the ImageLine, but anyway...
-		pngw.queueChunksBeforeIdat(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
+		PngReader pngr = new PngReader(orig);
+		PngWriter pngw = new PngWriter(dest, pngr.imgInfo, overwrite);
+		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
-			ImageLine line = pngr.readRowInt(row);
-			mirrorLineInt(pngr.imgInfo, line.scanline);
+			ImageLine line = (ImageLine) pngr.readRow(row);
+			mirrorLineInt(pngr.imgInfo, line.getScanline());
 			pngw.writeRow(line, row);
 		}
-		pngw.queueChunksAfterIdat(pngr, ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngr.end();
 		pngw.end();
 	}

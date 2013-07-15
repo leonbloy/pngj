@@ -1,14 +1,17 @@
-See how chunks are copied/cloned for writing (dirty concept?)
+
 
 See callcback mode. 
 Add Filter example
 
 Add ordering check
 
-Copy chunks for write: pass just the list, once 
 
 
 ------------
+
+Polish logger behaviuor, add log info
+
+---
 
 Document changes:
 

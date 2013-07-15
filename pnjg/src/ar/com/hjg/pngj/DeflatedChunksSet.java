@@ -217,7 +217,7 @@ public class DeflatedChunksSet {
 		return state.isFinished();
 	}
 
-	/** this should be called only when discarding this object */
+	/** this should be called only when discarding this object, or for aborting  */
 	public void end() {
 		try {
 		if (!state.isFinished())

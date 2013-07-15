@@ -1,47 +1,62 @@
 package ar.com.hjg.pngj;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
+
 /**
  * Manages the writer strategy for selecting the internal png predictor filter
  */
-class FilterWriteStrategy {
-	private static final int COMPUTE_STATS_EVERY_N_LINES = 8;
+class FilterWriteStrategy implements IFilterWriteStrategy {
 
 	final ImageInfo imgInfo;
-	public final FilterType configuredType; // can be negative (fin dout)
-	private FilterType currentType; // 0-4
+	public FilterType configuredType; // can be negative (fin dout)
+	private FilterType computedType;
 	private int lastRowTested = -1000000;
 	// performance of each filter (less is better) (can be negative)
 	private double[] lastSums = new double[5];
-	// performance of each filter (less is better) (can be negative)
-	private double[] lastEntropies = new double[5];
 	// a priori preference (NONE SUB UP AVERAGE PAETH)
-	private double[] preference = new double[] { 1.1, 1.1, 1.1, 1.1, 1.2 };
+	private double[] preference;
 	private int discoverEachLines = -1;
-	private double[] histogram1 = new double[256];
+	private List<FilterType> toTest;
 
-	FilterWriteStrategy(ImageInfo imgInfo, FilterType configuredType) {
+	public FilterWriteStrategy(ImageInfo imgInfo, FilterType cType) {
 		this.imgInfo = imgInfo;
-		this.configuredType = configuredType;
-		if (configuredType.val < 0) { // first guess
-			if ((imgInfo.rows < 8 && imgInfo.cols < 8) || imgInfo.indexed || imgInfo.bitDepth < 8)
-				currentType = FilterType.FILTER_NONE;
-			else
-				currentType = FilterType.FILTER_PAETH;
-		} else {
-			currentType = configuredType;
-		}
-		if (configuredType == FilterType.FILTER_AGGRESSIVE)
-			discoverEachLines = COMPUTE_STATS_EVERY_N_LINES;
-		if (configuredType == FilterType.FILTER_VERYAGGRESSIVE)
-			discoverEachLines = 1;
+		preference = imgInfo.indexed || imgInfo.packed ? new double[] { 1.2, 1.1, 1.1, 1.0, 1.1 } : new double[] { 1.1,
+				1.1, 1.1, 1.1, 1.2 };
+		toTest = new ArrayList<FilterType>(Arrays.asList(FilterType.getAllStandard()));
+		computedType = FilterType.FILTER_NONE;
 	}
 
-	boolean shouldTestAll(int rown) {
+	public FilterWriteStrategy(ImageInfo imgInfo) {
+		this(imgInfo, FilterType.FILTER_DEFAULT);
+	}
+
+	void setConfiguredType(FilterType cType) {
+		configuredType = cType;
+		discoverEachLines = 0;
+		if (configuredType.val >= 0)
+			computedType = configuredType;
+		else {
+			if (configuredType == FilterType.FILTER_AGGRESSIVE)
+				discoverEachLines = 8;
+			if (configuredType == FilterType.FILTER_VERYAGGRESSIVE)
+				discoverEachLines = 1;
+			if (configuredType == FilterType.FILTER_DEFAULT) {
+				if ((imgInfo.rows < 8 && imgInfo.cols < 8) || imgInfo.indexed || imgInfo.bitDepth < 8)
+					computedType = FilterType.FILTER_NONE;
+				else
+					computedType = FilterType.FILTER_PAETH;
+			}
+		}
+	}
+
+	public List<FilterType> shouldTest(int rown) {
 		if (discoverEachLines > 0 && lastRowTested + discoverEachLines <= rown) {
-			currentType = null;
-			return true;
+			return toTest;
 		} else
-			return false;
+			return Collections.emptyList();
 	}
 
 	public void setPreference(double none, double sub, double up, double ave, double paeth) {
@@ -52,46 +67,41 @@ class FilterWriteStrategy {
 		return (discoverEachLines > 0);
 	}
 
-	void fillResultsForFilter(int rown, FilterType type, double sum, int[] histo, boolean tentative) {
+	public void reportResultsForFilter(int rown, FilterType type, byte[] rowbfilter, boolean tentative) {
+		if (!computesStatistics())
+			return;
+		int sum = 0, val;
+		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
+			val = rowbfilter[i];
+			if (val < 0)
+				sum -= (int) val;
+			else
+				sum += (int) val;
+		}
 		lastRowTested = rown;
 		lastSums[type.val] = sum;
-		if (histo != null) {
-			double v, alfa, beta, e;
-			alfa = rown == 0 ? 0.0 : 0.3;
-			beta = 1 - alfa;
-			e = 0.0;
-			for (int i = 0; i < 256; i++) {
-				v = ((double) histo[i]) / imgInfo.cols;
-				v = histogram1[i] * alfa + v * beta;
-				if (tentative)
-					e += v > 0.00000001 ? v * Math.log(v) : 0.0;
-				else
-					histogram1[i] = v;
-			}
-			lastEntropies[type.val] = (-e);
-		}
 	}
 
-	FilterType gimmeFilterType(int rown, boolean useEntropy) {
-		if (currentType == null) { // get better
+	public FilterType gimmeFilterType(int rown) {
+		if (configuredType == null || configuredType.val < 0) { // not fixed?
 			if (rown == 0)
-				currentType = FilterType.FILTER_SUB;
+				computedType = FilterType.FILTER_SUB;
+			else if (configuredType == FilterType.FILTER_CYCLIC)
+				computedType = FilterType.getByVal((computedType.val + 1) % 5);
 			else {
 				double bestval = Double.MAX_VALUE;
 				double val;
 				for (int i = 0; i < 5; i++) {
-					val = useEntropy ? lastEntropies[i] : lastSums[i];
+					val = lastSums[i];
 					val /= preference[i];
 					if (val <= bestval) {
 						bestval = val;
-						currentType = FilterType.getByVal(i);
+						computedType = FilterType.getByVal(i);
 					}
 				}
 			}
 		}
-		if (configuredType == FilterType.FILTER_CYCLIC) {
-			currentType = FilterType.getByVal((currentType.val + 1) % 5);
-		}
-		return currentType;
+		return computedType;
 	}
+
 }

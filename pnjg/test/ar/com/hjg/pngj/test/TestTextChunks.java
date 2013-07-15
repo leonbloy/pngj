@@ -1,6 +1,11 @@
-package ar.com.hjg.pngj.samples;
+package ar.com.hjg.pngj.test;
 
+import java.io.File;
 import java.util.HashMap;
+
+import junit.framework.TestCase;
+
+import org.junit.Test;
 
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
@@ -10,7 +15,8 @@ import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
 public class TestTextChunks {
 
-	public static void test1() {
+	@Test
+	public void testTestChunks() {
 		HashMap<String, String> texts = new HashMap<String, String>();
 		texts.put("key1", "val");
 		texts.put("empty1", "");
@@ -19,15 +25,15 @@ public class TestTextChunks {
 		texts.put("key2", "val");
 		texts.put("empty2", "");
 		texts.put("unicode2", "Hernán");
-		texts.put("zero2", "Hola\0chau");
+		texts.put("zero2", "Hello\0bye");
 		texts.put("key3", "val");
 		texts.put("empty3", "");
 		texts.put("unicode3", "Hernán");
-		texts.put("zero3", "Hola\0chau");
+		texts.put("zero3", "Hello\0bye");
 		texts.put("nolatin1", "Hernán\u1230");
 
-		String suffix = "text";
-		PngWriter png = TestsHelper.prepareFileTmp(suffix);
+		File file1 = TestSupport.getTmpFile("testtext");
+		PngWriter png = TestSupport.prepareFileTmp(file1);
 
 		png.getMetadata().setText("key1", texts.get("key1"), false, false);
 		png.getMetadata().setText("key2", texts.get("key2"), true, false);
@@ -47,9 +53,9 @@ public class TestTextChunks {
 		png.getMetadata().setText("zero2", texts.get("zero2"), true, false);
 		png.getMetadata().setText("zero3", texts.get("zero3"), true, true);
 
-		TestsHelper.endFileTmp(png);
+		TestSupport.endFileTmp(png);
 
-		PngReader pngr = TestsHelper.getReaderTmp(suffix);
+		PngReader pngr = new PngReader(file1);
 		pngr.readSkippingAllRows();
 		int ok = 0;
 		for (PngChunk c : pngr.getChunksList().getChunks()) {
@@ -59,20 +65,11 @@ public class TestTextChunks {
 			PngChunkTextVar ct = (PngChunkTextVar) c;
 			String key = ct.getKey();
 			String val = ct.getVal();
-			System.out.println(c.id + " chunk. Key:" + key + " val='" + val + "'");
-			if (!val.equals(texts.get(key))) {
-				System.err.println("Error: expected '" + texts.get(key) + "' got '" + val + "' key=" + key + " id="
-						+ c.id);
-			}
+			//System.out.println(c.id + " chunk. Key:" + key + " val='" + val + "'");
+			TestCase.assertEquals(texts.get(key), val);
 		}
-		if (ok != texts.keySet().size())
-			throw new RuntimeException("number of text chunks does not coincide");
-
-		System.out.println("done");
+		TestCase.assertEquals("number of text chunks does not coincide",texts.keySet().size(), ok);
 
 	}
 
-	public static void main(String[] args) {
-		test1();
-	}
 }

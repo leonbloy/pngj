@@ -2,11 +2,13 @@ package ar.com.hjg.pngj;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
-public class PngReaderTest {
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
+
+public class PngReaderTest extends PngjTest {
 
 	StringBuilder sb=new StringBuilder();
 
@@ -78,13 +80,6 @@ public class PngReaderTest {
     	sb.setLength(0);
     }
 
-    /**
-     * Tears down the test fixture. 
-     * (Called after every test case method.)
-     */
-    @After
-    public void tearDown() {
-        TestSupport.cleanAll();
-    }
+
 
 }

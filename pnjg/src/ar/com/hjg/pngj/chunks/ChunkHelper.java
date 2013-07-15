@@ -200,9 +200,7 @@ public class ChunkHelper {
 		}
 	}
 
-	public static boolean maskMatch(int v, int mask) {
-		return (v & mask) != 0;
-	}
+
 
 	/**
 	 * Returns only the chunks that "match" the predicate

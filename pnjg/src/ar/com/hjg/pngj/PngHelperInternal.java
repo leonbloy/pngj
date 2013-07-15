@@ -17,7 +17,8 @@ import java.util.zip.CRC32;
  */
 public final class PngHelperInternal {
 
-	public static Logger LOGGER = Logger.getLogger("pngj");
+	public static final String KEY_LOGGER = "ar.com.pngj";
+	public static final Logger LOGGER = Logger.getLogger(KEY_LOGGER);
 
 	/**
 	 * Default charset, used internally by PNG for several things

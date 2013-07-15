@@ -6,15 +6,17 @@ import java.util.zip.Deflater;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  * Test the DeflatedChunkSet using a ChunkSetReader2 that reads the IDATs with
  * no knowledge of filters, etc
  */
-public class DeflatedChunkSetTest {
+public class DeflatedChunkSetTest extends PngjTest {
 
 	
 	public static class ChunkSetReaderIdatRawCb extends ChunkSeqReader { // callback
@@ -173,14 +175,7 @@ public class DeflatedChunkSetTest {
 
 	}
 
-	/**
-	 * Tears down the test fixture. (Called after every test case method.)
-	 */
-	@After
-	public void tearDown() {
-		TestSupport.cleanAll();
-	}
-	
+
 	
 
 	public static void main(String[] args) throws Exception{

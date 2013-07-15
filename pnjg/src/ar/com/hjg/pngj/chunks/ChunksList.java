@@ -1,7 +1,6 @@
 package ar.com.hjg.pngj.chunks;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import ar.com.hjg.pngj.ImageInfo;

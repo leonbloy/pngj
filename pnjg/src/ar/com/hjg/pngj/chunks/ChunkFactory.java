@@ -73,6 +73,13 @@ public class ChunkFactory implements IChunkFactory {
 		return new PngChunkUNKNOWN(id, imgInfo);
 	}
 
+	/**
+	 * Factory for chunks that are not in the original PNG standard.
+	 * This can be overriden (but dont forget to call this also)
+	 * @param id  Chunk id , 4 letters
+	 * @param imgInfo Usually not needed
+	 * @return null if chunk id not recognized 
+	 */
 	protected PngChunk createEmptyChunkExtended(String id, ImageInfo imgInfo) {
 		if (id.equals(PngChunkOFFS.ID))
 			return new PngChunkOFFS(imgInfo);

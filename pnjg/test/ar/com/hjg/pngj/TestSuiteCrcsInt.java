@@ -6,16 +6,18 @@ import java.util.zip.CRC32;
 
 import junit.framework.TestCase;
 
-import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
+
+import ar.com.hjg.pngj.test.PngjTest;
+import ar.com.hjg.pngj.test.TestSupport;
 
 
 /**
  * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines
  * (bytes 0 and 1), comparing with precomputed
  */
-public class TestSuiteCrcsInt {
+public class TestSuiteCrcsInt extends PngjTest  {
 	LinkedHashMap<String, Long> crcs;// these were computed with old PNJG
 
 	public TestSuiteCrcsInt() {
@@ -236,15 +238,6 @@ public class TestSuiteCrcsInt {
 	}
 
 
-	
-	/**
-	 * Tears down the test fixture. (Called after every test case method.)
-	 */
-	@After
-	public void tearDown() {
-		TestSupport.cleanAll();
-	}
-	
 	public static void main(String[] args) {
 		String filename = "basi0g01.png";
 		TestSuiteCrcsInt tc = new TestSuiteCrcsInt();

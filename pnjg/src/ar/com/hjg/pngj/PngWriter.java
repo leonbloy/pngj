@@ -3,19 +3,18 @@ package ar.com.hjg.pngj;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.Arrays;
 import java.util.List;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
-import ar.com.hjg.pngj.chunks.ChunkHelper;
+import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.ChunksListForWrite;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
-import ar.com.hjg.pngj.chunks.PngChunkTextVar;
+import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
@@ -44,7 +43,13 @@ public class PngWriter {
 	/**
 	 * PNG filter strategy
 	 */
-	protected FilterWriteStrategy filterStrat;
+	protected IFilterWriteStrategy filterStrat;
+
+	/**
+	 * If the ImageLine has a valid filterType, and the image is not interlaced,
+	 * that file type will be used
+	 */
+	protected boolean filterPreserve = false;
 
 	/**
 	 * zip compression level 0 - 9
@@ -61,9 +66,7 @@ public class PngWriter {
 	 */
 	private int deflaterStrategy = Deflater.FILTERED;
 
-	private int[] histox; // auxiliar buffer, only used by reportResultsForFilter
-
-	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 32768)
+	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 64k)
 
 	private final OutputStream os;
 
@@ -72,7 +75,7 @@ public class PngWriter {
 
 	protected byte[] rowbprev = null; // rowb prev
 
-	private int copyFromMask = ChunkCopyBehaviour.COPY_ALL;
+	private ChunkPredicate copyFromPredicate = null;
 	private ChunksList copyFromList = null;
 
 	/**
@@ -129,22 +132,6 @@ public class PngWriter {
 		datStreamDeflated = new DeflaterOutputStream(datStream, def);
 		writeSignatureAndIHDR();
 		writeFirstChunks();
-	}
-
-	private void reportResultsForFilter(int rown, FilterType type, boolean tentative) {
-		if (histox == null)
-			histox = new int[256];
-		Arrays.fill(histox, 0);
-		int s = 0, v;
-		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			v = rowbfilter[i];
-			if (v < 0)
-				s -= (int) v;
-			else
-				s += (int) v;
-			histox[v & 0xFF]++;
-		}
-		filterStrat.fillResultsForFilter(rown, type, s, histox, tentative);
 	}
 
 	private void writeEndChunk() {
@@ -205,25 +192,26 @@ public class PngWriter {
 		ihdr.setInterlaced(0); // we never interlace
 		ihdr.createRawChunk().writeChunk(os);
 		chunksList.getChunks().add(ihdr);
-
 	}
 
 	private void filterRow() {
-		// warning: filters operation rely on: "previos row" (rowbprev) is
-		// initialized to 0 the first time
-		if (filterStrat.shouldTestAll(rowNum)) {
-			filterRowNone();
-			reportResultsForFilter(rowNum, FilterType.FILTER_NONE, true);
-			filterRowSub();
-			reportResultsForFilter(rowNum, FilterType.FILTER_SUB, true);
-			filterRowUp();
-			reportResultsForFilter(rowNum, FilterType.FILTER_UP, true);
-			filterRowAverage();
-			reportResultsForFilter(rowNum, FilterType.FILTER_AVERAGE, true);
-			filterRowPaeth();
-			reportResultsForFilter(rowNum, FilterType.FILTER_PAETH, true);
+		FilterType filterType = FilterType.FILTER_UNKNOWN;
+		if (filterPreserve && FilterType.isValidStandard(rowb[0])) {
+			filterType = FilterType.getByVal(rowb[0]); // preserve original filter
+		} else {
+			for (FilterType ftype : filterStrat.shouldTest(rowNum)) {
+				filterRowWithFilterType(ftype);
+				filterStrat.reportResultsForFilter(rowNum, ftype, rowbfilter, true);
+			}
+			filterType = filterStrat.gimmeFilterType(rowNum);
 		}
-		FilterType filterType = filterStrat.gimmeFilterType(rowNum, true);
+		filterRowWithFilterType(filterType);
+		filterStrat.reportResultsForFilter(rowNum, filterType, rowbfilter, false);
+	}
+
+	private void filterRowWithFilterType(FilterType filterType) {
+		// warning: filters operation rely on: "previous row" (rowbprev) is
+		// initialized to 0 the first time
 		rowbfilter[0] = (byte) filterType.val;
 		switch (filterType) {
 		case FILTER_NONE:
@@ -242,9 +230,8 @@ public class PngWriter {
 			filterRowPaeth();
 			break;
 		default:
-			throw new PngjUnsupportedException("Filter type " + filterType + " not implemented");
+			throw new PngjUnsupportedException("Filter type " + filterType + " not recognized");
 		}
-		reportResultsForFilter(rowNum, filterType, false);
 	}
 
 	private void filterAndSend() {
@@ -265,17 +252,13 @@ public class PngWriter {
 	}
 
 	protected void filterRowNone() {
-		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			rowbfilter[i] = (byte) rowb[i];
-		}
+		System.arraycopy(rowb, 1, rowbfilter, 1, imgInfo.bytesPerRow);
 	}
 
 	protected void filterRowPaeth() {
 		int i, j, imax;
 		imax = imgInfo.bytesPerRow;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
-			// rowbfilter[i] = (byte) (rowb[i] - PngHelperInternal.filterPaethPredictor(j > 0 ? (rowb[j] & 0xFF) : 0,
-			// rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0));
 			rowbfilter[i] = (byte) PngHelperInternal.filterRowPaeth(rowb[i], j > 0 ? (rowb[j] & 0xFF) : 0,
 					rowbprev[i] & 0xFF, j > 0 ? (rowbprev[j] & 0xFF) : 0);
 		}
@@ -286,15 +269,13 @@ public class PngWriter {
 		for (i = 1; i <= imgInfo.bytesPixel; i++)
 			rowbfilter[i] = (byte) rowb[i];
 		for (j = 1, i = imgInfo.bytesPixel + 1; i <= imgInfo.bytesPerRow; i++, j++) {
-			// !!! rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
-			rowbfilter[i] = (byte) PngHelperInternal.filterRowSub(rowb[i], rowb[j]);
+			rowbfilter[i] = (byte) (rowb[i] - rowb[j]);
 		}
 	}
 
 	protected void filterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
-			// rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]); !!!
-			rowbfilter[i] = (byte) PngHelperInternal.filterRowUp(rowb[i], rowbprev[i]);
+			rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]);
 		}
 	}
 
@@ -309,7 +290,7 @@ public class PngWriter {
 	}
 
 	protected void queueChunksFromOther() {
-		if (copyFromList == null)
+		if (copyFromList == null || copyFromPredicate == null)
 			return;
 		boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
 		for (PngChunk chunk : copyFromList.getChunks()) {
@@ -320,40 +301,15 @@ public class PngWriter {
 				continue;
 			if (group >= ChunksList.CHUNK_GROUP_4_IDAT && !idatDone)
 				continue;
-			boolean copy = false;
-			if (chunk.crit) {
-				if (chunk.id.equals(ChunkHelper.PLTE)) {
-					if (imgInfo.indexed && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_PALETTE))
-						copy = true;
-					if (!imgInfo.greyscale && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALL))
-						copy = true;
-				}
-			} else { // ancillary
-				boolean text = (chunk instanceof PngChunkTextVar);
-				boolean safe = chunk.safe;
-				// notice that these if are not exclusive
-				if (ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALL))
-					copy = true;
-				if (safe && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALL_SAFE))
-					copy = true;
-				if (chunk.id.equals(ChunkHelper.tRNS)
-						&& ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_TRANSPARENCY))
-					copy = true;
-				if (chunk.id.equals(ChunkHelper.pHYs)
-						&& ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_PHYS))
-					copy = true;
-				if (text && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_TEXTUAL))
-					copy = true;
-				if (ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALMOSTALL)
-						&& !(ChunkHelper.isUnknown(chunk) || text || chunk.id.equals(ChunkHelper.hIST) || chunk.id
-								.equals(ChunkHelper.tIME)))
-					copy = true;
-			}
+			if (chunk.crit && !chunk.id.equals(PngChunkPLTE.ID))
+				continue; // critical chunks (except perhaps PLTE) are never copied
+			boolean copy = copyFromPredicate.match(chunk);
 			if (copy) {
-				// if the chunk is already queued or writen, it's ommited!
+				// but if the chunk is already queued or writen, it's ommited!
 				if (chunksList.getEquivalent(chunk).isEmpty() && chunksList.getQueuedEquivalent(chunk).isEmpty()) {
-					PngChunk newchunk = ChunkHelper.cloneForWrite(chunk, imgInfo);
-					chunksList.queue(newchunk);
+					chunksList.queue(chunk);
+					//PngChunk newchunk = ChunkHelper.cloneForWrite(chunk, imgInfo);
+					//chunksList.queue(newchunk);
 				}
 			}
 		}
@@ -384,13 +340,30 @@ public class PngWriter {
 	 * explicitly.
 	 * 
 	 * @param chunks
-	 * @param copyMask 
+	 * @param copyMask
 	 */
 	public void copyChunksFrom(ChunksList chunks, int copyMask) {
+		copyChunksFrom(chunks, ChunkCopyBehaviour.getPredicate(copyMask, imgInfo));
+	}
+
+	public void copyChunksFrom(ChunksList chunks) {
+		copyChunksFrom(chunks, ChunkCopyBehaviour.COPY_ALL);
+	}
+
+	/**
+	 * The chunk (ancillary or PLTE) will be copy if and only if predicate
+	 * matches
+	 * 
+	 * @param chunks
+	 * @param predicate
+	 */
+	public void copyChunksFrom(ChunksList chunks, ChunkPredicate predicate) {
 		if (copyFromList != null && chunks != null)
 			PngHelperInternal.LOGGER.warning("copyChunksFrom should only be called once");
+		if (predicate == null)
+			throw new PngjOutputException("copyChunksFrom requires a predicate");
 		this.copyFromList = chunks;
-		this.copyFromMask = copyMask;
+		this.copyFromPredicate = predicate;
 	}
 
 	/**
@@ -475,7 +448,7 @@ public class PngWriter {
 	 * <p>
 	 * This must be called just after constructor, before starting writing.
 	 * <p>
-	 * See also setCompLevel()
+	 * See also setFilterStrategy setCompLevel()
 	 * 
 	 * @param filterType
 	 *            One of the five prediction types or strategy to choose it (see
@@ -486,13 +459,25 @@ public class PngWriter {
 		filterStrat = new FilterWriteStrategy(imgInfo, filterType);
 	}
 
+	public void setFilterStrategy(IFilterWriteStrategy filterS) {
+		filterStrat = filterS;
+	}
+
+	public boolean isFilterPreserve() {
+		return filterPreserve;
+	}
+
+	public void setFilterPreserve(boolean filterPreserve) {
+		this.filterPreserve = filterPreserve;
+	}
+
 	/**
 	 * Sets maximum size of IDAT fragments. This has little effect on
 	 * performance you should rarely call this
 	 * <p>
 	 * 
 	 * @param idatMaxSize
-	 *            default=0 : use defaultSize (32K)
+	 *            default=0 : use defaultSize (64K)
 	 */
 	public void setIdatMaxSize(int idatMaxSize) {
 		this.idatMaxSize = idatMaxSize;
@@ -536,7 +521,8 @@ public class PngWriter {
 		byte[] tmp = rowb;
 		rowb = rowbprev;
 		rowbprev = tmp;
-		imgline.toPngRaw(rowb);
+		rowb[0] = (byte) FilterType.FILTER_UNKNOWN.val; // writeToPngRaw can overwrite this	
+		imgline.writeToPngRaw(rowb);
 		filterAndSend();
 	}
 

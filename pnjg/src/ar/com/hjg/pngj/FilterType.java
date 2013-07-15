@@ -3,7 +3,9 @@ package ar.com.hjg.pngj;
 import java.util.HashMap;
 
 /**
- * Internal PNG predictor filter, or strategy to select it.
+ * Internal PNG predictor filter
+ * 
+ * Negative values do not actually represent filter types but "strategies"
  * 
  */
 public enum FilterType {
@@ -70,4 +72,15 @@ public enum FilterType {
 		return byVal.get(i);
 	}
 
+	/** only considers standard */
+	public static boolean isValidStandard(int i) {
+		return i>=0 && i<=4;
+	}
+
+	/**
+	 * Returns all "standard" filters
+	 */
+	public static FilterType[] getAllStandard() {
+		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
+	}
 }
