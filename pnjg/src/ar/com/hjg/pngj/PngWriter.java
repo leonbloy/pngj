@@ -16,7 +16,6 @@ import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
-import ar.com.hjg.pngj.chunks.PngChunkUnbuffered;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
@@ -25,8 +24,6 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
 public class PngWriter {
 
 	public final ImageInfo imgInfo;
-
-	private final String filename; // optional, can be a description
 
 	/**
 	 * last writen row number, starting from 0
@@ -64,7 +61,7 @@ public class PngWriter {
 	 */
 	private int deflaterStrategy = Deflater.FILTERED;
 
-	private int[] histox = new int[256]; // auxiliar buffer, only used by reportResultsForFilter
+	private int[] histox; // auxiliar buffer, only used by reportResultsForFilter
 
 	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 32768)
 
@@ -75,11 +72,26 @@ public class PngWriter {
 
 	protected byte[] rowbprev = null; // rowb prev
 
+	private int copyFromMask = ChunkCopyBehaviour.COPY_ALL;
+	private ChunksList copyFromList = null;
+
+	/**
+	 * Same as PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite)
+	 * 
+	 * @param file
+	 * @param imgInfo
+	 */
 	public PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite) {
 		this(PngHelperInternal.ostreamFromFile(file, allowoverwrite), imgInfo);
 		setShouldCloseStream(true);
 	}
 
+	/**
+	 * Same as PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite)
+	 * 
+	 * @param file
+	 * @param imgInfo
+	 */
 	public PngWriter(File file, ImageInfo imgInfo) {
 		this(file, imgInfo, true);
 	}
@@ -99,7 +111,6 @@ public class PngWriter {
 	 *            Optional, just for error/debug messages
 	 */
 	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
-		this.filename = "";
 		this.os = outputStream;
 		this.imgInfo = imgInfo;
 		// prealloc
@@ -111,7 +122,7 @@ public class PngWriter {
 		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT); // can be changed
 	}
 
-	private void init() {
+	private void initIdat() { // this triggers the writing of first chunks
 		datStream = new PngIDatChunkOutputStream(this.os, idatMaxSize);
 		Deflater def = new Deflater(compLevel);
 		def.setStrategy(deflaterStrategy);
@@ -121,6 +132,8 @@ public class PngWriter {
 	}
 
 	private void reportResultsForFilter(int rown, FilterType type, boolean tentative) {
+		if (histox == null)
+			histox = new int[256];
 		Arrays.fill(histox, 0);
 		int s = 0, v;
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
@@ -137,11 +150,13 @@ public class PngWriter {
 	private void writeEndChunk() {
 		PngChunkIEND c = new PngChunkIEND(imgInfo);
 		c.createRawChunk().writeChunk(os);
+		chunksList.getChunks().add(c);
 	}
 
 	private void writeFirstChunks() {
 		int nw = 0;
 		currentChunkGroup = ChunksList.CHUNK_GROUP_1_AFTERIDHR;
+		queueChunksFromOther();
 		nw = chunksList.writeChunks(os, currentChunkGroup);
 		currentChunkGroup = ChunksList.CHUNK_GROUP_2_PLTE;
 		nw = chunksList.writeChunks(os, currentChunkGroup);
@@ -155,6 +170,7 @@ public class PngWriter {
 	}
 
 	private void writeLastChunks() { // not including end
+		queueChunksFromOther();
 		currentChunkGroup = ChunksList.CHUNK_GROUP_5_AFTERIDAT;
 		chunksList.writeChunks(os, currentChunkGroup);
 		// should not be unwriten chunks
@@ -188,6 +204,7 @@ public class PngWriter {
 		ihdr.setFilmeth(0); // filter method (0)
 		ihdr.setInterlaced(0); // we never interlace
 		ihdr.createRawChunk().writeChunk(os);
+		chunksList.getChunks().add(ihdr);
 
 	}
 
@@ -291,89 +308,89 @@ public class PngWriter {
 		return s;
 	}
 
-	/**
-	 * copy chunks from reader - copy_mask : see ChunksToWrite.COPY_XXX
-	 * <p>
-	 * If we are after idat, only considers those chunks after IDAT in PngReader
-	 * <p>
-	 * TODO: this should be more customizable
-	 */
-	private void copyChunks(ChunksList reader, int copy_mask, boolean onlyAfterIdat) {
+	protected void queueChunksFromOther() {
+		if (copyFromList == null)
+			return;
 		boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
-		for (PngChunk chunk : reader.getChunks()) {
-			int group = chunk.getChunkGroup();
-			if (group < ChunksList.CHUNK_GROUP_4_IDAT && idatDone)
-				continue;
+		for (PngChunk chunk : copyFromList.getChunks()) {
 			if (chunk.getRaw().data == null)
-				continue; // skipped chunk?
+				continue; // we cannot copy skipped chunks?
+			int group = chunk.getChunkGroup();
+			if (group <= ChunksList.CHUNK_GROUP_4_IDAT && idatDone)
+				continue;
+			if (group >= ChunksList.CHUNK_GROUP_4_IDAT && !idatDone)
+				continue;
 			boolean copy = false;
 			if (chunk.crit) {
 				if (chunk.id.equals(ChunkHelper.PLTE)) {
-					if (imgInfo.indexed && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_PALETTE))
+					if (imgInfo.indexed && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_PALETTE))
 						copy = true;
-					if (!imgInfo.greyscale && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALL))
+					if (!imgInfo.greyscale && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALL))
 						copy = true;
 				}
 			} else { // ancillary
 				boolean text = (chunk instanceof PngChunkTextVar);
 				boolean safe = chunk.safe;
 				// notice that these if are not exclusive
-				if (ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALL))
+				if (ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALL))
 					copy = true;
-				if (safe && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALL_SAFE))
+				if (safe && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALL_SAFE))
 					copy = true;
 				if (chunk.id.equals(ChunkHelper.tRNS)
-						&& ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_TRANSPARENCY))
+						&& ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_TRANSPARENCY))
 					copy = true;
-				if (chunk.id.equals(ChunkHelper.pHYs) && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_PHYS))
+				if (chunk.id.equals(ChunkHelper.pHYs)
+						&& ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_PHYS))
 					copy = true;
-				if (text && ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_TEXTUAL))
+				if (text && ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_TEXTUAL))
 					copy = true;
-				if (ChunkHelper.maskMatch(copy_mask, ChunkCopyBehaviour.COPY_ALMOSTALL)
+				if (ChunkHelper.maskMatch(copyFromMask, ChunkCopyBehaviour.COPY_ALMOSTALL)
 						&& !(ChunkHelper.isUnknown(chunk) || text || chunk.id.equals(ChunkHelper.hIST) || chunk.id
 								.equals(ChunkHelper.tIME)))
 					copy = true;
-				if (chunk instanceof PngChunkUnbuffered)
-					copy = false;
 			}
 			if (copy) {
-				chunksList.queue(chunk.cloneForWrite(imgInfo));
+				// if the chunk is already queued or writen, it's ommited!
+				if (chunksList.getEquivalent(chunk).isEmpty() && chunksList.getQueuedEquivalent(chunk).isEmpty()) {
+					PngChunk newchunk = ChunkHelper.cloneForWrite(chunk, imgInfo);
+					chunksList.queue(newchunk);
+				}
 			}
 		}
 	}
 
-	/**
-	 * Copies first (pre IDAT) ancillary chunks from a PngReader.
-	 * <p>
-	 * Should be called when creating an image from another, before starting
-	 * writing lines, to copy relevant chunks.
-	 * <p>
-	 * 
-	 * @param reader
-	 *            : PngReader object, already opened.
-	 * @param copy_mask
-	 *            : Mask bit (OR), see <code>ChunksToWrite.COPY_XXX</code>
-	 *            constants
-	 */
-	public void copyChunksFirst(ChunksList reader, int copy_mask) {
-		copyChunks(reader, copy_mask, false);
+	public void queueChunk(PngChunk chunk) {
+		for (PngChunk other : chunksList.getQueuedEquivalent(chunk)) {
+			getChunksList().removeChunk(other);
+		}
+		chunksList.queue(chunk);
 	}
 
 	/**
-	 * Copies last (post IDAT) ancillary chunks from a PngReader.
-	 * <p>
-	 * Should be called when creating an image from another, after writing all
-	 * lines, before closing the writer, to copy additional chunks.
-	 * <p>
+	 * Sets an origin (typically from a PngReader) of Chunks to be copied. This
+	 * should be called only once, before starting writing the rows. It doesn't
+	 * matter the current state of the PngReader reading, this is a live object
+	 * and what matters is that when the writer writes the pixels (IDAT) the
+	 * reader has already read them, and that when the writer ends, the reader
+	 * is already ended (all this is very natural).
 	 * 
-	 * @param reader
-	 *            : PngReader object, already opened and fully read.
-	 * @param copy_mask
-	 *            : Mask bit (OR), see <code>ChunksToWrite.COPY_XXX</code>
-	 *            constants
+	 * Apart from the copyMask, there is some addional heuristics:
+	 * 
+	 * - The chunks will be queued, but will be written as late as possible
+	 * (unless you explicitly set priority=true)
+	 * 
+	 * - The chunk will not be queued if an "equivalent" chunk was already
+	 * queued explicitly. And it will be overwriten another is queued
+	 * explicitly.
+	 * 
+	 * @param chunks
+	 * @param copyMask 
 	 */
-	public void copyChunksLast(ChunksList reader, int copy_mask) {
-		copyChunks(reader, copy_mask, true);
+	public void copyChunksFrom(ChunksList chunks, int copyMask) {
+		if (copyFromList != null && chunks != null)
+			PngHelperInternal.LOGGER.warning("copyChunksFrom should only be called once");
+		this.copyFromList = chunks;
+		this.copyFromMask = copyMask;
 	}
 
 	/**
@@ -400,7 +417,7 @@ public class PngWriter {
 		if (rowNum != imgInfo.rows - 1)
 			throw new PngjOutputException("all rows have not been written");
 		try {
-			datStreamDeflated.finish();
+			datStreamDeflated.finish(); // this should release deflater internal native resources
 			datStream.flush();
 			writeLastChunks();
 			writeEndChunk();
@@ -419,6 +436,8 @@ public class PngWriter {
 			} catch (Exception e) {
 				PngHelperInternal.LOGGER.warning("Error closing writer " + e.toString());
 			}
+		datStreamDeflated = null;
+		datStream = null;
 	}
 
 	/**
@@ -426,13 +445,6 @@ public class PngWriter {
 	 */
 	public ChunksListForWrite getChunksList() {
 		return chunksList;
-	}
-
-	/**
-	 * Filename or description, from the optional constructor argument.
-	 */
-	public String getFilename() {
-		return filename;
 	}
 
 	/**
@@ -509,12 +521,17 @@ public class PngWriter {
 		writeRow(imgline, rowNum + 1);
 	}
 
+	public void writeRows(ImageLines imglines) {
+		for (int i = 0; i < imgInfo.rows; i++)
+			writeRow(imglines.getImageLine(i));
+	}
+
 	public void writeRow(IImageLine imgline, int rownumber) {
 		rowNum++;
 		if (rownumber >= 0 && rowNum != rownumber)
 			throw new PngjOutputException("rows must be written in order: expected:" + rowNum + " passed:" + rownumber);
 		if (datStream == null)
-			init();
+			initIdat();
 		// swap
 		byte[] tmp = rowb;
 		rowb = rowbprev;

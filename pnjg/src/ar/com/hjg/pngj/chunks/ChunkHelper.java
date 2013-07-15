@@ -16,6 +16,7 @@ import java.util.zip.DeflaterOutputStream;
 import java.util.zip.Inflater;
 import java.util.zip.InflaterInputStream;
 
+import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
@@ -55,6 +56,7 @@ public class ChunkHelper {
 			return new Deflater();
 		}
 	};
+	
 
 	/*
 	 * static auxiliary buffer. any method that uses this should synchronize against this 
@@ -236,13 +238,15 @@ public class ChunkHelper {
 	}
 
 	/**
-	 * MY adhoc criteria: two chunks are "equivalent" ("practically equal") if
+	 * Adhoc criteria: two ancillary chunks are "equivalent" ("practically same type") if
 	 * they have same id and (perhaps, if multiple are allowed) if the match
 	 * also in some "internal key" (eg: key for string values, palette for sPLT,
 	 * etc)
 	 * 
-	 * Notice that the use of this is optional, and that the PNG standard allows
-	 * Text chunks that have same key
+	 * When we use this method, we implicitly assume that we don't allow/expect two "equivalent" chunks
+	 * in a single PNG 
+	 * 
+	 * Notice that the use of this is optional, and that the PNG standard actually allows text chunks that have same key
 	 * 
 	 * @return true if "equivalent"
 	 */
@@ -251,6 +255,7 @@ public class ChunkHelper {
 			return true;
 		if (c1 == null || c2 == null || !c1.id.equals(c2.id))
 			return false;
+		if(c1.crit) return false; 
 		// same id
 		if (c1.getClass() != c2.getClass())
 			return false; // should not happen
@@ -288,6 +293,13 @@ public class ChunkHelper {
 		Deflater deflater = deflaterProvider.get();
 		deflater.reset();
 		return deflater;
+	}
+
+	
+	public static PngChunk cloneForWrite(PngChunk chunk, ImageInfo imgInfo) {
+		PngChunk c = chunk.cloneForWrite(imgInfo);
+		c.setRaw(chunk.getRaw());
+		return c;
 	}
 
 }

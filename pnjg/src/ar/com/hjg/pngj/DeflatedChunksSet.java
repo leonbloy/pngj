@@ -219,10 +219,14 @@ public class DeflatedChunksSet {
 
 	/** this should be called only when discarding this object */
 	public void end() {
+		try {
 		if (!state.isFinished())
 			state = State.DONE;
 		if (infOwn)
 			inf.end();// we end the Inflater only if we created it
+		} catch(Exception e){
+			
+		}
 	}
 
 	/**

@@ -89,7 +89,6 @@ public class PngChunkITXT extends PngChunkTextVar {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkITXT other = new PngChunkITXT(imgInfo);
-		other.raw = raw;
 		other.key = key;
 		other.val = val;
 		other.compressed = compressed;

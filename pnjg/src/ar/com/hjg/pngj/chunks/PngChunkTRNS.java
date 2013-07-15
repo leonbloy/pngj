@@ -70,7 +70,6 @@ public class PngChunkTRNS extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkTRNS other = new PngChunkTRNS(imgInfo);
-		other.raw = raw;
 		other.gray = gray;
 		other.red = red;
 		other.green = green;

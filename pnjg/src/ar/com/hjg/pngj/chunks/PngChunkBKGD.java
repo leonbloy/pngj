@@ -61,7 +61,6 @@ public class PngChunkBKGD extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkBKGD other = new PngChunkBKGD(imgInfo);
-		other.raw = raw;
 		other.gray = gray;
 		other.red = red;
 		other.green = green;

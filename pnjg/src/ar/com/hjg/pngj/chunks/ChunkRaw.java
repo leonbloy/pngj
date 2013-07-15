@@ -1,14 +1,12 @@
 package ar.com.hjg.pngj.chunks;
 
 import java.io.ByteArrayInputStream;
-import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.zip.CRC32;
 
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjBadCrcException;
 import ar.com.hjg.pngj.PngjException;
-import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**

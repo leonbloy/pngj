@@ -4,17 +4,19 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
+import ar.com.hjg.pngj.chunks.PngChunk.ChunkOrderingConstraint;
+import ar.com.hjg.pngj.chunks.ChunkFactory;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
- * Adds to ChunkSeqReader the storing of PngChunk , with the PngFactory
- * and imageInfo + deinterlacer
+ * Adds to ChunkSeqReader the storing of PngChunk s , with the PngFactory, and imageInfo + deinterlacer
  * 
  * Most usual PNG reading should use this.
  */
@@ -33,6 +35,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	private boolean checkCrc=true;
 	
 	// --- parameters to be set prior to reading ---
+	private boolean includeNonBufferedChunks=false;
+	
 	private Set<String> chunksToSkip = new HashSet<String>();
 	private long maxTotalBytesRead = 0;
 	private long skipChunkMaxSize = 0;
@@ -125,11 +129,22 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 				deinterlacer = new Deinterlacer(imageInfo);
 			chunksList=new ChunksList(imageInfo);
 		}
-		PngChunk chunk=getChunkFactory().createChunk(chunkR.getChunkRaw(),getImageInfo());
-		chunksList.appendReadChunk(chunk, currentChunkGroup);
-		if(isDone()) {		// chunk ordering constrain should be checked at the end
+		if(chunkR.mode == ChunkReaderMode.BUFFER|| includeNonBufferedChunks) {
+			PngChunk chunk=getChunkFactory().createChunk(chunkR.getChunkRaw(),getImageInfo());
+			chunksList.appendReadChunk(chunk, currentChunkGroup);
+		}
+		if(isDone()) {		
 			processEndPng();
 		}
+	}
+
+	/** check that the last inserted chunk had the correct ordering */
+	protected void checkOrdering() {
+		PngChunk c = chunksList.getChunks().get(chunksList.getChunks().size()-1);
+		ChunkOrderingConstraint oc = c.getOrderingConstraint();
+		//chunksList.getById1();
+		PngHelperInternal.LOGGER.warning("check ordering not implemented");
+		
 	}
 
 	@Override
@@ -158,8 +173,11 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 		return new ChunkFactory();
 	}
 
-	private void processEndPng() {
-		// chunk ordering TODO
+	/**
+	 * Things to be done after IEND processing. This is not called if prematurely closed.
+	 */
+	protected void processEndPng() {
+		// nothing to do
 	}
 
 	public ImageInfo getImageInfo() {
@@ -191,6 +209,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	public List<PngChunk> getChunks() {
 		return chunksList.getChunks();
 	}
+	
 	
 	public void setMaxTotalBytesRead(long maxTotalBytesRead) {
 		this.maxTotalBytesRead = maxTotalBytesRead;
@@ -235,6 +254,20 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 
 	public Set<String> getChunksToSkip() {
 		return chunksToSkip;
+	}
+
+	/**
+	 * If true, the chunks with no data (because skipped or because processed like IDAT-type)
+	 * are still stored in the PngChunks list, which might be more informative.
+	 *  
+	 * Setting this to false saves a few bytes
+	 * 
+	 * Default: false
+	 * 
+	 * @param includeNonBufferedChunks 
+	 */
+	public void setIncludeNonBufferedChunks(boolean includeNonBufferedChunks) {
+		this.includeNonBufferedChunks = includeNonBufferedChunks;
 	}
 
 	

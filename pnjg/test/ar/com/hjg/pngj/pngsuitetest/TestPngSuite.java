@@ -70,7 +70,7 @@ public class TestPngSuite {
 				pngw = new PngWriter(mirror, pngr.imgInfo, true);
 				pngw.setFilterType(FilterType.FILTER_CYCLIC); // just to test all filters
 				pngr.readFirstChunks();
-				pngw.copyChunksFirst(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+				pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 				ImageLines lines = pngr.readRows();
 				for (int row = 0; row < pngr.imgInfo.rows; row++) {
 					mirrorLine(lines.getImageLine(row), pngr.imgInfo);
@@ -78,7 +78,7 @@ public class TestPngSuite {
 				}
 				pngr.end();
 				crc0 = PngHelperInternal.getCrctestVal(pngr);
-				pngw.copyChunksLast(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+				pngw.queueChunksAfterIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 				pngw.end();
 			} finally {
 				pngr.close();
@@ -96,7 +96,7 @@ public class TestPngSuite {
 				pngw = new PngWriter(recov, pngr2.imgInfo, true);
 				pngw.setFilterType(FilterType.FILTER_AGGRESSIVE);
 				pngr2.readFirstChunks();
-				pngw.copyChunksFirst(pngr2.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+				pngw.queueChunksBeforeIdat(pngr2.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 				for (int row = 0; row < pngr2.imgInfo.rows; row++) {
 					IImageLine line = pngr2.readRow();
 					mirrorLine(line, pngr2.imgInfo);
@@ -135,7 +135,7 @@ public class TestPngSuite {
 			boolean alpha = trns != null;
 			ImageInfo im2 = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, alpha);
 			pngw = new PngWriter(copy, im2, true);
-			pngw.copyChunksFirst(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
+			pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 			int[] buf = null;
 			for (int row = 0; row < pngr.imgInfo.rows; row++) {
 				ImageLine line = (ImageLine) pngr.readRow();
@@ -160,7 +160,7 @@ public class TestPngSuite {
 		PngReader pngr = new PngReader(orig);
 		PngWriter pngw = new PngWriter(copy, pngr.imgInfo, true);
 		try {
-			pngw.copyChunksFirst(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+			pngw.queueChunksBeforeIdat(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
 			boolean useByte = rand.nextBoolean() && pngr.imgInfo.bitDepth < 16;
 			if (useByte)
 				pngr.setImageLineFactory(ImageLineByte.getFactory(pngr.imgInfo));

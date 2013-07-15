@@ -2,8 +2,6 @@ package ar.com.hjg.pngj;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -66,9 +64,9 @@ public final class PngHelperInternal {
 			int b2 = is.read();
 			if (b1 == -1 || b2 == -1)
 				return -1;
-			return (b1 << 8) + b2;
+			return (b1 << 8) | b2;
 		} catch (IOException e) {
-			throw new PngjInputException("error reading readInt2", e);
+			throw new PngjInputException("error reading Int2", e);
 		}
 	}
 
@@ -83,9 +81,9 @@ public final class PngHelperInternal {
 			int b4 = is.read();
 			if (b1 == -1 || b2 == -1 || b3 == -1 || b4 == -1)
 				return -1;
-			return (b1 << 24) + (b2 << 16) + (b3 << 8) + b4;
+			return (b1 << 24) | (b2 << 16) | (b3 << 8) + b4;
 		} catch (IOException e) {
-			throw new PngjInputException("error reading readInt4", e);
+			throw new PngjInputException("error reading Int4", e);
 		}
 	}
 
@@ -94,7 +92,7 @@ public final class PngHelperInternal {
 	}
 
 	public static int readInt2fromBytes(byte[] b, int offset) {
-		return ((b[offset] & 0xff) << 16) | ((b[offset + 1] & 0xff));
+		return ((b[offset] & 0xff) << 8) | ((b[offset + 1] & 0xff));
 	}
 
 	public static final int readInt4fromBytes(byte[] b, int offset) {
@@ -201,17 +199,6 @@ public final class PngHelperInternal {
 			System.out.println(msg);
 	}
 
-	private static final ThreadLocal<CRC32> crcProvider = new ThreadLocal<CRC32>() {
-		protected CRC32 initialValue() {
-			return new CRC32();
-		}
-	};
-
-	/** thread-singleton crc engine */
-	public static CRC32 getCRC() {
-		return crcProvider.get();
-	}
-
 	// / filters
 	public static int filterRowNone(int r) {
 		return (int) (r & 0xFF);
@@ -231,26 +218,6 @@ public final class PngHelperInternal {
 
 	public static int filterRowPaeth(int r, int left, int up, int upleft) { // a = left, b = above, c = upper left
 		return (r - filterPaethPredictor(left, up, upleft)) & 0xFF;
-	}
-
-	public static int unfilterRowNone(int r) {
-		return (int) (r & 0xFF);
-	}
-
-	public static int unfilterRowSub(int r, int left) {
-		return ((int) (r + left) & 0xFF);
-	}
-
-	public static int unfilterRowUp(int r, int up) {
-		return ((int) (r + up) & 0xFF);
-	}
-
-	public static int unfilterRowAverage(int r, int left, int up) {
-		return (r + (left + up) / 2) & 0xFF;
-	}
-
-	public static int unfilterRowPaeth(int r, int left, int up, int upleft) { // a = left, b = above, c = upper left
-		return (r + filterPaethPredictor(left, up, upleft)) & 0xFF;
 	}
 
 	final static int filterPaethPredictor(final int a, final int b, final int c) { // a = left, b = above, c = upper
@@ -274,19 +241,15 @@ public final class PngHelperInternal {
 	/*
 	 * we put this methods here so as to not pollute the public interface of PngReader
 	 */
-	public final static void initCrcForTests(PngReader pngr) {
+	final public static void initCrcForTests(PngReader pngr) {
 		if (pngr.idatCrc == null)
 			pngr.idatCrc = new CRC32();
 	}
 
-	public final static long getCrctestVal(PngReader pngr) {
+	final public static long getCrctestVal(PngReader pngr) {
 		if (pngr.idatCrc != null)
 			return pngr.idatCrc.getValue();
 		else return -1;
-	}
-
-	public void logToStderr() {
-
 	}
 
 	/**
@@ -295,7 +258,7 @@ public final class PngHelperInternal {
 	 * @param obj
 	 *            : Object to print
 	 */
-	public static void debug(Object obj) {
+	static void debug(Object obj) {
 		debug(obj, 1, true);
 	}
 
@@ -307,11 +270,11 @@ public final class PngHelperInternal {
 	 * @param offset
 	 *            : Offset N lines from stacktrace
 	 */
-	public static void debug(Object obj, int offset) {
+	static void debug(Object obj, int offset) {
 		debug(obj, offset, true);
 	}
 
-	public static InputStream istreamFromFile(File f) {
+	static InputStream istreamFromFile(File f) {
 		FileInputStream is;
 		try {
 			is = new FileInputStream(f);
@@ -321,24 +284,18 @@ public final class PngHelperInternal {
 		return is;
 	}
 
-	public static OutputStream ostreamFromFile(File f) {
-		return ostreamFromFile(f, true);
+	
+	static OutputStream ostreamFromFile(File f) {
+		return ostreamFromFile(f,true);
 	}
 
-	public static OutputStream ostreamFromFile(File f, boolean allowoverwrite) {
-		FileOutputStream os;
-		if (f.exists() && !allowoverwrite)
-			throw new PngjOutputException("File already exists: " + f);
-		try {
-			os = new FileOutputStream(f);
-		} catch (Exception e) {
-			throw new PngjInputException("Could not open for write" + f, e);
-		}
-		return os;
+	static OutputStream ostreamFromFile(File f,boolean overwrite) {
+		return PngHelperInternal2.ostreamFromFile(f, overwrite);
 	}
+
 
 	/**
-	 * Prits a debug message (prints class name, method and line number) to
+	 * Prints a debug message (prints class name, method and line number) to
 	 * stderr and logFile
 	 * 
 	 * @param obj
@@ -348,7 +305,7 @@ public final class PngHelperInternal {
 	 * @param newLine
 	 *            : Print a newline char at the end ('\n')
 	 */
-	public static void debug(Object obj, int offset, boolean newLine) {
+	static void debug(Object obj, int offset, boolean newLine) {
 		StackTraceElement ste = new Exception().getStackTrace()[1 + offset];
 		String steStr = ste.getClassName();
 		int ind = steStr.lastIndexOf('.');

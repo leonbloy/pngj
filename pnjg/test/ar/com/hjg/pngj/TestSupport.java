@@ -4,13 +4,18 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Random;
 
 import junit.framework.TestCase;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
+import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
 public class TestSupport {
@@ -19,6 +24,12 @@ public class TestSupport {
 
 	public static Random rand = new Random();
 
+	public static final String PNG_TEST_STRIPES = "resources/test/stripes.png";
+	public static final String PNG_TEST_TESTG2 = "resources/test/testg2.png";
+	public static final String PNG_TEST_TESTG2I= "resources/test/testg2i.png";
+
+	public static final String PNG_TEST_BAD_MISSINGIDAT ="resources/test/bad_missingidat.png";
+	
 	public static String showChunks(List<PngChunk> chunks) {
 		StringBuilder sb = new StringBuilder();
 		for (PngChunk chunk : chunks) {
@@ -182,6 +193,50 @@ public class TestSupport {
 		return new File(x + suffix + ".png");
 	}
 
+	public static class NullOutputStream extends OutputStream {
+		private int cont = 0;
+
+		@Override
+		public void write(int arg0) throws IOException {
+			// nothing!
+			cont++;
+		}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			cont += len;
+		}
+
+		@Override
+		public void write(byte[] b) throws IOException {
+			cont += b.length;
+		}
+
+		public int getCont() {
+			return cont;
+		}
+
+	}
+
+	public static NullOutputStream createNullOutputStream() {
+		return new NullOutputStream();
+	}
+
+	public static List<PngChunk> getChunkById(String id,Collection<PngChunk> chunks) {
+		ArrayList<PngChunk> list = new ArrayList<PngChunk>();
+		for(PngChunk c:chunks) if(c.id.equals(id)) list.add(c);
+		return list;
+	}
 	
+	/** does not include IDAT */
+	public static ChunksList readAllChunks(File file,boolean includeIdat) {
+		PngReader pngr = new PngReader(file);
+		pngr.setChunksToSkip();
+		pngr.getChunkseq().setIncludeNonBufferedChunks(includeIdat);
+		pngr.readSkippingAllRows();
+		pngr.end();
+		return pngr.getChunksList();
+	}
+
 	
 }

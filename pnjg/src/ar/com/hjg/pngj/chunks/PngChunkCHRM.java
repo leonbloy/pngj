@@ -59,7 +59,6 @@ public class PngChunkCHRM extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkCHRM other = new PngChunkCHRM(imgInfo);
-		other.raw = raw;
 		other.whitex = whitex;
 		other.whitey = whitex;
 		other.redx = redx;

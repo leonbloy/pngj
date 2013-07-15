@@ -73,7 +73,6 @@ public class PngChunkSBIT extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkSBIT other = new PngChunkSBIT(imgInfo);
-		other.raw = raw;
 		other.graysb = graysb;
 		other.redsb = redsb;
 		other.greensb = greensb;

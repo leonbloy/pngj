@@ -51,7 +51,6 @@ public class PngChunkOFFS extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkOFFS other = new PngChunkOFFS(imgInfo);
-		other.raw = raw;
 		other.posX = posX;
 		other.posY = posY;
 		other.units = units;

@@ -51,7 +51,6 @@ public class PngChunkPHYS extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkPHYS other = new PngChunkPHYS(imgInfo);
-		other.raw = raw;
 		other.pixelsxUnitX = pixelsxUnitX;
 		other.pixelsxUnitY = pixelsxUnitY;
 		other.units = units;

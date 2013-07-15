@@ -43,7 +43,6 @@ public class PngChunkGAMA extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkGAMA other = new PngChunkGAMA(imgInfo);
-		other.raw = raw;
 		other.gamma = gamma;
 		return other;
 	}

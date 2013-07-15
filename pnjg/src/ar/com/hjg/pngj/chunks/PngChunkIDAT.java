@@ -35,7 +35,6 @@ public class PngChunkIDAT extends PngChunkMultiple {
 	@Override
 	public PngChunkIDAT cloneForWrite(ImageInfo imgInfo) {
 		PngChunkIDAT other = new PngChunkIDAT(imgInfo);
-		other.raw = raw;
 		return other;
 	}
 	

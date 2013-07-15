@@ -51,9 +51,13 @@ public abstract class PngChunk {
 		 */
 		BEFORE_PLTE_AND_IDAT,
 		/**
-		 * Must go after PLTE but before IDAT
+		 * Must go after PLTE (if exists) but before IDAT
 		 */
 		AFTER_PLTE_BEFORE_IDAT,
+		/**
+		 * Must go after PLTE (and it must exist) but before IDAT
+		 */
+		AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED,
 		/**
 		 * Must before IDAT (before or after PLTE)
 		 */
@@ -71,12 +75,17 @@ public abstract class PngChunk {
 			return this == BEFORE_IDAT || this == BEFORE_PLTE_AND_IDAT || this == AFTER_PLTE_BEFORE_IDAT;
 		}
 
+		/**
+		 * after pallete, if exists
+		 */
 		public boolean mustGoAfterPLTE() {
-			return this == AFTER_PLTE_BEFORE_IDAT;
+			return this == AFTER_PLTE_BEFORE_IDAT || this == AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED;
 		}
 
 		public boolean isOk(int currentChunkGroup, boolean hasplte) {
-			if (this == BEFORE_IDAT)
+			if (this == NONE)
+				return true;
+			else if (this == BEFORE_IDAT)
 				return currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT;
 			else if (this == BEFORE_PLTE_AND_IDAT)
 				return currentChunkGroup < ChunksList.CHUNK_GROUP_2_PLTE;
@@ -118,7 +127,7 @@ public abstract class PngChunk {
 	/**
 	 * @see #getChunkGroup()
 	 */
-	final public void setChunkGroup(int chunkGroup) {
+	final void setChunkGroup(int chunkGroup) {
 		this.chunkGroup = chunkGroup;
 	}
 
@@ -131,10 +140,11 @@ public abstract class PngChunk {
 	}
 
 	final void write(OutputStream os) {
-		ChunkRaw c = createRawChunk();
-		if (c == null)
+		if (raw == null)
+			raw = createRawChunk();
+		if (raw == null)
 			throw new PngjExceptionInternal("null chunk ! creation failed for " + this);
-		c.writeChunk(os);
+		raw.writeChunk(os);
 	}
 
 	/**
@@ -143,31 +153,31 @@ public abstract class PngChunk {
 	 * 
 	 * @return A newly allocated and filled raw chunk
 	 */
-	public abstract ChunkRaw createRawChunk();
+	abstract ChunkRaw createRawChunk();
 
 	/**
 	 * Parses raw chunk and fill inside data. This is used when reading
 	 * (deserialization). Each particular chunk class implements its own logic.
 	 */
-	public abstract void parseFromRaw(ChunkRaw c);
+	abstract void parseFromRaw(ChunkRaw c);
 
 	/**
 	 * Makes a copy of the chunk.
 	 * <p>
 	 * This is used when copying chunks from a reader to a writer
 	 * <p>
-	 * It should normally be a deep copy, and after the cloning
+	 * This is usually a (shallow) copy, and after the cloning
 	 * this.equals(other) should return true
 	 */
-	public abstract PngChunk cloneForWrite(ImageInfo imgInfo);
+	abstract PngChunk cloneForWrite(ImageInfo imgInfo);
 
-	public abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
+	abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
 
 	public ChunkRaw getRaw() {
 		return raw;
 	}
 
-	public void setRaw(ChunkRaw raw) {
+	void setRaw(ChunkRaw raw) {
 		this.raw = raw;
 	}
 
@@ -188,12 +198,14 @@ public abstract class PngChunk {
 	public String toString() {
 		return "chunk id= " + id + " (len=" + getLen() + " offset=" + getOffset() + ")";
 	}
-	
+
 	/**
-	 * This should be called obligatorily by the setters of the Chunk "high level" fields (so that the chunk is serialized and not reused)
-	 * or optionally by some reader (after parseFromRaw) that wants hard to minimize memory 
+	 * This signals that the raw chunk (serialized data) as invalid, so that
+	 * it's regenerated on write. This should be called for the (infrequent)
+	 * case of chunks that were copied from a PngReader and we want to manually
+	 * modify it.
 	 */
-	public void invalidateRaw() {
+	void invalidateRaw() {
 		raw = null;
 	}
 

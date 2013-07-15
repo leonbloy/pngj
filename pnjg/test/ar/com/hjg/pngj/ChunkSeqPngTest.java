@@ -1,10 +1,16 @@
 package ar.com.hjg.pngj;
 
+import java.util.Arrays;
+import java.util.List;
+
 import junit.framework.TestCase;
 
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
+
+import ar.com.hjg.pngj.chunks.PngChunk;
+import ar.com.hjg.pngj.chunks.PngChunkTIME;
 
 /**
  *   
@@ -45,17 +51,64 @@ public class ChunkSeqPngTest {
 	@Test
 	public void testReadCallback1()  {
 		ChunkSeqPngCb c = new ChunkSeqPngCb();
-		TestSupport.feedFromStreamTest(c, "resources/test/stripes.png");
+		c.setIncludeNonBufferedChunks(true);
+		TestSupport.feedFromStreamTest(c, TestSupport.PNG_TEST_STRIPES);
 		String chunksSummary = TestSupport.showChunks(c.getChunks());
 		TestCase.assertEquals(6785, c.getBytesCount());
 		TestCase.assertEquals("IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ",
 				chunksSummary);
+		List<PngChunk> timechunks = TestSupport.getChunkById(PngChunkTIME.ID, c.getChunks());
+		TestCase.assertEquals("there should be one  time chunk",1,timechunks.size());
+		PngChunkTIME t=(PngChunkTIME) timechunks.get(0);
+		TestCase.assertEquals("[2013, 6, 8, 19, 56, 57]",Arrays.toString(t.getYMDHMS()));
+		
+	}
+	
+	
+
+	/**
+	 * just reads the chuns skipping tIME
+	 */
+	@Test
+	public void testReadSkip1()  {
+		ChunkSeqPngCb c = new ChunkSeqPngCb();
+		c.setIncludeNonBufferedChunks(true);
+		c.addChunkToSkip(PngChunkTIME.ID);
+		TestSupport.feedFromStreamTest(c,TestSupport.PNG_TEST_STRIPES);
+		String chunksSummary = TestSupport.showChunks(c.getChunks());
+		TestCase.assertEquals(6785, c.getBytesCount());
+		TestCase.assertEquals("IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ",
+				chunksSummary);
+		List<PngChunk> timechunks = TestSupport.getChunkById(PngChunkTIME.ID, c.getChunks());
+		TestCase.assertEquals("there should be one (empty) time chunk",1,timechunks.size());
+		PngChunkTIME t=(PngChunkTIME) timechunks.get(0);
+		TestCase.assertNull("empty time chunk",t.getRaw().data);
+		
 	}
 
+	/**
+	 * just reads the chuns skipping tIME and not loading it
+	 */
+	@Test
+	public void testReadSkip2()  {
+		ChunkSeqPngCb c = new ChunkSeqPngCb();
+		c.addChunkToSkip(PngChunkTIME.ID);
+		c.setIncludeNonBufferedChunks(false); // <<----
+		TestSupport.feedFromStreamTest(c, TestSupport.PNG_TEST_STRIPES);
+		String chunksSummary = TestSupport.showChunks(c.getChunks());
+		TestCase.assertEquals(6785, c.getBytesCount());
+		TestCase.assertEquals("IHDR[13] pHYs[9] iTXt[30] IEND[0] ",
+				chunksSummary);
+		List<PngChunk> timechunks = TestSupport.getChunkById(PngChunkTIME.ID, c.getChunks());
+		TestCase.assertEquals("there should no time chunk",0,timechunks.size());
+	}
+
+	
 	@Test
 	public void testReadCallback2()  {
 		ChunkSeqPngCb c = new ChunkSeqPngCb();
-		TestSupport.feedFromStreamTest(c, "resources/test/testg2.png");
+		c.setIncludeNonBufferedChunks(true);
+		TestSupport.feedFromStreamTest(c, TestSupport.PNG_TEST_TESTG2);
 		TestCase.assertEquals("r=0[  0|  0   1   2]r=1[  0|112 192 105]r=2[  0|255 238 220]", c.summary.toString());
 	}
 	
@@ -87,7 +140,8 @@ public class ChunkSeqPngTest {
 	@Test
 	public void testReadPoll1()  {
 		ChunkSeqReaderPng c = new ChunkSeqReaderPng(false);
-		String res = readRowsPoll(c, "resources/test/testg2.png");
+		c.setIncludeNonBufferedChunks(true);
+		String res = readRowsPoll(c, TestSupport.PNG_TEST_TESTG2);
 		TestCase.assertEquals("r=0[  0|  0   1   2] r=1[  0|112 192 105] r=2[  0|255 238 220] ", 
 				res);
 		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ",
@@ -98,7 +152,8 @@ public class ChunkSeqPngTest {
 	@Test
 	public void testReadPollInt1()  {//(interlaced
 		ChunkSeqReaderPng c = new ChunkSeqReaderPng(false);
-		String res = readRowsPoll(c, "resources/test/testg2i.png");
+		c.setIncludeNonBufferedChunks(true);
+		String res = readRowsPoll(c, TestSupport.PNG_TEST_TESTG2I);
 		TestCase.assertEquals("r=0[  0|  0] r=1[  0|  2] r=2[  0|255 220] r=3[  0|  1] r=4[  0|238] r=5[  0|112 192 105] ", 
 				res);
 		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[70] IDAT[23] IEND[0] ",

@@ -35,7 +35,6 @@ public class PngChunkIEND extends PngChunkSingle {
 	@Override
 	public PngChunkIEND cloneForWrite(ImageInfo imgInfo) {
 		PngChunkIEND other = new PngChunkIEND(imgInfo);
-		other.raw = raw;
 		return other;
 	}
 }

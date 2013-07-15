@@ -71,7 +71,6 @@ public class PngChunkIHDR extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkIHDR other = new PngChunkIHDR(imgInfo);
-		other.raw = raw;
 		other.cols = cols;
 		other.rows = rows;
 		other.bitspc = bitspc;

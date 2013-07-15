@@ -27,33 +27,24 @@ public class ChunksList {
 	 * 
 	 * But IDAT is a single pseudo chunk without data
 	 */
-	protected List<PngChunk> chunks = new ArrayList<PngChunk>();
+	List<PngChunk> chunks = new ArrayList<PngChunk>();
+	//protected HashMap<String, List<PngChunk>> chunksById = new HashMap<String, List<PngChunk>>(); // does not include IDAT
 
 	final ImageInfo imageInfo; // only required for writing
+	
+	boolean withPlte=false;
+
 
 	public ChunksList(ImageInfo imfinfo) {
 		this.imageInfo = imfinfo;
 	}
 
 	/**
-	 * Keys of processed (read or writen) chunks
-	 * 
-	 * @return key:chunk id, val: number of occurrences
+	 *  WARNING: this does NOT return a copy, but the list itself. The called should not modify this directly!
+	 *  Don't use this to manipulate the chunks.
 	 */
-	public HashMap<String, Integer> getChunksKeys() {
-		HashMap<String, Integer> ck = new HashMap<String, Integer>();
-		for (PngChunk c : chunks) {
-			ck.put(c.id, ck.containsKey(c.id) ? ck.get(c.id) + 1 : 1);
-		}
-		return ck;
-	}
-
-	/**
-	 * Returns a copy of the list (but the chunks are not copied) <b> This
-	 * should not be used for general metadata handling
-	 */
-	public ArrayList<PngChunk> getChunks() {
-		return new ArrayList<PngChunk>(chunks);
+	public List<PngChunk> getChunks() {
+		return chunks;
 	}
 
 	protected static List<PngChunk> getXById(final List<PngChunk> list, final String id, final String innerid) {
@@ -83,6 +74,8 @@ public class ChunksList {
 	public void appendReadChunk(PngChunk chunk, int chunkGroup) {
 		chunk.setChunkGroup(chunkGroup);
 		chunks.add(chunk);
+		if (chunk.id.equals(PngChunkPLTE.ID))
+			withPlte = true;
 	}
 
 	/**
@@ -173,5 +166,7 @@ public class ChunksList {
 		}
 		return sb.toString();
 	}
+
+	
 
 }

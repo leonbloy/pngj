@@ -51,7 +51,6 @@ public class PngChunkHIST extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkHIST other = new PngChunkHIST(imgInfo);
-		other.raw = raw;
 		other.hist = new int[hist.length];
 		System.arraycopy(hist, 0, hist, 0, other.hist.length);
 		return other;

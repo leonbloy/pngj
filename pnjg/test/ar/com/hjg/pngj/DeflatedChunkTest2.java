@@ -33,35 +33,37 @@ public class DeflatedChunkTest2{
 		DeflatedChunksSet c = new DeflatedChunksSet("XXXX", rowsize, rowsize);
 		c.setCallbackMode(false);
 		c.processBytes(compressed, 0, 4);
+		StringBuilder sb = new StringBuilder();
 		while(c.isRowReady()) {
 			row++;
-			System.out.println(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row));
+			sb.append(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row) +", ");
 			c.prepareForNextRow(row==nrows? 0:rowsize);
 		}
 		c.processBytes(compressed, 4, 2);
 		while(c.isRowReady()) {
 			row++;
-			System.out.println(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row));
+			sb.append(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row) +", ");
 			c.prepareForNextRow(row==nrows? 0:rowsize);
 		}
 		c.processBytes(compressed, 6, 2);
 		while(c.isRowReady()) {
 			row++;
-			System.out.println(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row));
+			sb.append(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row) +", ");
 			c.prepareForNextRow(row==nrows? 0:rowsize);
 		}
 		c.processBytes(compressed, 8, 2);
 		while(c.isRowReady()) {
 			row++;
-			System.out.println(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row));
+			sb.append(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row) +", ");
 			c.prepareForNextRow(row==nrows-1? 0:rowsize);
 		}
 		c.processBytes(compressed, 10, 2);
 		while(c.isRowReady()) {
 			row++;
-			System.out.println(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row));
+			sb.append(c.state + " " + c.getnFedBytes() + " " +  TestSupport.showRow(c.getInflatedRow(),c.getRowFilled(),row) +", ");
 			c.prepareForNextRow(row==nrows? 0:rowsize);
 		}
+		TestCase.assertEquals("READY 6 r=0[  0| 42  43], READY 10 r=1[  0| 44  41], ", sb.toString());
 	}
 	
 

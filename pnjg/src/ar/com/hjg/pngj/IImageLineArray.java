@@ -1,6 +1,8 @@
 package ar.com.hjg.pngj;
 
+
 public interface IImageLineArray {
-	int getSize();
-	int getElem(int i);
+	public ImageInfo getImageInfo();
+	public int getSize();
+	public int getElem(int i);
 }

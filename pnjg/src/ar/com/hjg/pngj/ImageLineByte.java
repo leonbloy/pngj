@@ -152,4 +152,8 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 		return scanline;
 	}
 
+	public ImageInfo getImageInfo() {
+		return imgInfo;
+	}
+
 }

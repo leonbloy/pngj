@@ -50,7 +50,6 @@ public class PngChunkICCP extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkICCP other = new PngChunkICCP(imgInfo);
-		other.raw = raw;
 		other.profileName = profileName;
 		other.compressedProfile = new byte[compressedProfile.length];
 		System.arraycopy(compressedProfile, 0, other.compressedProfile, 0, compressedProfile.length); // deep

@@ -48,7 +48,6 @@ public class PngChunkSRGB extends PngChunkSingle {
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkSRGB other = new PngChunkSRGB(imgInfo);
-		other.raw = raw;
 		other.intent = intent;
 		return other;
 	}

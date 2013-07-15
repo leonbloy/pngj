@@ -28,12 +28,12 @@ public class PngChunkUNKNOWN extends PngChunkMultiple { // unkown, custom or not
 		
 	}
 
-	/* does not copy! */
+	/* does not do deep copy! */
 	public byte[] getData() {
 		return raw.data;
 	}
 
-	/* does not copy! */
+	/* does not do deep copy! */
 	public void setData(byte[] data) {
 		raw.data = data;
 	}
@@ -41,7 +41,6 @@ public class PngChunkUNKNOWN extends PngChunkMultiple { // unkown, custom or not
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkUNKNOWN other = new PngChunkUNKNOWN(id,imgInfo);
-		other.raw = raw;		
 		return other;
 	}
 }

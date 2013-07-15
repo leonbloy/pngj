@@ -1,10 +1,8 @@
 package ar.com.hjg.pngj;
 
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.zip.Deflater;
-import java.util.zip.Inflater;
 
 import junit.framework.TestCase;
 
@@ -137,7 +135,7 @@ public class DeflatedChunkSetTest {
 	@Test
 	public void read1PollExact() {
 		ChunkSetReaderIdatRaw c = new ChunkSetReaderIdatRaw(4, 3); // "true" values
-		c.readFrom(TestSupport.istream("resources/test/testg2.png"));
+		c.readFrom(TestSupport.istream(TestSupport.PNG_TEST_TESTG2));
 		TestCase.assertEquals(181, c.getBytesCount());
 		//System.out.println(c.summary);
 		TestCase.assertEquals("r=0[  1|  0   1   1] r=1[  3|112 136   8] r=2[  1|255 239 238] ", c.summary.toString());
@@ -146,7 +144,7 @@ public class DeflatedChunkSetTest {
 	@Test
 	public void read1PollLessBytes() {
 		ChunkSetReaderIdatRaw c = new ChunkSetReaderIdatRaw(3, 2);
-		c.readFrom(TestSupport.istream("resources/test/testg2.png"));
+		c.readFrom(TestSupport.istream(TestSupport.PNG_TEST_TESTG2));
 		TestCase.assertEquals(181, c.getBytesCount());
 		//System.out.println(c.summary);
 		TestCase.assertEquals("r=0[  1|  0   1] r=1[  1|  3 112] ", c.summary.toString());
@@ -155,7 +153,7 @@ public class DeflatedChunkSetTest {
 	@Test
 	public void read1PollMoreBytes() {
 		ChunkSetReaderIdatRaw c = new ChunkSetReaderIdatRaw(5, 9);
-		c.readFrom(TestSupport.istream("resources/test/testg2.png"));
+		c.readFrom(TestSupport.istream(TestSupport.PNG_TEST_TESTG2));
 		TestCase.assertEquals(181, c.getBytesCount());
 		//System.out.println(c.summary);
 		TestCase.assertEquals(
@@ -166,7 +164,7 @@ public class DeflatedChunkSetTest {
 	@Test(expected=PngjInputException.class)
 	public void read1PollBad() { // file has missing IDAT
 		ChunkSetReaderIdatRaw c = new ChunkSetReaderIdatRaw(81, 300); // "true" values
-		c.readFrom(TestSupport.istream("resources/test/bad_missingidat.png"));
+		c.readFrom(TestSupport.istream(TestSupport.PNG_TEST_BAD_MISSINGIDAT));
 	}
 
 

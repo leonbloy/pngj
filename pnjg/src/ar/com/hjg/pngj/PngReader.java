@@ -4,8 +4,6 @@ import java.io.File;
 import java.io.InputStream;
 import java.util.zip.CRC32;
 
-import sun.security.krb5.internal.crypto.crc32;
-
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
@@ -39,27 +37,26 @@ public class PngReader {
 	 * Basic image info - final and inmutable.
 	 */
 	public final ImageInfo imgInfo;
-	final ChunkSeqReaderPng chunkseq;
-	final BufferedStreamFeeder streamFeeder;
+	private final boolean interlaced;
+	private ChunkSeqReaderPng chunkseq;
+	private BufferedStreamFeeder streamFeeder;
 
 	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS; // see setter/getter
 	// some performance/defensive limits
-	private static final int maxTotalBytesReadDefault = 2010203; // ~ 200MB
-	private static final int maxBytesMetadataDefault = 5024024; // for ancillary chunks 
-	private static final int skipChunkMaxSizeDefault = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
+	private static final long maxTotalBytesReadDefault = 901001001L; // ~ 900MB
+	private static final long maxBytesMetadataDefault = 5024024; // for ancillary chunks 
+	private static final long skipChunkMaxSizeDefault = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
 	CRC32 idatCrc;//for testing
 	protected final PngMetadata metadata; // this a wrapper over chunks
 
-	protected IImageLine imgLine;
-	protected ImageLines imgLines; // only for interlaced mode
+	protected IImageLine imgLine;  // storage for each line, in non-interlaced mode 
+	protected ImageLines imgLines; // storage for set of lines, in interlaced mode (or groupal reading)
 
-	// line as bytes, counting from 1 (index 0 is reserved for filter type)
-	// only set for interlaced PNG
-	private final boolean interlaced;
-	// this only influences the 1-2-4 bitdepth format
-	private boolean unpackedMode = false;
 	private int rowNum; // current row number (already read)
 
+	/**
+	 * factory to be used to create new lines. This is used in the default 
+	 */
 	protected IImageLineFactory<? extends IImageLine> imageLineFactory;
 
 	/**
@@ -277,7 +274,7 @@ public class PngReader {
 	 * 
 	 * @return
 	 */
-	protected IImageLine newImageLineInstance() {
+	protected IImageLine getImageLineInstance() {
 		return getImageLineFactory().createImageLine(imgInfo);
 	}
 
@@ -431,6 +428,10 @@ public class PngReader {
 	 */
 	public String toString() { // basic info
 		return imgInfo.toString() + " interlaced=" + interlaced;
+	}
+
+	public ChunkSeqReaderPng getChunkseq() {
+		return chunkseq;
 	}
 
 }

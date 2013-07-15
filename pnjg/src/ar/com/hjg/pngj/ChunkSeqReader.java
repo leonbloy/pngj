@@ -9,8 +9,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
  * Consumes a stream of bytes that consist of a series of PNG-like chunks
  * (eventually prefixed by a PNG signature)
  * 
- * This has very little intelligence, and is quite general, it could even be
- * used for a MNG stream
+ * This has very little intelligence, and is quite general, (it could even be used for a MNG stream, for example)
  * 
  */
 public class ChunkSeqReader implements IBytesConsumer {

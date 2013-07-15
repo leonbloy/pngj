@@ -66,6 +66,20 @@ public class ChunksListForWrite extends ChunksList {
 	}
 
 	/**
+	 * Finds all chunks "equivalent" to this one
+	 * 
+	 * @param c2
+	 * @return Empty if nothing found
+	 */
+	public List<PngChunk> getQueuedEquivalent(final PngChunk c2) {
+		return ChunkHelper.filterList(queuedChunks, new ChunkPredicate() {
+			public boolean match(PngChunk c) {
+				return ChunkHelper.equivalent(c, c2);
+			}
+		});
+	}
+	
+	/**
 	 * Remove Chunk: only from queued
 	 * 
 	 * WARNING: this depends on c.equals() implementation, which is
@@ -73,13 +87,14 @@ public class ChunksListForWrite extends ChunksList {
 	 * check for reference equality!
 	 */
 	public boolean removeChunk(PngChunk c) {
+		if(c==null) return false;
 		return queuedChunks.remove(c);
 	}
 
 	/**
 	 * Adds chunk to queue
 	 * 
-	 * Does not check for duplicated or anything
+	 * If there
 	 * 
 	 * @param c
 	 */
@@ -150,7 +165,7 @@ public class ChunksListForWrite extends ChunksList {
 	}
 
 	public String toString() {
-		return "ChunkList: written: " + chunks.size() + " queue: " + queuedChunks.size();
+		return "ChunkList: written: " + getChunks().size() + " queue: " + queuedChunks.size();
 	}
 
 	/**
@@ -159,7 +174,7 @@ public class ChunksListForWrite extends ChunksList {
 	public String toStringFull() {
 		StringBuilder sb = new StringBuilder(toString());
 		sb.append("\n Written:\n");
-		for (PngChunk chunk : chunks) {
+		for (PngChunk chunk : getChunks()) {
 			sb.append(chunk).append(" G=" + chunk.getChunkGroup() + "\n");
 		}
 		if (!queuedChunks.isEmpty()) {
