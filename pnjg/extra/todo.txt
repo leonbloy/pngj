@@ -1,17 +1,21 @@
 
 
-See callcback mode. 
-Add Filter example
 
 Add ordering check
-
-
 
 ------------
 
 Polish logger behaviuor, add log info
 
 ---
+
+Docs, snippets
+
+Make some profiling tests (speed and compression).
+PngWriter strategy: more work
+
+Maven?
+
 
 Document changes:
 
