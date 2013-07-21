@@ -1,0 +1,105 @@
+package ar.com.hjg.pngj;
+
+import java.awt.image.BufferedImage;
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FilterInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
+
+import javax.imageio.ImageIO;
+
+import ar.com.hjg.pngj.chunks.PngChunk;
+
+/**
+ * This class allows to use a simple PNG reader as an input filter, wrapping a
+ * ChunkSeqReaderPng in callback mode.
+ * 
+ * In this implementation, all IDAT chunks are skipped and the rest are stored.
+ * An example of use, to grab the Metadata and let the pixels go to a
+ * BufferedImage:
+ * 
+ * <code>
+ ChunkReaderFilter reader=new ChunkReaderFilter(new FileInputStream("image.png"));
+ BufferedImage image1 = ImageIO.read(reader);
+ reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it happens)
+ System.out.println(reader.getChunksList());
+ </code>
+ * 
+ */
+public class ChunkReaderFilter extends FilterInputStream {
+
+	private ChunkSeqReaderPng chunkseq;
+
+	public ChunkReaderFilter(InputStream arg0) {
+		super(arg0);
+		chunkseq = createChunkSequenceReader();
+	}
+
+	protected ChunkSeqReaderPng createChunkSequenceReader() {
+		return new ChunkSeqReaderPng(true) {
+			@Override
+			public boolean shouldSkipContent(int len, String id) {
+				return super.shouldSkipContent(len, id) || id.equals("IDAT");
+			}
+
+			@Override
+			protected boolean shouldCheckCrc(int len, String id) {
+				return false;
+			}
+
+			@Override
+			protected void processChunk(ChunkReader chunkR) {
+				super.processChunk(chunkR);
+				//System.out.println("processed chunk " + chunkR.getChunkRaw().id);
+			}
+		};
+	}
+
+	@Override
+	public void close() throws IOException {
+		super.close();
+		chunkseq.close();
+	}
+
+	@Override
+	public int read() throws IOException {
+		int r = super.read();
+		if (r > 0)
+			chunkseq.feedAll(new byte[] { (byte) r }, 0, 1);
+		return r;
+	}
+
+	@Override
+	public int read(byte[] b, int off, int len) throws IOException {
+		int res = super.read(b, off, len);
+		if (res > 0)
+			chunkseq.feedAll(b, off, res);
+		return res;
+	}
+
+	@Override
+	public int read(byte[] b) throws IOException {
+		int res = super.read(b);
+		if (res > 0)
+			chunkseq.feedAll(b, 0, res);
+		return res;
+	}
+
+	public void readUntilEndAndClose() throws IOException {
+		BufferedStreamFeeder br=new BufferedStreamFeeder(this.in);
+		while((!chunkseq.isDone())&& br.hasMoreToFeed())
+				br.feed(chunkseq);
+		close();
+	}
+	
+	public List<PngChunk> getChunksList() {
+		return chunkseq.getChunks();
+	}
+
+	public ChunkSeqReaderPng getChunkseq() {
+		return chunkseq;
+	}
+
+}

@@ -1,0 +1,1 @@
+Don't remove this file, its presence is used as a token to find out the resources directory in some tests
