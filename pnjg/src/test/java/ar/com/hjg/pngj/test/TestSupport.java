@@ -50,6 +50,8 @@ public class TestSupport {
 
 	public static final String PNG_TEST_BAD_MISSINGIDAT = "test/bad_missingidat.png";
 
+	
+	
 	public static String showChunks(List<PngChunk> chunks) {
 		StringBuilder sb = new StringBuilder();
 		for (PngChunk chunk : chunks) {

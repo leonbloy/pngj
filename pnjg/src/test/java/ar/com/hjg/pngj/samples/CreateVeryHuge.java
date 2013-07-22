@@ -53,7 +53,7 @@ public class CreateVeryHuge {
 	static void doitOnDisk() throws Exception {
 		String filename = "C:/temp/huge.png";
 		// createVeryHuge(filename,30000,30000); // WARNING: this creates an image of about 2.5 Gb !!!
-		SampleShowChunks.showChunks(filename,true);
+		SampleShowChunks.showChunks(new File(filename),true);
 	}
 	
 	public static void main(String[] args) throws Exception {
