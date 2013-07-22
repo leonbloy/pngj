@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.misc;
+package ar.com.hjg.pngj.test;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -11,6 +11,12 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import junit.framework.TestCase;
+
+import org.junit.Test;
+
+import ar.com.hjg.pngj.PngHelperInternal;
+
 /**
  * 
  * checks that the compiled classes are apt for sandboxed environment
@@ -20,13 +26,15 @@ import java.util.Set;
  * @author Hernan J Gonzalez
  * 
  */
-class CheckWhiteListed {
+public class CheckWhiteListed {
 
 	private static final String WHITELIST_FILENAME = "whitelistedclasses.txt";
 	private Set<String> whiteList;
-
-	public void checkDir(File dir, boolean recurse) {
-		System.out.println("checking " + dir);
+	private boolean VERBOSE=false;
+	
+	/* returns ERR TOTAL */
+	public int[] checkDir(File dir, boolean recurse) {
+		//System.out.println("checking " + dir);
 		List<File> files = FindDependecies.getClassesFromDir(dir, recurse);
 		Map<String, List<File>> classes = FindDependecies.getReferencedClassesFromFiles(files);
 		List<String> cs = new ArrayList<String>(classes.keySet());
@@ -37,10 +45,14 @@ class CheckWhiteListed {
 			}
 		}
 		FindDependecies.printMap(classes);
-		if (classes.isEmpty())
-			System.out.println(dir + ": OK! " + nclasses + " classes examined");
+		int errors=classes.size() ;
+		if(VERBOSE) {
+		if (errors==0)
+			System.out.println(dir + ": OK! " + nclasses + " classes examined in " +dir);
 		else
-			System.out.println(dir + ": ERR! " + classes.size() + "/" + nclasses + " classes with problems ");
+			System.out.println(dir + ": ERR! " + errors + "/" + nclasses + " classes with problems in " +dir);
+		}
+		return new int[]{errors,nclasses};
 	}
 
 	public boolean isWhiteListed(String name) {
@@ -62,7 +74,7 @@ class CheckWhiteListed {
 				set.add(line);
 			}
 			bf.close();
-			System.out.println("loaded whitelisted classes: " + set.size() + " classes");
+			//System.out.println("loaded whitelisted classes: " + set.size() + " classes");
 			return set;
 		} catch (IOException e) {
 			throw new RuntimeException(e);
@@ -75,11 +87,21 @@ class CheckWhiteListed {
 		return false;
 	}
 
-	public static void main(String[] args) {
-		CheckWhiteListed checker = new CheckWhiteListed();
+	@Test
+	public void maintest() {
 		// this should include every directory except "nosandnbox" and "test"
-		checker.checkDir(new File("target/classes/ar/com/hjg/pngj"), false);
-		checker.checkDir(new File("target/classes/ar/com/hjg/pngj/chunks"), false);
+		int[] res = checkDir(new File("target/classes/ar/com/hjg/pngj"), false);
+		System.out.println("=== The above should only report class PngHelperInternal2 (that's ok)" );
+		TestCase.assertEquals("Only opne class with errors",1, res[0]);
+		TestCase.assertTrue("More than 10 classes",res[1]>10);
+		res = checkDir(new File("target/classes/ar/com/hjg/pngj/chunks"), false);
+		TestCase.assertEquals("No class with errors",0, res[0]);
+		TestCase.assertTrue("More than 10 classes",res[1]>10);
 		// checker.checkDir(new File("bin/ar/com/hjg/pngj/test"), false); // This fails, it's ok
+	}
+
+	
+	public static void main(String[] args) {
+		new CheckWhiteListed().maintest();
 	}
 }

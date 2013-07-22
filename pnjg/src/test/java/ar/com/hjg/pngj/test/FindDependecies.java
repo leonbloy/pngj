@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.misc;
+package ar.com.hjg.pngj.test;
 
 import java.io.BufferedInputStream;
 import java.io.DataInputStream;
@@ -14,12 +14,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
-/**
- * used in CheckWhiteListed
- * 
- * @author Hernan J Gonzalez
- * 
- */
 class FindDependecies {
 
 	public static List<File> getClassesFromDir(File dir, boolean recurse) {
@@ -149,12 +143,4 @@ class FindDependecies {
 		}
 	}
 
-	public static void main(String[] args) throws Exception {
-		// String dir=
-		// "c:\hjg\workspace\pnjg\bin\ar\com\hjg\pngj\PngReader.classar/com/hjg/png";
-		String dir = "bin/ar/com/hjg/pngj/";
-		List<File> files = getClassesFromDir(new File(dir), false);
-		Map<String, List<File>> classes = getReferencedClassesFromFiles(files);
-		printMap(classes);
-	}
 }

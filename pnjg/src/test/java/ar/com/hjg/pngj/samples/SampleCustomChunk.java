@@ -32,7 +32,7 @@ public class SampleCustomChunk {
 		// ID[3] : uppercase if "safe to copy"
 		public final static String ID = "prOp";
 
-		private final Properties props;
+		final Properties props;
 
 		// fill with your own "high level" properties, in this example,
 		public PngChunkPROP(ImageInfo imgInfo) {
