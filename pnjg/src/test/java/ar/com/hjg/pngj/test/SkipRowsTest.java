@@ -13,7 +13,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 
-public class TestSkipRows extends PngjTest {
+public class SkipRowsTest extends PngjTest {
 	boolean verbose=false;
 	private int cols=1300,rows=1300;
 	

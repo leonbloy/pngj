@@ -17,10 +17,10 @@ import ar.com.hjg.pngj.test.TestSupport;
  * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines
  * (bytes 0 and 1), comparing with precomputed
  */
-public class TestSuiteCrcsInt extends PngjTest  {
+public class SuiteCrcsIntTest extends PngjTest  {
 	LinkedHashMap<String, Long> crcs;// these were computed with old PNJG
 
-	public TestSuiteCrcsInt() {
+	public SuiteCrcsIntTest() {
 		init();
 	}
 	
@@ -240,7 +240,7 @@ public class TestSuiteCrcsInt extends PngjTest  {
 
 	public static void main(String[] args) {
 		String filename = "basi0g01.png";
-		TestSuiteCrcsInt tc = new TestSuiteCrcsInt();
+		SuiteCrcsIntTest tc = new SuiteCrcsIntTest();
 		long res=tc.calcCrc(filename);
 		long crc0=tc.crcs.get(filename);
 		TestCase.assertEquals("bad crc for " + filename,res,crc0);

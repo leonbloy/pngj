@@ -5,11 +5,13 @@ import java.awt.image.ComponentSampleModel;
 
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineFactory;
-import ar.com.hjg.pngj.IImageLineSet;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineByte;
 
-
+/*
+ * INCOMPLETE IMPLEMENTATION
+ * 
+ */
 public class ImageLineARGBbi implements IImageLine {
 
 	public final ImageInfo imgInfo;

@@ -97,6 +97,10 @@ class FindDependecies {
 		}
 		Set<String> allclasses = new HashSet<String>();
 		for (Integer index : classes) {
+			if(strings.get(index)== null) {
+				System.err.println("warning: not found " + file + " (clean and build!)" + index);
+				continue;
+			}
 			String c = strings.get(index).replaceAll("/", ".");
 			while (c.startsWith("["))
 				c = c.substring(1);

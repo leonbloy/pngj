@@ -13,8 +13,8 @@ public class ChunkSeqBasic extends ChunkSeqReader {
 	}
 
 	@Override
-	protected void processChunk(ChunkReader chunkR) {
-		super.processChunk(chunkR);
+	protected void postProcessChunk(ChunkReader chunkR) {
+		super.postProcessChunk(chunkR);
 	}
 
 	@Override

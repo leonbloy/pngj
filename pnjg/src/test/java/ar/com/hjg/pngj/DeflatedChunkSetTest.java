@@ -1,8 +1,6 @@
 package ar.com.hjg.pngj;
 
 import java.io.InputStream;
-import java.util.Arrays;
-import java.util.zip.Deflater;
 
 import junit.framework.TestCase;
 
@@ -80,24 +78,24 @@ public class DeflatedChunkSetTest extends PngjTest {
 
 		public void readFrom(InputStream is) {
 			BufferedStreamFeeder bf = new BufferedStreamFeeder(is, TestSupport.randBufSize());
-			while (curReaderDeflatedSet == null) {
+			while (getCurReaderDeflatedSet()  == null) {
 				if (bf.feed(this) < 1)
 					break;
 			}
 			for (rown = 0; rown < nrows; rown++) {
-				while (!isDone() && curReaderDeflatedSet != null && ! curReaderDeflatedSet.isRowReady()) {
+				while (!isDone() && getCurReaderDeflatedSet() != null && ! getCurReaderDeflatedSet().isRowReady()) {
 					if (bf.feed(this) < 1)
 						break;
 				}
-				if (curReaderDeflatedSet == null)
+				if (getCurReaderDeflatedSet() == null)
 					break;
 				summary.append(
-						TestSupport.showRow(curReaderDeflatedSet.getInflatedRow(), curReaderDeflatedSet.getRowFilled(),
-								curReaderDeflatedSet.getRown())).append(" ");
-				curReaderDeflatedSet.prepareForNextRow(rowsize);
+						TestSupport.showRow(getCurReaderDeflatedSet().getInflatedRow(), getCurReaderDeflatedSet().getRowFilled(),
+								getCurReaderDeflatedSet().getRown())).append(" ");
+				getCurReaderDeflatedSet() .prepareForNextRow(rowsize);
 			}
-			if(curReaderDeflatedSet!=null)
-				curReaderDeflatedSet.end();
+			if(getCurReaderDeflatedSet() !=null)
+				getCurReaderDeflatedSet() .end();
 
 			while (!isDone()) {
 				if (bf.feed(this) < 1)
@@ -177,7 +175,7 @@ public class DeflatedChunkSetTest extends PngjTest {
 
 
 	
-
+/*
 	public static void main(String[] args) throws Exception{
 		byte[] data= new byte[]{0,42,43,0,44,41};
 		byte[] compressed = new byte[20];
@@ -187,5 +185,5 @@ public class DeflatedChunkSetTest extends PngjTest {
 		int n = def1.deflate(compressed);
 		System.out.println(n);
 		System.out.println(Arrays.toString(compressed));
-	}
+	}*/
 }

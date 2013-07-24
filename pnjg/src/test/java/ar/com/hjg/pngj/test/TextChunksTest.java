@@ -13,7 +13,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
-public class TestTextChunks {
+public class TextChunksTest {
 
 	@Test
 	public void testTestChunks() {

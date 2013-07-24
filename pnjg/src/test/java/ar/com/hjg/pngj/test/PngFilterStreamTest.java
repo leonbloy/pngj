@@ -14,7 +14,7 @@ import ar.com.hjg.pngj.ChunkReaderFilter;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
 /** this shows how to use the Callback mode*/
-public class TestPngFilterStream {
+public class PngFilterStreamTest {
 	
 	@Test
 	public void testBufferedImage() throws Exception{

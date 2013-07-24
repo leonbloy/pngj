@@ -10,7 +10,7 @@ import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.PngWriter;
 
-public class TestFilterPreserve {
+public class FilterPreserveTest {
 
 
 	private File origFile() {

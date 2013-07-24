@@ -26,7 +26,7 @@ import ar.com.hjg.pngj.PngHelperInternal;
  * @author Hernan J Gonzalez
  * 
  */
-public class CheckWhiteListed {
+public class WhiteListedCheck {
 
 	private static final String WHITELIST_FILENAME = "whitelistedclasses.txt";
 	private Set<String> whiteList;
@@ -87,7 +87,7 @@ public class CheckWhiteListed {
 		return false;
 	}
 
-	@Test
+
 	public void maintest() {
 		// this should include every directory except "nosandnbox" and "test"
 		int[] res = checkDir(new File("target/classes/ar/com/hjg/pngj"), false);
@@ -102,6 +102,6 @@ public class CheckWhiteListed {
 
 	
 	public static void main(String[] args) {
-		new CheckWhiteListed().maintest();
+		new WhiteListedCheck().maintest();
 	}
 }

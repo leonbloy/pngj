@@ -17,7 +17,7 @@ import ar.com.hjg.pngj.samples.SampleCustomChunk.PngChunkPROP;
 /**
  * Tests (and shows) how to use a custom (user defined) chunk
  */
-public class TestCustomChunk {
+public class CustomChunkTest {
 
 	private File origFile() {
 		return new File(TestSupport.getResourcesDir(), "test/testg2.png");

@@ -1,4 +1,4 @@
-package ar.com.hjg.png.imageline;
+package ar.com.hjg.pngj.samples;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -11,6 +11,7 @@ import org.junit.Test;
 
 import junit.framework.TestCase;
 
+import ar.com.hjg.png.imageline.ImageLineSetARGBbi;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineHelper;
@@ -19,9 +20,8 @@ import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**
- * grayscale image - distorted diagonal stripes
  */
-public class SampleCreateFromBufferedImage {
+public class CreateFromBufferedImageTest {
 
 	public static BufferedImage readBi(File filename,int type) {
 		BufferedImage in;

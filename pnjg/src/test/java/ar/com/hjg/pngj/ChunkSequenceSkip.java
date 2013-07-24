@@ -18,8 +18,8 @@ public class ChunkSequenceSkip extends ChunkSeqReader {
 	}
 
 	@Override
-	protected void processChunk(ChunkReader chunkR) {
-		super.processChunk(chunkR);
+	protected void postProcessChunk(ChunkReader chunkR) {
+		super.postProcessChunk(chunkR);
 		chunks.add(chunkR.getChunkRaw());
 	}
 

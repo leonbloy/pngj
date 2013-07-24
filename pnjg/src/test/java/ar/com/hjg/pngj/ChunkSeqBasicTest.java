@@ -33,8 +33,8 @@ public class ChunkSeqBasicTest extends PngjTest {
 			this.os = osx;
 			cs = new ChunkSeqBasic(false) {
 				@Override
-				protected void processChunk(ChunkReader chunkR) {
-					super.processChunk(chunkR);
+				protected void postProcessChunk(ChunkReader chunkR) {
+					super.postProcessChunk(chunkR);
 					chunkR.getChunkRaw().writeChunk(os); // send the chunk straight to the os 
 				}
 

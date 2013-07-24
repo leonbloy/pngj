@@ -41,7 +41,7 @@ import ar.com.hjg.pngj.test.TestSupport;
  * sequence
  * 
  */
-public class TestPngSuite {
+public class PngSuiteFullTest {
 
 	Random rand = new Random();
 
