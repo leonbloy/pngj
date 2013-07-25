@@ -2,54 +2,65 @@ package ar.com.hjg.pngj;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 
 /**
- * Reads bytes from an input stream and feeds a IBytesConsumer
+ * Reads bytes from an input stream, and feeds a IBytesConsumer.
  */
 public class BufferedStreamFeeder {
 
-	private InputStream is;
+	private InputStream stream;
 	private byte[] buf;
 	private int pendinglen; // bytes read and stored in buf that have not yet still been fed to IBytesConsumer
 	private int offset;
 	private boolean eof = false;
-	private boolean closeOnEof = true;
+	private boolean closeStream = true;
 	private boolean failIfNoFeed = false;
-	private static final int DEFAULTSIZE=8192;
-	
+
+	private static final int DEFAULTSIZE = 8192;
+
 	public BufferedStreamFeeder(InputStream is) {
 		this(is, DEFAULTSIZE);
 	}
 
 	public BufferedStreamFeeder(InputStream is, int bufsize) {
-		this.is = is;
+		this.stream = is;
 		buf = new byte[bufsize];
 	}
 
-	public InputStream getIs() {
-		return is;
-	}
-
-	
-	public int feed(IBytesConsumer c) {
-		return feed(c, -1);
+	/**
+	 * Returns inputstream
+	 * 
+	 * @return Input Stream from which bytes are read
+	 */
+	public InputStream getStream() {
+		return stream;
 	}
 
 	/**
-	 * Feeds (at most maxbytes) 
-	 *  
+	 * Feeds bytes to the consumer
+	 * <br>
 	 * Returns bytes actually consumed
-	 * 
+	 * <br>
 	 * This should return 0 only if the stream is EOF or the consumer is done
 	 */
-	public int feed(IBytesConsumer c, int maxbytes) {
+	public int feed(IBytesConsumer consumer) {
+		return feed(consumer, -1);
+	}
+
+	/**
+	 * Feeds (at most maxbytes) to the consumer
+	 * <br>
+	 * This should return 0 only if the stream is EOF or the consumer is done
+	 */
+	public int feed(IBytesConsumer consumer, int maxbytes) {
 		int n = 0;
 		if (pendinglen == 0) {
 			refillBuffer();
 		}
 		int tofeed = maxbytes > 0 && maxbytes < pendinglen ? maxbytes : pendinglen;
 		if (tofeed > 0) {
-			n = c.feed(buf, offset, tofeed);
+			n = consumer.feed(buf, offset, tofeed);
 			if (n > 0) {
 				offset += n;
 				pendinglen -= n;
@@ -63,14 +74,17 @@ public class BufferedStreamFeeder {
 	/**
 	 * Feeds exactly nbytes, retrying if necessary
 	 * 
-	 * @param c Consumer
-	 * @param nbytes Number of bytes
-	 * @return true if success, false otherwise (EOF on stream, or consumer is done)
+	 * @param consumer
+	 *            Consumer
+	 * @param nbytes
+	 *            Number of bytes
+	 * @return true if success, false otherwise (EOF on stream, or consumer is
+	 *         done)
 	 */
-	public boolean feedFixed(IBytesConsumer c, int nbytes) {
+	public boolean feedFixed(IBytesConsumer consumer, int nbytes) {
 		int remain = nbytes;
 		while (remain > 0) {
-			int n = feed(c, remain);
+			int n = feed(consumer, remain);
 			if (n < 1)
 				return false;
 			remain -= n;
@@ -78,13 +92,17 @@ public class BufferedStreamFeeder {
 		return true;
 	}
 
+	/**
+	 * If there are not pending bytes to be consumed tries to fill the buffer
+	 * with bytes from the stream.
+	 */
 	protected void refillBuffer() {
 		if (pendinglen > 0 || eof)
 			return; // only if not pending data
 		try {
 			// try to read
 			offset = 0;
-			pendinglen = is.read(buf);
+			pendinglen = stream.read(buf);
 			if (pendinglen < 0) {
 				close();
 				return;
@@ -96,9 +114,8 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * True if we have more data to fed the consumer.
-	 * This internally tries to grabs more bytes from the stream if necessary
-	 * 
+	 * Returuns true if we have more data to fed the consumer. This internally
+	 * tries to grabs more bytes from the stream if necessary
 	 */
 	public boolean hasMoreToFeed() {
 		if (eof)
@@ -109,58 +126,63 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * If true, the stream will be closed on when close() is called
-	 * 
-	 * @param closeOnEof
+	 * @param closeStream
+	 *            If true, the underlying stream will be closed on when close()
+	 *            is called
 	 */
-	public void setCloseOnEof(boolean closeOnEof) {
-		this.closeOnEof = closeOnEof;
+	public void setCloseStream(boolean closeStream) {
+		this.closeStream = closeStream;
 	}
 
 	/**
-	 * sets EOF=true, and closes the stream if closeOnEof=true 
+	 * Closes this object.
 	 * 
-	 * This can be called internally, or from outside
+	 * Sets EOF=true, and closes the stream if <tt>closeStream</tt> is true
 	 * 
-	 * Idempotent, secure, never throws exception
+	 * This can be called internally, or from outside.
+	 * 
+	 * Idempotent, secure, never throws exception.
 	 **/
 	public void close() {
 		eof = true;
 		buf = null;
+		pendinglen = 0;
+		offset = 0;
 		try {
-			if (is != null && closeOnEof)
-				is.close();
+			if (stream != null && closeStream)
+				stream.close();
 		} catch (Exception e) {
+			PngHelperInternal.LOGGER.log(Level.WARNING, "Exception closing stream", e);
 		}
-		is = null;
+		stream = null;
 	}
 
 	/**
-	 * This allows to reuse this object. The state is reset.
-	 * 
-	 * WARNING: the old underlying is not closed.
+	 * Sets a new underlying inputstream. This allows to reuse this object. The
+	 * old underlying is not closed and the state is not reset (you should call
+	 * close() previously if you want that)
 	 * 
 	 * @param is
 	 */
 	public void setInputStream(InputStream is) { // to reuse this object
-		this.is = is;
-		pendinglen = 0;
-		offset = 0;
+		this.stream = is;
 		eof = false;
 	}
 
-	/** 
-	 * 
+	/**
 	 * @return EOF on stream, or close() was called
 	 */
 	public boolean isEof() {
 		return eof;
 	}
 
-	protected void setEof(boolean eof) {
-		this.eof = eof;
-	}
-
+	/**
+	 * If this flag is set (default: false), any call to feed() that returns
+	 * zero (no byte feed) will throw an exception. This is useful to be sure of
+	 * avoid infinite loops in some scenarios.
+	 * 
+	 * @param failIfNoFeed
+	 */
 	public void setFailIfNoFeed(boolean failIfNoFeed) {
 		this.failIfNoFeed = failIfNoFeed;
 	}

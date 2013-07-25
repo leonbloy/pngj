@@ -1,7 +1,0 @@
-Manifest-Version: 1.0
-Ant-Version: Apache Ant 1.8.3
-Created-By: 1.7.0_25-b17 (Oracle Corporation)
-Built-By: Hernan J. Gonzalez - hgonzalez@gmail.com
-Built-Date: 2013-07-14 00:02:14
-Implementation-Version: 2.0.0
-

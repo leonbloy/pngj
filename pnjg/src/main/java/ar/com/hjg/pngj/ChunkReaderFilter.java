@@ -1,14 +1,9 @@
 package ar.com.hjg.pngj;
 
-import java.awt.image.BufferedImage;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.FilterInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
-
-import javax.imageio.ImageIO;
 
 import ar.com.hjg.pngj.chunks.PngChunk;
 
@@ -50,8 +45,8 @@ public class ChunkReaderFilter extends FilterInputStream {
 			}
 
 			@Override
-			protected void processChunk(ChunkReader chunkR) {
-				super.processChunk(chunkR);
+			protected void postProcessChunk(ChunkReader chunkR) {
+				super.postProcessChunk(chunkR);
 				//System.out.println("processed chunk " + chunkR.getChunkRaw().id);
 			}
 		};
@@ -88,12 +83,12 @@ public class ChunkReaderFilter extends FilterInputStream {
 	}
 
 	public void readUntilEndAndClose() throws IOException {
-		BufferedStreamFeeder br=new BufferedStreamFeeder(this.in);
-		while((!chunkseq.isDone())&& br.hasMoreToFeed())
-				br.feed(chunkseq);
+		BufferedStreamFeeder br = new BufferedStreamFeeder(this.in);
+		while ((!chunkseq.isDone()) && br.hasMoreToFeed())
+			br.feed(chunkseq);
 		close();
 	}
-	
+
 	public List<PngChunk> getChunksList() {
 		return chunkseq.getChunks();
 	}

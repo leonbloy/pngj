@@ -74,7 +74,7 @@ public enum FilterType {
 
 	/** only considers standard */
 	public static boolean isValidStandard(int i) {
-		return i>=0 && i<=4;
+		return i >= 0 && i <= 4;
 	}
 
 	/**

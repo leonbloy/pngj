@@ -1,8 +1,7 @@
 package ar.com.hjg.pngj;
 
 /**
- * Packs information of current row.
- * Only used internally
+ * Packs information of current row. Only used internally
  */
 class RowInfo {
 	public final ImageInfo imgInfo;
@@ -44,7 +43,7 @@ class RowInfo {
 			rowNreal = rowNsubImg = rowseq;
 			rowsSubImg = imgInfo.rows;
 			colsSubImg = imgInfo.cols;
-			bytesRow=imgInfo.bytesPerRow;
+			bytesRow = imgInfo.bytesPerRow;
 		}
 	}
 

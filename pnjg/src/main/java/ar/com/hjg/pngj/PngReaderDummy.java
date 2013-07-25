@@ -7,8 +7,8 @@ import java.util.List;
 
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
-/** 
- * Sample implementation of a very basic reader that only loads the empty chunks  
+/**
+ * Sample implementation of a very basic reader that only loads the empty chunks
  */
 public class PngReaderDummy {
 
@@ -27,13 +27,13 @@ public class PngReaderDummy {
 	}
 
 	public void setShouldCloseStream(boolean shouldCloseStream) {
-		streamFeeder.setCloseOnEof(shouldCloseStream);
+		streamFeeder.setCloseStream(shouldCloseStream);
 	}
 
 	public void readAll() {
 		chunkseq = createChunkSeqReader();
 		try {
-			while(! chunkseq.isDone())
+			while (!chunkseq.isDone())
 				streamFeeder.feed(chunkseq);
 		} finally {
 			chunkseq.close();
@@ -49,8 +49,8 @@ public class PngReaderDummy {
 	private ChunkSeqReader createChunkSeqReader() {
 		return new ChunkSeqReader() {
 			@Override
-			protected void processChunk(ChunkReader chunkR) {
-				super.processChunk(chunkR);
+			protected void postProcessChunk(ChunkReader chunkR) {
+				super.postProcessChunk(chunkR);
 				if (shouldStoreChunkOnList(chunkR.getChunkRaw()))
 					chunks.add(chunkR.getChunkRaw());
 			}

@@ -6,8 +6,8 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 /**
  * Bunch of utility static methods to proces an image line at the pixel level.
  * <p>
- * WARNING: this has little testing/optimizing, and this API is not stable. 
- * some methods will probably be changed or removed if future releases.
+ * WARNING: this has little testing/optimizing, and this API is not stable. some
+ * methods will probably be changed or removed if future releases.
  * <p>
  * WARNING: most methods for getting/setting values work currently only for
  * ImageLine or ImageLineByte
@@ -87,9 +87,8 @@ public class ImageLineHelper {
 		return palette2rgb(line, pal, trns, buf, false);
 	}
 
-	
 	/**
-	 * warning: this only works with byte format, and alters ImageLine! 
+	 * warning: this only works with byte format, and alters ImageLine!
 	 */
 	static int[] lineToARGB32(ImageLineByte line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
 		boolean alphachannel = line.imgInfo.alpha;
@@ -125,7 +124,6 @@ public class ImageLineHelper {
 		}
 		return buf;
 	}
-	
 
 	/**
 	 * warning: this only works with byte format, and alters ImageLine! For
@@ -135,7 +133,7 @@ public class ImageLineHelper {
 		boolean alphachannel = line.imgInfo.alpha;
 		int cols = line.imgInfo.cols;
 		if (line.imgInfo.packed)
-				scaleUp(line);
+			scaleUp(line);
 		int bytes = cols * 4;
 		if (buf == null || buf.length < bytes)
 			buf = new byte[bytes];
@@ -177,7 +175,6 @@ public class ImageLineHelper {
 		}
 		return buf;
 	}
-	
 
 	static byte[] lineToRGB888(ImageLineByte line, PngChunkPLTE pal, byte[] buf) {
 		boolean alphachannel = line.imgInfo.alpha;
@@ -217,8 +214,6 @@ public class ImageLineHelper {
 		}
 		return buf;
 	}
-
-	
 
 	/**
 	 * Same as palette2rgbx , but returns rgba always, even if trns is null
@@ -398,7 +393,6 @@ public class ImageLineHelper {
 		return x > 127 ? 127 : (x < -128 ? -128 : x);
 	}
 
-	
 	static int getMaskForPackedFormats(int bitDepth) { // Utility function for pack/unpack
 		if (bitDepth == 4)
 			return 0xf0;

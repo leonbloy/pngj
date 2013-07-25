@@ -7,8 +7,10 @@ import java.util.List;
 
 /**
  * Manages the writer strategy for selecting the internal png predictor filter
+ * 
+ * TODO: this needs work
  */
-class FilterWriteStrategy implements IFilterWriteStrategy {
+public class FilterWriteStrategy implements IFilterWriteStrategy {
 
 	final ImageInfo imgInfo;
 	public FilterType configuredType; // can be negative (fin dout)
@@ -82,7 +84,7 @@ class FilterWriteStrategy implements IFilterWriteStrategy {
 		lastSums[type.val] = sum;
 	}
 
-	public FilterType gimmeFilterType(int rown) {
+	public FilterType preferedType(int rown) {
 		if (configuredType == null || configuredType.val < 0) { // not fixed?
 			if (rown == 0)
 				computedType = FilterType.FILTER_SUB;

@@ -1,8 +1,9 @@
 package ar.com.hjg.pngj;
 
-
 /**
- * ImageLine and ImageBye (most common IImageLine) also implement this 
+ * This interface is just for the sake of unifying some methods of {@link ImageLineHelper}
+ * that can use both {@link ImageLineInt} or {@link ImageLineByte}. It's not very useful
+ * outside that, and the user should not rely much on this.
  */
 public interface IImageLineArray {
 	public ImageInfo getImageInfo();

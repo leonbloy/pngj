@@ -100,6 +100,8 @@ public class PngReader {
 			setMaxTotalBytesRead(maxTotalBytesReadDefault);
 			setSkipChunkMaxSize(skipChunkMaxSizeDefault);
 			this.metadata = new PngMetadata(chunkseq.chunksList);
+			// sets a default factory (with ImageLineInt), 
+			// this can be overwrite by a extended constructor, or by a setter
 			setLineSetFactory(ImageLineSetDefault.getFactoryInt());
 			rowNum = -1;
 		} catch (RuntimeException e) {
@@ -182,12 +184,24 @@ public class PngReader {
 		return metadata;
 	}
 
+	/**
+	 * Reads next row. 
+	 * 
+	 * The caller must know that there are more rows to read.
+	 * 
+	 * @return Never null. Throws PngInputException if no more
+	 */
 	public IImageLine readRow() {
 		return readRow(rowNum + 1);
 	}
 
+	public boolean hasMoreRows() {
+		return rowNum < imgInfo.rows - 1;
+	}
+
 	/**
-	 * This must be called in ascending order (not necessarily consecutive)
+	 * The row number is mostly meant as a check, the rows must be called in
+	 * ascending order (not necessarily consecutive)
 	 */
 	public IImageLine readRow(int nrow) {
 		if (chunkseq.firstChunksNotYetRead())
@@ -261,8 +275,9 @@ public class PngReader {
 	}
 
 	/**
-	 * Sets the factory that creates the ImageLine. By default, this implementation uses ImageLineInt
-	 * but this can be changed (at construction time or later) by calling this method.
+	 * Sets the factory that creates the ImageLine. By default, this
+	 * implementation uses ImageLineInt but this can be changed (at construction
+	 * time or later) by calling this method.
 	 * 
 	 * See also createLineSet
 	 * 
@@ -271,13 +286,13 @@ public class PngReader {
 	public void setLineSetFactory(IImageLineSetFactory<? extends IImageLine> factory) {
 		imageLineSetFactory = factory;
 	}
-	
+
 	/**
-	 * By default this uses the factory (which, by default creates ImageLineInt).
-	 * You should rarely override this.
+	 * By default this uses the factory (which, by default creates
+	 * ImageLineInt). You should rarely override this.
 	 */
 	protected IImageLineSet<? extends IImageLine> createLineSet(boolean singleCursor, int nlines, int noffset, int step) {
-		return imageLineSetFactory.create(imgInfo,singleCursor, nlines, noffset, step);
+		return imageLineSetFactory.create(imgInfo, singleCursor, nlines, noffset, step);
 	}
 
 	protected void loadAllInterlaced(int nRows, int rowOffset, int rowStep) {
@@ -365,7 +380,7 @@ public class PngReader {
 	 * default=true
 	 */
 	public void setShouldCloseStream(boolean shouldCloseStream) {
-		streamFeeder.setCloseOnEof(shouldCloseStream);
+		streamFeeder.setCloseStream(shouldCloseStream);
 	}
 
 	/**

@@ -78,7 +78,7 @@ abstract class ProgressiveOutputStream extends ByteArrayOutputStream {
 		System.out.println("setting size: " + size + " count" + count);
 		checkFlushBuffer(false);
 	}
-	
+
 	public long getCountFlushed() {
 		return countFlushed;
 	}

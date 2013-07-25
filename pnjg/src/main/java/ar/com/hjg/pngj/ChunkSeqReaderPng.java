@@ -15,10 +15,10 @@ import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
- * Adds to ChunkSeqReader the storing of PngChunk s , with the PngFactory, and
+ * Adds to ChunkSeqReader the storing of PngChunk , with the PngFactory, and
  * imageInfo + deinterlacer
  * 
- * Most usual PNG reading should use this.
+ * Most usual PNG reading should use this class, or a PngReader,  which is a thin wrapper over this. 
  */
 public class ChunkSeqReaderPng extends ChunkSeqReader {
 
@@ -84,15 +84,15 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	public boolean shouldSkipContent(int len, String id) {
 		if (super.shouldSkipContent(len, id))
 			return true;
-		if (maxTotalBytesRead > 0 && len + bytesCount > maxTotalBytesRead)
+		if (maxTotalBytesRead > 0 && len + getBytesCount() > maxTotalBytesRead)
 			throw new PngjInputException("Maximum total bytes to read exceeeded: " + maxTotalBytesRead + " offset:"
-					+ bytesCount + " len=" + len);
+					+ getBytesCount() + " len=" + len);
 		if (chunksToSkip.contains(id))
 			return true; // specific skip
-		if(!ChunkHelper.isCritical(id)) {
+		if (!ChunkHelper.isCritical(id)) {
 			if (skipChunkMaxSize > 0 && len > skipChunkMaxSize)
 				return true; // too big chunk
-			if (maxBytesMetadata > 0 && len > maxBytesMetadata - bytesChunksLoaded )
+			if (maxBytesMetadata > 0 && len > maxBytesMetadata - bytesChunksLoaded)
 				return true; // too much ancillary chunks loaded
 		}
 		return false;
@@ -121,8 +121,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	}
 
 	@Override
-	protected void processChunk(ChunkReader chunkR) {
-		super.processChunk(chunkR);
+	protected void postProcessChunk(ChunkReader chunkR) {
+		super.postProcessChunk(chunkR);
 		if (chunkR.getChunkRaw().id.equals(PngChunkIHDR.ID)) {
 			PngChunkIHDR ch = new PngChunkIHDR(null);
 			ch.parseFromRaw(chunkR.getChunkRaw());

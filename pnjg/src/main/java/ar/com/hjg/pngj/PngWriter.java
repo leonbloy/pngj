@@ -203,7 +203,7 @@ public class PngWriter {
 				filterRowWithFilterType(ftype);
 				filterStrat.reportResultsForFilter(rowNum, ftype, rowbfilter, true);
 			}
-			filterType = filterStrat.gimmeFilterType(rowNum);
+			filterType = filterStrat.preferedType(rowNum);
 		}
 		filterRowWithFilterType(filterType);
 		filterStrat.reportResultsForFilter(rowNum, filterType, rowbfilter, false);

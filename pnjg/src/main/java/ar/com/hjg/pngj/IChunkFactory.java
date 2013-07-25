@@ -5,6 +5,6 @@ import ar.com.hjg.pngj.chunks.PngChunk;
 
 public interface IChunkFactory {
 
-	public PngChunk createChunk(ChunkRaw chunkRaw,ImageInfo imgInfo);
+	public PngChunk createChunk(ChunkRaw chunkRaw, ImageInfo imgInfo);
 
 }

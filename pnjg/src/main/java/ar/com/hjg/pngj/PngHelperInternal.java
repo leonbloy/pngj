@@ -250,7 +250,8 @@ public final class PngHelperInternal {
 	final public static long getCrctestVal(PngReader pngr) {
 		if (pngr.idatCrc != null)
 			return pngr.idatCrc.getValue();
-		else return -1;
+		else
+			return -1;
 	}
 
 	/**
@@ -285,15 +286,13 @@ public final class PngHelperInternal {
 		return is;
 	}
 
-	
 	static OutputStream ostreamFromFile(File f) {
-		return ostreamFromFile(f,true);
+		return ostreamFromFile(f, true);
 	}
 
-	static OutputStream ostreamFromFile(File f,boolean overwrite) {
+	static OutputStream ostreamFromFile(File f, boolean overwrite) {
 		return PngHelperInternal2.ostreamFromFile(f, overwrite);
 	}
-
 
 	/**
 	 * Prints a debug message (prints class name, method and line number) to

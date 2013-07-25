@@ -55,7 +55,7 @@ public class DeflatedChunksSet {
 		DONE;
 
 		public boolean isFinished() {
-			return this==DONE;
+			return this == DONE;
 		} // the caller has already uncompressed all the data of interest or EOF  
 	}
 
@@ -217,15 +217,15 @@ public class DeflatedChunksSet {
 		return state.isFinished();
 	}
 
-	/** this should be called only when discarding this object, or for aborting  */
+	/** this should be called only when discarding this object, or for aborting */
 	public void end() {
 		try {
-		if (!state.isFinished())
-			state = State.DONE;
-		if (infOwn)
-			inf.end();// we end the Inflater only if we created it
-		} catch(Exception e){
-			
+			if (!state.isFinished())
+				state = State.DONE;
+			if (infOwn)
+				inf.end();// we end the Inflater only if we created it
+		} catch (Exception e) {
+
 		}
 	}
 

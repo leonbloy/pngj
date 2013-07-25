@@ -16,7 +16,8 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 	protected T imageLine; // null unless single cursor
 	protected int currentRow = -1; // only relevant (and not much) for cursor
 
-	public ImageLineSetDefault(ImageInfo imgInfo, final boolean singleCursor,final int nlines, final int noffset, final int step) {
+	public ImageLineSetDefault(ImageInfo imgInfo, final boolean singleCursor, final int nlines, final int noffset,
+			final int step) {
 		this.imgInfo = imgInfo;
 		this.singleCursor = singleCursor;
 		if (singleCursor) {
@@ -30,7 +31,6 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 		}
 		createImageLines();
 	}
-
 
 	private void createImageLines() {
 		if (singleCursor)
@@ -101,12 +101,12 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 		return r < 0 ? 0 : (r < nlines ? r : nlines - 1);
 	}
 
-	
 	/** utility functions, return factories */
-	
+
 	public static IImageLineSetFactory<ImageLineInt> getFactoryInt() {
 		return new IImageLineSetFactory<ImageLineInt>() {
-			public IImageLineSet<ImageLineInt> create(ImageInfo iminfo,boolean singleCursor, int nlines, int noffset, int step) {
+			public IImageLineSet<ImageLineInt> create(ImageInfo iminfo, boolean singleCursor, int nlines, int noffset,
+					int step) {
 				return new ImageLineSetDefault<ImageLineInt>(iminfo, singleCursor, nlines, noffset, step) {
 					@Override
 					protected ImageLineInt createImageLine() {
@@ -119,7 +119,8 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 
 	public static IImageLineSetFactory<ImageLineByte> getFactoryByte() {
 		return new IImageLineSetFactory<ImageLineByte>() {
-			public IImageLineSet<ImageLineByte> create(ImageInfo iminfo,boolean singleCursor, int nlines, int noffset, int step) {
+			public IImageLineSet<ImageLineByte> create(ImageInfo iminfo, boolean singleCursor, int nlines, int noffset,
+					int step) {
 				return new ImageLineSetDefault<ImageLineByte>(iminfo, singleCursor, nlines, noffset, step) {
 					@Override
 					protected ImageLineByte createImageLine() {
