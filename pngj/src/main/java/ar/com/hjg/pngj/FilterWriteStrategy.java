@@ -13,7 +13,7 @@ import java.util.List;
 public class FilterWriteStrategy implements IFilterWriteStrategy {
 
 	final ImageInfo imgInfo;
-	public FilterType configuredType; // can be negative (fin dout)
+	private  FilterType configuredType; // can be negative (fin dout)
 	private FilterType computedType;
 	private int lastRowTested = -1000000;
 	// performance of each filter (less is better) (can be negative)
@@ -23,11 +23,12 @@ public class FilterWriteStrategy implements IFilterWriteStrategy {
 	private int discoverEachLines = -1;
 	private List<FilterType> toTest;
 
-	public FilterWriteStrategy(ImageInfo imgInfo, FilterType cType) {
+	public FilterWriteStrategy(ImageInfo imgInfo, FilterType ctype) {
 		this.imgInfo = imgInfo;
-		preference = imgInfo.indexed || imgInfo.packed ? new double[] { 1.2, 1.1, 1.1, 1.0, 1.1 } : new double[] { 1.1,
+		preference = imgInfo.indexed || imgInfo.packed ? new double[] { 1.2, 1.1, 1.1, 1.0, 1.1 } : new double[] { 1.3,
 				1.1, 1.1, 1.1, 1.2 };
 		toTest = new ArrayList<FilterType>(Arrays.asList(FilterType.getAllStandard()));
+		configuredType = ctype;
 		computedType = FilterType.FILTER_NONE;
 	}
 
@@ -41,6 +42,7 @@ public class FilterWriteStrategy implements IFilterWriteStrategy {
 		if (configuredType.val >= 0)
 			computedType = configuredType;
 		else {
+			computedType = FilterType.FILTER_PAETH; // set a nice default
 			if (configuredType == FilterType.FILTER_AGGRESSIVE)
 				discoverEachLines = 8;
 			if (configuredType == FilterType.FILTER_VERYAGGRESSIVE)
@@ -87,7 +89,7 @@ public class FilterWriteStrategy implements IFilterWriteStrategy {
 	public FilterType preferedType(int rown) {
 		if (configuredType == null || configuredType.val < 0) { // not fixed?
 			if (rown == 0)
-				computedType = FilterType.FILTER_SUB;
+				computedType = FilterType.FILTER_NONE;
 			else if (configuredType == FilterType.FILTER_CYCLIC)
 				computedType = FilterType.getByVal((computedType.val + 1) % 5);
 			else {

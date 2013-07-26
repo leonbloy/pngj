@@ -18,7 +18,7 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
- * Writes a PNG image
+ * Writes a PNG image, line by line.
  */
 public class PngWriter {
 
@@ -31,7 +31,7 @@ public class PngWriter {
 
 	private final ChunksListForWrite chunksList;
 
-	private final PngMetadata metadata; // high level wrapper over chunkList
+	private final PngMetadata metadata;
 
 	/**
 	 * Current chunk grounp, (0-6) already read or reading
@@ -46,8 +46,10 @@ public class PngWriter {
 	protected IFilterWriteStrategy filterStrat;
 
 	/**
-	 * If the ImageLine has a valid filterType, and the image is not interlaced,
-	 * that file type will be used
+	 * If the ImageLine has a valid filterType (and origin image is not
+	 * interlaced) that file type will be used.
+	 * <p>
+	 * Default: false
 	 */
 	protected boolean filterPreserve = false;
 
@@ -55,7 +57,8 @@ public class PngWriter {
 	 * zip compression level 0 - 9
 	 */
 	private int compLevel = 6;
-	private boolean shouldCloseStream = true; // true: closes stream after ending write
+
+	private boolean shouldCloseStream = true;
 
 	private PngIDatChunkOutputStream datStream;
 
@@ -70,19 +73,25 @@ public class PngWriter {
 
 	private final OutputStream os;
 
-	protected byte[] rowb = null; // element 0 is filter type!
-	protected byte[] rowbfilter = null; // current line with filter
+	private byte[] rowb = null; // element 0 is filter type!
+	private byte[] rowbfilter = null; // current line with filter
 
-	protected byte[] rowbprev = null; // rowb prev
+	private byte[] rowbprev = null; // rowb prev
 
 	private ChunkPredicate copyFromPredicate = null;
 	private ChunksList copyFromList = null;
 
 	/**
-	 * Same as PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite)
+	 * Opens a file for writing.
+	 * <p>
+	 * Sets shouldCloseStream=true. For more info see
+	 * {@link #PngWriter(OutputStream, ImageInfo)}
 	 * 
 	 * @param file
 	 * @param imgInfo
+	 * @param allowoverwrite
+	 *            If false and file exists, an {@link PngjOutputException} is
+	 *            thrown
 	 */
 	public PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite) {
 		this(PngHelperInternal.ostreamFromFile(file, allowoverwrite), imgInfo);
@@ -90,10 +99,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * Same as PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite)
-	 * 
-	 * @param file
-	 * @param imgInfo
+	 * @see #PngWriter(File, ImageInfo, boolean) (overwrite=true)
 	 */
 	public PngWriter(File file, ImageInfo imgInfo) {
 		this(file, imgInfo, true);
@@ -104,28 +110,27 @@ public class PngWriter {
 	 * nothing is writen yet. You still can set some parameters (compression,
 	 * filters) and queue chunks before start writing the pixels.
 	 * <p>
-	 * See also <code>FileHelper.createPngWriter()</code> if available.
 	 * 
 	 * @param outputStream
-	 *            Opened stream for binary writing
+	 *            Open stream for binary writing
 	 * @param imgInfo
 	 *            Basic image parameters
-	 * @param filenameOrDescription
-	 *            Optional, just for error/debug messages
 	 */
 	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
 		this.os = outputStream;
 		this.imgInfo = imgInfo;
 		// prealloc
-		rowb = new byte[imgInfo.bytesPerRow + 1];
-		rowbprev = new byte[rowb.length];
-		rowbfilter = new byte[rowb.length];
 		chunksList = new ChunksListForWrite(imgInfo);
 		metadata = new PngMetadata(chunksList);
 		filterStrat = new FilterWriteStrategy(imgInfo, FilterType.FILTER_DEFAULT); // can be changed
 	}
 
 	private void initIdat() { // this triggers the writing of first chunks
+		if (rowb == null || rowb.length < imgInfo.bytesPerRow + 1) {
+			rowb = new byte[imgInfo.bytesPerRow + 1];
+			rowbprev = new byte[rowb.length];
+			rowbfilter = new byte[rowb.length];
+		}
 		datStream = new PngIDatChunkOutputStream(this.os, idatMaxSize);
 		Deflater def = new Deflater(compLevel);
 		def.setStrategy(deflaterStrategy);
@@ -243,7 +248,7 @@ public class PngWriter {
 		}
 	}
 
-	protected void filterRowAverage() {
+	private void filterRowAverage() {
 		int i, j, imax;
 		imax = imgInfo.bytesPerRow;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
@@ -251,11 +256,11 @@ public class PngWriter {
 		}
 	}
 
-	protected void filterRowNone() {
+	private void filterRowNone() {
 		System.arraycopy(rowb, 1, rowbfilter, 1, imgInfo.bytesPerRow);
 	}
 
-	protected void filterRowPaeth() {
+	private void filterRowPaeth() {
 		int i, j, imax;
 		imax = imgInfo.bytesPerRow;
 		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= imax; i++, j++) {
@@ -264,7 +269,7 @@ public class PngWriter {
 		}
 	}
 
-	protected void filterRowSub() {
+	private void filterRowSub() {
 		int i, j;
 		for (i = 1; i <= imgInfo.bytesPixel; i++)
 			rowbfilter[i] = (byte) rowb[i];
@@ -273,23 +278,13 @@ public class PngWriter {
 		}
 	}
 
-	protected void filterRowUp() {
+	private void filterRowUp() {
 		for (int i = 1; i <= imgInfo.bytesPerRow; i++) {
 			rowbfilter[i] = (byte) (rowb[i] - rowbprev[i]);
 		}
 	}
 
-	protected int sumRowbfilter() { // sums absolute value
-		int s = 0;
-		for (int i = 1; i <= imgInfo.bytesPerRow; i++)
-			if (rowbfilter[i] < 0)
-				s -= (int) rowbfilter[i];
-			else
-				s += (int) rowbfilter[i];
-		return s;
-	}
-
-	protected void queueChunksFromOther() {
+	private void queueChunksFromOther() {
 		if (copyFromList == null || copyFromPredicate == null)
 			return;
 		boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
@@ -323,39 +318,50 @@ public class PngWriter {
 	}
 
 	/**
-	 * Sets an origin (typically from a PngReader) of Chunks to be copied. This
-	 * should be called only once, before starting writing the rows. It doesn't
-	 * matter the current state of the PngReader reading, this is a live object
-	 * and what matters is that when the writer writes the pixels (IDAT) the
-	 * reader has already read them, and that when the writer ends, the reader
-	 * is already ended (all this is very natural).
-	 * 
+	 * Sets an origin (typically from a {@link PngReader}) of Chunks to be
+	 * copied. This should be called only once, before starting writing the
+	 * rows. It doesn't matter the current state of the PngReader reading, this
+	 * is a live object and what matters is that when the writer writes the
+	 * pixels (IDAT) the reader has already read them, and that when the writer
+	 * ends, the reader is already ended (all this is very natural).
+	 * <p>
 	 * Apart from the copyMask, there is some addional heuristics:
-	 * 
+	 * <p>
 	 * - The chunks will be queued, but will be written as late as possible
 	 * (unless you explicitly set priority=true)
-	 * 
+	 * <p>
 	 * - The chunk will not be queued if an "equivalent" chunk was already
 	 * queued explicitly. And it will be overwriten another is queued
 	 * explicitly.
 	 * 
 	 * @param chunks
 	 * @param copyMask
+	 *            Some bitmask from {@link ChunkCopyBehaviour}
+	 * 
+	 * @see #copyChunksFrom(ChunksList, ChunkPredicate)
 	 */
 	public void copyChunksFrom(ChunksList chunks, int copyMask) {
 		copyChunksFrom(chunks, ChunkCopyBehaviour.getPredicate(copyMask, imgInfo));
 	}
 
+	/**
+	 * Copy all chunks from origin. See {@link #copyChunksFrom(ChunksList, int)}
+	 * for more info
+	 * 
+	 */
 	public void copyChunksFrom(ChunksList chunks) {
 		copyChunksFrom(chunks, ChunkCopyBehaviour.COPY_ALL);
 	}
 
 	/**
-	 * The chunk (ancillary or PLTE) will be copy if and only if predicate
-	 * matches
+	 * Copy chunks from origin depending on some {@link ChunkPredicate}
 	 * 
 	 * @param chunks
 	 * @param predicate
+	 *            The chunks (ancillary or PLTE) will be copied if and only if
+	 *            predicate matches
+	 * 
+	 * @see #copyChunksFrom(ChunksList, int) for more info
 	 */
 	public void copyChunksFrom(ChunksList chunks, ChunkPredicate predicate) {
 		if (copyFromList != null && chunks != null)
@@ -383,8 +389,8 @@ public class PngWriter {
 	}
 
 	/**
-	 * Finalizes the image creation and closes the stream. This MUST be called
-	 * after writing the lines.
+	 * Finalizes all the steps and closes the stream. This must be called after
+	 * writing the lines.
 	 */
 	public void end() {
 		if (rowNum != imgInfo.rows - 1)
@@ -401,8 +407,24 @@ public class PngWriter {
 		}
 	}
 
-	/** releases resources (stream) */
+	/**
+	 * Closes and releases resources
+	 * <p>
+	 * This is normally called internally from {@link #end()}, you should only
+	 * call this for aborting the writing and release resources (close the
+	 * stream).
+	 * <p>
+	 * Idempotent and secure - never throws exceptions
+	 */
 	public void close() {
+		try {
+			datStreamDeflated.close();
+		} catch (Exception e1) {
+		}
+		try {
+			datStream.close();
+		} catch (Exception e2) {
+		}
 		if (shouldCloseStream)
 			try {
 				os.close();
@@ -410,7 +432,7 @@ public class PngWriter {
 				PngHelperInternal.LOGGER.warning("Error closing writer " + e.toString());
 			}
 		datStreamDeflated = null;
-		datStream = null;
+		//datStream = null;
 	}
 
 	/**
@@ -421,7 +443,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * High level wrapper over chunksList for metadata handling
+	 * Retruns a high level wrapper over for metadata handling
 	 */
 	public PngMetadata getMetadata() {
 		return metadata;
@@ -456,17 +478,31 @@ public class PngWriter {
 	 *            (default) or AGGRESIVE
 	 */
 	public void setFilterType(FilterType filterType) {
-		filterStrat = new FilterWriteStrategy(imgInfo, filterType);
+		((FilterWriteStrategy)filterStrat).setConfiguredType(filterType);
+		if(filterType==FilterType.FILTER_NONE) {
+			setDeflaterStrategy(Deflater.DEFAULT_STRATEGY); // TODO this should be also done for FILTER_DEFAULT?
+		}
 	}
 
+	/**
+	 * Set an alternative strategy for selecting the prediction filter
+	 * 
+	 * @param filterS
+	 */
 	public void setFilterStrategy(IFilterWriteStrategy filterS) {
 		filterStrat = filterS;
 	}
 
+	/**
+	 * @see #filterPreserve
+	 */
 	public boolean isFilterPreserve() {
 		return filterPreserve;
 	}
 
+	/**
+	 * @see #filterPreserve
+	 */
 	public void setFilterPreserve(boolean filterPreserve) {
 		this.filterPreserve = filterPreserve;
 	}
@@ -484,7 +520,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * if true, input stream will be closed after ending write
+	 * If true, output stream will be closed after ending write
 	 * <p>
 	 * default=true
 	 */
@@ -496,7 +532,7 @@ public class PngWriter {
 	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY
 	 * Deflater.DEFAULT_STRATEGY
 	 * <p>
-	 * Default: Deflater.FILTERED . This should be changed very rarely.
+	 * Default: Deflater.FILTERED (for filter NONE usually DEFAULT_STRATEGY is a little better
 	 */
 	public void setDeflaterStrategy(int deflaterStrategy) {
 		this.deflaterStrategy = deflaterStrategy;
@@ -509,6 +545,13 @@ public class PngWriter {
 	public void writeRows(IImageLineSet<? extends IImageLine> imglines) {
 		for (int i = 0; i < imgInfo.rows; i++)
 			writeRow(imglines.getImageLine(i));
+	}
+
+	/**
+	 * Utility method, uses a ImageLineInt
+	 */
+	public void writeRowInt(int[] buf) {
+		writeRow(new ImageLineInt(imgInfo, buf));
 	}
 
 	public void writeRow(IImageLine imgline, int rownumber) {
@@ -524,10 +567,6 @@ public class PngWriter {
 		rowb[0] = (byte) FilterType.FILTER_UNKNOWN.val; // writeToPngRaw can overwrite this	
 		imgline.writeToPngRaw(rowb);
 		filterAndSend();
-	}
-
-	public void writeRowInt(int[] buf) {
-		writeRow(new ImageLineInt(imgInfo, buf));
 	}
 
 }

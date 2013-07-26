@@ -83,4 +83,11 @@ public enum FilterType {
 	public static FilterType[] getAllStandard() {
 		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
 	}
+	
+	/**
+	 * Returns all "standard" filters
+	 */
+	public static FilterType[] getAllStandardAndMainStrategies() {
+		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH ,FILTER_AGGRESSIVE,FILTER_VERYAGGRESSIVE};
+	}
 }
