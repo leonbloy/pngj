@@ -14,8 +14,10 @@ public class ShowFilterInfo {
 	}
 
 	public static void main(String[] args) throws Exception {
-		if(args.length<1) System.err.println("arg: PNG file"); 
-		else show(new File(args[0]));
+		if (args.length < 1)
+			System.err.println("arg: PNG file");
+		else
+			show(new File(args[0]));
 	}
 
 }

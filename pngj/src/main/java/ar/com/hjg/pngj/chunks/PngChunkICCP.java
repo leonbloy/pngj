@@ -1,7 +1,6 @@
 package ar.com.hjg.pngj.chunks;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /**
@@ -53,7 +52,7 @@ public class PngChunkICCP extends PngChunkSingle {
 		other.profileName = profileName;
 		other.compressedProfile = new byte[compressedProfile.length];
 		System.arraycopy(compressedProfile, 0, other.compressedProfile, 0, compressedProfile.length); // deep
-		return other;																												// copy
+		return other; // copy
 	}
 
 	/**
@@ -65,7 +64,7 @@ public class PngChunkICCP extends PngChunkSingle {
 	}
 
 	public void setProfileNameAndContent(String name, String profile) {
-		setProfileNameAndContent(name,  ChunkHelper.toBytes(profile));
+		setProfileNameAndContent(name, ChunkHelper.toBytes(profile));
 	}
 
 	public String getProfileName() {

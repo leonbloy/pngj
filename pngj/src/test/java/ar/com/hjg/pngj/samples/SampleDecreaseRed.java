@@ -3,8 +3,8 @@ package ar.com.hjg.pngj.samples;
 import java.io.File;
 
 import ar.com.hjg.pngj.IImageLine;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderInt;
 import ar.com.hjg.pngj.PngWriter;
@@ -39,7 +39,7 @@ public class SampleDecreaseRed {
 		pngr.end(); // it's recommended to end the reader first, in case there are trailing chunks to read
 		pngw.end();
 	}
-	
+
 	public static void convert2(String origFilename, String destFilename) {
 		PngReaderInt pngr = new PngReaderInt(new File(origFilename));
 		System.out.println(pngr.toString());
@@ -49,7 +49,7 @@ public class SampleDecreaseRed {
 		PngWriter pngw = new PngWriter(new File(destFilename), pngr.imgInfo, true);
 		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.getMetadata().setText(PngChunkTextVar.KEY_Description, "Decreased red and increased green");
-		while(pngr.hasMoreRows()) {
+		while (pngr.hasMoreRows()) {
 			ImageLineInt l1 = pngr.readRowInt();
 			int[] scanline = l1.getScanline(); // to save typing
 			for (int j = 0; j < pngr.imgInfo.cols; j++) {

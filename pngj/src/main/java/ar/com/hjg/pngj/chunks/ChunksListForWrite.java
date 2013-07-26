@@ -78,7 +78,7 @@ public class ChunksListForWrite extends ChunksList {
 			}
 		});
 	}
-	
+
 	/**
 	 * Remove Chunk: only from queued
 	 * 
@@ -87,7 +87,8 @@ public class ChunksListForWrite extends ChunksList {
 	 * check for reference equality!
 	 */
 	public boolean removeChunk(PngChunk c) {
-		if(c==null) return false;
+		if (c == null)
+			return false;
 		return queuedChunks.remove(c);
 	}
 

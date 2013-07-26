@@ -47,7 +47,6 @@ public class PngChunkHIST extends PngChunkSingle {
 		return c;
 	}
 
-	
 	@Override
 	public PngChunk cloneForWrite(ImageInfo imgInfo) {
 		PngChunkHIST other = new PngChunkHIST(imgInfo);

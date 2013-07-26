@@ -16,7 +16,6 @@ import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineSet;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineByte;
 import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.ImageLineInt;
@@ -134,7 +133,7 @@ public class PngSuiteFullTest {
 			boolean alpha = trns != null;
 			ImageInfo im2 = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, alpha);
 			pngw = new PngWriter(copy, im2, true);
-			pngw.copyChunksFrom(pngr.getChunksList(),ChunkCopyBehaviour.COPY_ALL_SAFE);
+			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 			int[] buf = null;
 			for (int row = 0; row < pngr.imgInfo.rows; row++) {
 				ImageLineInt line = (ImageLineInt) pngr.readRow();
@@ -278,15 +277,15 @@ public class PngSuiteFullTest {
 		File dir = TestSupport.getPngTestSuiteDir();
 		File outdir = TestSupport.getTempDir();
 		System.out.println("Lines starting with 'ok error' are expected errors, they are ok.");
-		if(clearTempFiles)
+		if (clearTempFiles)
 			System.out.print("Output files removed, to see them set clearTempFiles=false. ");
 		System.out.println("Output dir: " + outdir);
 		int err = testAllSuite(dir, outdir, imagesToCheck);
 		TestCase.assertEquals("The suite returner " + err + " unexpected errors", 0, err);
 		long t1 = System.currentTimeMillis();
-		
-		System.out.println("Time: " +(t1-t0) + " msecs. Java version: " +System.getProperty("java.version"));
-		
+
+		System.out.println("Time: " + (t1 - t0) + " msecs. Java version: " + System.getProperty("java.version"));
+
 	}
 
 	@Before

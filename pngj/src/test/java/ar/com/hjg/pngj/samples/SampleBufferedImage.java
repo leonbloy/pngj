@@ -16,9 +16,9 @@ import java.io.OutputStream;
 import javax.imageio.ImageIO;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineByte;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngjException;
@@ -107,65 +107,68 @@ public class SampleBufferedImage {
 		}
 		pngw.end();
 	}
-	
+
 	/**
 	 * 
-	 * @param bi BufferedImage of TYPE_INT_ARGB or TYPE_INT_RGB
+	 * @param bi
+	 *            BufferedImage of TYPE_INT_ARGB or TYPE_INT_RGB
 	 * @param os
 	 * @param useAlpha
 	 */
 	public static void writeARGB(BufferedImage bi, OutputStream os) {
-		if(bi.getType() != BufferedImage.TYPE_INT_ARGB) throw new PngjException("This method expects  BufferedImage.TYPE_INT_ARGB" );
+		if (bi.getType() != BufferedImage.TYPE_INT_ARGB)
+			throw new PngjException("This method expects  BufferedImage.TYPE_INT_ARGB");
 		ImageInfo imi = new ImageInfo(bi.getWidth(), bi.getHeight(), 8, true);
 		PngWriter pngw = new PngWriter(os, imi);
 		// pngw.setCompLevel(6); // tuning
 		// pngw.setFilterType(FilterType.FILTER_PAETH); // tuning
-		DataBufferInt db =((DataBufferInt) bi.getRaster().getDataBuffer());
-		if(db.getNumBanks()!=1) throw new PngjException("This method expects one bank");
-		SinglePixelPackedSampleModel samplemodel =  (SinglePixelPackedSampleModel) bi.getSampleModel();
+		DataBufferInt db = ((DataBufferInt) bi.getRaster().getDataBuffer());
+		if (db.getNumBanks() != 1)
+			throw new PngjException("This method expects one bank");
+		SinglePixelPackedSampleModel samplemodel = (SinglePixelPackedSampleModel) bi.getSampleModel();
 		ImageLineByte line = new ImageLineByte(imi);
 		int[] dbbuf = db.getData();
 		byte[] scanline = line.getScanline();
 		for (int row = 0; row < imi.rows; row++) {
-			int elem=samplemodel.getOffset(0,row);
-			for (int col = 0,j=0; col < imi.cols; col++) {
+			int elem = samplemodel.getOffset(0, row);
+			for (int col = 0, j = 0; col < imi.cols; col++) {
 				int sample = dbbuf[elem++];
-				scanline[j++] =  (byte) ((sample & 0xFF0000)>>16); // R
-				scanline[j++] =  (byte) ((sample & 0xFF00)>>8); // G
-				scanline[j++] =  (byte) (sample & 0xFF); // B
-				scanline[j++] =  (byte) (((sample & 0xFF000000)>>24)&0xFF); // A
+				scanline[j++] = (byte) ((sample & 0xFF0000) >> 16); // R
+				scanline[j++] = (byte) ((sample & 0xFF00) >> 8); // G
+				scanline[j++] = (byte) (sample & 0xFF); // B
+				scanline[j++] = (byte) (((sample & 0xFF000000) >> 24) & 0xFF); // A
 			}
 			pngw.writeRow(line, row);
 		}
 		pngw.end();
 	}
-	
-	
+
 	public static void writeTYPE_4BYTE_ABGR(BufferedImage bi, OutputStream os) {
-		if(bi.getType() != BufferedImage.TYPE_4BYTE_ABGR) throw new PngjException("This method expects  BufferedImage.TYPE_4BYTE_ABGR" );
+		if (bi.getType() != BufferedImage.TYPE_4BYTE_ABGR)
+			throw new PngjException("This method expects  BufferedImage.TYPE_4BYTE_ABGR");
 		ImageInfo imi = new ImageInfo(bi.getWidth(), bi.getHeight(), 8, true);
 		PngWriter pngw = new PngWriter(os, imi);
 		// pngw.setCompLevel(6); // tuning
 		// pngw.setFilterType(FilterType.FILTER_PAETH); // tuning
-		DataBufferByte db =((DataBufferByte) bi.getRaster().getDataBuffer());
-		ComponentSampleModel samplemodel =  (ComponentSampleModel) bi.getSampleModel();
+		DataBufferByte db = ((DataBufferByte) bi.getRaster().getDataBuffer());
+		ComponentSampleModel samplemodel = (ComponentSampleModel) bi.getSampleModel();
 		ImageLineByte line = new ImageLineByte(imi);
-		if(db.getNumBanks()!=1) throw new PngjException("This method expects one bank");
+		if (db.getNumBanks() != 1)
+			throw new PngjException("This method expects one bank");
 		byte[] dbbuf = db.getData();
 		byte[] scanline = line.getScanline();
 		for (int row = 0; row < imi.rows; row++) {
-			int elem=samplemodel.getOffset(0,row);
-			for (int col = 0,j=0; col < imi.cols; col++,elem+=7) {
-				scanline[j++] =  dbbuf[elem--];
-				scanline[j++] =  dbbuf[elem--];
-				scanline[j++] =  dbbuf[elem--];
-				scanline[j++] =  dbbuf[elem];
+			int elem = samplemodel.getOffset(0, row);
+			for (int col = 0, j = 0; col < imi.cols; col++, elem += 7) {
+				scanline[j++] = dbbuf[elem--];
+				scanline[j++] = dbbuf[elem--];
+				scanline[j++] = dbbuf[elem--];
+				scanline[j++] = dbbuf[elem];
 			}
 			pngw.writeRow(line, row);
 		}
 		pngw.end();
 	}
-	
 
 	static public String imageTypeName(int imtype) {
 		switch (imtype) {
@@ -201,41 +204,39 @@ public class SampleBufferedImage {
 		return "unknown image type #" + imtype;
 	}
 
-
-	public static BufferedImage readAsBiType(File file,int bufferedImageType) throws IOException {
+	public static BufferedImage readAsBiType(File file, int bufferedImageType) throws IOException {
 		BufferedImage bi = ImageIO.read(file);
 		BufferedImage bi2 = bi;
 		System.out.println("Type: " + imageTypeName(bi.getType()) + " -> " + imageTypeName(bufferedImageType));
-		if(bi.getType() != bufferedImageType) {
+		if (bi.getType() != bufferedImageType) {
 			bi2 = new BufferedImage(bi.getWidth(), bi.getHeight(), bufferedImageType);
 			Graphics2D g = bi2.createGraphics();
 			g.drawImage(bi, 0, 0, null);
 			g.dispose();
 		}
-		return bi2; 
+		return bi2;
 	}
 
 	public static void testTYPE_4BYTE_ABGR() throws IOException {
 		File dest = new File("C:/temp/big2.png");
 		OutputStream fos = new BufferedOutputStream(new FileOutputStream(dest));
 		BufferedImage bi = ImageIO.read(new File("C:/temp/big.png"));
-		long t0=System.currentTimeMillis();
-		writeTYPE_4BYTE_ABGR(bi,fos);
-		long t1=System.currentTimeMillis();
-		System.out.printf("Done %s (%d msecs)\n",dest.getAbsolutePath(),t1-t0);
+		long t0 = System.currentTimeMillis();
+		writeTYPE_4BYTE_ABGR(bi, fos);
+		long t1 = System.currentTimeMillis();
+		System.out.printf("Done %s (%d msecs)\n", dest.getAbsolutePath(), t1 - t0);
 	}
 
 	public static void testARGB() throws IOException {
 		File dest = new File("C:/temp/big2.png");
 		OutputStream fos = new BufferedOutputStream(new FileOutputStream(dest));
-		BufferedImage bi = readAsBiType(new File("C:/temp/big.png"),BufferedImage.TYPE_INT_ARGB);
-		long t0=System.currentTimeMillis();
-		writeARGB(bi,fos);
-		long t1=System.currentTimeMillis();
-		System.out.printf("Done %s (%d msecs)\n",dest.getAbsolutePath(),t1-t0);
+		BufferedImage bi = readAsBiType(new File("C:/temp/big.png"), BufferedImage.TYPE_INT_ARGB);
+		long t0 = System.currentTimeMillis();
+		writeARGB(bi, fos);
+		long t1 = System.currentTimeMillis();
+		System.out.printf("Done %s (%d msecs)\n", dest.getAbsolutePath(), t1 - t0);
 	}
 
-	
 	public static void main(String[] args) throws Exception {
 		testTYPE_4BYTE_ABGR();
 	}

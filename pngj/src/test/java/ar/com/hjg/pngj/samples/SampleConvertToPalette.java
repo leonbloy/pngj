@@ -32,7 +32,7 @@ public class SampleConvertToPalette {
 		cuant.setParReserveAlphaColor(useTransparency);
 		cuant.run();
 		pngr.end();
-		pngr =new PngReader(origFilename);
+		pngr = new PngReader(origFilename);
 		ImageInfo imiw = new ImageInfo(pngr.imgInfo.cols, pngr.imgInfo.rows, 8, false, false, true);
 		// second pass
 		PngWriter pngw = new PngWriter(destFilename, imiw, true);

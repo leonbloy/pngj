@@ -24,10 +24,10 @@ public class ImageLineBufferedImage implements IImageLine {
 	private boolean bgrOrder;
 	private byte[] bytes;
 
-	public ImageLineBufferedImage(ImageInfo imgInfo, BufferedImage bi,byte[] bytesdata) {
+	public ImageLineBufferedImage(ImageInfo imgInfo, BufferedImage bi, byte[] bytesdata) {
 		this.imgInfo = imgInfo;
 		this.image = bi;
-		this.bytes=bytesdata;
+		this.bytes = bytesdata;
 		//bytes = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
 		hasAlpha = image.getColorModel().hasAlpha();
 		if (hasAlpha) {

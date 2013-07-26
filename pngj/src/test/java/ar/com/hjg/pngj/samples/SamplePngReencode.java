@@ -16,8 +16,7 @@ public class SamplePngReencode {
 		PngReader pngr = new PngReader(new File(orig));
 		PngWriter pngw = new PngWriter(new File(dest), pngr.imgInfo, true);
 		System.out.println(pngr.toString());
-		System.out.printf("Creating Image %s  filter=%s compLevel=%d \n", dest, filterType.toString(),
-				cLevel);
+		System.out.printf("Creating Image %s  filter=%s compLevel=%d \n", dest, filterType.toString(), cLevel);
 		pngw.setFilterType(filterType);
 		pngw.setCompLevel(cLevel);
 		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);

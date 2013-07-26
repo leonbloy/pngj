@@ -37,5 +37,5 @@ public class PngChunkIDAT extends PngChunkMultiple {
 		PngChunkIDAT other = new PngChunkIDAT(imgInfo);
 		return other;
 	}
-	
+
 }

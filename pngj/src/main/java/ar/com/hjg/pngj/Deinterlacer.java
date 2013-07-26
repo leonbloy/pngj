@@ -1,6 +1,5 @@
 package ar.com.hjg.pngj;
 
-
 class Deinterlacer {
 	final ImageInfo imi;
 	private int pass; // 1-7

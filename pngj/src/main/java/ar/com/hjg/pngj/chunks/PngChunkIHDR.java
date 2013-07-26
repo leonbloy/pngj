@@ -17,7 +17,6 @@ import ar.com.hjg.pngj.PngjInputException;
 public class PngChunkIHDR extends PngChunkSingle {
 	public final static String ID = ChunkHelper.IHDR;
 
-	
 	private int cols;
 	private int rows;
 	private int bitspc;
@@ -156,7 +155,7 @@ public class PngChunkIHDR extends PngChunkSingle {
 			throw new PngjInputException("bad IHDR: col/row/compmethod/filmethod invalid");
 		if (bitspc != 1 && bitspc != 2 && bitspc != 4 && bitspc != 8 && bitspc != 16)
 			throw new PngjInputException("bad IHDR: bitdepth invalid");
-		if(interlaced <0 || interlaced>1)
+		if (interlaced < 0 || interlaced > 1)
 			throw new PngjInputException("bad IHDR: interlace invalid");
 		switch (colormodel) {
 		case 0:
@@ -175,5 +174,5 @@ public class PngChunkIHDR extends PngChunkSingle {
 			throw new PngjInputException("bad IHDR: invalid colormodel");
 		}
 	}
-	
+
 }

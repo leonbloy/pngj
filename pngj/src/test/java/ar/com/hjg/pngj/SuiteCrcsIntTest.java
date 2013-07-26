@@ -12,18 +12,17 @@ import org.junit.Test;
 import ar.com.hjg.pngj.test.PngjTest;
 import ar.com.hjg.pngj.test.TestSupport;
 
-
 /**
- * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines
- * (bytes 0 and 1), comparing with precomputed
+ * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and
+ * computes a CRC of all lines (bytes 0 and 1), comparing with precomputed
  */
-public class SuiteCrcsIntTest extends PngjTest  {
+public class SuiteCrcsIntTest extends PngjTest {
 	LinkedHashMap<String, Long> crcs;// these were computed with old PNJG
 
 	public SuiteCrcsIntTest() {
 		init();
 	}
-	
+
 	@Test
 	public void testcrcs() {
 		LinkedHashMap<String, Long> bad = new LinkedHashMap<String, Long>();
@@ -45,12 +44,12 @@ public class SuiteCrcsIntTest extends PngjTest  {
 				PngHelperInternal.LOGGER.severe("exception with " + file + ": " + e.getMessage());
 			}
 		}
-		TestCase.assertEquals("bad crcs:" + bad.toString(),0, errs);
+		TestCase.assertEquals("bad crcs:" + bad.toString(), 0, errs);
 
 	}
-	
+
 	protected long calcCrc(String file) {
-		File f = new File(TestSupport.getPngTestSuiteDir(),file);
+		File f = new File(TestSupport.getPngTestSuiteDir(), file);
 		PngReader png = new PngReader(f);
 		CRC32 crc = new CRC32();
 		for (int i = 0; i < png.imgInfo.rows; i++) {
@@ -237,13 +236,12 @@ public class SuiteCrcsIntTest extends PngjTest  {
 		init();
 	}
 
-
 	public static void main(String[] args) {
 		String filename = "basi0g01.png";
 		SuiteCrcsIntTest tc = new SuiteCrcsIntTest();
-		long res=tc.calcCrc(filename);
-		long crc0=tc.crcs.get(filename);
-		TestCase.assertEquals("bad crc for " + filename,res,crc0);
+		long res = tc.calcCrc(filename);
+		long crc0 = tc.crcs.get(filename);
+		TestCase.assertEquals("bad crc for " + filename, res, crc0);
 		System.out.println("ok");
 	}
 

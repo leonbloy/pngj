@@ -38,10 +38,8 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * Feeds bytes to the consumer
-	 * <br>
-	 * Returns bytes actually consumed
-	 * <br>
+	 * Feeds bytes to the consumer <br>
+	 * Returns bytes actually consumed <br>
 	 * This should return 0 only if the stream is EOF or the consumer is done
 	 */
 	public int feed(IBytesConsumer consumer) {
@@ -49,8 +47,7 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * Feeds (at most maxbytes) to the consumer
-	 * <br>
+	 * Feeds (at most maxbytes) to the consumer <br>
 	 * This should return 0 only if the stream is EOF or the consumer is done
 	 */
 	public int feed(IBytesConsumer consumer, int maxbytes) {

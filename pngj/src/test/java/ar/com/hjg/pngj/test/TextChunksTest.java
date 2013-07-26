@@ -68,7 +68,7 @@ public class TextChunksTest {
 			//System.out.println(c.id + " chunk. Key:" + key + " val='" + val + "'");
 			TestCase.assertEquals(texts.get(key), val);
 		}
-		TestCase.assertEquals("number of text chunks does not coincide",texts.keySet().size(), ok);
+		TestCase.assertEquals("number of text chunks does not coincide", texts.keySet().size(), ok);
 
 	}
 

@@ -22,7 +22,7 @@ public class ChunkFactory implements IChunkFactory {
 		if (c == null)
 			c = createEmptyChunkUnknown(chunkRaw.id, imgInfo);
 		c.setRaw(chunkRaw);
-		if(parse && chunkRaw.data!=null)
+		if (parse && chunkRaw.data != null)
 			c.parseFromRaw(chunkRaw);
 		return c;
 	}
@@ -68,17 +68,19 @@ public class ChunkFactory implements IChunkFactory {
 		return null;
 	}
 
-
 	protected final PngChunk createEmptyChunkUnknown(String id, ImageInfo imgInfo) {
 		return new PngChunkUNKNOWN(id, imgInfo);
 	}
 
 	/**
-	 * Factory for chunks that are not in the original PNG standard.
-	 * This can be overriden (but dont forget to call this also)
-	 * @param id  Chunk id , 4 letters
-	 * @param imgInfo Usually not needed
-	 * @return null if chunk id not recognized 
+	 * Factory for chunks that are not in the original PNG standard. This can be
+	 * overriden (but dont forget to call this also)
+	 * 
+	 * @param id
+	 *            Chunk id , 4 letters
+	 * @param imgInfo
+	 *            Usually not needed
+	 * @return null if chunk id not recognized
 	 */
 	protected PngChunk createEmptyChunkExtended(String id, ImageInfo imgInfo) {
 		if (id.equals(PngChunkOFFS.ID))
@@ -87,6 +89,5 @@ public class ChunkFactory implements IChunkFactory {
 			return new PngChunkSTER(imgInfo);
 		return null; // extend!
 	}
-
 
 }

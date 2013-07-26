@@ -185,7 +185,7 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads next row. 
+	 * Reads next row.
 	 * 
 	 * The caller must know that there are more rows to read.
 	 * 

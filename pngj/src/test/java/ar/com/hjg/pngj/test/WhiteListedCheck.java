@@ -13,10 +13,6 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
-import org.junit.Test;
-
-import ar.com.hjg.pngj.PngHelperInternal;
-
 /**
  * 
  * checks that the compiled classes are apt for sandboxed environment
@@ -30,8 +26,8 @@ public class WhiteListedCheck {
 
 	private static final String WHITELIST_FILENAME = "whitelistedclasses.txt";
 	private Set<String> whiteList;
-	private boolean VERBOSE=false;
-	
+	private boolean VERBOSE = false;
+
 	/* returns ERR TOTAL */
 	public int[] checkDir(File dir, boolean recurse) {
 		//System.out.println("checking " + dir);
@@ -45,14 +41,14 @@ public class WhiteListedCheck {
 			}
 		}
 		FindDependecies.printMap(classes);
-		int errors=classes.size() ;
-		if(VERBOSE) {
-		if (errors==0)
-			System.out.println(dir + ": OK! " + nclasses + " classes examined in " +dir);
-		else
-			System.out.println(dir + ": ERR! " + errors + "/" + nclasses + " classes with problems in " +dir);
+		int errors = classes.size();
+		if (VERBOSE) {
+			if (errors == 0)
+				System.out.println(dir + ": OK! " + nclasses + " classes examined in " + dir);
+			else
+				System.out.println(dir + ": ERR! " + errors + "/" + nclasses + " classes with problems in " + dir);
 		}
-		return new int[]{errors,nclasses};
+		return new int[] { errors, nclasses };
 	}
 
 	public boolean isWhiteListed(String name) {
@@ -69,7 +65,7 @@ public class WhiteListedCheck {
 			HashSet<String> set = new HashSet<String>();
 			while ((line = bf.readLine()) != null) {
 				line = line.trim();
-				if (line.length()==0 || line.startsWith("#"))
+				if (line.length() == 0 || line.startsWith("#"))
 					continue;
 				set.add(line);
 			}
@@ -87,20 +83,18 @@ public class WhiteListedCheck {
 		return false;
 	}
 
-
 	public void maintest() {
 		// this should include every directory except "nosandnbox" and "test"
 		int[] res = checkDir(new File("target/classes/ar/com/hjg/pngj"), false);
-		System.out.println("=== The above should only report class PngHelperInternal2 (that's ok)" );
-		TestCase.assertEquals("Only opne class with errors",1, res[0]);
-		TestCase.assertTrue("More than 10 classes",res[1]>10);
+		System.out.println("=== The above should only report class PngHelperInternal2 (that's ok)");
+		TestCase.assertEquals("Only opne class with errors", 1, res[0]);
+		TestCase.assertTrue("More than 10 classes", res[1] > 10);
 		res = checkDir(new File("target/classes/ar/com/hjg/pngj/chunks"), false);
-		TestCase.assertEquals("No class with errors",0, res[0]);
-		TestCase.assertTrue("More than 10 classes",res[1]>10);
+		TestCase.assertEquals("No class with errors", 0, res[0]);
+		TestCase.assertTrue("More than 10 classes", res[1] > 10);
 		// checker.checkDir(new File("bin/ar/com/hjg/pngj/test"), false); // This fails, it's ok
 	}
 
-	
 	public static void main(String[] args) {
 		new WhiteListedCheck().maintest();
 	}

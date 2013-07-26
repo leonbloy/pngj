@@ -57,7 +57,6 @@ public class ChunkHelper {
 			return new Deflater();
 		}
 	};
-	
 
 	/*
 	 * static auxiliary buffer. any method that uses this should synchronize against this 
@@ -93,7 +92,7 @@ public class ChunkHelper {
 		try {
 			return new String(x, offset, len, PngHelperInternal.charsetLatin1name);
 		} catch (UnsupportedEncodingException e) {
-			throw new PngBadCharsetException(e);		
+			throw new PngBadCharsetException(e);
 		}
 	}
 
@@ -115,7 +114,7 @@ public class ChunkHelper {
 		try {
 			return new String(x, PngHelperInternal.charsetUTF8name);
 		} catch (UnsupportedEncodingException e) {
-			throw new PngBadCharsetException(e);		
+			throw new PngBadCharsetException(e);
 		}
 	}
 
@@ -126,7 +125,7 @@ public class ChunkHelper {
 		try {
 			return new String(x, offset, len, PngHelperInternal.charsetUTF8name);
 		} catch (UnsupportedEncodingException e) {
-			throw new PngBadCharsetException(e);		
+			throw new PngBadCharsetException(e);
 		}
 	}
 
@@ -188,7 +187,7 @@ public class ChunkHelper {
 			return true;
 		case LOAD_CHUNK_IF_SAFE:
 			return isSafeToCopy(id);
-			case LOAD_CHUNK_NEVER:
+		case LOAD_CHUNK_NEVER:
 			return false;
 		}
 		return false; // should not reach here
@@ -225,8 +224,6 @@ public class ChunkHelper {
 		}
 	}
 
-
-
 	/**
 	 * Returns only the chunks that "match" the predicate
 	 * 
@@ -261,15 +258,16 @@ public class ChunkHelper {
 	}
 
 	/**
-	 * Adhoc criteria: two ancillary chunks are "equivalent" ("practically same type") if
-	 * they have same id and (perhaps, if multiple are allowed) if the match
-	 * also in some "internal key" (eg: key for string values, palette for sPLT,
-	 * etc)
+	 * Adhoc criteria: two ancillary chunks are "equivalent"
+	 * ("practically same type") if they have same id and (perhaps, if multiple
+	 * are allowed) if the match also in some "internal key" (eg: key for string
+	 * values, palette for sPLT, etc)
 	 * 
-	 * When we use this method, we implicitly assume that we don't allow/expect two "equivalent" chunks
-	 * in a single PNG 
+	 * When we use this method, we implicitly assume that we don't allow/expect
+	 * two "equivalent" chunks in a single PNG
 	 * 
-	 * Notice that the use of this is optional, and that the PNG standard actually allows text chunks that have same key
+	 * Notice that the use of this is optional, and that the PNG standard
+	 * actually allows text chunks that have same key
 	 * 
 	 * @return true if "equivalent"
 	 */
@@ -278,7 +276,8 @@ public class ChunkHelper {
 			return true;
 		if (c1 == null || c2 == null || !c1.id.equals(c2.id))
 			return false;
-		if(c1.crit) return false; 
+		if (c1.crit)
+			return false;
 		// same id
 		if (c1.getClass() != c2.getClass())
 			return false; // should not happen
@@ -318,7 +317,6 @@ public class ChunkHelper {
 		return deflater;
 	}
 
-	
 	public static PngChunk cloneForWrite(PngChunk chunk, ImageInfo imgInfo) {
 		PngChunk c = chunk.cloneForWrite(imgInfo);
 		c.setRaw(chunk.getRaw());

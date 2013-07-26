@@ -17,7 +17,8 @@ import java.util.Set;
 class FindDependecies {
 
 	public static List<File> getClassesFromDir(File dir, boolean recurse) {
-		if(! dir.isDirectory()) throw new RuntimeException("not a dir: "+dir);
+		if (!dir.isDirectory())
+			throw new RuntimeException("not a dir: " + dir);
 		File[] files = dir.listFiles();
 		List<File> f = new ArrayList<File>();
 		for (File file : files) {
@@ -97,7 +98,7 @@ class FindDependecies {
 		}
 		Set<String> allclasses = new HashSet<String>();
 		for (Integer index : classes) {
-			if(strings.get(index)== null) {
+			if (strings.get(index) == null) {
 				System.err.println("warning: not found " + file + " (clean and build!)" + index);
 				continue;
 			}

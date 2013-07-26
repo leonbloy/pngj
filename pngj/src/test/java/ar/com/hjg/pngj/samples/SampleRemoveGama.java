@@ -11,8 +11,8 @@ import ar.com.hjg.pngj.chunks.PngChunkGAMA;
 /**
  * Remove GAMA chunk, if present
  * 
- * These could be done more efficienty, by treating IDAT chunks as ancillary chunks
- * See ChunkSeqBasicTest for an example
+ * These could be done more efficienty, by treating IDAT chunks as ancillary
+ * chunks See ChunkSeqBasicTest for an example
  * 
  */
 public class SampleRemoveGama {
@@ -25,7 +25,7 @@ public class SampleRemoveGama {
 			public boolean match(PngChunk chunk) {
 				return chunk.id.equals(PngChunkGAMA.ID);
 			}
-		}); 
+		});
 		for (int row = 0; row < pngr.imgInfo.rows; row++) {
 			pngw.writeRow(pngr.readRow(row));
 		}

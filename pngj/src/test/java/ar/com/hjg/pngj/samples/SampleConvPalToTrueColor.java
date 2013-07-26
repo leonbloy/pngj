@@ -3,8 +3,8 @@ package ar.com.hjg.pngj.samples;
 import java.io.File;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;

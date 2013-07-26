@@ -98,11 +98,11 @@ public class NeuQuant {
 			}
 
 			public int[] getPixel(int row, int col) {
-					byte[] line = (((ImageLineByte)png.readRow(row)).getScanline());
-					int off = col * imi.channels;
-					return imi.alpha ? new int[] { line[off] & 0xFF, line[off + 1] & 0xFF, line[off + 2] & 0xFF,
-							line[off + 3] & 0xFF } : new int[] { line[off] & 0xFF, line[off + 1] & 0xFF,
-							line[off + 2] & 0xFF };
+				byte[] line = (((ImageLineByte) png.readRow(row)).getScanline());
+				int off = col * imi.channels;
+				return imi.alpha ? new int[] { line[off] & 0xFF, line[off + 1] & 0xFF, line[off + 2] & 0xFF,
+						line[off + 3] & 0xFF } : new int[] { line[off] & 0xFF, line[off + 1] & 0xFF,
+						line[off + 2] & 0xFF };
 			}
 		};
 	}

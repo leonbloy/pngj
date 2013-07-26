@@ -6,13 +6,13 @@ import java.util.List;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * This class is ultra dummy, skips all chunks contents.
- * Useful to read chunks structure
+ * This class is ultra dummy, skips all chunks contents. Useful to read chunks
+ * structure
  */
 public class ChunkSequenceSkip extends ChunkSeqReader {
 
-	private List<ChunkRaw> chunks=new ArrayList<ChunkRaw>();
-	
+	private List<ChunkRaw> chunks = new ArrayList<ChunkRaw>();
+
 	public ChunkSequenceSkip() {
 		super(true);
 	}
@@ -36,5 +36,5 @@ public class ChunkSequenceSkip extends ChunkSeqReader {
 	public List<ChunkRaw> getChunks() {
 		return chunks;
 	}
-	
+
 }

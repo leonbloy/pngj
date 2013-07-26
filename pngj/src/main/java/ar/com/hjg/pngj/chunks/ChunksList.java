@@ -30,17 +30,16 @@ public class ChunksList {
 	//protected HashMap<String, List<PngChunk>> chunksById = new HashMap<String, List<PngChunk>>(); // does not include IDAT
 
 	final ImageInfo imageInfo; // only required for writing
-	
-	boolean withPlte=false;
 
+	boolean withPlte = false;
 
 	public ChunksList(ImageInfo imfinfo) {
 		this.imageInfo = imfinfo;
 	}
 
 	/**
-	 *  WARNING: this does NOT return a copy, but the list itself. The called should not modify this directly!
-	 *  Don't use this to manipulate the chunks.
+	 * WARNING: this does NOT return a copy, but the list itself. The called
+	 * should not modify this directly! Don't use this to manipulate the chunks.
 	 */
 	public List<PngChunk> getChunks() {
 		return chunks;
@@ -165,7 +164,5 @@ public class ChunksList {
 		}
 		return sb.toString();
 	}
-
-	
 
 }

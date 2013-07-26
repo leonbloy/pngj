@@ -5,8 +5,8 @@ import java.io.FileOutputStream;
 import java.io.OutputStream;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 

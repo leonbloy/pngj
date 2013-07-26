@@ -16,7 +16,6 @@ import ar.com.hjg.pngj.test.TestSupport;
  */
 public class DeflatedChunkSetTest extends PngjTest {
 
-	
 	public static class ChunkSetReaderIdatRawCb extends ChunkSeqReader { // callback
 		final int rowsize;
 		private int nrows;
@@ -78,24 +77,24 @@ public class DeflatedChunkSetTest extends PngjTest {
 
 		public void readFrom(InputStream is) {
 			BufferedStreamFeeder bf = new BufferedStreamFeeder(is, TestSupport.randBufSize());
-			while (getCurReaderDeflatedSet()  == null) {
+			while (getCurReaderDeflatedSet() == null) {
 				if (bf.feed(this) < 1)
 					break;
 			}
 			for (rown = 0; rown < nrows; rown++) {
-				while (!isDone() && getCurReaderDeflatedSet() != null && ! getCurReaderDeflatedSet().isRowReady()) {
+				while (!isDone() && getCurReaderDeflatedSet() != null && !getCurReaderDeflatedSet().isRowReady()) {
 					if (bf.feed(this) < 1)
 						break;
 				}
 				if (getCurReaderDeflatedSet() == null)
 					break;
 				summary.append(
-						TestSupport.showRow(getCurReaderDeflatedSet().getInflatedRow(), getCurReaderDeflatedSet().getRowFilled(),
-								getCurReaderDeflatedSet().getRown())).append(" ");
-				getCurReaderDeflatedSet() .prepareForNextRow(rowsize);
+						TestSupport.showRow(getCurReaderDeflatedSet().getInflatedRow(), getCurReaderDeflatedSet()
+								.getRowFilled(), getCurReaderDeflatedSet().getRown())).append(" ");
+				getCurReaderDeflatedSet().prepareForNextRow(rowsize);
 			}
-			if(getCurReaderDeflatedSet() !=null)
-				getCurReaderDeflatedSet() .end();
+			if (getCurReaderDeflatedSet() != null)
+				getCurReaderDeflatedSet().end();
 
 			while (!isDone()) {
 				if (bf.feed(this) < 1)
@@ -128,8 +127,7 @@ public class DeflatedChunkSetTest extends PngjTest {
 		TestSupport.feedFromStreamTest(c, "test/testg2.png");
 		TestCase.assertEquals(181, c.getBytesCount());
 		TestCase.assertEquals(6, c.getChunkCount());
-		TestCase.assertEquals("r=0[  1|  0   1   1   3] r=1[112|136   8   1 255] r=2[239|238] ",
-				c.summary.toString());
+		TestCase.assertEquals("r=0[  1|  0   1   1   3] r=1[112|136   8   1 255] r=2[239|238] ", c.summary.toString());
 	}
 
 	@Test
@@ -156,34 +154,29 @@ public class DeflatedChunkSetTest extends PngjTest {
 		c.readFrom(TestSupport.istream(TestSupport.PNG_TEST_TESTG2));
 		TestCase.assertEquals(181, c.getBytesCount());
 		//System.out.println(c.summary);
-		TestCase.assertEquals(
-				"r=0[  1|  0   1   1   3] r=1[112|136   8   1 255] r=2[239|238] ",
-				c.summary.toString());
+		TestCase.assertEquals("r=0[  1|  0   1   1   3] r=1[112|136   8   1 255] r=2[239|238] ", c.summary.toString());
 	}
-	
-	@Test(expected=PngjInputException.class)
+
+	@Test(expected = PngjInputException.class)
 	public void read1PollBad() { // file has missing IDAT
 		ChunkSetReaderIdatRaw c = new ChunkSetReaderIdatRaw(81, 300); // "true" values
 		c.readFrom(TestSupport.istream(TestSupport.PNG_TEST_BAD_MISSINGIDAT));
 	}
-
 
 	@Before
 	public void setUp() {
 
 	}
 
-
-	
-/*
-	public static void main(String[] args) throws Exception{
-		byte[] data= new byte[]{0,42,43,0,44,41};
-		byte[] compressed = new byte[20];
-		Deflater def1 = new Deflater(Deflater.DEFAULT_COMPRESSION);
-		def1.setInput(data);
-		def1.finish();
-		int n = def1.deflate(compressed);
-		System.out.println(n);
-		System.out.println(Arrays.toString(compressed));
-	}*/
+	/*
+		public static void main(String[] args) throws Exception{
+			byte[] data= new byte[]{0,42,43,0,44,41};
+			byte[] compressed = new byte[20];
+			Deflater def1 = new Deflater(Deflater.DEFAULT_COMPRESSION);
+			def1.setInput(data);
+			def1.finish();
+			int n = def1.deflate(compressed);
+			System.out.println(n);
+			System.out.println(Arrays.toString(compressed));
+		}*/
 }

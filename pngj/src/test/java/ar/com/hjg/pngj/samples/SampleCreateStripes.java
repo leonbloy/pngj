@@ -3,8 +3,8 @@ package ar.com.hjg.pngj.samples;
 import java.io.File;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
 
@@ -34,8 +34,7 @@ public class SampleCreateStripes {
 	}
 
 	public static void createTest(String name, int cols, int rows) {
-		PngWriter i2 = new PngWriter(new File(name), new ImageInfo(cols, rows, 8, false, true, false),
-				true);
+		PngWriter i2 = new PngWriter(new File(name), new ImageInfo(cols, rows, 8, false, true, false), true);
 		makeTestImage(i2);
 		System.out.println("Done: " + name);
 	}

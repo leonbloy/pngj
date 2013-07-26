@@ -14,9 +14,9 @@ import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 
 public class SkipRowsTest extends PngjTest {
-	boolean verbose=false;
-	private int cols=1300,rows=1300;
-	
+	boolean verbose = false;
+	private int cols = 1300, rows = 1300;
+
 	/*
 	 * several ways of reading opnly metatada
 	 */
@@ -45,13 +45,13 @@ public class SkipRowsTest extends PngjTest {
 			t0 = System.currentTimeMillis() - t0;
 
 		}
-		String chunks1, chunks2,chunks3;
+		String chunks1, chunks2, chunks3;
 		// read last row : inefficient
 		System.out.print("testing " + this.getClass().getSimpleName() + " : ");
 		{
 			long t0 = System.currentTimeMillis();
 			PngReader pngr = new PngReader(file);
-			pngr.readRow(imi.rows-1);
+			pngr.readRow(imi.rows - 1);
 			pngr.end();
 			t0 = System.currentTimeMillis() - t0;
 			chunks1 = pngr.getChunksList().toStringFull();

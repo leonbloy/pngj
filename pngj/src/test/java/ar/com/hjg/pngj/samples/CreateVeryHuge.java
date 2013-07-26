@@ -8,8 +8,8 @@ import java.util.Random;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineHelper;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.test.TestSupport;
 
@@ -19,11 +19,10 @@ import ar.com.hjg.pngj.test.TestSupport;
  */
 public class CreateVeryHuge {
 
-	public static void createVeryHuge(String filename, final int cols, final int rows)  {
-		OutputStream os=null;
+	public static void createVeryHuge(String filename, final int cols, final int rows) {
+		OutputStream os = null;
 		try {
-			os = filename == null ? TestSupport.createNullOutputStream() : new FileOutputStream(new File(
-					filename));
+			os = filename == null ? TestSupport.createNullOutputStream() : new FileOutputStream(new File(filename));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
@@ -45,7 +44,7 @@ public class CreateVeryHuge {
 		System.out.println("Created: " + png.imgInfo.toString());
 		System.out.printf("%d msecs, %.1f msecs/MPixel \n", dt, dt * 1000000.0 / (cols * rows));
 	}
-	
+
 	public void testOnNullDevice() {
 		createVeryHuge(null, 30000, 30000);
 	}
@@ -53,9 +52,9 @@ public class CreateVeryHuge {
 	static void doitOnDisk() throws Exception {
 		String filename = "C:/temp/huge.png";
 		// createVeryHuge(filename,30000,30000); // WARNING: this creates an image of about 2.5 Gb !!!
-		SampleShowChunks.showChunks(new File(filename),true);
+		SampleShowChunks.showChunks(new File(filename), true);
 	}
-	
+
 	public static void main(String[] args) throws Exception {
 		doitOnDisk();
 	}

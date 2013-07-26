@@ -22,10 +22,10 @@ public class ImageLineARGBbi implements IImageLine {
 	private boolean bgrOrder;
 	private byte[] bytes;
 
-	public ImageLineARGBbi(ImageInfo imgInfo, BufferedImage bi,byte[] bytesdata) {
+	public ImageLineARGBbi(ImageInfo imgInfo, BufferedImage bi, byte[] bytesdata) {
 		this.imgInfo = imgInfo;
 		this.image = bi;
-		this.bytes=bytesdata;
+		this.bytes = bytesdata;
 		//bytes = ((DataBufferByte) bi.getRaster().getDataBuffer()).getData();
 		hasAlpha = image.getColorModel().hasAlpha();
 		if (hasAlpha) {

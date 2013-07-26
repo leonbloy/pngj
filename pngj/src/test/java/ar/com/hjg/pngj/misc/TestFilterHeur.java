@@ -17,7 +17,7 @@ public class TestFilterHeur {
 		long t0 = System.currentTimeMillis();
 		String suffix = filterType.toString().replace("FILTER_", "").toLowerCase() + "_" + String.valueOf(cLevel);
 		String dest = orig.replaceAll("\\.png$", "") + "_" + suffix + ".png";
-		PngReader pngr = new PngReader (new File(orig));
+		PngReader pngr = new PngReader(new File(orig));
 		PngWriter pngw = new PngWriter(new File(dest), pngr.imgInfo, true);
 		pngw.setFilterType(filterType);
 		pngw.setCompLevel(cLevel);
@@ -35,12 +35,11 @@ public class TestFilterHeur {
 		System.out.printf("%s\t%d\t%.2f\n", dest, (t1 - t0), sizerel);
 	}
 
-	
 	public static void main(String[] args) throws Exception {
 		if (args.length != 2) {
 			System.err.println("Arguments: [pngsrc] [compressionlevel]");
 			System.exit(1);
 		}
-		reencode(args[0], FilterType.FILTER_VERYAGGRESSIVE,Integer.parseInt(args[1]));
+		reencode(args[0], FilterType.FILTER_VERYAGGRESSIVE, Integer.parseInt(args[1]));
 	}
 }

@@ -39,8 +39,8 @@ public class ChunkSeqBasicTest extends PngjTest {
 				}
 
 				@Override
-				protected void startNewChunk(int len, String id,long offset) {
-					super.startNewChunk(len, id,offset);
+				protected void startNewChunk(int len, String id, long offset) {
+					super.startNewChunk(len, id, offset);
 					insertMyChunk(id); // insert the text chunk if appropiate
 				}
 			};
@@ -58,7 +58,7 @@ public class ChunkSeqBasicTest extends PngjTest {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 
 		private void insertMyChunk(String nextChukn) {
@@ -74,31 +74,30 @@ public class ChunkSeqBasicTest extends PngjTest {
 		}
 	}
 
-
-
 	@Test
 	public void addTextualBefore() {
 		TestSupport.getResourcesDir();
-		String dest="test/temp/stripeswt.png";
-		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES),	TestSupport.ostream(dest), true);
+		String dest = "test/temp/stripeswt.png";
+		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES), TestSupport.ostream(dest), true);
 		String s = ChunkSequenceSkipTest.getChunksSummary(dest);
 		//PngHelperInternal.LOGGER.info(s);
-		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[16] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ", s);
+		TestCase.assertEquals(
+				"IHDR[13] pHYs[9] tEXt[16] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ", s);
 	}
 
 	@Test
 	public void addTextualAfter() {
-		String dest="test/temp/stripeswb.png";
-		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES),	TestSupport.ostream(dest), false);
+		String dest = "test/temp/stripeswb.png";
+		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES), TestSupport.ostream(dest), false);
 		String s = ChunkSequenceSkipTest.getChunksSummary(dest);
 		//PngHelperInternal.LOGGER.info(s);
-		TestCase.assertEquals("IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] tEXt[16] IEND[0] ", s);
+		TestCase.assertEquals(
+				"IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] tEXt[16] IEND[0] ", s);
 	}
 
-    @Before
-    public void setUp() {
-     
-    }
+	@Before
+	public void setUp() {
 
+	}
 
 }

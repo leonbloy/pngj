@@ -9,7 +9,7 @@ import ar.com.hjg.pngj.test.TestSupport;
  * prints chunks list
  */
 public class SampleShowChunks {
-	
+
 	public static void showChunks(File file, boolean includeidat) {
 
 		PngReaderDummy png = new PngReaderDummy(file);
@@ -21,6 +21,6 @@ public class SampleShowChunks {
 	}
 
 	public static void main(String[] args) throws Exception {
-		showChunks(new File(TestSupport.getResourcesDir(),TestSupport.PNG_TEST_STRIPES), true);
+		showChunks(new File(TestSupport.getResourcesDir(), TestSupport.PNG_TEST_STRIPES), true);
 	}
 }

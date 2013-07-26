@@ -123,7 +123,7 @@ public class SampleCustomChunk {
 		pngr.getChunkseq().setChunkFactory(new MyCustomChunkFactory());
 		System.out.println("Reading : " + pngr.toString());
 		pngr.readSkippingAllRows();
-		pngr.end(); 
+		pngr.end();
 		// we know there can be at most one chunk of this type...
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
 		System.out.println(chunk);

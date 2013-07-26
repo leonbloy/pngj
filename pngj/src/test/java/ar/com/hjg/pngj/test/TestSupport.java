@@ -7,11 +7,11 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 import java.util.Random;
 
 import junit.framework.TestCase;
@@ -21,8 +21,8 @@ import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineArray;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.ImageLineByte;
+import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
@@ -42,6 +42,10 @@ public class TestSupport {
 
 	public static Random rand = new Random();
 
+	static {
+		Locale.setDefault(Locale.US);
+	}
+	
 	private static File resourcesDir = null;
 
 	public static final String PNG_TEST_STRIPES = "test/stripes.png";
@@ -50,8 +54,6 @@ public class TestSupport {
 
 	public static final String PNG_TEST_BAD_MISSINGIDAT = "test/bad_missingidat.png";
 
-	
-	
 	public static String showChunks(List<PngChunk> chunks) {
 		StringBuilder sb = new StringBuilder();
 		for (PngChunk chunk : chunks) {
@@ -283,6 +285,10 @@ public class TestSupport {
 		String x = orig.getPath();
 		x = x.replaceAll("\\.png$", "");
 		return new File(x + suffix + ".png");
+	}
+	
+	public static String addSuffixToName(String orig, String suffix) {
+		 return orig.replaceAll("\\.png$", "") + ".png";
 	}
 
 	public static class NullOutputStream extends OutputStream {

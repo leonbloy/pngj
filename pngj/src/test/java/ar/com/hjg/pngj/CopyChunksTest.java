@@ -80,7 +80,7 @@ public class CopyChunksTest extends PngjTest {
 			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
 			pngw.copyChunksFrom(pngr.getChunksList(), new ChunkPredicate() {
 				public boolean match(PngChunk chunk) {
-					return ! chunk.id.equals(PngChunkTIME.ID); // copy unles it's time
+					return !chunk.id.equals(PngChunkTIME.ID); // copy unles it's time
 				}
 			});
 			pngw.writeRows(pngr.readRows());
@@ -157,7 +157,7 @@ public class CopyChunksTest extends PngjTest {
 		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
 		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
 	}
-	
+
 	/**
 	 * same, but not at the end
 	 */
@@ -183,7 +183,5 @@ public class CopyChunksTest extends PngjTest {
 		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
 		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
 	}
-
-
 
 }

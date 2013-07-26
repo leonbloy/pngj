@@ -5,8 +5,9 @@ import java.util.zip.CRC32;
 import java.util.zip.Inflater;
 
 /**
- * Extends {@link DeflatedChunksSet}, adding the intelligence to unfilter rows, 
- * and to understand row lenghts in terms of ImageInfo and (eventually) Deinterlacer
+ * Extends {@link DeflatedChunksSet}, adding the intelligence to unfilter rows,
+ * and to understand row lenghts in terms of ImageInfo and (eventually)
+ * Deinterlacer
  */
 public class IdatSet extends DeflatedChunksSet {
 

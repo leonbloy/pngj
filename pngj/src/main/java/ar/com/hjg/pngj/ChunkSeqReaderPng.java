@@ -18,7 +18,8 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
  * Adds to ChunkSeqReader the storing of PngChunk , with the PngFactory, and
  * imageInfo + deinterlacer
  * 
- * Most usual PNG reading should use this class, or a PngReader,  which is a thin wrapper over this. 
+ * Most usual PNG reading should use this class, or a PngReader, which is a thin
+ * wrapper over this.
  */
 public class ChunkSeqReaderPng extends ChunkSeqReader {
 

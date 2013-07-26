@@ -4,7 +4,6 @@ import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
 /**
@@ -26,7 +25,7 @@ public class PngChunkITXT extends PngChunkTextVar {
 
 	@Override
 	public ChunkRaw createRawChunk() {
-		if (key==null || key.trim().length()==0)
+		if (key == null || key.trim().length() == 0)
 			throw new PngjException("Text chunk key must be non empty");
 		try {
 			ByteArrayOutputStream ba = new ByteArrayOutputStream();
