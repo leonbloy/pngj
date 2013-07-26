@@ -1,4 +1,4 @@
-package ar.com.hjg.png.imageline;
+package ar.com.hjg.pngj.imageline;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;
@@ -9,10 +9,12 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineByte;
 
 /*
- * INCOMPLETE IMPLEMENTATION
+ * Limits:
+ *   For reading, the following are supported:
+ *     - TRUECOLOR 8-4-2-1  
  * 
  */
-public class ImageLineARGBbi implements IImageLine {
+public class ImageLineBufferedImage implements IImageLine {
 
 	public final ImageInfo imgInfo;
 	private final BufferedImage image;
@@ -22,7 +24,7 @@ public class ImageLineARGBbi implements IImageLine {
 	private boolean bgrOrder;
 	private byte[] bytes;
 
-	public ImageLineARGBbi(ImageInfo imgInfo, BufferedImage bi, byte[] bytesdata) {
+	public ImageLineBufferedImage(ImageInfo imgInfo, BufferedImage bi, byte[] bytesdata) {
 		this.imgInfo = imgInfo;
 		this.image = bi;
 		this.bytes = bytesdata;

@@ -1,4 +1,4 @@
-package ar.com.hjg.png.imageline;
+package ar.com.hjg.pngj.imageline;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.DataBufferByte;

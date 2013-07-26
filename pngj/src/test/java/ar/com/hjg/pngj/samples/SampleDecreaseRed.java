@@ -22,8 +22,8 @@ public class SampleDecreaseRed {
 		PngReader pngr = new PngReader(new File(origFilename));
 		System.out.println(pngr.toString());
 		int channels = pngr.imgInfo.channels;
-		if (channels < 3)
-			throw new RuntimeException("This method is for RGB/RGBA images");
+		if (channels < 3 || pngr.imgInfo.bitDepth != 8)
+			throw new RuntimeException("This method is for RGB8/RGBA8 images");
 		PngWriter pngw = new PngWriter(new File(destFilename), pngr.imgInfo, true);
 		pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL_SAFE);
 		pngw.getMetadata().setText(PngChunkTextVar.KEY_Description, "Decreased red and increased green");

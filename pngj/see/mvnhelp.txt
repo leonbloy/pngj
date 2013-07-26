@@ -1,3 +1,0 @@
-javadoc:  
-  mvn javadoc:javadoc
-  mvn javadoc:jar

@@ -29,7 +29,7 @@ public class SampleCreateOrangeGradient {
 			ImageLineHelper.setPixelRGB8(iline, col, r, g, b); // orange-ish gradient
 		}
 		for (int row = 0; row < png.imgInfo.rows; row++) {
-			png.writeRow(iline, row);
+			png.writeRow(iline);
 		}
 		png.end();
 	}
