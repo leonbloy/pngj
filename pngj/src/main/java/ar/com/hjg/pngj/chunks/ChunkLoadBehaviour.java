@@ -11,7 +11,8 @@ public enum ChunkLoadBehaviour {
 	LOAD_CHUNK_NEVER,
 	/**
 	 * Ancillary chunks are loaded only if 'known' (registered with the
-	 * factory).
+	 * factory). 
+	 * @deprecated
 	 */
 	LOAD_CHUNK_KNOWN,
 	/**

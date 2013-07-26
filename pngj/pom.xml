@@ -7,6 +7,7 @@
   <description>Pure Java library for efficient PNG encoding</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+    <maven.docs.dest>site1</maven.docs.dest>
   </properties>
   <dependencies>
   	<dependency>
@@ -26,6 +27,14 @@
             <source>1.5</source>
             <target>1.5</target>
         </configuration>
+  		</plugin>
+  		<plugin>
+  		<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-javadoc-plugin</artifactId>
+  			<version>2.9.1</version>
+  			<configuration>
+	  		<reportOutputDirectory>site</reportOutputDirectory>
+  			</configuration>
   		</plugin>
   	</plugins>
   </build>
