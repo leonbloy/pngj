@@ -7,7 +7,7 @@
   <description>Pure Java library for efficient PNG encoding</description>
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-    <maven.docs.dest>site1</maven.docs.dest>
+    <maven.docs.dest>site</maven.docs.dest>
   </properties>
   <dependencies>
   	<dependency>
@@ -36,6 +36,15 @@
 	  		<reportOutputDirectory>site</reportOutputDirectory>
   			</configuration>
   		</plugin>
+  		<plugin>
+  		<groupId>org.apache.maven.plugins</groupId>
+  			<artifactId>maven-source-plugin</artifactId>
+  			<version>2.2.1</version>
+  			<configuration>
+	  		<reportOutputDirectory>site</reportOutputDirectory>
+  			</configuration>
+  		</plugin>
   	</plugins>
   </build>
+  <url>http://pngj.googlecode.com/</url>
 </project>

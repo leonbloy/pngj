@@ -1,15 +1,43 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-Version 2.0.0  (Jul 2013)  Lots of changes, some incompatible
-   
-    
+Version 2.0 (July 2013)
+   - Lots of improvements and changes, some backward incompatible, especially in PngReader:
+     -- Async/Non-blocking reader
+         - Allows to read an image via callbacks, asynchronously. 
+         - Also allows to use instantiate a InputStreamFilter so that PNGJ stays in the middle of a PNG reader from other
+         client. See an example in PngFilterStreamTest
+     -- PngReader was becoming a "God object", and it was difficult to extend or plugin functionality. Now we have a 
+      much more flexible and layered design. PngReader now is rather a high-lever wrapper over a ChunkSeqReaderPng 
+     -- The old ImageLine, which started as a wrapper over a int[] array, was difficult to extend. In particular, we wanted to
+      provide alternate storage or source/destination for the pixel data (eg: a BufferedImage or a Android Bitmap), and we
+      wanted to do that transparently and efficiently (no unnecessary data copies). We have that now.
+     -- The deinterlacer is now a more efficient and more elegantly coupled with alternate pixel storage.
+     -- The unpack of pixels (from packed formats) is now done always.   
+    - Changes in PngWriter
+       -- Instead of the two (clumsy) calls to copyFirstChunks/copyLastChunks, now we need to make a single call to copyChunksFrom()
+        This changes a little the semantics of how chunks are queued, for the better.
+       -- The filter strategy logic is a little better, both in perfomance and in extensibility (FilterWriteStrategy)
+         (Thanks Andrea Aime <andrea.aime@geo-solutions.it> for this and other suggestions) 
+    - The PngFileHelper static methods for creating PngReader/PngWriter were removed. The made little sense, really. 
+     We added straight new constructors now.
+  - Chunks.
+    -- Several performance improvements for ancilary chunks. Direct copy (without deserialization+serialization).
+    -- New Chunk Factory, more flexible and without reflection (Thanks marcin.mikosik@gmail.com for idea)
+     See CustomChunkTest for example.
+  - Migrated to Maven
+     - New project layout
+  - Fixed some Java 1.5 compatibility issues (thanks David Burnett <daviburn@gmail.com>)    
+  - Many new and better organized unit tests       
+  
+  
+  
+========================================================================================
 
-------------------------------------------------------------
 Version 1.1.5? (?)  
-    - PngReader.reuseBuffersFrom() - allows to reuse buffers (supports bigger-than-needed buffers) and Inflater
-    - ChunkHelper has internally ThreadLocal inflater and deflater to improve ztxt compression/decompression
-    - PngHelperInternal.skip() doesn't allocate buffer now
+------------------------------------------------------
+    - PngReader.reuseBuffersFrom() - supports bigger-than-needed buffers
+    - PngHelperInternal.skip() now doesn't allocate buffer now
     - Small efficiency improvement in FilterType.getByVal
     
 Version 1.1.2 (3 Dec 2012)   
