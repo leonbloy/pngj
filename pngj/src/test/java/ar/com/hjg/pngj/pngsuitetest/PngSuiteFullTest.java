@@ -74,7 +74,7 @@ public class PngSuiteFullTest {
 				IImageLineSet<? extends IImageLine> lines = pngr.readRows();
 				for (int row = 0; row < pngr.imgInfo.rows; row++) {
 					mirrorLine(lines.getImageLine(row), pngr.imgInfo);
-					pngw.writeRow(lines.getImageLine(row), row);
+					pngw.writeRow(lines.getImageLine(row));
 				}
 				pngr.end();
 				crc0 = PngHelperInternal.getCrctestVal(pngr);
@@ -98,7 +98,7 @@ public class PngSuiteFullTest {
 				for (int row = 0; row < pngr2.imgInfo.rows; row++) {
 					IImageLine line = pngr2.readRow();
 					mirrorLine(line, pngr2.imgInfo);
-					pngw.writeRow(line, row);
+					pngw.writeRow(line);
 				}
 				pngr2.end();
 				pngw.end();

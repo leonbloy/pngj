@@ -1,3 +1,8 @@
 javadoc:  
   mvn javadoc:javadoc
   mvn javadoc:jar
+
+jar:
+  mvn install
+  mvn source:test-jar
+  mvn source:jar
