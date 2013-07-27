@@ -1,8 +1,8 @@
 package ar.com.hjg.pngj;
 
 /**
- * A "image line" (or row) providing methods for reading and writing to PNG raw
- * image data. Notice that this is does not make any assumptions of an
+ * A "image line" (or row) providing methods for reading and writing from/to PNG raw
+ * "unfiltered" pixel data. Notice that this is does not make any assumptions of an
  * underlying storage. The user of this library will normally cast to a more
  * concrete implementation, as {@link ImageLineInt} or {@link ImageLineByte}
  * 

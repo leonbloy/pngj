@@ -538,20 +538,21 @@ public class PngWriter {
 		this.deflaterStrategy = deflaterStrategy;
 	}
 
+	/**
+	 * Writes next row, does not check row number.
+	 * @param imgline
+	 */
 	public void writeRow(IImageLine imgline) {
 		writeRow(imgline, rowNum + 1);
 	}
 
+	/**
+	 * Writes the full set of row. The ImageLineSet should contain (allow to acces)
+	 * imgInfo.rows
+	 */
 	public void writeRows(IImageLineSet<? extends IImageLine> imglines) {
 		for (int i = 0; i < imgInfo.rows; i++)
 			writeRow(imglines.getImageLine(i));
-	}
-
-	/**
-	 * Utility method, uses a ImageLineInt
-	 */
-	public void writeRowInt(int[] buf) {
-		writeRow(new ImageLineInt(imgInfo, buf));
 	}
 
 	public void writeRow(IImageLine imgline, int rownumber) {
@@ -568,5 +569,13 @@ public class PngWriter {
 		imgline.writeToPngRaw(rowb);
 		filterAndSend();
 	}
+
+	/**
+	 * Utility method, uses internaly a ImageLineInt
+	 */
+	public void writeRowInt(int[] buf) {
+		writeRow(new ImageLineInt(imgInfo, buf));
+	}
+
 
 }
