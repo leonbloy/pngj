@@ -32,7 +32,7 @@
 							<addDefaultImplementationEntries>true</addDefaultImplementationEntries>
 						</manifest>
 						<manifestEntries>
-							<Built-By>hjg.com.ar</Built-By>
+							<Built-By>hjg.com.ar@gmail.com</Built-By>
 						</manifestEntries>
 					</archive>
 				</configuration>
@@ -45,7 +45,7 @@
 					<verbose>true</verbose>
 					<fork>true</fork>
 					<!-- <executable>${JAVA_1_5_HOME}/bin/javac</executable> -->		
-					<executable>c:\Program Files (x86)\Java\jdk1.5.0_21\bin\javac.exe</executable>		 
+					<!-- <executable>c:\Program Files (x86)\Java\jdk1.5.0_21\bin\javac.exe</executable> -->		 
 					<source>1.5</source>
 					<target>1.5</target>
 				</configuration>
