@@ -1,9 +1,10 @@
 /* Javadoc style sheet */
 /*
+PNG customized
 Overall document style
 */
 body {
-    background-color:#ffffff;
+    background-color:#ffffee;
     color:#353833;
     font-family:Arial, Helvetica, sans-serif;
     font-size:76%;
@@ -209,8 +210,10 @@ Page header and footer styles
     margin:20px 0 5px 0;
 }
 .header ul li, .footer ul li {
-    list-style:none;
+ /* pngj */
+ /*   list-style:none;
     font-size:1.2em;
+    */
 }
 /*
 Heading styles
@@ -471,4 +474,11 @@ h1.hidden {
 }
 .strong {
     font-weight:bold;
+}
+
+/********** pngj */
+pre.code {
+background:#eee;padding:5px;
+border-top:1px dashed #333;border-bottom:1px dashed #333;
+margin:10px;
 }

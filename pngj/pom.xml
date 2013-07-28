@@ -34,6 +34,8 @@
   			<version>2.9.1</version>
   			<configuration>
 	  		<reportOutputDirectory>site</reportOutputDirectory>
+	  		<stylesheetfile>stylesheet.css</stylesheetfile>
+	  		<charset>UTF-8</charset>
   			</configuration>
   		</plugin>
   		<plugin>

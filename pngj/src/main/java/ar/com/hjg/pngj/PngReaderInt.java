@@ -4,13 +4,18 @@ import java.io.File;
 import java.io.InputStream;
 
 /**
- * This is esentially the same as PngReader, only that it provides some methods
- * that know the concrete ImageLine implementation
+ * Trivial extension of {@link PngReader} that uses {@link ImageLineInt}.
+ * <p>
+ * In the current implementation this is quite dummy/redundant, because (for
+ * backward compatibility) PngReader already uses a {@link ImageLineInt}.
+ * <p>
+ * The factory is set at construction time. Remember that this could still be
+ * changed at runtime.
  */
 public class PngReaderInt extends PngReader {
 
 	public PngReaderInt(File file) {
-		super(file);
+		super(file); // not necessary to set factory, PngReader already does that
 	}
 
 	public PngReaderInt(InputStream inputStream) {
@@ -22,9 +27,8 @@ public class PngReaderInt extends PngReader {
 	 * 
 	 * This only make sense for this concrete class
 	 * 
-	 * @return
 	 */
-	public final ImageLineInt readRowInt() {
+	public ImageLineInt readRowInt() {
 		IImageLine line = readRow();
 		if (line instanceof ImageLineInt)
 			return (ImageLineInt) line;
