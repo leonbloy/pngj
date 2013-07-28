@@ -1,15 +1,21 @@
 package ar.com.hjg.pngj;
 
 /**
- * Set of {@link IImageLine} elements. This is actually a "virtual" set, it can
- * be implemented in several ways; for example
- * 
+ * Set of {@link IImageLine} elements.
+ * <p>
+ * This is actually a "virtual" set, it can be implemented in several ways; for
+ * example
  * <ul>
- * <li>Cursor: stores only one line, which is implicitly moved when requested</li>
+ * <li>Cursor-like: stores only one line, which is implicitly moved when
+ * requested</li>
  * <li>All lines: all lines stored as an array of <tt>IImageLine</tt></li>
  * <li>
  * Subset of lines: eg, only first 3 lines, or odd numbered lines. Or a band of
  * neighbours lines that is moved like a cursor.</li>
+ * The ImageLine that PngReader returns is hosted by a IImageLineSet (this
+ * abstraction allows the implementation to deal with interlaced images cleanly)
+ * but the library user does not normally needs to know that (or rely on that),
+ * except for the {@link PngReader#readRows()} method.
  * </ul>
  */
 public interface IImageLineSet<T extends IImageLine> {

@@ -21,16 +21,20 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjException;
 
+/**
+ * Helper methods and constants related to Chunk processing.
+ * <p>
+ * This should only be of interest to developers doing special chunk processing
+ * or extending the ChunkFactory
+ */
 public class ChunkHelper {
+	ChunkHelper() {
+	}
+
 	public static final String IHDR = "IHDR";
 	public static final String PLTE = "PLTE";
 	public static final String IDAT = "IDAT";
 	public static final String IEND = "IEND";
-	public static final byte[] b_IHDR = toBytes(IHDR);
-	public static final byte[] b_PLTE = toBytes(PLTE);
-	public static final byte[] b_IDAT = toBytes(IDAT);
-	public static final byte[] b_IEND = toBytes(IEND);
-
 	public static final String cHRM = "cHRM";
 	public static final String gAMA = "gAMA";
 	public static final String iCCP = "iCCP";
@@ -45,6 +49,11 @@ public class ChunkHelper {
 	public static final String iTXt = "iTXt";
 	public static final String tEXt = "tEXt";
 	public static final String zTXt = "zTXt";
+
+	public static final byte[] b_IHDR = toBytes(IHDR);
+	public static final byte[] b_PLTE = toBytes(PLTE);
+	public static final byte[] b_IDAT = toBytes(IDAT);
+	public static final byte[] b_IEND = toBytes(IEND);
 
 	private static final ThreadLocal<Inflater> inflaterProvider = new ThreadLocal<Inflater>() {
 		protected Inflater initialValue() {
@@ -181,7 +190,6 @@ public class ChunkHelper {
 	public static boolean shouldLoad(String id, ChunkLoadBehaviour behav) {
 		if (isCritical(id))
 			return true;
-		//boolean kwown = PngChunk.isKnown(id);
 		switch (behav) {
 		case LOAD_CHUNK_ALWAYS:
 			return true;

@@ -190,7 +190,6 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 	 * Helper method, returns a default factory for this object
 	 * 
 	 * @param iminfo
-	 * @return
 	 */
 	public static IImageLineFactory<ImageLineInt> getFactory(ImageInfo iminfo) {
 		return new IImageLineFactory<ImageLineInt>() {

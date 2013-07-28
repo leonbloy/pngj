@@ -1,11 +1,15 @@
 package ar.com.hjg.pngj;
 
 /**
- * A "image line" (or row) providing methods for reading and writing from/to PNG raw
- * "unfiltered" pixel data. Notice that this is does not make any assumptions of an
- * underlying storage. The user of this library will normally cast to a more
- * concrete implementation, as {@link ImageLineInt} or {@link ImageLineByte}
- * 
+ * General format-translated image line.
+ * <p>
+ * The methods from this interface provides translation from/to PNG raw
+ * unfiltered pixel data, for each image line. This doesn't make any assumptions
+ * of underlying storage.
+ * <p>
+ * The user of this library will not normally use this methods, but instead will
+ * cast to a more concrete implementation, as {@link ImageLineInt} or
+ * {@link ImageLineByte} with its methods for accessing the pixel values.
  */
 public interface IImageLine {
 

@@ -13,7 +13,7 @@ import java.util.List;
 public class FilterWriteStrategy implements IFilterWriteStrategy {
 
 	final ImageInfo imgInfo;
-	private  FilterType configuredType; // can be negative (fin dout)
+	private FilterType configuredType; // can be negative (fin dout)
 	private FilterType computedType;
 	private int lastRowTested = -1000000;
 	// performance of each filter (less is better) (can be negative)

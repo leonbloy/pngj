@@ -199,17 +199,6 @@ public class CopyChunksTest extends PngjTest {
 			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
 			TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", clist1);
 		}
-		{// NO ANCILLARY CHUNK
-			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
-			pngr.setChunkLoadBehaviour(ChunkLoadBehaviour.LOAD_CHUNK_NEVER);
-			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
-			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
-			pngw.writeRows(pngr.readRows());
-			pngr.end();
-			pngw.end();
-			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
-			TestCase.assertEquals("IHDR[13] IEND[0] ", clist1);
-		}
 		{ // ONLY SAFE TO COPY
 			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
 			pngr.setChunkLoadBehaviour(ChunkLoadBehaviour.LOAD_CHUNK_IF_SAFE);
@@ -220,6 +209,17 @@ public class CopyChunksTest extends PngjTest {
 			pngw.end();
 			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
 			TestCase.assertEquals("IHDR[13] pHYs[9] iTXt[30] IEND[0] ", clist1);
+		}
+		{// NO ANCILLARY CHUNK
+			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
+			pngr.setChunkLoadBehaviour(ChunkLoadBehaviour.LOAD_CHUNK_NEVER);
+			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
+			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+			pngw.writeRows(pngr.readRows());
+			pngr.end();
+			pngw.end();
+			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
+			TestCase.assertEquals("IHDR[13] IEND[0] ", clist1);
 		}
 
 	}

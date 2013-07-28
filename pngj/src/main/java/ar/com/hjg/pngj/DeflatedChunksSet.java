@@ -5,18 +5,17 @@ import java.util.zip.Inflater;
 
 /**
  * A set of IDAT-like chunks which, concatenated, form a zlib stream.
- * 
+ * <p>
  * The inflated stream is intented to be read as a sequence of "rows", of which
- * the caller knows the length and number.
- * 
- * Eg: For IDAT non-interlaced images, a row has bytesPerRow + 1 filter byte
- * 
+ * the caller knows the lengths (not necessary equal) and number.
+ * <p>
+ * Eg: For IDAT non-interlaced images, a row has bytesPerRow + 1 filter byte<br>
  * For interlaced images, the lengths are variable.
- * 
- * Can work in sync (polled) mode or async (callback) mode
- * 
- * See DeflatedChunkSetTest for example of use. See IdatSet, which is mostly
- * used and has a slightly simpler use
+ * <p>
+ * This class can work in sync (polled) mode or async (callback) mode
+ * <p>
+ * See {@link IdatSet}, which is mostly used and has a slightly simpler use.<br>
+ * See <code>DeflatedChunkSetTest</code> for example of use.
  */
 public class DeflatedChunksSet {
 
@@ -28,8 +27,8 @@ public class DeflatedChunksSet {
 	/*
 	 * States
 	 * 
-	 * processBytes() is externally called, prohibited in  S_READY
-	 * (in DONE/DONE_ABORTED it's ignored)
+	 * processBytes() is externally called, prohibited in  READY
+	 * (in DONE it's ignored)
 	 * 
 	 * WARNING: inflater.finished() != DONE (not enough, not neccesary)
 	 *  DONE means that we have already uncompressed all the data of interest.
@@ -67,8 +66,13 @@ public class DeflatedChunksSet {
 	private DeflatedChunkReader curChunk;
 
 	private boolean callbackMode = true;
-	public final String chunkid;
 	private int nFedBytes = 0; // count the total compressed bytes that have been fed
+
+	/**
+	 * All IDAT-like chunks that form a same DeflatedChunksSet should have the
+	 * same id
+	 */
+	public final String chunkid;
 
 	/**
 	 * @param initialRowLen
@@ -133,7 +137,7 @@ public class DeflatedChunksSet {
 	/* 
 	 * This never inflates more than one row
 	 * (but it can recurse!) 
-	 **/
+	 */
 	private void inflateData() {
 		int ninflated = 0;
 		if (row == null || row.length < rowlen)
@@ -165,7 +169,9 @@ public class DeflatedChunksSet {
 		}
 	}
 
-	/** called automatically in all modes when a full row has been inflated */
+	/**
+	 * Called automatically in all modes when a full row has been inflated.
+	 */
 	protected void preProcessRow() {
 
 	}
@@ -173,22 +179,26 @@ public class DeflatedChunksSet {
 	/**
 	 * callback, must be implemented in callbackMode Must return byes of next
 	 * row, for next callback
-	 * */
+	 */
 	protected int processRowCallback() {
 		throw new PngjInputException("not implemented");
 	}
 
-	/* the effective length is getRowFilled() */
+	/**
+	 * Inflated buffer.
+	 * 
+	 * The effective length is given by {@link #getRowFilled()}
+	 */
 	public byte[] getInflatedRow() {
 		return row;
 	}
 
 	/**
 	 * Should be called after the previous row was processed
-	 * 
+	 * <p>
 	 * Pass 0 or negative to signal that we are done (not expecting more bytes)
-	 * 
-	 * This resets rowfilled
+	 * <p>
+	 * This resets {@link #rowfilled}
 	 */
 	protected void prepareForNextRow(int len) {
 		rowfilled = 0;
@@ -205,14 +215,29 @@ public class DeflatedChunksSet {
 		}
 	}
 
+	/**
+	 * In this state, the object is waiting for more input to deflate.
+	 * <p>
+	 * Only in this state it's legal to feed this
+	 */
 	public boolean isWaitingForMoreInput() {
 		return state == State.WAITING;
 	}
 
+	/**
+	 * In this state, the object is waiting the caller to retrieve inflated data
+	 * <p>
+	 * Effective length: see {@link #getRowFilled()}
+	 */
 	public boolean isRowReady() {
 		return state == State.READY;
 	}
 
+	/**
+	 * In this state, all relevant data has been uncompressed and retrieved.
+	 * <p>
+	 * We can still feed this object, but the bytes will be swallowed/ignored.
+	 */
 	public boolean isDone() {
 		return state.isFinished();
 	}
@@ -230,8 +255,8 @@ public class DeflatedChunksSet {
 	}
 
 	/**
-	 * This the the target size of the current row, should coincide (or be less
-	 * than) with row.length
+	 * Target size of the current row, including filter byte. <br>
+	 * should coincide (or be less than) with row.length
 	 */
 	public int getRowLen() {
 		return rowlen;
@@ -243,18 +268,32 @@ public class DeflatedChunksSet {
 	}
 
 	/**
-	 * This corresponds to the raw numeration of rows as seen by the deflater
+	 * Get current (last) row number.
+	 * <p>
+	 * This corresponds to the raw numeration of rows as seen by the deflater.
+	 * Not the same as the real image row, if interlaced.
 	 * 
-	 * @return
 	 */
 	public int getRown() {
 		return rown;
 	}
 
+	/**
+	 * Some IDAT-like set can allow other chunks in between (APGN?).
+	 * <p>
+	 * Normally false.
+	 * 
+	 * @param id
+	 *            Id of the other chunk that appeared in middel of this set.
+	 * @return true if allowed
+	 */
 	public boolean allowOtherChunksInBetween(String id) {
 		return false;
 	}
 
+	/**
+	 * Callback mode = async processing
+	 */
 	public boolean isCallbackMode() {
 		return callbackMode;
 	}
@@ -263,15 +302,16 @@ public class DeflatedChunksSet {
 		this.callbackMode = callbackMode;
 	}
 
+	/** total number of bytes that have been fed to this object */
+	public int getnFedBytes() {
+		return nFedBytes;
+	}
+
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("idatSet : " + curChunk.getChunkRaw().id + " state=" + state + " rows="
 				+ rown);
 		return sb.toString();
-	}
-
-	public int getnFedBytes() {
-		return nFedBytes;
 	}
 
 }

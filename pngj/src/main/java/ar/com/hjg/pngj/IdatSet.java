@@ -5,8 +5,10 @@ import java.util.zip.CRC32;
 import java.util.zip.Inflater;
 
 /**
- * Extends {@link DeflatedChunksSet}, adding the intelligence to unfilter rows,
- * and to understand row lenghts in terms of ImageInfo and (eventually)
+ * This object process the concatenation of IDAT chunks.
+ * <p>
+ * It extends {@link DeflatedChunksSet}, adding the intelligence to unfilter
+ * rows, and to understand row lenghts in terms of ImageInfo and (eventually)
  * Deinterlacer
  */
 public class IdatSet extends DeflatedChunksSet {
@@ -15,12 +17,30 @@ public class IdatSet extends DeflatedChunksSet {
 	protected byte rowUnfilteredPrev[];
 	protected final ImageInfo imgInfo;
 	protected final Deinterlacer deinterlacer;
+
 	final RowInfo rowinfo; // info for the last processed row
 
+	/**
+	 * @param id
+	 *            Chunk id (first chunk), should be shared by all concatenated
+	 *            chunks
+	 * @param iminfo
+	 *            Image info
+	 * @param deinterlacer
+	 *            Not null if interlaced
+	 */
 	public IdatSet(String id, ImageInfo iminfo, Deinterlacer deinterlacer) {
 		this(id, iminfo, deinterlacer, null, null);
 	}
 
+	/**
+	 * Special constructor with preallocated buffer.
+	 * <p>
+	 * <p>
+	 * Same as {@link #IdatSet(String, ImageInfo, Deinterlacer)}, but you can
+	 * pass a Inflater (will be reset internally), and a buffer (will be used
+	 * only if size is enough)
+	 */
 	public IdatSet(String id, ImageInfo iminfo, Deinterlacer deinterlacer, Inflater inf, byte[] buffer) {
 		super(id, deinterlacer != null ? deinterlacer.getBytesToRead() + 1 : iminfo.bytesPerRow + 1,
 				iminfo.bytesPerRow + 1, inf, buffer);
@@ -29,6 +49,10 @@ public class IdatSet extends DeflatedChunksSet {
 		this.rowinfo = new RowInfo(iminfo, deinterlacer);
 	}
 
+	/**
+	 * Applies PNG un-filter to inflated raw line. Result in
+	 * {@link #getUnfilteredRow()} {@link #getRowLen()}
+	 */
 	public void unfilterRow() {
 		unfilterRow(rowinfo.bytesRow);
 	}
@@ -112,6 +136,9 @@ public class IdatSet extends DeflatedChunksSet {
 		}
 	}
 
+	/**
+	 * does the unfiltering of the inflated row, and updates row info
+	 */
 	@Override
 	protected void preProcessRow() {
 		super.preProcessRow();
@@ -121,21 +148,34 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	/**
-	 * for async/callback mode - this is a dummy implementation that just skips
-	 * the idat
+	 * Method for async/callback mode .
+	 * <p>
+	 * In callback mode will be called as soon as each row is retrieved
+	 * (inflated and unfiltered), after {@link #preProcessRow()}
+	 * <p>
+	 * This is a dummy implementation that does nothing.
+	 * <p>
+	 * The return value is essential
+	 * <p>
+	 * 
+	 * @return Length of next row, in bytes (including filter byte),
+	 *         non-positive if done
 	 */
 	@Override
 	protected int processRowCallback() {
-		// to the processing here
 		int bytesNextRow = advanceToNextRow();
 		return bytesNextRow;
 	}
 
 	/**
-	 * 
-	 * returns nextRowLen . in polled mode, calls setNextRowLen()
-	 * 
+	 * Signals that we are done with the previous row, begin reading the next
+	 * one.
+	 * <p>
+	 * In polled mode, calls setNextRowLen()
+	 * <p>
 	 * Warning: after calling this, the unfilterRow is invalid!
+	 * 
+	 * @return Returns nextRowLen
 	 */
 	public int advanceToNextRow() {
 		//PngHelperInternal.LOGGER.info("advanceToNextRow");
@@ -157,9 +197,14 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	/**
-	 * See isRowReady
+	 * Unfiltered row.
+	 * <p>
+	 * This should be called only if {@link #isRowReady()} returns true.
+	 * <p>
+	 * To get real length, use {@link #getRowLen()}
+	 * <p>
 	 * 
-	 * @return
+	 * @return Unfiltered row, includes filter byte
 	 */
 	public byte[] getUnfilteredRow() {
 		return rowUnfiltered;

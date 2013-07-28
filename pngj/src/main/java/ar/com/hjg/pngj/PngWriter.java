@@ -341,7 +341,7 @@ public class PngWriter {
 	 * @see #copyChunksFrom(ChunksList, ChunkPredicate)
 	 */
 	public void copyChunksFrom(ChunksList chunks, int copyMask) {
-		copyChunksFrom(chunks, ChunkCopyBehaviour.getPredicate(copyMask, imgInfo));
+		copyChunksFrom(chunks, ChunkCopyBehaviour.createPredicate(copyMask, imgInfo));
 	}
 
 	/**
@@ -478,8 +478,8 @@ public class PngWriter {
 	 *            (default) or AGGRESIVE
 	 */
 	public void setFilterType(FilterType filterType) {
-		((FilterWriteStrategy)filterStrat).setConfiguredType(filterType);
-		if(filterType==FilterType.FILTER_NONE) {
+		((FilterWriteStrategy) filterStrat).setConfiguredType(filterType);
+		if (filterType == FilterType.FILTER_NONE) {
 			setDeflaterStrategy(Deflater.DEFAULT_STRATEGY); // TODO this should be also done for FILTER_DEFAULT?
 		}
 	}
@@ -532,7 +532,8 @@ public class PngWriter {
 	 * Deflater strategy: one of Deflater.FILTERED Deflater.HUFFMAN_ONLY
 	 * Deflater.DEFAULT_STRATEGY
 	 * <p>
-	 * Default: Deflater.FILTERED (for filter NONE usually DEFAULT_STRATEGY is a little better
+	 * Default: Deflater.FILTERED (for filter NONE usually DEFAULT_STRATEGY is a
+	 * little better
 	 */
 	public void setDeflaterStrategy(int deflaterStrategy) {
 		this.deflaterStrategy = deflaterStrategy;
@@ -540,6 +541,7 @@ public class PngWriter {
 
 	/**
 	 * Writes next row, does not check row number.
+	 * 
 	 * @param imgline
 	 */
 	public void writeRow(IImageLine imgline) {
@@ -547,8 +549,8 @@ public class PngWriter {
 	}
 
 	/**
-	 * Writes the full set of row. The ImageLineSet should contain (allow to acces)
-	 * imgInfo.rows
+	 * Writes the full set of row. The ImageLineSet should contain (allow to
+	 * acces) imgInfo.rows
 	 */
 	public void writeRows(IImageLineSet<? extends IImageLine> imglines) {
 		for (int i = 0; i < imgInfo.rows; i++)
@@ -576,6 +578,5 @@ public class PngWriter {
 	public void writeRowInt(int[] buf) {
 		writeRow(new ImageLineInt(imgInfo, buf));
 	}
-
 
 }

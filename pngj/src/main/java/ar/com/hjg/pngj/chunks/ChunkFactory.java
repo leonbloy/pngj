@@ -3,6 +3,12 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.IChunkFactory;
 import ar.com.hjg.pngj.ImageInfo;
 
+/**
+ * Default chunk factory.
+ * <p>
+ * The user that wants to parse custom chunks can extend
+ * {@link #createEmptyChunkExtended(String, ImageInfo)}
+ */
 public class ChunkFactory implements IChunkFactory {
 
 	boolean parse;
@@ -68,6 +74,11 @@ public class ChunkFactory implements IChunkFactory {
 		return null;
 	}
 
+	/**
+	 * This is used as last resort factory method.
+	 * <p>
+	 * It creates a {@link PngChunkUNKNOWN} chunk.
+	 */
 	protected final PngChunk createEmptyChunkUnknown(String id, ImageInfo imgInfo) {
 		return new PngChunkUNKNOWN(id, imgInfo);
 	}

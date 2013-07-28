@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj;
 
 /**
- * Exception thrown by reading process
+ * Exception thrown when reading a PNG.
  */
 public class PngjInputException extends PngjException {
 	private static final long serialVersionUID = 1L;

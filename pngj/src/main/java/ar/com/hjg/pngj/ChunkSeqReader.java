@@ -6,11 +6,10 @@ import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 
 /**
- * Consumes a stream of bytes that consist of a series of PNG-like chunks
- * (eventually prefixed by a PNG signature)
- * 
+ * Consumes a stream of bytes that consist of a series of PNG-like chunks.
+ * <p>
  * This has little intelligence, it's quite low-level and general (it could even
- * be used for a MNG stream, for example)
+ * be used for a MNG stream, for example). It supports signature recognition.
  */
 public class ChunkSeqReader implements IBytesConsumer {
 
@@ -70,7 +69,7 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * @return processed bytes, in the 1-len range. -1 if done. Only returns 0
 	 *         if len=0.
 	 **/
-	public int feed(byte[] buffer, int offset, int len) {
+	public int consume(byte[] buffer, int offset, int len) {
 		if (done)
 			return -1;
 		if (len == 0)
@@ -120,7 +119,7 @@ public class ChunkSeqReader implements IBytesConsumer {
 
 	/**
 	 * Trys to feeds exactly <tt>len</tt> bytes, calling
-	 * {@link #feed(byte[], int, int)} retrying if necessary.
+	 * {@link #consume(byte[], int, int)} retrying if necessary.
 	 * 
 	 * This should only be used in callback mode
 	 * 
@@ -128,7 +127,7 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 */
 	public boolean feedAll(byte[] buf, int off, int len) {
 		while (len > 0) {
-			int n = feed(buf, off, len);
+			int n = consume(buf, off, len);
 			if (n < 1)
 				return false;
 			len -= n;
@@ -224,7 +223,6 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * This implementation return false.
 	 * 
 	 * @param id
-	 * @return
 	 */
 	protected boolean isIdatKind(String id) {
 		return false; // override in ChunkSequencePng
@@ -236,7 +234,6 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * 
 	 * @param len
 	 * @param id
-	 * @return
 	 */
 	protected boolean shouldSkipContent(int len, String id) {
 		return false;
@@ -302,8 +299,6 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * The current deflated set (typically IDAT chunks) reader. This is not null
 	 * only while reading that set. Notice that there could be several idat sets
 	 * (eg for APNG)
-	 * 
-	 * @return
 	 */
 	public DeflatedChunksSet getCurReaderDeflatedSet() {
 		return curReaderDeflatedSet;

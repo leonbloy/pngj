@@ -15,12 +15,13 @@ import ar.com.hjg.pngj.chunks.PngChunk;
  * An example of use, to grab the Metadata and let the pixels go to a
  * BufferedImage:
  * 
- * <code>
- ChunkReaderFilter reader=new ChunkReaderFilter(new FileInputStream("image.png"));
- BufferedImage image1 = ImageIO.read(reader);
- reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it happens)
- System.out.println(reader.getChunksList());
- </code>
+ * 
+ * <pre class="code">
+ * ChunkReaderFilter reader = new ChunkReaderFilter(new FileInputStream(&quot;image.png&quot;));
+ * BufferedImage image1 = ImageIO.read(reader);
+ * reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it happens)
+ * System.out.println(reader.getChunksList());
+ * </pre>
  * 
  */
 public class ChunkReaderFilter extends FilterInputStream {

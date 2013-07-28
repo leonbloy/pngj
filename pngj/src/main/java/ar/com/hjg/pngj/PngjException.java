@@ -1,10 +1,7 @@
 package ar.com.hjg.pngj;
 
 /**
- * Generic exception
- * 
- * @author Hernan J Gonzalez
- * 
+ * Generic exception for this library. It's a RuntimeException (unchecked)
  */
 public class PngjException extends RuntimeException {
 	private static final long serialVersionUID = 1L;

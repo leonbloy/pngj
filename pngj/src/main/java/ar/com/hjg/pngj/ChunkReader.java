@@ -3,17 +3,18 @@ package ar.com.hjg.pngj;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * Parses a PNG chunk, consuming bytes in one of three modes
- * (BUFFER,HOT_PROCESS,SKIP).
- * 
- * It calls chunkDone() when done, and processData() if HOT_PROCESS Apart from
- * this, it's totally agnostic (it doesn't know about IDAT chunks, or PNG
+ * Parses a PNG chunk, consuming bytes in one mode:
+ * {@link ChunkReaderMode#BUFFER}, {@link ChunkReaderMode#PROCESS},
+ * {@link ChunkReaderMode#SKIP}.
+ * <p>
+ * It calls {@link #chunkDone()} when done. Also calls
+ * {@link #processData(byte[], int, int)} if <code>PROCESS</code> mode. Apart
+ * from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG
  * general structure)
- * 
- * It wraps a ChunkRaw instance (content filled only if BUFFER mode)
- * 
- * This object should be short lived (one instance created for each chunk, and
- * discarded after reading), but the wrapped chunkRaw can be long lived.
+ * <p>
+ * The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it
+ * should be short lived (one instance created for each chunk, and discarded
+ * after reading), but the wrapped chunkRaw can be (usually is) long lived.
  */
 public abstract class ChunkReader {
 

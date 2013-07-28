@@ -4,8 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * default implementation of ImageLineSetDefault, supports single cursor, full
- * rows, or partial
+ * Default implementation of {@link IImageLineSet}.
+ * <P>
+ * Supports all modes: single cursor, full rows, or partial
  */
 public abstract class ImageLineSetDefault<T extends IImageLine> implements IImageLineSet<T> {
 
@@ -45,10 +46,11 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 	protected abstract T createImageLine();
 
 	/**
-	 * warning: this is the row number in the original image
-	 * 
-	 * if this is a cursor, no check is done, always the same row is returned
-	 * 
+	 * Retrieves the image line
+	 * <p>
+	 * Warning: the argument is the row number in the original image
+	 * <p>
+	 * If this is a cursor, no check is done, always the same row is returned
 	 */
 	public T getImageLine(int n) {
 		currentRow = n;
@@ -58,21 +60,28 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 			return imageLines.get(imageRowToMatrixRowStrict(n));
 	}
 
+	/**
+	 * True if the set contains this image line
+	 * <p>
+	 * Warning: the argument is the row number in the original image
+	 * <p>
+	 * If this works as cursor, this returns true only if that is the number of
+	 * its "current" line
+	 */
 	public boolean hasImageLine(int n) {
 		return singleCursor ? currentRow == n : imageRowToMatrixRowStrict(n) >= 0;
 	}
 
 	/**
-	 * How many lines does this object contain
-	 * 
-	 * @return
+	 * How many lines does this object contain?
 	 */
 	public int size() {
 		return nlines;
 	}
 
 	/**
-	 * Same as imageRowToMatrixRow, but returns negative if invalid
+	 * Same as {@link #imageRowToMatrixRow(int)}, but returns negative if
+	 * invalid
 	 */
 	public int imageRowToMatrixRowStrict(int imrow) {
 		imrow -= offset;
@@ -85,24 +94,27 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 	 * 
 	 * @param mrow
 	 *            Matrix row number
-	 * @return Image row number. Invalid only if mrow is invalid
+	 * @return Image row number. Returns trash if mrow is invalid
 	 */
 	public int matrixRowToImageRow(int mrow) {
 		return mrow * step + offset;
 	}
 
 	/**
+	 * Converts from real image row to this object row number.
+	 * <p>
 	 * Warning: this always returns a valid matrix row (clamping on 0 : nrows-1,
-	 * and rounding down) Eg: rowOffset=4,rowStep=2 imageRowToMatrixRow(17)
-	 * returns 6 , imageRowToMatrixRow(1) returns 0
+	 * and rounding down)
+	 * <p>
+	 * Eg: rowOffset=4,rowStep=2 imageRowToMatrixRow(17) returns 6 ,
+	 * imageRowToMatrixRow(1) returns 0
 	 */
 	public int imageRowToMatrixRow(int imrow) {
 		int r = (imrow - offset) / step;
 		return r < 0 ? 0 : (r < nlines ? r : nlines - 1);
 	}
 
-	/** utility functions, return factories */
-
+	/** utility function, returns default factory for {@link ImageLineInt} */
 	public static IImageLineSetFactory<ImageLineInt> getFactoryInt() {
 		return new IImageLineSetFactory<ImageLineInt>() {
 			public IImageLineSet<ImageLineInt> create(ImageInfo iminfo, boolean singleCursor, int nlines, int noffset,
@@ -117,6 +129,7 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 		};
 	}
 
+	/** utility function, returns default factory for {@link ImageLineByte} */
 	public static IImageLineSetFactory<ImageLineByte> getFactoryByte() {
 		return new IImageLineSetFactory<ImageLineByte>() {
 			public IImageLineSet<ImageLineByte> create(ImageInfo iminfo, boolean singleCursor, int nlines, int noffset,

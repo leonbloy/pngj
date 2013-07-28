@@ -1,0 +1,35 @@
+<html>
+<body>
+<b>PNGJ: a pure Java library for PNG image encoding/decoding</b>
+<p>
+Main features:
+<ul>
+<li>Very efficient in memory usage and speed.
+<li>Pure Java (requires 5 or greater). 
+<li>Small and self contained. No dependencies on third party libraries, nor even on <tt>java.awt.*/javax.imageio.*</tt>
+<li>Runs on GAE (Google App Engine) and Android
+<li>Allows to read/write progressively, row by row. This means that
+you can process huge images without needing to load them fully in memory.
+<li>Reads all PNG color models (true color, gray, palette, all bit depths: 1-2-4-8-16,
+with-without alpha). Interlaced PNG is supported (though not welcomed).
+<li>Writes all PNG color models - interlaced PNG writing is <i>not</i> supported.
+<li>Full support for metadata (CHUNKS) handling.
+<li>Supports (since 2.0) asyncronous reading.
+<li>The format of the pixel data (read and write) is extensible (since 2.0) 
+and very  efficient (no double copies).
+<li>Supports (since 2.0) low level tweaking and extension in the reader.
+<li>Open source (Apache 2.0 licence)
+</ul>
+<p>
+Note that this is a relatively low-level library. 
+It does not provide any high-level image processing (eg, resizing,
+colour conversions), nor tries to abstract the concrete image format
+(as BufferedImage does, for example). In particular, the default format 
+of the scanlines (as wrapped in ImageLineInt or ImageLineByte) is not
+abstract, the meaning of the values depends on the image color model and bitdepth.
+
+
+
+<p>
+</body>
+</html>

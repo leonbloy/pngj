@@ -6,9 +6,9 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * outputs the stream for IDAT chunk , fragmented at fixed size (64k default).
+ * Outputs the stream for IDAT chunk , fragmented at fixed size (64k default).
  */
-public class PngIDatChunkOutputStream extends ProgressiveOutputStream {
+class PngIDatChunkOutputStream extends ProgressiveOutputStream {
 	private static final int SIZE_DEFAULT = 65556; // 64k rather arbitrary
 	private final OutputStream outputStream;
 

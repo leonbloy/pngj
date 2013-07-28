@@ -47,7 +47,7 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * Feeds (at most maxbytes) to the consumer <br>
+	 * Feeds the consumer (with at most maxbytes) <br>
 	 * This should return 0 only if the stream is EOF or the consumer is done
 	 */
 	public int feed(IBytesConsumer consumer, int maxbytes) {
@@ -57,7 +57,7 @@ public class BufferedStreamFeeder {
 		}
 		int tofeed = maxbytes > 0 && maxbytes < pendinglen ? maxbytes : pendinglen;
 		if (tofeed > 0) {
-			n = consumer.feed(buf, offset, tofeed);
+			n = consumer.consume(buf, offset, tofeed);
 			if (n > 0) {
 				offset += n;
 				pendinglen -= n;

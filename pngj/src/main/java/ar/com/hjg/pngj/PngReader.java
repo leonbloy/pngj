@@ -11,11 +11,10 @@ import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
- * Reads a PNG image (pixels and/or metadata) from a file or stream. 
+ * Reads a PNG image (pixels and/or metadata) from a file or stream.
  * <p>
- * Each row is
- * read as an {@link ImageLineInt} object (one int per sample), but this can be
- * changed by setting a different ImageLineFactory
+ * Each row is read as an {@link ImageLineInt} object (one int per sample), but
+ * this can be changed by setting a different ImageLineFactory
  * <p>
  * Internally, this wraps a {@link ChunkSeqReaderPng} with a
  * {@link BufferedStreamFeeder}
@@ -26,37 +25,39 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * 2. Afterwards you can set some additional global options. Eg.
  * {@link #setCrcCheckDisabled()}.<br>
  * 3. Optional: If you call getMetadata() or getChunksLisk() before start
- * reading the rows, all the chunks before IDAT are then loaded and
- * available <br>
- * 4a. The rows are read in order by calling {@link #readRow()}.
- * You can also call {@link #readRow(int)} to skip rows -but you can't go
- * backwards, at least not with this implementation.
- * This method returns a {@link IImageLine} object which can be casted to the
- * concrete class. This class returns by default a {@link ImageLineInt}, but
- * this can be changed.<br>
+ * reading the rows, all the chunks before IDAT are then loaded and available <br>
+ * 4a. The rows are read in order by calling {@link #readRow()}. You can also
+ * call {@link #readRow(int)} to skip rows -but you can't go backwards, at least
+ * not with this implementation. This method returns a {@link IImageLine} object
+ * which can be casted to the concrete class. This class returns by default a
+ * {@link ImageLineInt}, but this can be changed.<br>
  * 4b. Alternatively, you can read all rows, or a subset, in a single call:
  * {@link #readRows()}, {@link #readRows(int, int, int)} ,etc. In general this
  * consumes more memory, but for interlaced images this is equally efficient,
  * and more so if reading a small subset of rows.<br>
- * 5. Reading of the last row automatically loads the trailing chunks, and ends the
- * reader.<br>
- * 6. end() also loads the trailing chunks, if not done, and finishes cleanly the reading and closes the stream.
+ * 5. Reading of the last row automatically loads the trailing chunks, and ends
+ * the reader.<br>
+ * 6. end() also loads the trailing chunks, if not done, and finishes cleanly
+ * the reading and closes the stream.
  */
 public class PngReader {
 	// some performance/defensive limits
 	/**
-	 * Defensive limit: refuse to read more than 900MB, can be changed with {@link #setMaxTotalBytesRead(long)}
+	 * Defensive limit: refuse to read more than 900MB, can be changed with
+	 * {@link #setMaxTotalBytesRead(long)}
 	 */
-	public  static final long MAX_TOTAL_BYTES_READ_DEFAULT = 901001001L; // ~ 900MB
+	public static final long MAX_TOTAL_BYTES_READ_DEFAULT = 901001001L; // ~ 900MB
 	/**
-	 * Defensive limit: refuse to load more than 5MB of ancillary metadata, see {@link #setMaxBytesMetadata(long)}
-	 * and also {@link #addChunkToSkip(String)}
+	 * Defensive limit: refuse to load more than 5MB of ancillary metadata, see
+	 * {@link #setMaxBytesMetadata(long)} and also
+	 * {@link #addChunkToSkip(String)}
 	 */
 	public static final long MAX_BYTES_METADATA_DEFAULT = 5024024; // for ancillary chunks
 	/**
-	 * Skip ancillary chunks greater than 2MB, see {@link #setSkipChunkMaxSize(long)}
+	 * Skip ancillary chunks greater than 2MB, see
+	 * {@link #setSkipChunkMaxSize(long)}
 	 */
-	public  static final long MAX_CHUNK_SIZE_SKIP = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
+	public static final long MAX_CHUNK_SIZE_SKIP = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
 
 	/**
 	 * Basic image info - final and inmutable.
@@ -71,7 +72,7 @@ public class PngReader {
 	protected BufferedStreamFeeder streamFeeder;
 
 	protected final PngMetadata metadata; // this a wrapper over chunks
-	protected int rowNum=-1; // current row number (already read)
+	protected int rowNum = -1; // current row number (already read)
 
 	CRC32 idatCrc;//for internal testing
 
@@ -153,9 +154,12 @@ public class PngReader {
 	}
 
 	/**
-	 * Determines which ancillary chunks (metadata) are to be loaded and which skipped.
+	 * Determines which ancillary chunks (metadata) are to be loaded and which
+	 * skipped.
 	 * <p>
-	 * Additional restrictions may apply. {@see #setChunksToSkip(String...),#addChunkToSkip(String), #setMaxBytesMetadata(long), #setSkipChunkMaxSize(long)}
+	 * Additional restrictions may apply. See also
+	 * {@link #setChunksToSkip(String...)}, {@link #addChunkToSkip(String)},
+	 * {@link #setMaxBytesMetadata(long)}, {@link #setSkipChunkMaxSize(long)}
 	 * 
 	 * @param chunkLoadBehaviour
 	 *            {@link ChunkLoadBehaviour}
@@ -209,7 +213,6 @@ public class PngReader {
 
 	/**
 	 * True if last row has not yet been read
-	 * @return
 	 */
 	public boolean hasMoreRows() {
 		return rowNum < imgInfo.rows - 1;
@@ -262,11 +265,16 @@ public class PngReader {
 	}
 
 	/**
-	 * Reads a subset of rows. This method should called once, and not be mixed with {@link #readRow()} 
-	 * @param nRows how many rows to read (default: imageInfo.rows)
-	 * @param rowOffset rows to skip (default:0) 
-	 * @param rowStep step between rows to load( default:1)
-	 * @return
+	 * Reads a subset of rows.
+	 * <p>
+	 * This method should called once, and not be mixed with {@link #readRow()}
+	 * 
+	 * @param nRows
+	 *            how many rows to read (default: imageInfo.rows)
+	 * @param rowOffset
+	 *            rows to skip (default:0)
+	 * @param rowStep
+	 *            step between rows to load( default:1)
 	 */
 	public IImageLineSet<? extends IImageLine> readRows(int nRows, int rowOffset, int rowStep) {
 		if (chunkseq.firstChunksNotYetRead())
@@ -347,10 +355,10 @@ public class PngReader {
 
 	/**
 	 * Reads all the (remaining) file, skipping the pixels data. This is much
-	 * more efficient that calling {@link #readRow()}, specially for big files (about 10
-	 * times faster!), because it doesn't even decompress the IDAT stream and
-	 * disables CRC check Use this if you are not interested in reading
-	 * pixels,only metadata.
+	 * more efficient that calling {@link #readRow()}, specially for big files
+	 * (about 10 times faster!), because it doesn't even decompress the IDAT
+	 * stream and disables CRC check Use this if you are not interested in
+	 * reading pixels,only metadata.
 	 */
 	public void readSkippingAllRows() {
 		chunkseq.addChunkToSkip(PngChunkIDAT.ID);
@@ -483,6 +491,5 @@ public class PngReader {
 	public String toString() { // basic info
 		return imgInfo.toString() + " interlaced=" + interlaced;
 	}
-
 
 }
