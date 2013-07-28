@@ -201,6 +201,16 @@ public class TestSupport {
 		}
 	}
 
+	public static File absFile(File f) {
+			if (!f.isAbsolute()) f = new File(getResourcesDir(), f.getPath());
+			return f;
+	}
+	public static File absFile(String x) {
+		File f = new File(x);
+		if (!f.isAbsolute()) f = new File(getResourcesDir(), f.getPath());
+		return f;
+	}
+
 	/**
 	 * the location (if relative) is realtive to the resources dir
 	 * 

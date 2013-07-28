@@ -10,6 +10,7 @@ import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
+import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
@@ -182,6 +183,45 @@ public class CopyChunksTest extends PngjTest {
 		PngChunkTIME time = (PngChunkTIME) cdest.getById1("tIME");
 		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
 		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
+	}
+
+	@Test
+	public void testLoadBehaviour() {
+		File dest = new File(TestSupport.getTempDir(), this.getClass().getSimpleName() + ".png");
+		{ // ALL CHUNKS
+			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
+			pngr.setChunkLoadBehaviour(ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS);
+			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
+			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+			pngw.writeRows(pngr.readRows());
+			pngr.end();
+			pngw.end();
+			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
+			TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", clist1);
+		}
+		{// NO ANCILLARY CHUNK
+			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
+			pngr.setChunkLoadBehaviour(ChunkLoadBehaviour.LOAD_CHUNK_NEVER);
+			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
+			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+			pngw.writeRows(pngr.readRows());
+			pngr.end();
+			pngw.end();
+			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
+			TestCase.assertEquals("IHDR[13] IEND[0] ", clist1);
+		}
+		{ // ONLY SAFE TO COPY
+			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
+			pngr.setChunkLoadBehaviour(ChunkLoadBehaviour.LOAD_CHUNK_IF_SAFE);
+			PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
+			pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
+			pngw.writeRows(pngr.readRows());
+			pngr.end();
+			pngw.end();
+			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
+			TestCase.assertEquals("IHDR[13] pHYs[9] iTXt[30] IEND[0] ", clist1);
+		}
+
 	}
 
 }
