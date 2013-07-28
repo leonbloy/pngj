@@ -4,5 +4,6 @@ javadoc:
 
 jar:
   mvn install
+  mvn install -DskipTests
   mvn source:test-jar
   mvn source:jar
