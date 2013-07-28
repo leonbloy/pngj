@@ -1,8 +1,9 @@
 package ar.com.hjg.pngj.chunks;
 
 /**
- * Defines gral strategy about what to do with ancillary (non-critical) chunks
- * when reading
+ * What to do with ancillary (non-critical)
+ * chunks when reading.<p>
+ * 
  */
 public enum ChunkLoadBehaviour {
 	/**
@@ -10,14 +11,7 @@ public enum ChunkLoadBehaviour {
 	 */
 	LOAD_CHUNK_NEVER,
 	/**
-	 * Ancillary chunks are loaded only if 'known' (registered with the
-	 * factory). 
-	 * @deprecated
-	 */
-	LOAD_CHUNK_KNOWN,
-	/**
-	 * 
-	 * Load chunk if "known" or "safe to copy".
+	 * Load chunk if "safe to copy"
 	 */
 	LOAD_CHUNK_IF_SAFE,
 	/**

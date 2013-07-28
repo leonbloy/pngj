@@ -7,6 +7,7 @@ import java.util.Set;
 import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkFactory;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
+import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
@@ -15,11 +16,11 @@ import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
- * Adds to ChunkSeqReader the storing of PngChunk , with the PngFactory, and
- * imageInfo + deinterlacer
- * 
- * Most usual PNG reading should use this class, or a PngReader, which is a thin
- * wrapper over this.
+ * Adds to ChunkSeqReader the storing of PngChunk, with a PngFactory, and
+ * imageInfo + deinterlacer.
+ * <p>
+ * Most usual PNG reading should use this class, or a {@link PngReader}, which
+ * is a thin wrapper over this.
  */
 public class ChunkSeqReaderPng extends ChunkSeqReader {
 
@@ -43,6 +44,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	private long skipChunkMaxSize = 0;
 	private long maxBytesMetadata = 0;
 	private IChunkFactory chunkFactory;
+	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS;
 
 	public ChunkSeqReaderPng(boolean callbackMode) {
 		super();
@@ -85,16 +87,26 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	public boolean shouldSkipContent(int len, String id) {
 		if (super.shouldSkipContent(len, id))
 			return true;
+		if (ChunkHelper.isCritical(id))
+			return false;// critical chunks are never skipped
 		if (maxTotalBytesRead > 0 && len + getBytesCount() > maxTotalBytesRead)
 			throw new PngjInputException("Maximum total bytes to read exceeeded: " + maxTotalBytesRead + " offset:"
 					+ getBytesCount() + " len=" + len);
 		if (chunksToSkip.contains(id))
 			return true; // specific skip
-		if (!ChunkHelper.isCritical(id)) {
-			if (skipChunkMaxSize > 0 && len > skipChunkMaxSize)
-				return true; // too big chunk
-			if (maxBytesMetadata > 0 && len > maxBytesMetadata - bytesChunksLoaded)
-				return true; // too much ancillary chunks loaded
+		if (skipChunkMaxSize > 0 && len > skipChunkMaxSize)
+			return true; // too big chunk
+		if (maxBytesMetadata > 0 && len > maxBytesMetadata - bytesChunksLoaded)
+			return true; // too much ancillary chunks loaded
+		switch (chunkLoadBehaviour) {
+		case LOAD_CHUNK_IF_SAFE:
+			if (!ChunkHelper.isSafeToCopy(id))
+				return true;
+			break;
+		case LOAD_CHUNK_NEVER:
+			return true;
+		default:
+			break;
 		}
 		return false;
 	}
@@ -168,8 +180,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 	}
 
 	@Override
-	public int feed(byte[] buf, int off, int len) {
-		return super.feed(buf, off, len);
+	public int consume(byte[] buf, int off, int len) {
+		return super.consume(buf, off, len);
 	}
 
 	/**
@@ -262,6 +274,10 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 
 	public Set<String> getChunksToSkip() {
 		return chunksToSkip;
+	}
+
+	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
+		this.chunkLoadBehaviour = chunkLoadBehaviour;
 	}
 
 	/**

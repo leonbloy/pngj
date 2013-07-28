@@ -11,13 +11,15 @@ import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
 /**
- * Reads a PNG image (pixels and/or metadata) from a file or stream. Each row is
+ * Reads a PNG image (pixels and/or metadata) from a file or stream. 
+ * <p>
+ * Each row is
  * read as an {@link ImageLineInt} object (one int per sample), but this can be
  * changed by setting a different ImageLineFactory
- * 
+ * <p>
  * Internally, this wraps a {@link ChunkSeqReaderPng} with a
  * {@link BufferedStreamFeeder}
- * 
+ * <p>
  * The reading sequence is as follows: <br>
  * 1. At construction time, the header and IHDR chunk are read (basic image
  * info) <br>
@@ -68,7 +70,6 @@ public class PngReader {
 	protected ChunkSeqReaderPng chunkseq;
 	protected BufferedStreamFeeder streamFeeder;
 
-	private ChunkLoadBehaviour chunkLoadBehaviour = ChunkLoadBehaviour.LOAD_CHUNK_ALWAYS; // see setter/getter
 	protected final PngMetadata metadata; // this a wrapper over chunks
 	protected int rowNum=-1; // current row number (already read)
 
@@ -152,20 +153,15 @@ public class PngReader {
 	}
 
 	/**
-	 * @see #setChunkLoadBehaviour(ChunkLoadBehaviour)
-	 */
-	public ChunkLoadBehaviour getChunkLoadBehaviour() {
-		return chunkLoadBehaviour;
-	}
-
-	/**
-	 * Determines which ancillary chunks (metada) are to be loaded
+	 * Determines which ancillary chunks (metadata) are to be loaded and which skipped.
+	 * <p>
+	 * Additional restrictions may apply. {@see #setChunksToSkip(String...),#addChunkToSkip(String), #setMaxBytesMetadata(long), #setSkipChunkMaxSize(long)}
 	 * 
 	 * @param chunkLoadBehaviour
 	 *            {@link ChunkLoadBehaviour}
 	 */
 	public void setChunkLoadBehaviour(ChunkLoadBehaviour chunkLoadBehaviour) {
-		this.chunkLoadBehaviour = chunkLoadBehaviour;
+		this.chunkseq.setChunkLoadBehaviour(chunkLoadBehaviour);
 	}
 
 	/**
