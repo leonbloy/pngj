@@ -7,6 +7,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -27,14 +28,15 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
 /**
- * Methods of this class are designed for debug and testing, they are not
- * optimized
+ * Methods of this class are designed for debug and testing PNGJ library, they
+ * are not optimized
  */
 public class TestSupport {
 
@@ -45,7 +47,7 @@ public class TestSupport {
 	static {
 		Locale.setDefault(Locale.US);
 	}
-	
+
 	private static File resourcesDir = null;
 
 	public static final String PNG_TEST_STRIPES = "test/stripes.png";
@@ -202,12 +204,15 @@ public class TestSupport {
 	}
 
 	public static File absFile(File f) {
-			if (!f.isAbsolute()) f = new File(getResourcesDir(), f.getPath());
-			return f;
+		if (!f.isAbsolute())
+			f = new File(getResourcesDir(), f.getPath());
+		return f;
 	}
+
 	public static File absFile(String x) {
 		File f = new File(x);
-		if (!f.isAbsolute()) f = new File(getResourcesDir(), f.getPath());
+		if (!f.isAbsolute())
+			f = new File(getResourcesDir(), f.getPath());
 		return f;
 	}
 
@@ -227,18 +232,21 @@ public class TestSupport {
 		}
 	}
 
-	/** */
+	/** The resources dir for the tests should include  PNG_TEST_STRIPES (and testsuite1)
+	 * Typically target/tests-classes
+	 * */
 	public static File getResourcesDir() {
 		if (resourcesDir == null) {
-			String tokenfile = "pngj-tests-token-readme.txt";
+			String tokenfile = PNG_TEST_STRIPES;
+			URL u = TestSupport.class.getClassLoader().getResource(tokenfile);
+			if(u==null) throw new PngjException(PNG_TEST_STRIPES  + " not found in classpath, this is required in order to locate the resources dir for the PNGJ tests to run");
+			File f;
 			try {
-				URL u = TestSupport.class.getClassLoader().getResource(tokenfile);
-				File f = (new File(u.toURI())).getParentFile();
-				resourcesDir = f;
-			} catch (Exception e) {
-				e.printStackTrace();
-				return null;
+				f = (new File(u.toURI())).getParentFile().getParentFile();
+			} catch (URISyntaxException e) {
+				throw new PngjException(e);
 			}
+			resourcesDir = f;
 		}
 		return resourcesDir;
 	}
@@ -296,9 +304,9 @@ public class TestSupport {
 		x = x.replaceAll("\\.png$", "");
 		return new File(x + suffix + ".png");
 	}
-	
+
 	public static String addSuffixToName(String orig, String suffix) {
-		 return orig.replaceAll("\\.png$", "") + ".png";
+		return orig.replaceAll("\\.png$", "") + ".png";
 	}
 
 	public static class NullOutputStream extends OutputStream {

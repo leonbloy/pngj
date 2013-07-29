@@ -9,10 +9,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineByte;
 
 /*
- * Limits:
- *   For reading, the following are supported:
- *     - TRUECOLOR 8-4-2-1  
- * 
+ * INCOMPLETE
  */
 public class ImageLineBufferedImage implements IImageLine {
 

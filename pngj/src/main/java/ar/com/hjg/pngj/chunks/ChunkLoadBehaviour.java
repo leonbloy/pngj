@@ -15,6 +15,10 @@ public enum ChunkLoadBehaviour {
 	 */
 	LOAD_CHUNK_IF_SAFE,
 	/**
+	 * Load only most important chunk: TRNS
+	 */
+	LOAD_CHUNK_MOST_IMPORTANT,
+	/**
 	 * Load all chunks. <br>
 	 * Notice that other restrictions might apply, see
 	 * PngReader.skipChunkMaxSize PngReader.skipChunkIds

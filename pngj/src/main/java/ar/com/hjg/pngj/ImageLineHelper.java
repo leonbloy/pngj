@@ -32,6 +32,11 @@ public class ImageLineHelper {
 		DEPTH_UNPACK = new int[][] { null, DEPTH_UNPACK_1, DEPTH_UNPACK_2, null, DEPTH_UNPACK_4 };
 	}
 
+	/**
+	 * When the bitdepth is less than 8, the imageLine is usually
+	 * returned/expected unscaled. This method upscales it in place. Eg, if
+	 * bitdepth=1, values 0-1 will be converted to 0-255
+	 */
 	public static void scaleUp(IImageLineArray line) {
 		if (line.getImageInfo().indexed || line.getImageInfo().bitDepth >= 8)
 			return;
@@ -50,6 +55,9 @@ public class ImageLineHelper {
 			throw new PngjException("not implemented");
 	}
 
+	/**
+	 * Reverse of {@link #scaleUp(IImageLineArray)}
+	 */
 	public static void scaleDown(IImageLineArray line) {
 		if (line.getImageInfo().indexed || line.getImageInfo().bitDepth >= 8)
 			return;
@@ -66,6 +74,14 @@ public class ImageLineHelper {
 			}
 		} else
 			throw new PngjException("not implemented");
+	}
+
+	public static byte scaleUp(int bitdepth, byte v) {
+		return bitdepth < 8 ? (byte) DEPTH_UNPACK[bitdepth][v] : v;
+	}
+
+	public static byte scaleDown(int bitdepth, byte v) {
+		return bitdepth < 8 ? (byte) (v >> (8 - bitdepth)) : v;
 	}
 
 	/**
@@ -88,13 +104,11 @@ public class ImageLineHelper {
 	}
 
 	/**
-	 * warning: this only works with byte format, and alters ImageLine!
+	 * Warning: the line should be upscaled, see {@link #scaleUp(IImageLineArray)}
 	 */
 	static int[] lineToARGB32(ImageLineByte line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
 		boolean alphachannel = line.imgInfo.alpha;
 		int cols = line.getImageInfo().cols;
-		if (line.getImageInfo().packed)
-			scaleUp(line);
 		if (buf == null || buf.length < cols)
 			buf = new int[cols];
 		int index, rgb, alpha, ga, g;
@@ -106,7 +120,7 @@ public class ImageLineHelper {
 				alpha = index < nindexesWithAlpha ? trns.getPalletteAlpha()[index] : 255;
 				buf[c] = (alpha << 24) | rgb;
 			}
-		} else if (line.imgInfo.greyscale) { //
+		} else if (line.imgInfo.greyscale) { // gray
 			ga = trns != null ? trns.getGray() : -1;
 			for (int c = 0, c2 = 0; c < cols; c++) {
 				g = (line.scanline[c2++] & 0xFF);
@@ -126,14 +140,11 @@ public class ImageLineHelper {
 	}
 
 	/**
-	 * warning: this only works with byte format, and alters ImageLine! For
-	 * packed formats, the line should be unpacked,
+	 * Warning: the line should be upscaled, see {@link #scaleUp(IImageLineArray)}
 	 */
 	static byte[] lineToRGBA8888(ImageLineByte line, PngChunkPLTE pal, PngChunkTRNS trns, byte[] buf) {
 		boolean alphachannel = line.imgInfo.alpha;
 		int cols = line.imgInfo.cols;
-		if (line.imgInfo.packed)
-			scaleUp(line);
 		int bytes = cols * 4;
 		if (buf == null || buf.length < bytes)
 			buf = new byte[bytes];
