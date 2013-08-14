@@ -40,13 +40,6 @@ public class PngChunkGAMA extends PngChunkSingle {
 		gamma = ((double) g) / 100000.0;
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkGAMA other = new PngChunkGAMA(imgInfo);
-		other.gamma = gamma;
-		return other;
-	}
-
 	public double getGamma() {
 		return gamma;
 	}

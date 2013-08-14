@@ -1,7 +1,17 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-Version 2.0 (July 2013)
+Version 2.0.2 (not yet released)
+  - Removed PngChunk.cloneForWrite(), not more necesary
+
+Version 2.0.1 (9/Aug/2013)
+----------------------------------------------------------------------
+  - Internal directory layout change (pom.xml on root)
+  - Uploaded to Maven central repository via OSS Sonatype 
+   https://oss.sonatype.org/content/repositories/releases/ar/com/hjg/pngj/
+
+Version 2.0.0 (July 2013)
+----------------------------------------------------------------------
 Lots of improvements and changes,  some backward incompatible. 
  - PngReader was heavily rewritten.
   --  New architecture: PngReader was a "God object" antipattern, it was 

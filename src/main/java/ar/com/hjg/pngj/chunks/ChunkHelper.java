@@ -324,11 +324,4 @@ public class ChunkHelper {
 		deflater.reset();
 		return deflater;
 	}
-
-	public static PngChunk cloneForWrite(PngChunk chunk, ImageInfo imgInfo) {
-		PngChunk c = chunk.cloneForWrite(imgInfo);
-		c.setRaw(chunk.getRaw());
-		return c;
-	}
-
 }

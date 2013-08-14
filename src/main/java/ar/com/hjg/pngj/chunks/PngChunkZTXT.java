@@ -58,11 +58,4 @@ public class PngChunkZTXT extends PngChunkTextVar {
 		val = ChunkHelper.toString(uncomp);
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkZTXT other = new PngChunkZTXT(imgInfo);
-		other.key = key;
-		other.val = val;
-		return other;
-	}
 }

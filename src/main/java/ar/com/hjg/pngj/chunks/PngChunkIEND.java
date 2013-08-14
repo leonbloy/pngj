@@ -32,9 +32,4 @@ public class PngChunkIEND extends PngChunkSingle {
 		// this is not used
 	}
 
-	@Override
-	public PngChunkIEND cloneForWrite(ImageInfo imgInfo) {
-		PngChunkIEND other = new PngChunkIEND(imgInfo);
-		return other;
-	}
 }

@@ -70,17 +70,6 @@ public class PngChunkSBIT extends PngChunkSingle {
 		return c;
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkSBIT other = new PngChunkSBIT(imgInfo);
-		other.graysb = graysb;
-		other.redsb = redsb;
-		other.greensb = greensb;
-		other.bluesb = bluesb;
-		other.alphasb = alphasb;
-		return other;
-	}
-
 	public void setGraysb(int gray) {
 		if (!imgInfo.greyscale)
 			throw new PngjException("only greyscale images support this");

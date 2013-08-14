@@ -48,15 +48,6 @@ public class PngChunkPHYS extends PngChunkSingle {
 		units = PngHelperInternal.readInt1fromByte(chunk.data, 8);
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkPHYS other = new PngChunkPHYS(imgInfo);
-		other.pixelsxUnitX = pixelsxUnitX;
-		other.pixelsxUnitY = pixelsxUnitY;
-		other.units = units;
-		return other;
-	}
-
 	public long getPixelsxUnitX() {
 		return pixelsxUnitX;
 	}

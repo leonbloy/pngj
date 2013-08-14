@@ -303,8 +303,6 @@ public class PngWriter {
 				// but if the chunk is already queued or writen, it's ommited!
 				if (chunksList.getEquivalent(chunk).isEmpty() && chunksList.getQueuedEquivalent(chunk).isEmpty()) {
 					chunksList.queue(chunk);
-					//PngChunk newchunk = ChunkHelper.cloneForWrite(chunk, imgInfo);
-					//chunksList.queue(newchunk);
 				}
 			}
 		}

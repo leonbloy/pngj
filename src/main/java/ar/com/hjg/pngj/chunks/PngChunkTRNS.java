@@ -67,20 +67,6 @@ public class PngChunkTRNS extends PngChunkSingle {
 		}
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkTRNS other = new PngChunkTRNS(imgInfo);
-		other.gray = gray;
-		other.red = red;
-		other.green = green;
-		other.blue = blue;
-		if (paletteAlpha != null) {
-			other.paletteAlpha = new int[paletteAlpha.length];
-			System.arraycopy(paletteAlpha, 0, other.paletteAlpha, 0, other.paletteAlpha.length);
-		}
-		return other;
-	}
-
 	/**
 	 * Set rgb values
 	 * 

@@ -100,16 +100,6 @@ public class PngChunkSPLT extends PngChunkMultiple {
 		}
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkSPLT other = new PngChunkSPLT(imgInfo);
-		other.palName = palName;
-		other.sampledepth = sampledepth;
-		other.palette = new int[palette.length];
-		System.arraycopy(palette, 0, other.palette, 0, other.palette.length);
-		return other;
-	}
-
 	public int getNentries() {
 		return palette.length / 5;
 	}

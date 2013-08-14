@@ -67,19 +67,6 @@ public class PngChunkIHDR extends PngChunkSingle {
 		interlaced = PngHelperInternal.readByte(st);
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkIHDR other = new PngChunkIHDR(imgInfo);
-		other.cols = cols;
-		other.rows = rows;
-		other.bitspc = bitspc;
-		other.colormodel = colormodel;
-		other.compmeth = compmeth;
-		other.filmeth = filmeth;
-		other.interlaced = interlaced;
-		return other;
-	}
-
 	public int getCols() {
 		return cols;
 	}

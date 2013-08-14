@@ -50,18 +50,6 @@ public class PngChunkTIME extends PngChunkSingle {
 		sec = PngHelperInternal.readInt1fromByte(chunk.data, 6);
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkTIME other = new PngChunkTIME(imgInfo);
-		other.year = year;
-		other.mon = mon;
-		other.day = day;
-		other.hour = hour;
-		other.min = min;
-		other.sec = sec;
-		return other;
-	}
-
 	public void setNow(int secsAgo) {
 		Calendar d = Calendar.getInstance();
 		d.setTimeInMillis(System.currentTimeMillis() - 1000 * (long) secsAgo);

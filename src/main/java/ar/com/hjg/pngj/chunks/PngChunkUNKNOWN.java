@@ -37,10 +37,4 @@ public class PngChunkUNKNOWN extends PngChunkMultiple { // unkown, custom or not
 	public void setData(byte[] data) {
 		raw.data = data;
 	}
-
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkUNKNOWN other = new PngChunkUNKNOWN(id, imgInfo);
-		return other;
-	}
 }

@@ -51,14 +51,6 @@ public class PngChunkPLTE extends PngChunkSingle {
 		}
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkPLTE other = new PngChunkPLTE(imgInfo);
-		other.setNentries(getNentries());
-		System.arraycopy(entries, 0, other.entries, 0, nentries);
-		return other;
-	}
-
 	public void setNentries(int n) {
 		nentries = n;
 		if (nentries < 1 || nentries > 256)

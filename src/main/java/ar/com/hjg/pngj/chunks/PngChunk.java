@@ -140,7 +140,7 @@ public abstract class PngChunk {
 	}
 
 	final void write(OutputStream os) {
-		if (raw == null)
+		if (raw == null || raw.data == null)
 			raw = createRawChunk();
 		if (raw == null)
 			throw new PngjExceptionInternal("null chunk ! creation failed for " + this);
@@ -162,16 +162,10 @@ public abstract class PngChunk {
 	protected abstract void parseFromRaw(ChunkRaw c);
 
 	/**
-	 * Makes a copy of the chunk.
-	 * <p>
-	 * This is used when copying chunks from a reader to a writer
-	 * <p>
-	 * This is usually a (shallow) copy, and after the cloning
-	 * this.equals(other) should return true
+	 * See {@link PngChunkMultiple} and {@link PngChunkSingle}
+	 * @return true if PNG accepts multiple chunks of this class
 	 */
-	protected abstract PngChunk cloneForWrite(ImageInfo imgInfo);
-
-	protected abstract boolean allowsMultiple(); // this is implemented in PngChunkMultiple/PngChunSingle
+	protected abstract boolean allowsMultiple(); 
 
 	public ChunkRaw getRaw() {
 		return raw;
@@ -181,14 +175,30 @@ public abstract class PngChunk {
 		this.raw = raw;
 	}
 
+	/**
+	 * @see ChunkRaw#len
+	 */
 	public int getLen() {
 		return raw != null ? raw.len : -1;
 	}
 
+	/**
+	 * @see ChunkRaw#getOffset()
+	 */
 	public long getOffset() {
 		return raw != null ? raw.getOffset() : -1;
 	}
 
+	/**
+	 * This signals that the raw chunk (serialized data) as invalid, so that
+	 * it's regenerated on write. This should be called for the (infrequent)
+	 * case of chunks that were copied from a PngReader and we want to manually
+	 * modify it.
+	 */
+	public void invalidateRawData() {
+		raw = null;
+	}
+	
 	/**
 	 * see {@link ChunkOrderingConstraint}
 	 */
@@ -199,14 +209,6 @@ public abstract class PngChunk {
 		return "chunk id= " + id + " (len=" + getLen() + " offset=" + getOffset() + ")";
 	}
 
-	/**
-	 * This signals that the raw chunk (serialized data) as invalid, so that
-	 * it's regenerated on write. This should be called for the (infrequent)
-	 * case of chunks that were copied from a PngReader and we want to manually
-	 * modify it.
-	 */
-	void invalidateRaw() {
-		raw = null;
-	}
+
 
 }

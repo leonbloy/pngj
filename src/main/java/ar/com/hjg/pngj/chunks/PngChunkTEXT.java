@@ -36,11 +36,4 @@ public class PngChunkTEXT extends PngChunkTextVar {
 		val = i < c.data.length ? ChunkHelper.toString(c.data, i, c.data.length - i) : "";
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkTEXT other = new PngChunkTEXT(imgInfo);
-		other.key = key;
-		other.val = val;
-		return other;
-	}
 }

@@ -37,13 +37,6 @@ public class PngChunkSTER extends PngChunkSingle {
 		mode = chunk.data[0];
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkSTER other = new PngChunkSTER(imgInfo);
-		other.mode = mode;
-		return other;
-	}
-
 	/**
 	 * 0: cross-fuse layout 1: diverging-fuse layout
 	 */

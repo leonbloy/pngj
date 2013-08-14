@@ -78,14 +78,6 @@ public class SampleCustomChunk {
 			return props;
 		}
 
-		@Override
-		protected PngChunk cloneForWrite(ImageInfo imgInfo) {
-			PngChunkPROP chunk = new PngChunkPROP(imgInfo);
-			chunk.props.clear();
-			chunk.props.putAll(this.props);
-			return chunk;
-		}
-
 	}
 
 	public static void addPropChunk(String orig, String dest, Properties p) {

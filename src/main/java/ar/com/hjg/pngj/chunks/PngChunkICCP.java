@@ -46,15 +46,6 @@ public class PngChunkICCP extends PngChunkSingle {
 		System.arraycopy(chunk.data, pos0 + 2, compressedProfile, 0, compdatasize);
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkICCP other = new PngChunkICCP(imgInfo);
-		other.profileName = profileName;
-		other.compressedProfile = new byte[compressedProfile.length];
-		System.arraycopy(compressedProfile, 0, other.compressedProfile, 0, compressedProfile.length); // deep
-		return other; // copy
-	}
-
 	/**
 	 * The profile should be uncompressed bytes
 	 */

@@ -56,23 +56,8 @@ public class PngChunkCHRM extends PngChunkSingle {
 		bluey = PngHelperInternal.intToDouble100000(PngHelperInternal.readInt4fromBytes(c.data, 28));
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkCHRM other = new PngChunkCHRM(imgInfo);
-		other.whitex = whitex;
-		other.whitey = whitex;
-		other.redx = redx;
-		other.redy = redy;
-		other.greenx = greenx;
-		other.greeny = greeny;
-		other.bluex = bluex;
-		other.bluey = bluey;
-		return other;
-	}
-
 	public void setChromaticities(double whitex, double whitey, double redx, double redy, double greenx, double greeny,
 			double bluex, double bluey) {
-		invalidateRaw();
 		this.whitex = whitex;
 		this.redx = redx;
 		this.greenx = greenx;

@@ -37,7 +37,7 @@ public class ChunkRaw {
 	 */
 	public byte[] data = null;
 	/**
-	 * offset in the full PNG stream, only informational, for read (0=NA)
+	 * @see ChunkRaw#getOffset()
 	 */
 	private long offset = 0;
 
@@ -90,11 +90,14 @@ public class ChunkRaw {
 	 */
 	public void writeChunk(OutputStream os) {
 		if (idbytes.length != 4)
-			throw new PngjOutputException("bad chunkid [" + ChunkHelper.toString(idbytes) + "]");
+			throw new PngjOutputException("bad chunkid [" + id + "]");
 		PngHelperInternal.writeInt4(os, len);
 		PngHelperInternal.writeBytes(os, idbytes);
-		if (len > 0)
+		if (len > 0) {
+			if (data == null)
+				throw new PngjOutputException("cannot write chunk, raw chunk data is null [" + id + "]");
 			PngHelperInternal.writeBytes(os, data, 0, len);
+		}
 		computeCrcForWriting();
 		PngHelperInternal.writeBytes(os, crcval, 0, 4);
 	}
@@ -116,7 +119,10 @@ public class ChunkRaw {
 	ByteArrayInputStream getAsByteStream() { // only the data
 		return new ByteArrayInputStream(data);
 	}
-
+	
+	/**
+	 * offset in the full PNG stream, in bytes. only informational, for read chunks (0=NA)
+	 */
 	public long getOffset() {
 		return offset;
 	}

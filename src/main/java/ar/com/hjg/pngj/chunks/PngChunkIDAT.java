@@ -32,10 +32,5 @@ public class PngChunkIDAT extends PngChunkMultiple {
 	public void parseFromRaw(ChunkRaw c) { // does nothing
 	}
 
-	@Override
-	public PngChunkIDAT cloneForWrite(ImageInfo imgInfo) {
-		PngChunkIDAT other = new PngChunkIDAT(imgInfo);
-		return other;
-	}
 
 }

@@ -58,24 +58,12 @@ public class PngChunkBKGD extends PngChunkSingle {
 		}
 	}
 
-	@Override
-	public PngChunk cloneForWrite(ImageInfo imgInfo) {
-		PngChunkBKGD other = new PngChunkBKGD(imgInfo);
-		other.gray = gray;
-		other.red = red;
-		other.green = green;
-		other.blue = blue;
-		other.paletteIndex = paletteIndex;
-		return other;
-	}
-
 	/**
 	 * Set gray value (0-255 if bitdept=8)
 	 * 
 	 * @param gray
 	 */
 	public void setGray(int gray) {
-		invalidateRaw();
 		if (!imgInfo.greyscale)
 			throw new PngjException("only gray images support this");
 		this.gray = gray;
@@ -92,7 +80,6 @@ public class PngChunkBKGD extends PngChunkSingle {
 	 * 
 	 */
 	public void setPaletteIndex(int i) {
-		invalidateRaw();
 		if (!imgInfo.indexed)
 			throw new PngjException("only indexed (pallete) images support this");
 		this.paletteIndex = i;
@@ -109,7 +96,6 @@ public class PngChunkBKGD extends PngChunkSingle {
 	 * 
 	 */
 	public void setRGB(int r, int g, int b) {
-		invalidateRaw();
 		if (imgInfo.greyscale || imgInfo.indexed)
 			throw new PngjException("only rgb or rgba images support this");
 		red = r;
