@@ -55,18 +55,6 @@ public class ChunkHelper {
 	public static final byte[] b_IDAT = toBytes(IDAT);
 	public static final byte[] b_IEND = toBytes(IEND);
 
-	private static final ThreadLocal<Inflater> inflaterProvider = new ThreadLocal<Inflater>() {
-		protected Inflater initialValue() {
-			return new Inflater();
-		}
-	};
-
-	private static final ThreadLocal<Deflater> deflaterProvider = new ThreadLocal<Deflater>() {
-		protected Deflater initialValue() {
-			return new Deflater();
-		}
-	};
-
 	/*
 	 * static auxiliary buffer. any method that uses this should synchronize against this 
 	 */
@@ -208,7 +196,7 @@ public class ChunkHelper {
 	public static byte[] compressBytes(byte[] ori, int offset, int len, boolean compress) {
 		try {
 			ByteArrayInputStream inb = new ByteArrayInputStream(ori, offset, len);
-			InputStream in = compress ? inb : new InflaterInputStream(inb, getInflater());
+			InputStream in = compress ? inb : new InflaterInputStream(inb);
 			ByteArrayOutputStream outb = new ByteArrayOutputStream();
 			OutputStream out = compress ? new DeflaterOutputStream(outb) : outb;
 			shovelInToOut(in, out);
@@ -305,23 +293,5 @@ public class ChunkHelper {
 		return c instanceof PngChunkTextVar;
 	}
 
-	/**
-	 * thread-local inflater, just reset : this should be only used for short
-	 * individual chunks compression
-	 */
-	public static Inflater getInflater() {
-		Inflater inflater = inflaterProvider.get();
-		inflater.reset();
-		return inflater;
-	}
 
-	/**
-	 * thread-local deflater, just reset : this should be only used for short
-	 * individual chunks decompression
-	 */
-	public static Deflater getDeflater() {
-		Deflater deflater = deflaterProvider.get();
-		deflater.reset();
-		return deflater;
-	}
 }
