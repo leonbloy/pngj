@@ -251,6 +251,17 @@ public class TestSupport {
 		return resourcesDir;
 	}
 
+	public static List<File> listPngFromDir(File dir) {
+		dir = absFile(dir);
+		ArrayList<File> pngs=new ArrayList<File>();
+		for(String f: dir.list()) {
+			if(f.toLowerCase().endsWith(".png")) 
+				pngs.add(new File(dir,f));
+		}
+		return pngs;
+	}
+
+	
 	public static File getPngTestSuiteDir() {
 		return new File(getResourcesDir(), "testsuite1");
 	}

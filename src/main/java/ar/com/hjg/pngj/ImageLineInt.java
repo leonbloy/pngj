@@ -62,7 +62,7 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 		return filterType;
 	}
 
-	public void setFilterType(FilterType ft) {
+	protected void setFilterType(FilterType ft) {
 		filterType = ft;
 	}
 

@@ -30,7 +30,6 @@ public class Speed {
 		PngWriter png = new PngWriter(os, new ImageInfo(cols, rows, 8, false));
 		png.setFilterType(filtertype);
 		png.setCompLevel(compLevel);
-		png.setDeflaterStrategy(Deflater.FILTERED);
 		ImageLineInt iline1 = new ImageLineInt(png.imgInfo);
 		ImageLineInt iline2 = new ImageLineInt(png.imgInfo);
 		ImageLineInt iline = iline1;
