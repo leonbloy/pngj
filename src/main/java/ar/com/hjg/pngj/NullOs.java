@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.misc;
+package ar.com.hjg.pngj;
 
 import java.io.IOException;
 import java.io.OutputStream;

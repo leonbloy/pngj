@@ -14,6 +14,8 @@ import ar.com.hjg.pngj.chunks.PngChunkIEND;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngMetadata;
+import ar.com.hjg.pngj.pixels.PixelsWriter;
+import ar.com.hjg.pngj.pixels.PixelsWriterDefault;
 
 /**
  * Writes a PNG image, line by line.
@@ -38,6 +40,12 @@ public class PngWriter {
 	 */
 	protected int currentChunkGroup = -1;
 
+	/**
+	 * Some writes might require two passes
+	 */
+	protected int passes = 1;
+	protected int currentpass = 0; // numbered from 1
+
 	private boolean shouldCloseStream = true;
 
 	private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 64k)
@@ -50,7 +58,7 @@ public class PngWriter {
 	private ChunkPredicate copyFromPredicate = null;
 	private ChunksList copyFromList = null;
 
-
+	protected StringBuilder debuginfo = new StringBuilder();
 
 	/**
 	 * Opens a file for writing.
@@ -94,6 +102,7 @@ public class PngWriter {
 		chunksList = new ChunksListForWrite(imgInfo);
 		metadata = new PngMetadata(chunksList);
 		pixelsWriter = createPixelsWriter(imgInfo);
+		setCompLevel(9);
 	}
 
 	private void initIdat() { // this triggers the writing of first chunks
@@ -119,8 +128,7 @@ public class PngWriter {
 		currentChunkGroup = ChunksList.CHUNK_GROUP_2_PLTE;
 		nw = chunksList.writeChunks(os, currentChunkGroup);
 		if (nw > 0 && imgInfo.greyscale)
-			throw new PngjOutputException(
-					"cannot write palette for this format");
+			throw new PngjOutputException("cannot write palette for this format");
 		if (nw == 0 && imgInfo.indexed)
 			throw new PngjOutputException("missing palette");
 		currentChunkGroup = ChunksList.CHUNK_GROUP_3_AFTERPLTE;
@@ -135,9 +143,7 @@ public class PngWriter {
 		// should not be unwriten chunks
 		List<PngChunk> pending = chunksList.getQueuedChunks();
 		if (!pending.isEmpty())
-			throw new PngjOutputException(pending.size()
-					+ " chunks were not written! Eg: "
-					+ pending.get(0).toString());
+			throw new PngjOutputException(pending.size() + " chunks were not written! Eg: " + pending.get(0).toString());
 		currentChunkGroup = ChunksList.CHUNK_GROUP_6_END;
 	}
 
@@ -186,8 +192,7 @@ public class PngWriter {
 			boolean copy = copyFromPredicate.match(chunk);
 			if (copy) {
 				// but if the chunk is already queued or writen, it's ommited!
-				if (chunksList.getEquivalent(chunk).isEmpty()
-						&& chunksList.getQueuedEquivalent(chunk).isEmpty()) {
+				if (chunksList.getEquivalent(chunk).isEmpty() && chunksList.getQueuedEquivalent(chunk).isEmpty()) {
 					chunksList.queue(chunk);
 				}
 			}
@@ -225,8 +230,7 @@ public class PngWriter {
 	 * @see #copyChunksFrom(ChunksList, ChunkPredicate)
 	 */
 	public void copyChunksFrom(ChunksList chunks, int copyMask) {
-		copyChunksFrom(chunks,
-				ChunkCopyBehaviour.createPredicate(copyMask, imgInfo));
+		copyChunksFrom(chunks, ChunkCopyBehaviour.createPredicate(copyMask, imgInfo));
 	}
 
 	/**
@@ -250,8 +254,7 @@ public class PngWriter {
 	 */
 	public void copyChunksFrom(ChunksList chunks, ChunkPredicate predicate) {
 		if (copyFromList != null && chunks != null)
-			PngHelperInternal.LOGGER
-					.warning("copyChunksFrom should only be called once");
+			PngHelperInternal.LOGGER.warning("copyChunksFrom should only be called once");
 		if (predicate == null)
 			throw new PngjOutputException("copyChunksFrom requires a predicate");
 		this.copyFromList = chunks;
@@ -310,8 +313,7 @@ public class PngWriter {
 			try {
 				os.close();
 			} catch (Exception e) {
-				PngHelperInternal.LOGGER.warning("Error closing writer "
-						+ e.toString());
+				PngHelperInternal.LOGGER.warning("Error closing writer " + e.toString());
 			}
 	}
 
@@ -329,38 +331,36 @@ public class PngWriter {
 		return metadata;
 	}
 
-	
-	
-
 	/**
 	 * Sets internal prediction filter type, or strategy to choose it.
 	 * <p>
 	 * This must be called just after constructor, before starting writing.
 	 * <p>
-	 * @deprecated
 	 */
 	public void setFilterType(FilterType filterType) {
-		((PixelsWriterDefault)pixelsWriter).setConfiguredType(filterType);
+		pixelsWriter.setFilterType(filterType);
 	}
 
-	
 	/**
-	 * This is kept for backwards compatibility, now the PixelsWriter object should be used
-	 * for setting compression/filtering options
+	 * This is kept for backwards compatibility, now the PixelsWriter object
+	 * should be used for setting compression/filtering options
 	 * 
 	 * @see PixelsWriter#setCompressionFactor(double)
-	 * @param compLevel between 0 (no compression, max speed) and 9 (max compression)
+	 * @param compLevel
+	 *            between 0 (no compression, max speed) and 9 (max compression)
 	 */
 	public void setCompLevel(int complevel) {
-		pixelsWriter.setCompressionFactor(PixelsWriterDefault.compressionLevelToCompressionFactor(complevel));
+		pixelsWriter.setDeflaterCompLevel(complevel);
 	}
 
-	
 	/**
-	 * @see PixelsWriter#setFilterPreserve(boolean)
+	 * 
 	 */
 	public void setFilterPreserve(boolean filterPreserve) {
-		pixelsWriter.setFilterPreserve(filterPreserve);
+		if (filterPreserve)
+			pixelsWriter.setFilterType(FilterType.FILTER_PRESERVE);
+		else if (pixelsWriter.getFilterType() == null)
+			pixelsWriter.setFilterType(FilterType.FILTER_DEFAULT);
 	}
 
 	/**
@@ -404,15 +404,22 @@ public class PngWriter {
 
 	public void writeRow(IImageLine imgline, int rownumber) {
 		rowNum++;
+		if (rowNum == imgInfo.rows)
+			rowNum = 0;
+		if (rownumber == imgInfo.rows)
+			rownumber = 0;		
 		if (rownumber >= 0 && rowNum != rownumber)
-			throw new PngjOutputException(
-					"rows must be written in order: expected:" + rowNum
-							+ " passed:" + rownumber);
-		if (rownumber==0)
+			throw new PngjOutputException("rows must be written in order: expected:" + rowNum + " passed:" + rownumber);
+		if (rowNum == 0)
+			currentpass++;
+		if (rownumber == 0 && currentpass == passes) {
 			initIdat();
-		writeFirstChunks();
-		imgline.writeToPngRaw(pixelsWriter.getRowb());
-		pixelsWriter.filterAndWrite();
+			writeFirstChunks();
+		}
+		byte[] rowb = pixelsWriter.getRowb();
+		imgline.writeToPngRaw(rowb);
+		pixelsWriter.processRow(rowb);
+
 	}
 
 	/**
@@ -422,14 +429,17 @@ public class PngWriter {
 		writeRow(new ImageLineInt(imgInfo, buf));
 	}
 
-	/** 
+	/**
 	 * Factory method for pixels writer. This will be called once at the moment
 	 * at start writing a set of IDAT chunks (typically once in a normal PNG)
 	 * 
 	 * This should be overriden if custom filtering strategies are desired
 	 * 
-	 * @param imginfo Might be different than that of this object (eg: APNG with subimages)
-	 * @param os Output stream
+	 * @param imginfo
+	 *            Might be different than that of this object (eg: APNG with
+	 *            subimages)
+	 * @param os
+	 *            Output stream
 	 * @return
 	 */
 	protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
@@ -437,9 +447,12 @@ public class PngWriter {
 		return pw;
 	}
 
-	public PixelsWriter getPixelsWriter() {
+	public final PixelsWriter getPixelsWriter() {
 		return pixelsWriter;
 	}
-	
+
+	public String getDebuginfo() {
+		return debuginfo.toString();
+	}
 
 }

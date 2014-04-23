@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+
 /**
  * This interface is just for the sake of unifying some methods of
  * {@link ImageLineHelper} that can use both {@link ImageLineInt} or

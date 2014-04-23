@@ -3,10 +3,10 @@ package ar.com.hjg.pngj;
 import java.util.HashMap;
 
 /**
- * Internal PNG predictor filter
+ * Internal PNG predictor filter type
  * 
- * Negative values do not actually represent filter types but "strategies"
- * 
+ * Negative values are pseudo types, actually global strategies for writing, that 
+ * (can) result on different real filters for different rows
  */
 public enum FilterType {
 	/**
@@ -30,29 +30,37 @@ public enum FilterType {
 	 */
 	FILTER_PAETH(4),
 	/**
-	 * Default strategy: select one of the above filters depending on global
-	 * image parameters
+	 * Default strategy: select one of the standard filters depending on global
+	 * image parameters 
 	 */
 	FILTER_DEFAULT(-1),
 	/**
-	 * Aggressive strategy: select one of the above filters trying each of the
-	 * filters (every 8 rows)
+	 * @deprecated use #FILTER_ADAPTIVE_FAST
 	 */
 	FILTER_AGGRESSIVE(-2),
 	/**
-	 * Very aggressive strategy: select one of the above filters trying each of
-	 * the filters (for every row!)
+	 * @deprecated use #FILTER_ADAPTIVE_MEDIUM or #FILTER_ADAPTIVE_FULL
 	 */
-	FILTER_VERYAGGRESSIVE(-3),
+	FILTER_VERYAGGRESSIVE(-4),
+	/**
+	 * 
+	 */
+	FILTER_ADAPTIVE_FAST(-2), // samples each 8 or 16 rows
+	FILTER_ADAPTIVE_MEDIUM(-3), // samples about 1/4 row
+	FILTER_ADAPTIVE_FULL(-4), // all rows
+	/**
+	 * Preserves the filter passed in original row.
+	 */
+	FILTER_PRESERVE(-40), 
 	/**
 	 * Uses all fiters, one for lines, cyciclally. Only for tests.
 	 */
 	FILTER_CYCLIC(-50),
-
 	/**
-	 * Not specified, placeholder for unknown or NA filters.
+	 * Not specified, placeholder for unknown or NA filters.  
 	 */
-	FILTER_UNKNOWN(-100), ;
+	FILTER_UNKNOWN(-100) ;
+	
 	public final int val;
 
 	private FilterType(int val) {
@@ -77,18 +85,27 @@ public enum FilterType {
 		return i >= 0 && i <= 4;
 	}
 
+	public static boolean isValidStandard(FilterType fy) {
+		return fy != null && isValidStandard(fy.val);
+	}
+
+	public static boolean isAdaptive(FilterType fy) {
+		return fy.val<=-2 && fy.val>=-4;
+	}
+	
 	/**
 	 * Returns all "standard" filters
 	 */
 	public static FilterType[] getAllStandard() {
 		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
 	}
-
-	/**
-	 * Returns all "standard" filters
-	 */
-	public static FilterType[] getAllStandardAndMainStrategies() {
-		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH, FILTER_AGGRESSIVE,
-				FILTER_VERYAGGRESSIVE };
+	
+	public static FilterType[] getAllStandardNoneLast() {
+		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH,FILTER_NONE };
 	}
+	
+	public static FilterType[] getAllStandardExceptNone() {
+		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
+	}
+
 }

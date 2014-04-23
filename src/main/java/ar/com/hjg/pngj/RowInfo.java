@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+
 /**
  * Packs information of current row. Only used internally
  */

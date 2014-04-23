@@ -10,6 +10,7 @@ import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Locale;
@@ -102,6 +103,8 @@ public class TestSupport {
 	}
 
 	public static String showFilters(File pngr, int maxgroups, boolean usenewlines) {
+		if(maxgroups<=0) maxgroups=Integer.MAX_VALUE;
+		int[] types=new int[5];
 		PngReaderByte png = new PngReaderByte(pngr);
 		StringBuilder sb = new StringBuilder();
 		FilterType ft1, ft0 = null;
@@ -109,16 +112,17 @@ public class TestSupport {
 		int r1 = -1;
 		for (int r = 0; r < png.imgInfo.rows; r++) {
 			ft1 = ((IImageLineArray) png.readRow()).getFilterType();
+			types[ft1.val]++;
 			if (r == 0 || ft1 != ft0) {
 				if (r > 0) {
 					contgroups++;
-					sb.append(String.format("[%d:%d]=%s", r1, r - 1, ft0)).append(usenewlines ? "\n" : " ");
+					sb.append(String.format("[%d %d]=%s", r1, r -r1, ft0)).append(usenewlines ? "\n" : " ");
 				}
 				r1 = r;
 				ft0 = ft1;
 			}
 			if (r == png.imgInfo.rows - 1) {
-				sb.append(String.format("[%d:%d]=%s", r1, r, ft0)).append(usenewlines ? "\n" : " ");
+				sb.append(String.format("[%d %d]=%s", r1,  r -r1, ft0)).append(usenewlines ? "\n" : " ");
 			}
 			if (contgroups >= maxgroups) {
 				sb.append("...");
@@ -126,6 +130,10 @@ public class TestSupport {
 			}
 		}
 		png.end();
+		for(int i=0;i<=4;i++) {
+			types[i] =  (int)((types[i] *100)/png.imgInfo.rows);
+		}
+		sb.append(" " + Arrays.toString(types));
 		return sb.toString().trim().replaceAll("FILTER_", "");
 	}
 
@@ -397,6 +405,24 @@ public class TestSupport {
 		for (int i = 0; i < png.imgInfo.rows; i++)
 			png.writeRow(imline);
 		png.end();
+	}
+
+	public static List<File> getPngsFromDir(File dirOrFile, boolean recurse) {
+		List<File> li = new ArrayList<File>();
+		if (dirOrFile.isDirectory()) {
+			for (File f : dirOrFile.listFiles()) {
+				if (recurse && f.isDirectory())
+					li.addAll(getPngsFromDir(f, true));
+				if (f.getName().toLowerCase().endsWith(".png"))
+					li.add(f);
+			}
+		} else
+			li.add(dirOrFile);// not a dir, but a file
+		return li;
+	}
+	
+	public static List<File> getPngsFromDir(File dir) {
+		return getPngsFromDir(dir, true);
 	}
 
 }

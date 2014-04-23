@@ -10,7 +10,7 @@ import ar.com.hjg.pngj.test.TestSupport;
 public class ShowFilterInfo {
 
 	public static void show(File file) {
-		System.out.println(TestSupport.showFilters(file, 5, false));
+		System.out.println(TestSupport.showFilters(file, -1, false));
 	}
 
 	public static void main(String[] args) throws Exception {

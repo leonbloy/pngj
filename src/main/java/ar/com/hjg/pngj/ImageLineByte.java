@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+
 /**
  * Lightweight wrapper for an image scanline, used for read and write.
  * <p>

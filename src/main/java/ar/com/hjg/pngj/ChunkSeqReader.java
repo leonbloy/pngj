@@ -27,7 +27,9 @@ public class ChunkSeqReader implements IBytesConsumer {
 	private long bytesCount = 0;
 
 	private ChunkReader curChunkReader;
-	private DeflatedChunksSet curReaderDeflatedSet;
+	private DeflatedChunksSet curReaderDeflatedSet; // one instance is created for each "idat-like set". Normally one.
+
+	private long idatBytes; // this is only for the IDAT (not mrerely "idat-like")
 
 	/**
 	 * Creates a ChunkSeqReader (with signature)
@@ -146,12 +148,14 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * To decide the mode and options, it calls
 	 * {@link #shouldCheckCrc(int, String)},
 	 * {@link #shouldSkipContent(int, String)}, {@link #isIdatKind(String)}.
-	 * Those methods should be overriden in preference to this.
+	 * Those methods should be overriden in preference to this; if overriden, this should be called first.
 	 * 
 	 * The respective {@link ChunkReader#chunkDone()} method is directed to this
 	 * {@link #postProcessChunk(ChunkReader)}.
 	 */
 	protected void startNewChunk(int len, String id, long offset) {
+		if(id.equals(ChunkHelper.IDAT))
+			idatBytes += len;
 		boolean checkCrc = shouldCheckCrc(len, id);
 		boolean skip = shouldSkipContent(len, id);
 		boolean isIdatType = isIdatKind(id);
@@ -177,7 +181,6 @@ public class ChunkSeqReader implements IBytesConsumer {
 				protected void chunkDone() {
 					postProcessChunk(this);
 				}
-
 				@Override
 				protected void processData(byte[] buf, int off, int len) {
 					throw new PngjExceptionInternal("should never happen");
@@ -331,6 +334,16 @@ public class ChunkSeqReader implements IBytesConsumer {
 		return "IHDR";
 	}
 
+	/** 
+	 * Helper method, reports amount of bytes inside IDAT chunks. 
+	 * 
+	 * @return Bytes in IDAT chunks
+	 */
+	public long getIdatBytes() {
+		return idatBytes;
+	}
+
+	
 	/**
 	 * Which should be the id of the last chunk
 	 * 

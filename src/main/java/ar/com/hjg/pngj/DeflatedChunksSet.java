@@ -303,7 +303,7 @@ public class DeflatedChunksSet {
 	}
 
 	/** total number of bytes that have been fed to this object */
-	public int getnFedBytes() {
+	public long getnFedBytes() {
 		return nFedBytes;
 	}
 

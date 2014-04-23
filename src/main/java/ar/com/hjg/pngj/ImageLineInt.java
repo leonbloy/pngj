@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+
 /**
  * Represents an image line, integer format (one integer by sample). See
  * {@link #scanline} to understand the format.

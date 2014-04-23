@@ -2,7 +2,7 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.PngReaderDummy;
+import ar.com.hjg.pngj.PngReaderDumb;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**
@@ -12,7 +12,7 @@ public class SampleShowChunks {
 
 	public static void showChunks(File file, boolean includeidat) {
 
-		PngReaderDummy png = new PngReaderDummy(file);
+		PngReaderDumb png = new PngReaderDumb(file);
 		png.setIncludeIdat(includeidat);
 		png.readAll();
 		for (int i = 0; i < png.getChunks().size(); i++) {
