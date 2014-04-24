@@ -63,14 +63,12 @@ public class PngWriter {
 	/**
 	 * Opens a file for writing.
 	 * <p>
-	 * Sets shouldCloseStream=true. For more info see
-	 * {@link #PngWriter(OutputStream, ImageInfo)}
+	 * Sets shouldCloseStream=true. For more info see {@link #PngWriter(OutputStream, ImageInfo)}
 	 * 
 	 * @param file
 	 * @param imgInfo
 	 * @param allowoverwrite
-	 *            If false and file exists, an {@link PngjOutputException} is
-	 *            thrown
+	 *            If false and file exists, an {@link PngjOutputException} is thrown
 	 */
 	public PngWriter(File file, ImageInfo imgInfo, boolean allowoverwrite) {
 		this(PngHelperInternal.ostreamFromFile(file, allowoverwrite), imgInfo);
@@ -85,9 +83,8 @@ public class PngWriter {
 	}
 
 	/**
-	 * Constructs a new PngWriter from a output stream. After construction
-	 * nothing is writen yet. You still can set some parameters (compression,
-	 * filters) and queue chunks before start writing the pixels.
+	 * Constructs a new PngWriter from a output stream. After construction nothing is writen yet. You still can set some
+	 * parameters (compression, filters) and queue chunks before start writing the pixels.
 	 * <p>
 	 * 
 	 * @param outputStream
@@ -207,21 +204,17 @@ public class PngWriter {
 	}
 
 	/**
-	 * Sets an origin (typically from a {@link PngReader}) of Chunks to be
-	 * copied. This should be called only once, before starting writing the
-	 * rows. It doesn't matter the current state of the PngReader reading, this
-	 * is a live object and what matters is that when the writer writes the
-	 * pixels (IDAT) the reader has already read them, and that when the writer
-	 * ends, the reader is already ended (all this is very natural).
+	 * Sets an origin (typically from a {@link PngReader}) of Chunks to be copied. This should be called only once,
+	 * before starting writing the rows. It doesn't matter the current state of the PngReader reading, this is a live
+	 * object and what matters is that when the writer writes the pixels (IDAT) the reader has already read them, and
+	 * that when the writer ends, the reader is already ended (all this is very natural).
 	 * <p>
 	 * Apart from the copyMask, there is some addional heuristics:
 	 * <p>
-	 * - The chunks will be queued, but will be written as late as possible
-	 * (unless you explicitly set priority=true)
+	 * - The chunks will be queued, but will be written as late as possible (unless you explicitly set priority=true)
 	 * <p>
-	 * - The chunk will not be queued if an "equivalent" chunk was already
-	 * queued explicitly. And it will be overwriten another is queued
-	 * explicitly.
+	 * - The chunk will not be queued if an "equivalent" chunk was already queued explicitly. And it will be overwriten
+	 * another is queued explicitly.
 	 * 
 	 * @param chunks
 	 * @param copyMask
@@ -234,8 +227,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * Copy all chunks from origin. See {@link #copyChunksFrom(ChunksList, int)}
-	 * for more info
+	 * Copy all chunks from origin. See {@link #copyChunksFrom(ChunksList, int)} for more info
 	 * 
 	 */
 	public void copyChunksFrom(ChunksList chunks) {
@@ -247,8 +239,7 @@ public class PngWriter {
 	 * 
 	 * @param chunks
 	 * @param predicate
-	 *            The chunks (ancillary or PLTE) will be copied if and only if
-	 *            predicate matches
+	 *            The chunks (ancillary or PLTE) will be copied if and only if predicate matches
 	 * 
 	 * @see #copyChunksFrom(ChunksList, int) for more info
 	 */
@@ -264,8 +255,8 @@ public class PngWriter {
 	/**
 	 * Computes compressed size/raw size, approximate.
 	 * <p>
-	 * Actually: compressed size = total size of IDAT data , raw size =
-	 * uncompressed pixel bytes = rows * (bytesPerRow + 1).
+	 * Actually: compressed size = total size of IDAT data , raw size = uncompressed pixel bytes = rows * (bytesPerRow +
+	 * 1).
 	 * 
 	 * This must be called after pngw.end()
 	 */
@@ -278,8 +269,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * Finalizes all the steps and closes the stream. This must be called after
-	 * writing the lines.
+	 * Finalizes all the steps and closes the stream. This must be called after writing the lines.
 	 */
 	public void end() {
 		if (rowNum != imgInfo.rows - 1)
@@ -298,18 +288,21 @@ public class PngWriter {
 	/**
 	 * Closes and releases resources
 	 * <p>
-	 * This is normally called internally from {@link #end()}, you should only
-	 * call this for aborting the writing and release resources (close the
-	 * stream).
+	 * This is normally called internally from {@link #end()}, you should only call this for aborting the writing and
+	 * release resources (close the stream).
 	 * <p>
 	 * Idempotent and secure - never throws exceptions
 	 */
 	public void close() {
 		try {
-			datStream.close();
+			if (datStream != null)
+				datStream.close();
+
 		} catch (Exception e2) {
 		}
-		if (shouldCloseStream)
+		if (pixelsWriter != null)
+			pixelsWriter.close();
+		if (shouldCloseStream && os != null)
 			try {
 				os.close();
 			} catch (Exception e) {
@@ -342,8 +335,8 @@ public class PngWriter {
 	}
 
 	/**
-	 * This is kept for backwards compatibility, now the PixelsWriter object
-	 * should be used for setting compression/filtering options
+	 * This is kept for backwards compatibility, now the PixelsWriter object should be used for setting
+	 * compression/filtering options
 	 * 
 	 * @see PixelsWriter#setCompressionFactor(double)
 	 * @param compLevel
@@ -364,8 +357,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * Sets maximum size of IDAT fragments. This has little effect on
-	 * performance you should rarely call this
+	 * Sets maximum size of IDAT fragments. This has little effect on performance you should rarely call this
 	 * <p>
 	 * 
 	 * @param idatMaxSize
@@ -394,8 +386,7 @@ public class PngWriter {
 	}
 
 	/**
-	 * Writes the full set of row. The ImageLineSet should contain (allow to
-	 * acces) imgInfo.rows
+	 * Writes the full set of row. The ImageLineSet should contain (allow to acces) imgInfo.rows
 	 */
 	public void writeRows(IImageLineSet<? extends IImageLine> imglines) {
 		for (int i = 0; i < imgInfo.rows; i++)
@@ -407,7 +398,7 @@ public class PngWriter {
 		if (rowNum == imgInfo.rows)
 			rowNum = 0;
 		if (rownumber == imgInfo.rows)
-			rownumber = 0;		
+			rownumber = 0;
 		if (rownumber >= 0 && rowNum != rownumber)
 			throw new PngjOutputException("rows must be written in order: expected:" + rowNum + " passed:" + rownumber);
 		if (rowNum == 0)
@@ -430,17 +421,16 @@ public class PngWriter {
 	}
 
 	/**
-	 * Factory method for pixels writer. This will be called once at the moment
-	 * at start writing a set of IDAT chunks (typically once in a normal PNG)
+	 * Factory method for pixels writer. This will be called once at the moment at start writing a set of IDAT chunks
+	 * (typically once in a normal PNG)
 	 * 
-	 * This should be overriden if custom filtering strategies are desired
+	 * This should be overriden if custom filtering strategies are desired. Remember to release this with close()
 	 * 
 	 * @param imginfo
-	 *            Might be different than that of this object (eg: APNG with
-	 *            subimages)
+	 *            Might be different than that of this object (eg: APNG with subimages)
 	 * @param os
 	 *            Output stream
-	 * @return
+	 * @return new PixelsWriter. Don't forget to call close() when discarding it
 	 */
 	protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
 		PixelsWriterDefault pw = new PixelsWriterDefault(imginfo);

@@ -1,28 +1,23 @@
 package ar.com.hjg.pngj;
 
-
 /**
- * Represents an image line, integer format (one integer by sample). See
- * {@link #scanline} to understand the format.
+ * Represents an image line, integer format (one integer by sample). See {@link #scanline} to understand the format.
  */
 public class ImageLineInt implements IImageLine, IImageLineArray {
 	public final ImageInfo imgInfo;
 
 	/**
-	 * The 'scanline' is an array of integers, corresponds to an image line
-	 * (row).
+	 * The 'scanline' is an array of integers, corresponds to an image line (row).
 	 * <p>
-	 * Each <code>int</code> is a "sample" (one for channel), (0-255 or 0-65535)
-	 * in the corresponding PNG sequence: <code>R G B R G B...</code> or
-	 * <code>R G B A R G B A...</tt> 
+	 * Each <code>int</code> is a "sample" (one for channel), (0-255 or 0-65535) in the corresponding PNG sequence:
+	 * <code>R G B R G B...</code> or <code>R G B A R G B A...</tt> 
 	 * or <code>g g g ...</code> or <code>i i i</code> (palette index)
 	 * <p>
-	 * For bitdepth=1/2/4 the value is not scaled (hence, eg, if bitdepth=2 the
-	 * range will be 0-4)
+	 * For bitdepth=1/2/4 the value is not scaled (hence, eg, if bitdepth=2 the range will be 0-4)
 	 * <p>
 	 * To convert a indexed line to RGB values, see
-	 * {@link ImageLineHelper#palette2rgb(ImageLineInt, ar.com.hjg.pngj.chunks.PngChunkPLTE, int[])}
-	 * (you can't do the reverse)
+	 * {@link ImageLineHelper#palette2rgb(ImageLineInt, ar.com.hjg.pngj.chunks.PngChunkPLTE, int[])} (you can't do the
+	 * reverse)
 	 */
 	protected final int[] scanline;
 
@@ -38,8 +33,7 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 
 	/**
 	 * @param imgInfo
-	 *            Inmutable ImageInfo, basic parameters of the image we are
-	 *            reading or writing
+	 *            Inmutable ImageInfo, basic parameters of the image we are reading or writing
 	 */
 	public ImageLineInt(ImageInfo imgInfo) {
 		this(imgInfo, null);
@@ -47,8 +41,7 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 
 	/**
 	 * @param imgInfo
-	 *            Inmutable ImageInfo, basic parameters of the image we are
-	 *            reading or writing
+	 *            Inmutable ImageInfo, basic parameters of the image we are reading or writing
 	 * @param sci
 	 *            prealocated buffer (can be null)
 	 */

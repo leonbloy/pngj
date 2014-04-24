@@ -4,16 +4,14 @@ import java.io.File;
 import java.io.OutputStream;
 
 /**
- * For organization purposes, this class is the onlt that uses classes not in
- * GAE (Google App Engine) white list
+ * For organization purposes, this class is the onlt that uses classes not in GAE (Google App Engine) white list
  * <p>
  * You should not use this class in GAE
  */
 final class PngHelperInternal2 {
 
 	/**
-	 * WARNING: this uses FileOutputStream which is not allowed in
-	 * GoogleAppEngine
+	 * WARNING: this uses FileOutputStream which is not allowed in GoogleAppEngine
 	 * 
 	 * In GAE, dont use this
 	 * 

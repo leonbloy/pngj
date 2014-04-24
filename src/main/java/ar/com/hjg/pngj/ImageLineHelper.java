@@ -6,11 +6,10 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 /**
  * Bunch of utility static methods to proces an image line at the pixel level.
  * <p>
- * WARNING: this has little testing/optimizing, and this API is not stable. some
- * methods will probably be changed or removed if future releases.
+ * WARNING: this has little testing/optimizing, and this API is not stable. some methods will probably be changed or
+ * removed if future releases.
  * <p>
- * WARNING: most methods for getting/setting values work currently only for
- * ImageLine or ImageLineByte
+ * WARNING: most methods for getting/setting values work currently only for ImageLine or ImageLineByte
  */
 public class ImageLineHelper {
 
@@ -33,9 +32,8 @@ public class ImageLineHelper {
 	}
 
 	/**
-	 * When the bitdepth is less than 8, the imageLine is usually
-	 * returned/expected unscaled. This method upscales it in place. Eg, if
-	 * bitdepth=1, values 0-1 will be converted to 0-255
+	 * When the bitdepth is less than 8, the imageLine is usually returned/expected unscaled. This method upscales it in
+	 * place. Eg, if bitdepth=1, values 0-1 will be converted to 0-255
 	 */
 	public static void scaleUp(IImageLineArray line) {
 		if (line.getImageInfo().indexed || line.getImageInfo().bitDepth >= 8)
@@ -85,8 +83,7 @@ public class ImageLineHelper {
 	}
 
 	/**
-	 * Given an indexed line with a palette, unpacks as a RGB array, or RGBA if
-	 * a non nul PngChunkTRNS chunk is passed
+	 * Given an indexed line with a palette, unpacks as a RGB array, or RGBA if a non nul PngChunkTRNS chunk is passed
 	 * 
 	 * @param line
 	 *            ImageLine as returned from PngReader
@@ -96,8 +93,7 @@ public class ImageLineHelper {
 	 *            Transparency chunk, can be null (absent)
 	 * @param buf
 	 *            Preallocated array, optional
-	 * @return R G B (A), one sample 0-255 per array element. Ready for
-	 *         pngw.writeRowInt()
+	 * @return R G B (A), one sample 0-255 per array element. Ready for pngw.writeRowInt()
 	 */
 	public static int[] palette2rgb(ImageLineInt line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
 		return palette2rgb(line, pal, trns, buf, false);
@@ -237,8 +233,7 @@ public class ImageLineHelper {
 	 *            Transparency chunk, can be null (absent)
 	 * @param buf
 	 *            Preallocated array, optional
-	 * @return R G B (A), one sample 0-255 per array element. Ready for
-	 *         pngw.writeRowInt()
+	 * @return R G B (A), one sample 0-255 per array element. Ready for pngw.writeRowInt()
 	 */
 	public static int[] palette2rgba(ImageLineInt line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf) {
 		return palette2rgb(line, pal, trns, buf, true);
@@ -275,8 +270,7 @@ public class ImageLineHelper {
 	 * what follows is pretty uninteresting/untested/obsolete, subject to change
 	 */
 	/**
-	 * Just for basic info or debugging. Shows values for first and last pixel.
-	 * Does not include alpha
+	 * Just for basic info or debugging. Shows values for first and last pixel. Does not include alpha
 	 */
 	public static String infoFirstLastPixels(ImageLineInt line) {
 		return line.imgInfo.channels == 1 ? String.format("first=(%d) last=(%d)", line.scanline[0],

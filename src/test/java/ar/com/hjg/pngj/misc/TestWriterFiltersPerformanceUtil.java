@@ -261,13 +261,13 @@ public class TestWriterFiltersPerformanceUtil {
 		Arrays.fill(mean, 0.0);
 		int accepts = 0;
 		for (int tries = 0; tries < ntries; tries++) {
-			System.arraycopy(FiltersPerformance.filter_preference_default, 0, bak, 0, 5);
+			System.arraycopy(FiltersPerformance.FILTER_WEIGHTS_DEFAULT, 0, bak, 0, 5);
 			int which = r.nextInt(5);
 			which = (tries + 3) % 5;
 			double dx = tries > 0 ? (r.nextBoolean() ? 1.033 : 1 / 1.033) : 1.0;
 			double dxx = Math.pow(1 / dx, 0.25);
 			for (int j = 0; j < 5; j++)
-				FiltersPerformance.filter_preference_default[j] *= which == j ? dx : dxx;
+				FiltersPerformance.FILTER_WEIGHTS_DEFAULT[j] *= which == j ? dx : dxx;
 			TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(
 					TestSupport.getPngsFromDir(dir), new PngWriterGralFactory(FilterType.FILTER_ADAPTIVE_FULL));
 			test.condOnlyRGB8 = true;
@@ -284,20 +284,20 @@ public class TestWriterFiltersPerformanceUtil {
 				accepts++;
 				lastgoal = goal;
 			} else { // goal > lastgoal
-				System.arraycopy(bak, 0, FiltersPerformance.filter_preference_default, 0, 5);
+				System.arraycopy(bak, 0, FiltersPerformance.FILTER_WEIGHTS_DEFAULT, 0, 5);
 			}
 			for (int j = 0; j < 5; j++) {
-				mean[j] += FiltersPerformance.filter_preference_default[j];
+				mean[j] += FiltersPerformance.FILTER_WEIGHTS_DEFAULT[j];
 			}
 			System.out.printf("t=%d/%d goal=%.6f gan=%.6f i=%d %s arr=%s files=%d\n", tries, ntries, lastgoal,
 					ganancia, which, (accepted ? "+" : "-"),
-					Arrays.toString(FiltersPerformance.filter_preference_default), files);
+					Arrays.toString(FiltersPerformance.FILTER_WEIGHTS_DEFAULT), files);
 		}
 		for (int j = 0; j < 5; j++) {
 			mean[j] /= ntries;
 		}
 
-		System.out.printf("last: %s\n", Arrays.toString(FiltersPerformance.filter_preference_default));
+		System.out.printf("last: %s\n", Arrays.toString(FiltersPerformance.FILTER_WEIGHTS_DEFAULT));
 		System.out.printf("mean: %s acceptRate=%.2f\n", Arrays.toString(mean), accepts / (double) ntries);
 
 	}
@@ -306,7 +306,7 @@ public class TestWriterFiltersPerformanceUtil {
 		double bestgoal = Double.MAX_VALUE;
 		double bestp = 0;
 		for (double pnone = 1.3; pnone > 0.1; pnone -= .05) {
-			FiltersPerformance.filter_preference_default[0] = pnone;
+			FiltersPerformance.FILTER_WEIGHTS_DEFAULT[0] = pnone;
 			TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(
 					TestSupport.getPngsFromDir(dir), new PngWriterGralFactory(FilterType.FILTER_ADAPTIVE_FULL));
 			test.condOnly16bits = true;
@@ -321,7 +321,7 @@ public class TestWriterFiltersPerformanceUtil {
 		}
 
 		System.out.printf("best pnone: %.6f p= %s \n", bestp,
-				Arrays.toString(FiltersPerformance.filter_preference_default));
+				Arrays.toString(FiltersPerformance.FILTER_WEIGHTS_DEFAULT));
 
 	}
 
@@ -481,15 +481,15 @@ public class TestWriterFiltersPerformanceUtil {
 		long t0 = System.currentTimeMillis();
 		int clevel = 6;
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
-		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\m\\m084.png"));
+		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
 		SHOW_FILENAME_FORCE = !files.isDirectory();
 		//computeSizeOriginal(files); // 1
 		// computeSpeedWithPngWriterPreserving(files,clevel); //2	
 		// showCompressionWithJava(files, false); // 3
 		//computeSpeedWithPngWriterDefault(files,clevel); //4
 		//computeSpeedWithPngWriterDefault(files,clevel); //4
-		//computeSpeedWithPngWriterWithAdaptative(files,clevel);
-		computeSpeedWithPngWriterSuperAdaptative(files, clevel, -1, true);
+		computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FULL, clevel);
+		//computeSpeedWithPngWriterSuperAdaptative(files, clevel, -1, false);
 		// computeSpeedWithPngWriterNone(files,clevel); //2
 		// computeSpeedWithPngWriterWithAdaptative(files,clevel); //2
 		// computeSpeedWithX(files,PngWriterBands.class); //2

@@ -50,7 +50,8 @@ public class PixelsWriterDefault extends PixelsWriter {
 
 	@Override
 	protected void filterAndWrite(final byte[] rowb) {
-		if(rowb != this.rowb) throw new RuntimeException("??"); //we rely on this
+		if (rowb != this.rowb)
+			throw new RuntimeException("??"); //we rely on this
 		decideCurFilterType();
 		byte[] filtered = filterRowWithFilterType(curfilterType, rowb, rowbprev, rowbfilter);
 		sendToCompressedStream(filtered);
@@ -84,12 +85,11 @@ public class PixelsWriterDefault extends PixelsWriter {
 			throw new PngjOutputException("not implemented filter: " + getFilterType());
 		}
 	}
-	
-	
-	
+
 	@Override
 	public byte[] getRowb() {
-		if(!initdone) init();
+		if (!initdone)
+			init();
 		return rowb;
 	}
 
@@ -108,8 +108,8 @@ public class PixelsWriterDefault extends PixelsWriter {
 	}
 
 	@Override
-	public void end() {
-		super.end();
+	public void close() {
+		super.close();
 	}
 
 }

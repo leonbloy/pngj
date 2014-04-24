@@ -7,9 +7,8 @@ import java.util.zip.Inflater;
 /**
  * This object process the concatenation of IDAT chunks.
  * <p>
- * It extends {@link DeflatedChunksSet}, adding the intelligence to unfilter
- * rows, and to understand row lenghts in terms of ImageInfo and (eventually)
- * Deinterlacer
+ * It extends {@link DeflatedChunksSet}, adding the intelligence to unfilter rows, and to understand row lenghts in
+ * terms of ImageInfo and (eventually) Deinterlacer
  */
 public class IdatSet extends DeflatedChunksSet {
 
@@ -22,8 +21,7 @@ public class IdatSet extends DeflatedChunksSet {
 
 	/**
 	 * @param id
-	 *            Chunk id (first chunk), should be shared by all concatenated
-	 *            chunks
+	 *            Chunk id (first chunk), should be shared by all concatenated chunks
 	 * @param iminfo
 	 *            Image info
 	 * @param deinterlacer
@@ -37,9 +35,8 @@ public class IdatSet extends DeflatedChunksSet {
 	 * Special constructor with preallocated buffer.
 	 * <p>
 	 * <p>
-	 * Same as {@link #IdatSet(String, ImageInfo, Deinterlacer)}, but you can
-	 * pass a Inflater (will be reset internally), and a buffer (will be used
-	 * only if size is enough)
+	 * Same as {@link #IdatSet(String, ImageInfo, Deinterlacer)}, but you can pass a Inflater (will be reset
+	 * internally), and a buffer (will be used only if size is enough)
 	 */
 	public IdatSet(String id, ImageInfo iminfo, Deinterlacer deinterlacer, Inflater inf, byte[] buffer) {
 		super(id, deinterlacer != null ? deinterlacer.getBytesToRead() + 1 : iminfo.bytesPerRow + 1,
@@ -50,8 +47,7 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	/**
-	 * Applies PNG un-filter to inflated raw line. Result in
-	 * {@link #getUnfilteredRow()} {@link #getRowLen()}
+	 * Applies PNG un-filter to inflated raw line. Result in {@link #getUnfilteredRow()} {@link #getRowLen()}
 	 */
 	public void unfilterRow() {
 		unfilterRow(rowinfo.bytesRow);
@@ -150,16 +146,15 @@ public class IdatSet extends DeflatedChunksSet {
 	/**
 	 * Method for async/callback mode .
 	 * <p>
-	 * In callback mode will be called as soon as each row is retrieved
-	 * (inflated and unfiltered), after {@link #preProcessRow()}
+	 * In callback mode will be called as soon as each row is retrieved (inflated and unfiltered), after
+	 * {@link #preProcessRow()}
 	 * <p>
 	 * This is a dummy implementation that does nothing.
 	 * <p>
 	 * The return value is essential
 	 * <p>
 	 * 
-	 * @return Length of next row, in bytes (including filter byte),
-	 *         non-positive if done
+	 * @return Length of next row, in bytes (including filter byte), non-positive if done
 	 */
 	@Override
 	protected int processRowCallback() {
@@ -168,8 +163,7 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	/**
-	 * Signals that we are done with the previous row, begin reading the next
-	 * one.
+	 * Signals that we are done with the previous row, begin reading the next one.
 	 * <p>
 	 * In polled mode, calls setNextRowLen()
 	 * <p>
@@ -217,6 +211,13 @@ public class IdatSet extends DeflatedChunksSet {
 	void updateCrc(CRC32 idatCrc) {
 		if (idatCrc != null)// just for testing
 			idatCrc.update(getUnfilteredRow(), 1, getRowFilled() - 1);
+	}
+
+	@Override
+	public void close() {
+		super.close();
+		rowUnfiltered = null;//not really necessary...
+		rowUnfilteredPrev = null;
 	}
 
 }

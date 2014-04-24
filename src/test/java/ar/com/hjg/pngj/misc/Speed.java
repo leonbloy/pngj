@@ -3,7 +3,6 @@ package ar.com.hjg.pngj.misc;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
-import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;

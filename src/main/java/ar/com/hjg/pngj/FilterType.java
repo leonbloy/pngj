@@ -5,8 +5,8 @@ import java.util.HashMap;
 /**
  * Internal PNG predictor filter type
  * 
- * Negative values are pseudo types, actually global strategies for writing, that 
- * (can) result on different real filters for different rows
+ * Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters
+ * for different rows
  */
 public enum FilterType {
 	/**
@@ -30,8 +30,7 @@ public enum FilterType {
 	 */
 	FILTER_PAETH(4),
 	/**
-	 * Default strategy: select one of the standard filters depending on global
-	 * image parameters 
+	 * Default strategy: select one of the standard filters depending on global image parameters
 	 */
 	FILTER_DEFAULT(-1),
 	/**
@@ -51,16 +50,16 @@ public enum FilterType {
 	/**
 	 * Preserves the filter passed in original row.
 	 */
-	FILTER_PRESERVE(-40), 
+	FILTER_PRESERVE(-40),
 	/**
 	 * Uses all fiters, one for lines, cyciclally. Only for tests.
 	 */
 	FILTER_CYCLIC(-50),
 	/**
-	 * Not specified, placeholder for unknown or NA filters.  
+	 * Not specified, placeholder for unknown or NA filters.
 	 */
-	FILTER_UNKNOWN(-100) ;
-	
+	FILTER_UNKNOWN(-100);
+
 	public final int val;
 
 	private FilterType(int val) {
@@ -90,20 +89,20 @@ public enum FilterType {
 	}
 
 	public static boolean isAdaptive(FilterType fy) {
-		return fy.val<=-2 && fy.val>=-4;
+		return fy.val <= -2 && fy.val >= -4;
 	}
-	
+
 	/**
 	 * Returns all "standard" filters
 	 */
 	public static FilterType[] getAllStandard() {
 		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
 	}
-	
+
 	public static FilterType[] getAllStandardNoneLast() {
-		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH,FILTER_NONE };
+		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH, FILTER_NONE };
 	}
-	
+
 	public static FilterType[] getAllStandardExceptNone() {
 		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
 	}

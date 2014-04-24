@@ -6,11 +6,10 @@ import java.io.InputStream;
 /**
  * Trivial extension of {@link PngReader} that uses {@link ImageLineInt}.
  * <p>
- * In the current implementation this is quite dummy/redundant, because (for
- * backward compatibility) PngReader already uses a {@link ImageLineInt}.
+ * In the current implementation this is quite dummy/redundant, because (for backward compatibility) PngReader already
+ * uses a {@link ImageLineInt}.
  * <p>
- * The factory is set at construction time. Remember that this could still be
- * changed at runtime.
+ * The factory is set at construction time. Remember that this could still be changed at runtime.
  */
 public class PngReaderInt extends PngReader {
 

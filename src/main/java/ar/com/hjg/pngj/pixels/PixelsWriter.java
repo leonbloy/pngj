@@ -29,7 +29,6 @@ public abstract class PixelsWriter {
 	private int deflaterStrategy = Deflater.DEFAULT_STRATEGY;
 	protected boolean initdone = false;
 
-	
 	protected FilterType filterType = FilterType.FILTER_DEFAULT;
 	// counts the filters used - just for stats
 	private int[] filtersUsed = new int[5];
@@ -43,7 +42,7 @@ public abstract class PixelsWriter {
 		bytesRow = imgInfo.bytesPerRow;
 		buflen = bytesRow + 1;
 		bytesPixel = imgInfo.bytesPixel;
-		currentRow=-1;
+		currentRow = -1;
 	}
 
 	public final void processRow(final byte[] rowb) {
@@ -59,15 +58,15 @@ public abstract class PixelsWriter {
 	}
 
 	/**
-	 * This does the filtering and send to stream. Typically should
-	 * decide the filtering, call {@link #filterRowWithFilterType(FilterType, byte[], byte[], byte[])} and
-	 * and {@link #sendToCompressedStream(byte[])}
+	 * This does the filtering and send to stream. Typically should decide the filtering, call
+	 * {@link #filterRowWithFilterType(FilterType, byte[], byte[], byte[])} and and
+	 * {@link #sendToCompressedStream(byte[])}
 	 * 
 	 * @param rowb
 	 * @param currentRow
 	 */
 	protected abstract void filterAndWrite(final byte[] rowb);
-		
+
 	/**
 	 * Does the real filtering. This must be called with the real (standard) filterType
 	 * 
@@ -120,8 +119,8 @@ public abstract class PixelsWriter {
 	}
 
 	/**
-	 *  This will be called by the PngWrite to store the raw pixels for each row.
-	 *  This can change from call to call.   Warning: this can be called before the object is init, call init() o be sure 
+	 * This will be called by the PngWrite to store the raw pixels for each row. This can change from call to call.
+	 * Warning: this can be called before the object is init, call init() o be sure
 	 */
 	public abstract byte[] getRowb();
 
@@ -134,7 +133,6 @@ public abstract class PixelsWriter {
 			if (compressorStream == null) { // if not set, use the deflater
 				compressorStream = new CompressorStreamDeflater(os, imgInfo.rows, buflen, getDeflaterCompLevel(),
 						getDeflaterStrategy());
-				((CompressorStreamDeflater) compressorStream).setDiscardWhenDone(true);
 			}
 			initdone = true;
 		}
@@ -149,9 +147,12 @@ public abstract class PixelsWriter {
 			filterType = FilterType.FILTER_DEFAULT;
 	}
 
-	/** cleanup. This should be called explicitly */
-	public void end() {
-		compressorStream.close();
+	/** cleanup. This should be called explicitly. This must be idempotent and not throw exceptions */
+	public void close() {
+		if (compressorStream != null) {
+			compressorStream.close();
+			compressorStream = null;
+		}
 	}
 
 	public Integer getDeflaterStrategy() {
@@ -229,5 +230,5 @@ public abstract class PixelsWriter {
 		else
 			return FilterType.FILTER_PAETH;
 	}
-	
+
 }

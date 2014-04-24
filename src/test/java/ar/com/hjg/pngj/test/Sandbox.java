@@ -21,14 +21,15 @@ public class Sandbox {
 	public static void reencodeWithFilter(File s, FilterType ftype) throws IOException {
 		PngReader p = new PngReader(s);
 		NullOs nos = new NullOs();
-		PngWriter pw=new PngWriter(nos, p.imgInfo);
+		PngWriter pw = new PngWriter(nos, p.imgInfo);
 		pw.setFilterType(ftype);
 		pw.setCompLevel(6);
 		pw.writeRows(p.readRows());
-		p.end();pw.end();
-		System.out.println(s + " f=" + ftype + " comp:" + pw.getPixelsWriter().getCompression() + " " + pw.getPixelsWriter().getFiltersUsed());
+		p.end();
+		pw.end();
+		System.out.println(s + " f=" + ftype + " comp:" + pw.getPixelsWriter().getCompression() + " "
+				+ pw.getPixelsWriter().getFiltersUsed());
 	}
-
 
 	public static void main(String[] args) throws Exception {
 		// 24 target (paeth) 0.62 

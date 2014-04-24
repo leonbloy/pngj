@@ -11,8 +11,7 @@ import ar.com.hjg.pngj.test.PngjTest;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**
- * Test the DeflatedChunkSet using a ChunkSetReader2 that reads the IDATs with
- * no knowledge of filters, etc
+ * Test the DeflatedChunkSet using a ChunkSetReader2 that reads the IDATs with no knowledge of filters, etc
  */
 public class DeflatedChunkSetTest extends PngjTest {
 
@@ -94,7 +93,7 @@ public class DeflatedChunkSetTest extends PngjTest {
 				getCurReaderDeflatedSet().prepareForNextRow(rowsize);
 			}
 			if (getCurReaderDeflatedSet() != null)
-				getCurReaderDeflatedSet().end();
+				getCurReaderDeflatedSet().close();
 
 			while (!isDone()) {
 				if (bf.feed(this) < 1)

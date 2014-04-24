@@ -6,8 +6,7 @@ import java.util.zip.Deflater;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
- * This class uses a quick compressor to get a rough estimate of deflate
- * compression ratio.
+ * This class uses a quick compressor to get a rough estimate of deflate compression ratio.
  * 
  * This just ignores the outputStream, and the deflater related parameters
  */
@@ -55,13 +54,19 @@ public class CompressorStreamLz4 extends CompressorStream {
 		this(os, nblocks, bytesPerBlock);// edlfater ignored
 	}
 
-	public CompressorStreamLz4(OutputStream os, int nblocks, int bytesPerBlock, int deflaterCompLevel, int deflaterStrategy) {
+	public CompressorStreamLz4(OutputStream os, int nblocks, int bytesPerBlock, int deflaterCompLevel,
+			int deflaterStrategy) {
 		this(os, nblocks, bytesPerBlock); // paramters ignored
 	}
 
 	public void write(byte[] b, int off) {
 		if (done || closed)
 			throw new PngjOutputException("write beyond end of stream");
+		if (storeFirstByte) {
+			if (firstBytes == null)
+				firstBytes = new byte[nblocks];
+			firstBytes[block] = b[0];
+		}
 		block++;
 		if (!buffered) {
 			bytesOut += lz4.compressEstim(b, off, bytesPerBlock);

@@ -5,21 +5,19 @@ import java.io.OutputStream;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
- * This is an OutputStream that compresses (via Deflater or a deflater-like
- * object), and optionally passes the compressed stream to another output
- * stream.
+ * This is an OutputStream that compresses (via Deflater or a deflater-like object), and optionally passes the
+ * compressed stream to another output stream.
  * 
  * It allows to compute in/out/ratio stats
  * 
- * It works as a stream (similar to DeflaterOutputStream), but it's peculiar in
- * that it knows in advance that it will be written with a (known) number of blocks
- * of fixed (known) length. In out app, the block is a row (including filter byte)
+ * It works as a stream (similar to DeflaterOutputStream), but it's peculiar in that it knows in advance that it will be
+ * written with a (known) number of blocks of fixed (known) length. In out app, the block is a row (including filter
+ * byte)
  * 
  * If not closed, it can be recicled via reset()
  * 
- * It has 3 states: - working: 0 or more bytes received - done: targetLen bytes
- * received and proceseed, only here getCompressionRatio() can be called -
- * closed: object discarded
+ * It has 3 states: - working: 0 or more bytes received - done: targetLen bytes received and proceseed, only here
+ * getCompressionRatio() can be called - closed: object discarded
  * 
  */
 public abstract class CompressorStream {
@@ -43,23 +41,30 @@ public abstract class CompressorStream {
 		this.bytesPerBlock = bytesPerBlock;
 	}
 
-	/* idempotent */
+	/** Releases resources. Does NOT close the OuputStream. Idempotent. Should be called when done */
 	public void close() {
-		if (!closed) {
-			closed = true;
-		}
+		closed = true;
 	}
 
 	/**
-	 * length must be bytesPerBlock
+	 * length is assumed: bytesPerBlock
 	 */
 	public abstract void write(byte[] b, int off);
 
-	public void write(byte[] b) {
+	/**
+	 * length is assumed: bytesPerBlock
+	 */
+	public final void write(byte[] b) {
 		write(b, 0);
 	}
 
-	public abstract void reset();
+	public void reset() {
+		if (closed)
+			throw new PngjOutputException("cannot reset, discarded object");
+		bytesIn = 0;
+		bytesOut = 0;
+		block = 0;
+	}
 
 	/**
 	 * compressed/raw. This should be called only when done
@@ -114,6 +119,12 @@ public abstract class CompressorStream {
 
 	public void setStoreFirstByte(boolean storeFirstByte) {
 		this.storeFirstByte = storeFirstByte;
+		if (this.storeFirstByte) {
+			if (firstBytes == null || firstBytes.length < nblocks)
+				firstBytes = new byte[nblocks];
+
+		} else
+			firstBytes = null;
 	}
 
 }

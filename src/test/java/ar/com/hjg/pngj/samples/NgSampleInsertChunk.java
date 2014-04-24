@@ -12,9 +12,8 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
 /**
- * This example shows how to insert a textual chunk in the most efficient
- * manner, using just a ChunkSequenceDumb (This does not check for duplicated
- * textual chunks)
+ * This example shows how to insert a textual chunk in the most efficient manner, using just a ChunkSequenceDumb (This
+ * does not check for duplicated textual chunks)
  */
 public class NgSampleInsertChunk {
 

@@ -1,31 +1,31 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.io.FilterWriter;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
+
 // TODO: check that filter for row 0 is NONE/SUB
 public class PixelsWriterMultiple extends PixelsWriter {
 
 	protected LinkedList<byte[]> rows; // unfiltered rowsperband elements [0] is the current (rowb). This should include all rows of current band, plus one
 	protected List<CompressorStream> filterBank = new ArrayList<CompressorStream>(); // rowsperband elements [0] is the current
 	protected byte[][] filteredRows = new byte[5][]; // one for each filter (0=none is not allocated)
-	protected byte[] filteredRowTmp ; // 
+	protected byte[] filteredRowTmp; // 
+	private FiltersPerformance fPerformance;
 	protected int rowsPerBand = 0;
 	protected int rowInBand = -1;
 	protected int bandNum = -1;
 	protected int firstRowInThisBand, lastRowInThisBand;
 	protected int rowPerBandCurrent = 0; // lastRowInThisBand-firstRowInThisBand +1 : might be smaller than rowsPerBand
 
-	protected int memoryTarget = 20000; // around this amount of bytes will ocupy the band
+	protected static final int HINT_MEMORY_DEFAULT_KB = 100;
+	protected int hintMemoryKb = HINT_MEMORY_DEFAULT_KB; // we will consume about (not more than) this memory (in buffers, not couting the deflaters)
+	private int hintRowsPerBand = -1;
 
-	FiltersPerformance fPerformance;
-	private boolean useLz4 = false;
-	private int rowsPerBandHint;
+	private boolean useLz4 = true;
 
 	public PixelsWriterMultiple(ImageInfo imgInfo) {
 		super(imgInfo);
@@ -57,13 +57,14 @@ public class PixelsWriterMultiple extends PixelsWriter {
 
 		if (currentRow == lastRowInThisBand) {
 			int best = getBestCompressor();
-			System.out.println("bes comp=" + best + " rows=" + firstRowInThisBand + ":" + lastRowInThisBand);
+			//System.out.println("bes comp=" + best + " rows=" + firstRowInThisBand + ":" + lastRowInThisBand);
 			byte[] filtersAdapt = filterBank.get(5).getFirstBytes();
 			for (int r = firstRowInThisBand, i = 0, j = lastRowInThisBand - firstRowInThisBand; r <= lastRowInThisBand; r++, j--, i++) {
 				int fti = best <= 4 ? best : filtersAdapt[i];
 				byte[] filtered = null;
 				if (r != lastRowInThisBand) {
-					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),	filteredRowTmp);
+					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),
+							filteredRowTmp);
 				} else { // no need to do this filtering, we already have it
 					filtered = filteredRows[fti];
 				}
@@ -91,7 +92,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 					filteredRows[i] = new byte[buflen];
 			}
 			if (rowsPerBand == 0)
-				rowsPerBand = computeRowsPerBand(imgInfo, memoryTarget, rowsPerBandHint);
+				rowsPerBand = computeInitialRowsPerBand();
 		}
 	}
 
@@ -133,13 +134,13 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		}
 	}
 
-	private static int computeRowsPerBand(ImageInfo imgInfo, int memTarget, int rowPerBandHint) {
-		int r = (memTarget + imgInfo.bytesPerRow / 2) / (imgInfo.bytesPerRow + 1) + 1;
-		if (rowPerBandHint > 0 && r > rowPerBandHint)
-			r = rowPerBandHint;
+	private int computeInitialRowsPerBand() {
+		int r = (int) ((hintMemoryKb * 1024.0) / (imgInfo.bytesPerRow + 1) - 5);
+		if (hintRowsPerBand > 0 && r > hintRowsPerBand)
+			r = hintRowsPerBand;
 		if (r > imgInfo.rows)
 			r = imgInfo.rows;
-		if (r > 2 && r > imgInfo.rows / 8 ) { // redistribute more evenly
+		if (r > 2 && r > imgInfo.rows / 8) { // redistribute more evenly
 			int k = (imgInfo.rows + (r - 1)) / r;
 			r = (imgInfo.rows + k / 2) / k;
 		}
@@ -166,26 +167,26 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	}
 
 	@Override
-	public void end() {
-		super.end();
+	public void close() {
+		super.close();
 		rows.clear();
-		for (CompressorStream f : filterBank)
+		for (CompressorStream f : filterBank) {
 			f.close();
+		}
 		filterBank.clear();
+	}
+
+	public void setHintMemoryKb(int hintMemoryKb) {
+		this.hintMemoryKb = hintMemoryKb <= 0 ? HINT_MEMORY_DEFAULT_KB
+				: (hintMemoryKb > 100000 ? 100000 : hintMemoryKb);
+	}
+
+	public void setHintRowsPerBand(int hintRowsPerBand) {
+		this.hintRowsPerBand = hintRowsPerBand;
 	}
 
 	public void setUseLz4(boolean lz4) {
 		this.useLz4 = lz4;
-
-	}
-
-	public void setMemoryTarget(int memoryTarget) {
-		if (memoryTarget > 0)
-			this.memoryTarget = memoryTarget;
-	}
-
-	public void setRowPerBandHint(int rowPerBandHint) {
-		this.rowsPerBandHint = rowPerBandHint;
 	}
 
 }

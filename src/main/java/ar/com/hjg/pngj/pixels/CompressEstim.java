@@ -3,8 +3,7 @@ package ar.com.hjg.pngj.pixels;
 import java.util.Random;
 import java.util.zip.Deflater;
 
-public class CompressEstim  {
-
+public class CompressEstim {
 
 	enum CompressEstimMethod {
 		DEFLATER, LZ4DUMMY
@@ -18,7 +17,7 @@ public class CompressEstim  {
 	private long statmsecs = 1;
 	private long statbytesin = 1;
 	private long statbytesout = 1;
-	private byte[]  buffer;
+	private byte[] buffer;
 
 	public CompressEstim(CompressEstimMethod method) {
 		this.method = method;
@@ -31,8 +30,8 @@ public class CompressEstim  {
 	/**
 	 * Returns an estimation of compression ratio (out/in).
 	 * 
-	 * This is one-shot (not dependent on previous history). For small values (less than MINLEN) returns 1.0
-	 * For large values (more than 64K) it might consider only the first 64K
+	 * This is one-shot (not dependent on previous history). For small values (less than MINLEN) returns 1.0 For large
+	 * values (more than 64K) it might consider only the first 64K
 	 * 
 	 * @param buf
 	 * @param offset
@@ -76,12 +75,12 @@ public class CompressEstim  {
 	}
 
 	public void close() {
-		
+
 	}
-	
+
 	public String toStringStats() {
-		return String.format("Method=%s bytesin(kb)=%.1f r=%.3f MB/sec=%.1f", method.toString(), (statbytesin / 1024.0),
-				globalCompression(), getSpeed());
+		return String.format("Method=%s bytesin(kb)=%.1f r=%.3f MB/sec=%.1f", method.toString(),
+				(statbytesin / 1024.0), globalCompression(), getSpeed());
 	}
 
 	/** returns global compression ratio for all history - you'll rarely use this */
@@ -112,7 +111,7 @@ public class CompressEstim  {
 			double elz42 = 0;
 			int times = 100;
 			for (int t = 0; t < times; t++) {
-				b[0]=(byte) t;
+				b[0] = (byte) t;
 				elz42 = estlz4.estim(b);
 				edef = estdef.estim(b);
 			}

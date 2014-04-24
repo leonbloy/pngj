@@ -10,8 +10,8 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 
 /**
- * Sample implementation of a very basic reader that only loads the empty chunks
- * (except the IHDR). The IDAT are optional.
+ * Sample implementation of a very basic reader that only loads the empty chunks (except the IHDR). The IDAT are
+ * optional.
  */
 public class PngReaderDumb {
 
@@ -96,7 +96,8 @@ public class PngReaderDumb {
 	}
 
 	public void close() {
-		if(	chunkseq!=null) chunkseq.close();
+		if (chunkseq != null)
+			chunkseq.close();
 		streamFeeder.close();
 	}
 }

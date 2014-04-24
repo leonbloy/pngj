@@ -1,11 +1,9 @@
 package ar.com.hjg.pngj;
 
-
 /**
  * Lightweight wrapper for an image scanline, used for read and write.
  * <p>
- * This object can be (usually it is) reused while iterating over the image
- * lines.
+ * This object can be (usually it is) reused while iterating over the image lines.
  * <p>
  * See <code>scanline</code> field, to understand the format.
  * 

@@ -297,8 +297,7 @@ public final class PngHelperInternal {
 	}
 
 	/**
-	 * Prints a debug message (prints class name, method and line number) to
-	 * stderr and logFile
+	 * Prints a debug message (prints class name, method and line number) to stderr and logFile
 	 * 
 	 * @param obj
 	 *            : Object to print

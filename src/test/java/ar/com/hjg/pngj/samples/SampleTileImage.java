@@ -13,9 +13,12 @@ import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 /**
  * Takes several tiles and join them in a single image
  * 
- * @param tiles            Filenames of PNG files to tile
- * @param dest            Destination PNG filename
- * @param nTilesX            How many tiles per row?
+ * @param tiles
+ *            Filenames of PNG files to tile
+ * @param dest
+ *            Destination PNG filename
+ * @param nTilesX
+ *            How many tiles per row?
  */
 public class SampleTileImage {
 

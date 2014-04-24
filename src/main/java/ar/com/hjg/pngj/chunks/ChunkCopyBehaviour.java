@@ -5,13 +5,11 @@ import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 
 /**
- * Chunk copy policy to apply when copyng from a {@link PngReader} to a
- * {@link PngWriter}.
+ * Chunk copy policy to apply when copyng from a {@link PngReader} to a {@link PngWriter}.
  * <p>
  * The constants are bit-masks, they can be OR-ed
  * <p>
- * Reference: <a
- * href="http://www.w3.org/TR/PNG/#14">http://www.w3.org/TR/PNG/#14</a> <br>
+ * Reference: <a href="http://www.w3.org/TR/PNG/#14">http://www.w3.org/TR/PNG/#14</a> <br>
  */
 public class ChunkCopyBehaviour {
 
@@ -56,11 +54,10 @@ public class ChunkCopyBehaviour {
 	/**
 	 * Creates a predicate equivalent to the copy mask
 	 * <p>
-	 * Given a copy mask (see static fields) and the ImageInfo of the target
-	 * PNG, returns a predicate that tells if a chunk should be copied.
+	 * Given a copy mask (see static fields) and the ImageInfo of the target PNG, returns a predicate that tells if a
+	 * chunk should be copied.
 	 * <p>
-	 * This is a handy helper method, you can also create and set your own
-	 * predicate
+	 * This is a handy helper method, you can also create and set your own predicate
 	 */
 	public static ChunkPredicate createPredicate(final int copyFromMask, final ImageInfo imgInfo) {
 		return new ChunkPredicate() {

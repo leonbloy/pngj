@@ -36,8 +36,7 @@ import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
 /**
- * Methods of this class are designed for debug and testing PNGJ library, they
- * are not optimized
+ * Methods of this class are designed for debug and testing PNGJ library, they are not optimized
  */
 public class TestSupport {
 
@@ -103,8 +102,9 @@ public class TestSupport {
 	}
 
 	public static String showFilters(File pngr, int maxgroups, boolean usenewlines) {
-		if(maxgroups<=0) maxgroups=Integer.MAX_VALUE;
-		int[] types=new int[5];
+		if (maxgroups <= 0)
+			maxgroups = Integer.MAX_VALUE;
+		int[] types = new int[5];
 		PngReaderByte png = new PngReaderByte(pngr);
 		StringBuilder sb = new StringBuilder();
 		FilterType ft1, ft0 = null;
@@ -116,13 +116,13 @@ public class TestSupport {
 			if (r == 0 || ft1 != ft0) {
 				if (r > 0) {
 					contgroups++;
-					sb.append(String.format("[%d %d]=%s", r1, r -r1, ft0)).append(usenewlines ? "\n" : " ");
+					sb.append(String.format("[%d %d]=%s", r1, r - r1, ft0)).append(usenewlines ? "\n" : " ");
 				}
 				r1 = r;
 				ft0 = ft1;
 			}
 			if (r == png.imgInfo.rows - 1) {
-				sb.append(String.format("[%d %d]=%s", r1,  r -r1, ft0)).append(usenewlines ? "\n" : " ");
+				sb.append(String.format("[%d %d]=%s", r1, r - r1, ft0)).append(usenewlines ? "\n" : " ");
 			}
 			if (contgroups >= maxgroups) {
 				sb.append("...");
@@ -130,16 +130,15 @@ public class TestSupport {
 			}
 		}
 		png.end();
-		for(int i=0;i<=4;i++) {
-			types[i] =  (int)((types[i] *100)/png.imgInfo.rows);
+		for (int i = 0; i <= 4; i++) {
+			types[i] = (int) ((types[i] * 100) / png.imgInfo.rows);
 		}
 		sb.append(" " + Arrays.toString(types));
 		return sb.toString().trim().replaceAll("FILTER_", "");
 	}
 
 	/**
-	 * First byte is the filter type, nbytes is the valid content (including
-	 * filter byte) This shows at most 9 bytes
+	 * First byte is the filter type, nbytes is the valid content (including filter byte) This shows at most 9 bytes
 	 */
 	public static String showRow(byte[] row, int nbytes, int rown, int dx, int ox) {
 		StringBuilder sb = new StringBuilder();
@@ -240,14 +239,17 @@ public class TestSupport {
 		}
 	}
 
-	/** The resources dir for the tests should include  PNG_TEST_STRIPES (and testsuite1)
-	 * Typically target/tests-classes
+	/**
+	 * The resources dir for the tests should include PNG_TEST_STRIPES (and testsuite1) Typically target/tests-classes
 	 * */
 	public static File getResourcesDir() {
 		if (resourcesDir == null) {
 			String tokenfile = PNG_TEST_STRIPES;
 			URL u = TestSupport.class.getClassLoader().getResource(tokenfile);
-			if(u==null) throw new PngjException(PNG_TEST_STRIPES  + " not found in classpath, this is required in order to locate the resources dir for the PNGJ tests to run");
+			if (u == null)
+				throw new PngjException(
+						PNG_TEST_STRIPES
+								+ " not found in classpath, this is required in order to locate the resources dir for the PNGJ tests to run");
 			File f;
 			try {
 				f = (new File(u.toURI())).getParentFile().getParentFile();
@@ -261,15 +263,14 @@ public class TestSupport {
 
 	public static List<File> listPngFromDir(File dir) {
 		dir = absFile(dir);
-		ArrayList<File> pngs=new ArrayList<File>();
-		for(String f: dir.list()) {
-			if(f.toLowerCase().endsWith(".png")) 
-				pngs.add(new File(dir,f));
+		ArrayList<File> pngs = new ArrayList<File>();
+		for (String f : dir.list()) {
+			if (f.toLowerCase().endsWith(".png"))
+				pngs.add(new File(dir, f));
 		}
 		return pngs;
 	}
 
-	
 	public static File getPngTestSuiteDir() {
 		return new File(getResourcesDir(), "testsuite1");
 	}
@@ -420,7 +421,7 @@ public class TestSupport {
 			li.add(dirOrFile);// not a dir, but a file
 		return li;
 	}
-	
+
 	public static List<File> getPngsFromDir(File dir) {
 		return getPngsFromDir(dir, true);
 	}

@@ -65,8 +65,7 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 	 * <p>
 	 * Warning: the argument is the row number in the original image
 	 * <p>
-	 * If this works as cursor, this returns true only if that is the number of
-	 * its "current" line
+	 * If this works as cursor, this returns true only if that is the number of its "current" line
 	 */
 	public boolean hasImageLine(int n) {
 		return singleCursor ? currentRow == n : imageRowToMatrixRowStrict(n) >= 0;
@@ -80,8 +79,7 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 	}
 
 	/**
-	 * Same as {@link #imageRowToMatrixRow(int)}, but returns negative if
-	 * invalid
+	 * Same as {@link #imageRowToMatrixRow(int)}, but returns negative if invalid
 	 */
 	public int imageRowToMatrixRowStrict(int imrow) {
 		imrow -= offset;
@@ -103,11 +101,9 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
 	/**
 	 * Converts from real image row to this object row number.
 	 * <p>
-	 * Warning: this always returns a valid matrix row (clamping on 0 : nrows-1,
-	 * and rounding down)
+	 * Warning: this always returns a valid matrix row (clamping on 0 : nrows-1, and rounding down)
 	 * <p>
-	 * Eg: rowOffset=4,rowStep=2 imageRowToMatrixRow(17) returns 6 ,
-	 * imageRowToMatrixRow(1) returns 0
+	 * Eg: rowOffset=4,rowStep=2 imageRowToMatrixRow(17) returns 6 , imageRowToMatrixRow(1) returns 0
 	 */
 	public int imageRowToMatrixRow(int imrow) {
 		int r = (imrow - offset) / step;

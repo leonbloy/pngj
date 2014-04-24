@@ -3,8 +3,7 @@ package ar.com.hjg.pngj;
 /**
  * This loads the png as a plain sequence of chunks, buffering all
  * 
- * Useful to do things like insert or delete a ancilllary chunk.
- * This does not distinguish IDAT from others
+ * Useful to do things like insert or delete a ancilllary chunk. This does not distinguish IDAT from others
  **/
 public class ChunkSeqBasic extends ChunkSeqReader {
 	public boolean checkCrc = true;

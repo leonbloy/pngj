@@ -58,7 +58,7 @@ public class TestWriterFiltersPerformance {
 			}
 			imgInfo = reader.imgInfo;
 			OutputStream os = writeToFile ? new FileOutputStream(tempFile) : new NullOs();
-			PngWriter writer = writerFactory.createPngWriter(os,reader.imgInfo);
+			PngWriter writer = writerFactory.createPngWriter(os, reader.imgInfo);
 			writer.copyChunksFrom(reader.getChunksList());
 			long t0 = System.currentTimeMillis();
 			for (int i = 0; i < reader.imgInfo.rows; i++) {

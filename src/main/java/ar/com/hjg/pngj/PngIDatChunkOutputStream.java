@@ -28,10 +28,10 @@ class PngIDatChunkOutputStream extends ProgressiveOutputStream {
 	protected final void flushBuffer(byte[] b, int len) {
 		int len2 = prefix == null ? len : len + prefix.length;
 		ChunkRaw c = new ChunkRaw(len2, ChunkHelper.b_IDAT, false);
-		if(len ==len2)
+		if (len == len2)
 			c.data = b;
 		else {
-			
+
 		}
 		c.writeChunk(outputStream);
 	}

@@ -13,8 +13,8 @@ import ar.com.hjg.pngj.test.PngjTest;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**
- * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and
- * computes a CRC of all lines (bytes 0 and 1), comparing with precomputed
+ * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines (bytes 0
+ * and 1), comparing with precomputed
  */
 public class SuiteCrcsIntTest extends PngjTest {
 	LinkedHashMap<String, Long> crcs;// these were computed with old PNJG

@@ -22,8 +22,8 @@ public class SamplePngReencode {
 			protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
 				PixelsWriterMultiple pw = new PixelsWriterMultiple(imgInfo);
 				pw.setUseLz4(false);
-				pw.setRowPerBandHint(200);
-				pw.setMemoryTarget(5000000);
+				pw.setHintMemoryKb(1500);
+				pw.setHintRowsPerBand(16);
 				return pw;
 			}
 		};
@@ -39,7 +39,7 @@ public class SamplePngReencode {
 		pngw.end();
 		System.out.printf("Done. Compression: %.3f \n", pngw.computeCompressionRatio());
 	}
-	
+
 	public static void reencode(String orig, String dest, FilterType filterType, int cLevel) {
 		PngReader pngr = new PngReader(new File(orig));
 		PngWriter pngw = new PngWriter(new File(dest), pngr.imgInfo, true);

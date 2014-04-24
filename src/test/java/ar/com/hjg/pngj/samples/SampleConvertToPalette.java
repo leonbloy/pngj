@@ -11,8 +11,7 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 
 /**
- * Example: convert a RGB8/RGBA8 image to palette using Kohonen quantizer
- * Supports Alpha Does not support dithering yet
+ * Example: convert a RGB8/RGBA8 image to palette using Kohonen quantizer Supports Alpha Does not support dithering yet
  * 
  * THIS IS JUST AN EXAMPLE, IT'S NOT OPTIMIZED NOR TESTED
  */

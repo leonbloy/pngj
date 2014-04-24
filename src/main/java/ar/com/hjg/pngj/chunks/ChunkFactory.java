@@ -6,8 +6,7 @@ import ar.com.hjg.pngj.ImageInfo;
 /**
  * Default chunk factory.
  * <p>
- * The user that wants to parse custom chunks can extend
- * {@link #createEmptyChunkExtended(String, ImageInfo)}
+ * The user that wants to parse custom chunks can extend {@link #createEmptyChunkExtended(String, ImageInfo)}
  */
 public class ChunkFactory implements IChunkFactory {
 
@@ -84,8 +83,8 @@ public class ChunkFactory implements IChunkFactory {
 	}
 
 	/**
-	 * Factory for chunks that are not in the original PNG standard. This can be
-	 * overriden (but dont forget to call this also)
+	 * Factory for chunks that are not in the original PNG standard. This can be overriden (but dont forget to call this
+	 * also)
 	 * 
 	 * @param id
 	 *            Chunk id , 4 letters

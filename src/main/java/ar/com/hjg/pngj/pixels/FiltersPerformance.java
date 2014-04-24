@@ -10,38 +10,43 @@ import ar.com.hjg.pngj.PngjExceptionInternal;
 /** for use in adaptative strategy */
 public class FiltersPerformance {
 
+	private final ImageInfo iminfo;
+	private double memoryA = 0.7; // empirical (not very critical: 0.72)
+	private int lastrow = -1;
+	private double[] absum = new double[5];// depending on the strategy not all values might be computed for all
+	private double[] entropy = new double[5];
+	private double[] cost = new double[5];
+	private int[] histog = new int[256]; // temporary, not normalized
+	private int lastprefered = -1;
+	private boolean initdone = false;
+	private double preferenceForNone = 1.0; // higher gives more preference to NONE
+
+	// this values are empirical (montecarlo), for RGB8 images with entropy estimator for NONE and memory=0.7
+	// DONT MODIFY THIS
+	public static final double[] FILTER_WEIGHTS_DEFAULT = { 0.73, 1.03, 0.97, 1.11, 1.22 }; // lower is better!
+
+	private double[] filter_weights = new double[5];
+
+	private final static double LOG2NI = -1.0 / Math.log(2.0);
+
 	public FiltersPerformance(ImageInfo imgInfo) {
 		this.iminfo = imgInfo;
 	}
 
 	private void init() {
-		System.arraycopy(filter_preference_default, 0, filter_preference, 0, 5);
-		double preferNone = filter_preference[0];
+		System.arraycopy(FILTER_WEIGHTS_DEFAULT, 0, filter_weights, 0, 5);
+		double wNone = filter_weights[0];
 		if (iminfo.bitDepth == 16)
-			preferNone = 1.2;
+			wNone = 1.2;
 		else if (iminfo.alpha)
-			preferNone = 0.8;
+			wNone = 0.8;
 		else if (iminfo.indexed || iminfo.bitDepth < 8)
-			preferNone = 0.4; // we prefer NONE strongly
-		filter_preference[0] = preferNone;
+			wNone = 0.4; // we prefer NONE strongly
+		wNone /= preferenceForNone;
+		filter_weights[0] = wNone;
 		Arrays.fill(cost, 1.0);
 		initdone = true;
 	}
-
-	private final ImageInfo iminfo;
-	private double memoryA = 0.7; // empirical (not very critical: 0.72)
-	private int lastrow = -1;
-	double[] absum = new double[5];// depending on the strategy not all values might be computed for all
-	double[] entropy = new double[5];
-	double[] cost = new double[5];
-	int[] histog = new int[256]; // temporary, not normalized
-	int lastprefered = -1;
-	boolean initdone = false;
-	// this values are empirical (montecarlo), for RGB8 images with entropy estimator for NONE and memory=0.7
-	// DONT MODIFY THIS
-	public static final double[] filter_preference_default = { 0.73, 1.03, 0.97, 1.11, 1.22 }; // lower is prefered
-
-	private double[] filter_preference = new double[5];
 
 	public void updateFromFiltered(FilterType ftype, byte[] rowff, int rown) {
 		updateFromRawOrFiltered(ftype, rowff, null, null, rown);
@@ -82,7 +87,7 @@ public class FiltersPerformance {
 				val = (Math.pow(2.0, entropy[i]) - 1.0) * 0.5;
 			} else
 				continue;
-			val *= filter_preference[i];
+			val *= filter_weights[i];
 			val = cost[i] * memoryA + (1 - memoryA) * val;
 			cost[i] = val;
 			if (val < vali) {
@@ -91,7 +96,6 @@ public class FiltersPerformance {
 			}
 		}
 		lastprefered = fi;
-		//if(lastrow %100==1)		System.out.println("rown="+lastrow + " pref=" + fi+ " " + Arrays.toString(cost));
 		return FilterType.getByVal(lastprefered);
 	}
 
@@ -146,8 +150,6 @@ public class FiltersPerformance {
 		return s / (double) iminfo.bytesPerRow;
 	}
 
-	private final static double LOG2NI = -1.0 / Math.log(2.0);
-
 	public final double computeEntropyFromHistogram() {
 		double s = 1.0 / iminfo.bytesPerRow;
 		double ls = Math.log(s);
@@ -161,6 +163,16 @@ public class FiltersPerformance {
 		if (h < 0.0)
 			h = 0.0;
 		return h;
+	}
+
+	/**
+	 * If larger than 1.0, NONE will be more prefered. This must be called before init
+	 * 
+	 * @param preferenceForNone
+	 *            around 1.0 (default: 1.0)
+	 */
+	public void setPreferenceForNone(double preferenceForNone) {
+		this.preferenceForNone = preferenceForNone;
 	}
 
 }

@@ -3,18 +3,14 @@ package ar.com.hjg.pngj;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * Parses a PNG chunk, consuming bytes in one mode:
- * {@link ChunkReaderMode#BUFFER}, {@link ChunkReaderMode#PROCESS},
+ * Parses a PNG chunk, consuming bytes in one mode: {@link ChunkReaderMode#BUFFER}, {@link ChunkReaderMode#PROCESS},
  * {@link ChunkReaderMode#SKIP}.
  * <p>
- * It calls {@link #chunkDone()} when done. Also calls
- * {@link #processData(byte[], int, int)} if <code>PROCESS</code> mode. Apart
- * from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG
- * general structure)
+ * It calls {@link #chunkDone()} when done. Also calls {@link #processData(byte[], int, int)} if <code>PROCESS</code>
+ * mode. Apart from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG general structure)
  * <p>
- * The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it
- * should be short lived (one instance created for each chunk, and discarded
- * after reading), but the wrapped chunkRaw can be (usually is) long lived.
+ * The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it should be short lived (one instance
+ * created for each chunk, and discarded after reading), but the wrapped chunkRaw can be (usually is) long lived.
  */
 public abstract class ChunkReader {
 
@@ -38,8 +34,7 @@ public abstract class ChunkReader {
 		 */
 		BUFFER,
 		/**
-		 * Does not store content, processes on the fly, calling processData()
-		 * for each partial read
+		 * Does not store content, processes on the fly, calling processData() for each partial read
 		 */
 		PROCESS,
 		/**
@@ -49,8 +44,7 @@ public abstract class ChunkReader {
 	}
 
 	/**
-	 * The constructor creates also a chunkRaw, preallocated if mode =
-	 * ChunkReaderMode.BUFFER
+	 * The constructor creates also a chunkRaw, preallocated if mode = ChunkReaderMode.BUFFER
 	 * 
 	 * @param clen
 	 * @param id
@@ -68,8 +62,7 @@ public abstract class ChunkReader {
 	}
 
 	/**
-	 * Returns raw chunk (data can be empty or not, depending on
-	 * ChunkReaderMode)
+	 * Returns raw chunk (data can be empty or not, depending on ChunkReaderMode)
 	 * 
 	 * @return Raw chunk - never null
 	 */
@@ -78,13 +71,11 @@ public abstract class ChunkReader {
 	}
 
 	/**
-	 * Consumes data for the chunk (data and CRC). This never consumes more
-	 * bytes than for this chunk.
+	 * Consumes data for the chunk (data and CRC). This never consumes more bytes than for this chunk.
 	 * 
 	 * In HOT_PROCESS can call processData() (not more than once)
 	 * 
-	 * If this ends the chunk (included CRC) it checks CRC (if checking) and
-	 * calls chunkDone()
+	 * If this ends the chunk (included CRC) it checks CRC (if checking) and calls chunkDone()
 	 * 
 	 * @param buf
 	 * @param off
@@ -148,8 +139,7 @@ public abstract class ChunkReader {
 	}
 
 	/**
-	 * Determines if CRC should be checked. This should be called before
-	 * starting reading.
+	 * Determines if CRC should be checked. This should be called before starting reading.
 	 * 
 	 * @param crcCheck
 	 */
@@ -160,18 +150,15 @@ public abstract class ChunkReader {
 	}
 
 	/**
-	 * This method will only be called in PROCESS mode, probably several times,
-	 * each time with a new fragment of data
+	 * This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data
 	 * 
-	 * It's guaranteed that the data to read has non-zero length and it
-	 * corresponds exclusively to this chunk data (no crc, no data from no other
-	 * chunks, )
+	 * It's guaranteed that the data to read has non-zero length and it corresponds exclusively to this chunk data (no
+	 * crc, no data from no other chunks, )
 	 */
 	protected abstract void processData(byte[] buf, int off, int len);
 
 	/**
-	 * This method will be called (in all modes) when the full chunk -including
-	 * crc- has been read
+	 * This method will be called (in all modes) when the full chunk -including crc- has been read
 	 */
 	protected abstract void chunkDone();
 

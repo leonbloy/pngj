@@ -19,6 +19,7 @@ public class BufferedStreamFeeder {
 
 	private static final int DEFAULTSIZE = 8192;
 
+	/** By default, the stream will be closed on close() */
 	public BufferedStreamFeeder(InputStream is) {
 		this(is, DEFAULTSIZE);
 	}
@@ -75,8 +76,7 @@ public class BufferedStreamFeeder {
 	 *            Consumer
 	 * @param nbytes
 	 *            Number of bytes
-	 * @return true if success, false otherwise (EOF on stream, or consumer is
-	 *         done)
+	 * @return true if success, false otherwise (EOF on stream, or consumer is done)
 	 */
 	public boolean feedFixed(IBytesConsumer consumer, int nbytes) {
 		int remain = nbytes;
@@ -90,8 +90,7 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * If there are not pending bytes to be consumed tries to fill the buffer
-	 * with bytes from the stream.
+	 * If there are not pending bytes to be consumed tries to fill the buffer with bytes from the stream.
 	 */
 	protected void refillBuffer() {
 		if (pendinglen > 0 || eof)
@@ -111,8 +110,8 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * Returuns true if we have more data to fed the consumer. This internally
-	 * tries to grabs more bytes from the stream if necessary
+	 * Returuns true if we have more data to fed the consumer. This internally tries to grabs more bytes from the stream
+	 * if necessary
 	 */
 	public boolean hasMoreToFeed() {
 		if (eof)
@@ -124,8 +123,7 @@ public class BufferedStreamFeeder {
 
 	/**
 	 * @param closeStream
-	 *            If true, the underlying stream will be closed on when close()
-	 *            is called
+	 *            If true, the underlying stream will be closed on when close() is called
 	 */
 	public void setCloseStream(boolean closeStream) {
 		this.closeStream = closeStream;
@@ -155,9 +153,8 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * Sets a new underlying inputstream. This allows to reuse this object. The
-	 * old underlying is not closed and the state is not reset (you should call
-	 * close() previously if you want that)
+	 * Sets a new underlying inputstream. This allows to reuse this object. The old underlying is not closed and the
+	 * state is not reset (you should call close() previously if you want that)
 	 * 
 	 * @param is
 	 */
@@ -174,9 +171,8 @@ public class BufferedStreamFeeder {
 	}
 
 	/**
-	 * If this flag is set (default: false), any call to feed() that returns
-	 * zero (no byte feed) will throw an exception. This is useful to be sure of
-	 * avoid infinite loops in some scenarios.
+	 * If this flag is set (default: false), any call to feed() that returns zero (no byte feed) will throw an
+	 * exception. This is useful to be sure of avoid infinite loops in some scenarios.
 	 * 
 	 * @param failIfNoFeed
 	 */

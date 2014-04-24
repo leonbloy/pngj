@@ -6,8 +6,8 @@ import java.util.zip.Inflater;
 /**
  * A set of IDAT-like chunks which, concatenated, form a zlib stream.
  * <p>
- * The inflated stream is intented to be read as a sequence of "rows", of which
- * the caller knows the lengths (not necessary equal) and number.
+ * The inflated stream is intented to be read as a sequence of "rows", of which the caller knows the lengths (not
+ * necessary equal) and number.
  * <p>
  * Eg: For IDAT non-interlaced images, a row has bytesPerRow + 1 filter byte<br>
  * For interlaced images, the lengths are variable.
@@ -58,9 +58,9 @@ public class DeflatedChunksSet {
 		} // the caller has already uncompressed all the data of interest or EOF  
 	}
 
-	State state;
+	State state = State.WAITING; // never null
 
-	final Inflater inf;
+	private Inflater inf;
 	private final boolean infOwn; // true if the inflater is our own 
 
 	private DeflatedChunkReader curChunk;
@@ -69,8 +69,7 @@ public class DeflatedChunksSet {
 	private int nFedBytes = 0; // count the total compressed bytes that have been fed
 
 	/**
-	 * All IDAT-like chunks that form a same DeflatedChunksSet should have the
-	 * same id
+	 * All IDAT-like chunks that form a same DeflatedChunksSet should have the same id
 	 */
 	public final String chunkid;
 
@@ -80,23 +79,28 @@ public class DeflatedChunksSet {
 	 * @param maxRowLen
 	 *            Max length in bytes of "rows"
 	 * @param inflater
-	 *            Can be null. If not null, will be reset
+	 *            Can be null. If not null, must be already reset (and it must be closed/released by caller!)
 	 */
 	public DeflatedChunksSet(String chunkid, int initialRowLen, int maxRowLen, Inflater inflater, byte[] buffer) {
 		this.chunkid = chunkid;
 		this.rowlen = initialRowLen;
-		this.inf = inflater != null ? inflater : new Inflater();
-		if (inflater != null) {
-			inf.reset();
-			infOwn = false;
-		} else
-			infOwn = true;
 		if (initialRowLen < 1 || maxRowLen < initialRowLen)
 			throw new PngjException("bad inital row len " + initialRowLen);
+		if (inflater != null) {
+			this.inf = inflater;
+			infOwn = false;
+		} else {
+			this.inf = new Inflater();
+			infOwn = true; // inflater is own, we will release on close()
+		}
 		this.row = buffer != null && buffer.length >= initialRowLen ? buffer : new byte[maxRowLen];
-		state = State.WAITING;
 		rown = -1;
-		prepareForNextRow(initialRowLen);
+		this.state = State.WAITING;
+		try {
+			prepareForNextRow(initialRowLen);
+		} catch (Exception e) {
+			close();
+		}
 	}
 
 	public DeflatedChunksSet(String chunkid, int initialRowLen, int maxRowLen) {
@@ -114,8 +118,8 @@ public class DeflatedChunksSet {
 	/**
 	 * Feeds the inflater with the compressed bytes
 	 * 
-	 * In poll mode, the caller should not call repeatedly this, without
-	 * consuming first, checking isDataReadyForConsumer()
+	 * In poll mode, the caller should not call repeatedly this, without consuming first, checking
+	 * isDataReadyForConsumer()
 	 * 
 	 * @param buf
 	 * @param off
@@ -139,33 +143,38 @@ public class DeflatedChunksSet {
 	 * (but it can recurse!) 
 	 */
 	private void inflateData() {
-		int ninflated = 0;
-		if (row == null || row.length < rowlen)
-			row = new byte[rowlen]; // should not happen
-		if (rowfilled < rowlen) {
-			try {
-				ninflated = inf.inflate(row, rowfilled, rowlen - rowfilled);
-			} catch (DataFormatException e) {
-				throw new PngjInputException("error decompressing zlib stream ", e);
+		try {
+			int ninflated = 0;
+			if (row == null || row.length < rowlen)
+				row = new byte[rowlen]; // should not happen
+			if (rowfilled < rowlen) {
+				try {
+					ninflated = inf.inflate(row, rowfilled, rowlen - rowfilled);
+				} catch (DataFormatException e) {
+					throw new PngjInputException("error decompressing zlib stream ", e);
+				}
+				rowfilled += ninflated;
 			}
-			rowfilled += ninflated;
-		}
-		State nextstate = null;
-		if (rowfilled == rowlen)
-			nextstate = State.READY; // complete row, process it
-		else if (!inf.finished())
-			nextstate = State.WAITING;
-		else if (rowfilled > 0)
-			nextstate = State.READY; // complete row, process it
-		else
-			nextstate = State.DONE; // eof, no more data
-		state = nextstate;
-		if (state == State.READY) {
-			preProcessRow();
-			if (isCallbackMode()) { // callback mode
-				int nextRowLen = processRowCallback();
-				prepareForNextRow(nextRowLen);
+			State nextstate = null;
+			if (rowfilled == rowlen)
+				nextstate = State.READY; // complete row, process it
+			else if (!inf.finished())
+				nextstate = State.WAITING;
+			else if (rowfilled > 0)
+				nextstate = State.READY; // complete row, process it
+			else
+				nextstate = State.DONE; // eof, no more data
+			state = nextstate;
+			if (state == State.READY) {
+				preProcessRow();
+				if (isCallbackMode()) { // callback mode
+					int nextRowLen = processRowCallback();
+					prepareForNextRow(nextRowLen);
+				}
 			}
+		} catch (RuntimeException e) {
+			close();
+			throw e;
 		}
 	}
 
@@ -177,8 +186,7 @@ public class DeflatedChunksSet {
 	}
 
 	/**
-	 * callback, must be implemented in callbackMode Must return byes of next
-	 * row, for next callback
+	 * callback, must be implemented in callbackMode Must return byes of next row, for next callback
 	 */
 	protected int processRowCallback() {
 		throw new PngjInputException("not implemented");
@@ -242,15 +250,16 @@ public class DeflatedChunksSet {
 		return state.isFinished();
 	}
 
-	/** this should be called only when discarding this object, or for aborting */
-	public void end() {
+	/** This should be called when discarding this object, or for aborting. Secure, idempotent */
+	public void close() {
 		try {
 			if (!state.isFinished())
 				state = State.DONE;
-			if (infOwn)
+			if (infOwn && inf != null) {
 				inf.end();// we end the Inflater only if we created it
+				inf = null;
+			}
 		} catch (Exception e) {
-
 		}
 	}
 
@@ -270,8 +279,8 @@ public class DeflatedChunksSet {
 	/**
 	 * Get current (last) row number.
 	 * <p>
-	 * This corresponds to the raw numeration of rows as seen by the deflater.
-	 * Not the same as the real image row, if interlaced.
+	 * This corresponds to the raw numeration of rows as seen by the deflater. Not the same as the real image row, if
+	 * interlaced.
 	 * 
 	 */
 	public int getRown() {
