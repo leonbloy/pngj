@@ -23,6 +23,7 @@ import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.PngReaderDumb;
 import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.PngWriterHc;
 import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.pixels.FiltersPerformance;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
@@ -414,9 +415,9 @@ public class TestWriterFiltersPerformanceUtil {
 		System.out.println(test.getSummary());
 	}
 
-	public static void computeSpeedWithPngWriterSuperAdaptative(File dir, int clevel, long memory, boolean useLz4) {
+	public static void computeSpeedWithPngWriterSuperAdaptative(File dir, int clevel, int  memoryKb, boolean useLz4) {
 		TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(dir),
-				new PngWriterSuperAdaptiveFactory(useLz4, memory, clevel));
+				new PngWriterSuperAdaptiveFactory(useLz4, memoryKb, clevel));
 		System.out.println(test.doit(1));
 		System.out.println(test.getSummary());
 	}
@@ -424,11 +425,11 @@ public class TestWriterFiltersPerformanceUtil {
 	public static class PngWriterSuperAdaptiveFactory implements IPngWriterFactory {
 		private int clevel;
 		private boolean lz4;
-		private long memTarget;
+		private int memoryKb;
 
-		public PngWriterSuperAdaptiveFactory(boolean lz4, long memoryTarget, int clevel) {
+		public PngWriterSuperAdaptiveFactory(boolean lz4, int memoryKb, int clevel) {
 			this.lz4 = lz4;
-			this.memTarget = memoryTarget;
+			this.memoryKb = memoryKb;
 			this.clevel = clevel;
 		}
 
@@ -437,16 +438,10 @@ public class TestWriterFiltersPerformanceUtil {
 		}
 
 		public PngWriter createPngWriter(OutputStream outputStream, ImageInfo imgInfo) {
-			PngWriter pngw = new PngWriter(outputStream, imgInfo) {
-				@Override
-				protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
-					PixelsWriterMultiple pw = new PixelsWriterMultiple(imgInfo);
-					pw.setUseLz4(lz4);
-					return pw;
-				}
-
-			};
+			PngWriterHc pngw = new PngWriterHc(outputStream, imgInfo);
 			pngw.getPixelsWriter().setDeflaterCompLevel(clevel);
+			pngw.getPixelWriterMultiple().setUseLz4(lz4);
+			pngw.getPixelWriterMultiple().setHintMemoryKb(memoryKb);
 			return pngw;
 		}
 	}
@@ -488,8 +483,8 @@ public class TestWriterFiltersPerformanceUtil {
 		// showCompressionWithJava(files, false); // 3
 		//computeSpeedWithPngWriterDefault(files,clevel); //4
 		//computeSpeedWithPngWriterDefault(files,clevel); //4
-		computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FULL, clevel);
-		//computeSpeedWithPngWriterSuperAdaptative(files, clevel, -1, false);
+		//computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FULL, clevel);
+		computeSpeedWithPngWriterSuperAdaptative(files, clevel, -1, true);
 		// computeSpeedWithPngWriterNone(files,clevel); //2
 		// computeSpeedWithPngWriterWithAdaptative(files,clevel); //2
 		// computeSpeedWithX(files,PngWriterBands.class); //2

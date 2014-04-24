@@ -19,7 +19,8 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	protected int rowInBand = -1;
 	protected int bandNum = -1;
 	protected int firstRowInThisBand, lastRowInThisBand;
-	protected int rowPerBandCurrent = 0; // lastRowInThisBand-firstRowInThisBand +1 : might be smaller than rowsPerBand
+	protected int rowsPerBandCurrent = 0; // lastRowInThisBand-firstRowInThisBand +1 : might be smaller than rowsPerBand
+	private boolean tryAdaptive = true;
 
 	protected static final int HINT_MEMORY_DEFAULT_KB = 100;
 	protected int hintMemoryKb = HINT_MEMORY_DEFAULT_KB; // we will consume about (not more than) this memory (in buffers, not couting the deflaters)
@@ -49,22 +50,23 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			byte[] filtered = filterRowWithFilterType(ftype, rowb, rowbprev, filteredRows[ftype.val]);
 			filterBank.get(ftype.val).write(filtered);
 			// adptive: report each filterted
-			fPerformance.updateFromFiltered(ftype, filtered, currentRow);
+			if (tryAdaptive)
+				fPerformance.updateFromFiltered(ftype, filtered, currentRow);
 		}
 		filteredRows[0] = rowb;
-		FilterType preferredAdaptive = fPerformance.getPreferred();
-		filterBank.get(5).write(filteredRows[preferredAdaptive.val]);
-
+		if (tryAdaptive) {
+			FilterType preferredAdaptive = fPerformance.getPreferred();
+			filterBank.get(5).write(filteredRows[preferredAdaptive.val]);
+		}
 		if (currentRow == lastRowInThisBand) {
 			int best = getBestCompressor();
 			//System.out.println("bes comp=" + best + " rows=" + firstRowInThisBand + ":" + lastRowInThisBand);
-			byte[] filtersAdapt = filterBank.get(5).getFirstBytes();
+			byte[] filtersAdapt = best == 5 ? filterBank.get(5).getFirstBytes() : null;
 			for (int r = firstRowInThisBand, i = 0, j = lastRowInThisBand - firstRowInThisBand; r <= lastRowInThisBand; r++, j--, i++) {
-				int fti = best <= 4 ? best : filtersAdapt[i];
+				int fti = best == 5 ? filtersAdapt[i] : best;
 				byte[] filtered = null;
 				if (r != lastRowInThisBand) {
-					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),
-							filteredRowTmp);
+					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),	filteredRowTmp);
 				} else { // no need to do this filtering, we already have it
 					filtered = filteredRows[fti];
 				}
@@ -72,7 +74,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			}
 		}
 		// rotate
-		if (rows.size() > rowPerBandCurrent) {
+		if (rows.size() > rowsPerBandCurrent) {
 			rows.addFirst(rows.removeLast());
 		} else
 			rows.addFirst(new byte[buflen]);
@@ -112,7 +114,9 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			int lastRowInNextBand = firstRowInThisBand + 2 * rowsPerBand - 1;
 			if (lastRowInNextBand >= imgInfo.rows) // hack:make this band bigger, so we don't have a small last band
 				lastRowInThisBand = imgInfo.rows - 1;
-			rowPerBandCurrent = 1 + lastRowInThisBand - firstRowInThisBand;
+			rowsPerBandCurrent = 1 + lastRowInThisBand - firstRowInThisBand;
+			tryAdaptive = rowsPerBandCurrent <= 3 || (rowsPerBandCurrent < 10 && imgInfo.bytesPerRow < 64) ? false
+					: true;
 			// rebuild bank 
 			rebuildFiltersBank();
 		}
@@ -125,9 +129,9 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		for (int i = 0; i <= 5; i++) {// one for each filter plus one adaptive
 			CompressorStream cp = null;
 			if (useLz4)
-				cp = new CompressorStreamLz4(null, rowPerBandCurrent, buflen);
+				cp = new CompressorStreamLz4(null, rowsPerBandCurrent, buflen);
 			else
-				cp = new CompressorStreamDeflater(null, rowPerBandCurrent, buflen);
+				cp = new CompressorStreamDeflater(null, rowsPerBandCurrent, buflen);
 			if (i == 5)
 				cp.setStoreFirstByte(true);
 			filterBank.add(cp);
@@ -150,7 +154,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	protected int getBestCompressor() {
 		double bestcr = Double.MAX_VALUE;
 		int bestb = -1;
-		for (int i = 0; i < filterBank.size(); i++) {
+		for (int i = tryAdaptive ? 5 : 4; i >= 0; i--) {
 			CompressorStream fb = filterBank.get(i);
 			double cr = fb.getCompressionRatio();
 			if (cr < bestcr) {

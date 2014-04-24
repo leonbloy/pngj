@@ -151,7 +151,6 @@ public abstract class PixelsWriter {
 	public void close() {
 		if (compressorStream != null) {
 			compressorStream.close();
-			compressorStream = null;
 		}
 	}
 
