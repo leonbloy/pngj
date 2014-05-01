@@ -9,40 +9,42 @@ import ar.com.hjg.pngj.PngjOutputException;
 /**
  */
 public class PixelsWriterDefault extends PixelsWriter {
-
-	protected int adaptMaxSkip = 8; // set in initParams, does not change   
-	protected int adaptSkipIncreaseSinceRow = 8; // set in initParams, does not change 
-	protected int adaptCurSkip = 0;
-	protected int adaptNextRow = 0;
-
 	private FiltersPerformance filtersPerformance;
 	protected FilterType curfilterType;
 	private byte[] rowb;
 	private byte[] rowbfilter;
 	private byte[] rowbprev;
 
+	protected int adaptMaxSkip; // set in initParams, does not change   
+	protected int adaptSkipIncreaseSinceRow; // set in initParams, does not change 
+	protected double adaptSkipIncreaseFactor; // set in initParams, does not change 
+	protected int adaptNextRow = 0;
+
 	public PixelsWriterDefault(ImageInfo imgInfo) {
 		super(imgInfo);
+		filtersPerformance = new FiltersPerformance(imgInfo);
 	}
 
 	@Override
 	protected void initParams() {
 		super.initParams();
-		filtersPerformance = new FiltersPerformance(imgInfo); // TODO: tweak parameters
 		if (imgInfo.getTotalPixels() <= 1024 && !FilterType.isValidStandard(filterType))
 			filterType = getDefaultFilter();
 		if (FilterType.isAdaptive(filterType)) {
-			adaptCurSkip = 0;
+			//adaptCurSkip = 0;
 			adaptNextRow = 0;
 			if (filterType == FilterType.FILTER_ADAPTIVE_FAST) {
-				adaptMaxSkip = 1024;
-				adaptSkipIncreaseSinceRow = 1;
+				adaptMaxSkip = 200;
+				adaptSkipIncreaseSinceRow = 3;
+				adaptSkipIncreaseFactor = 1 / 4.0; // skip ~ row/3
 			} else if (filterType == FilterType.FILTER_ADAPTIVE_MEDIUM) {
-				adaptMaxSkip = 15;
-				adaptSkipIncreaseSinceRow = 8;
+				adaptMaxSkip = 8;
+				adaptSkipIncreaseSinceRow = 32;
+				adaptSkipIncreaseFactor = 1 / 80.0;
 			} else if (filterType == FilterType.FILTER_ADAPTIVE_FULL) {
 				adaptMaxSkip = 0;
-				adaptSkipIncreaseSinceRow = 32;
+				adaptSkipIncreaseSinceRow = 128;
+				adaptSkipIncreaseFactor = 1 / 120.0;
 			} else
 				throw new PngjOutputException("bad filter " + filterType);
 		}
@@ -74,16 +76,22 @@ public class PixelsWriterDefault extends PixelsWriter {
 			curfilterType = getFilterType(); // this could be done once 
 		} else if (FilterType.isAdaptive(getFilterType())) {// adaptive
 			if (currentRow == adaptNextRow) {
-				if (currentRow >= adaptSkipIncreaseSinceRow && adaptCurSkip < adaptMaxSkip)
-					adaptCurSkip++;
-				adaptNextRow = currentRow + 1 + adaptCurSkip;
 				for (FilterType ftype : FilterType.getAllStandard())
 					filtersPerformance.updateFromRaw(ftype, rowb, rowbprev, currentRow);
 				curfilterType = filtersPerformance.getPreferred();
+				int skip = (currentRow >= adaptSkipIncreaseSinceRow ? (int) Math
+						.round((currentRow - adaptSkipIncreaseSinceRow) * adaptSkipIncreaseFactor) : 0);
+				if (skip > adaptMaxSkip)
+					skip = adaptMaxSkip;
+				if (currentRow == 0)
+					skip = 0;
+				adaptNextRow = currentRow + 1 + skip;
 			}
 		} else {
 			throw new PngjOutputException("not implemented filter: " + getFilterType());
 		}
+		if (currentRow == 0 && curfilterType != FilterType.FILTER_NONE && curfilterType != FilterType.FILTER_SUB)
+			curfilterType = FilterType.FILTER_SUB; //first row should always be none or sub
 	}
 
 	@Override
@@ -110,6 +118,27 @@ public class PixelsWriterDefault extends PixelsWriter {
 	@Override
 	public void close() {
 		super.close();
+	}
+
+	/**
+	 * Only for adaptive strategies. See {@link FiltersPerformance#setPreferenceForNone(double)}
+	 */
+	public void setPreferenceForNone(double preferenceForNone) {
+		filtersPerformance.setPreferenceForNone(preferenceForNone);
+	}
+
+	/**
+	 * Only for adaptive strategies. See {@link FiltersPerformance#tuneMemory(double)}
+	 */
+	public void tuneMemory(double m) {
+		filtersPerformance.tuneMemory(m);
+	}
+
+	/**
+	 * Only for adaptive strategies. See {@link FiltersPerformance#setFilterWeights(double[])}
+	 */
+	public void setFilterWeights(double[] weights) {
+		filtersPerformance.setFilterWeights(weights);
 	}
 
 }

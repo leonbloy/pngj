@@ -1,17 +1,17 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
-import java.util.List;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.PngHelperInternal;
 
 // TODO: check that filter for row 0 is NONE/SUB
 public class PixelsWriterMultiple extends PixelsWriter {
 
 	protected LinkedList<byte[]> rows; // unfiltered rowsperband elements [0] is the current (rowb). This should include all rows of current band, plus one
-	protected List<CompressorStream> filterBank = new ArrayList<CompressorStream>(); // rowsperband elements [0] is the current
+	protected CompressorStream[] filterBank = new CompressorStream[6]; 
 	protected byte[][] filteredRows = new byte[5][]; // one for each filter (0=none is not allocated)
 	protected byte[] filteredRowTmp; // 
 	private FiltersPerformance fPerformance;
@@ -24,7 +24,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 
 	protected static final int HINT_MEMORY_DEFAULT_KB = 100;
 	protected int hintMemoryKb = HINT_MEMORY_DEFAULT_KB; // we will consume about (not more than) this memory (in buffers, not couting the deflaters)
-	private int hintRowsPerBand = -1;
+	private int hintRowsPerBand = 1000; // very large number
 
 	private boolean useLz4 = true;
 
@@ -47,23 +47,30 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		byte[] rowbprev = rows.get(1);
 		for (FilterType ftype : FilterType.getAllStandardNoneLast()) {
 			// this has a special behaviour for NONE: filteredRows[0] is null, and the returned value is  rowb
+			if(currentRow == 0 && ftype!= FilterType.FILTER_NONE && ftype!= FilterType.FILTER_SUB) continue;
 			byte[] filtered = filterRowWithFilterType(ftype, rowb, rowbprev, filteredRows[ftype.val]);
-			filterBank.get(ftype.val).write(filtered);
+			filterBank[ftype.val].write(filtered);
+			if(currentRow == 0 && ftype == FilterType.FILTER_SUB) { // litle lie, only for first row
+				filterBank[FilterType.FILTER_PAETH.val].write(filtered);
+				filterBank[FilterType.FILTER_AVERAGE.val].write(filtered);
+				filterBank[FilterType.FILTER_UP.val].write(filtered);
+			}
 			// adptive: report each filterted
-			if (tryAdaptive)
+			if (tryAdaptive) {
 				fPerformance.updateFromFiltered(ftype, filtered, currentRow);
+			}
 		}
 		filteredRows[0] = rowb;
 		if (tryAdaptive) {
 			FilterType preferredAdaptive = fPerformance.getPreferred();
-			filterBank.get(5).write(filteredRows[preferredAdaptive.val]);
+			filterBank[5].write(filteredRows[preferredAdaptive.val]);
 		}
 		if (currentRow == lastRowInThisBand) {
 			int best = getBestCompressor();
 			//System.out.println("bes comp=" + best + " rows=" + firstRowInThisBand + ":" + lastRowInThisBand);
-			byte[] filtersAdapt = best == 5 ? filterBank.get(5).getFirstBytes() : null;
+			byte[] filtersAdapt = filterBank[best].getFirstBytes();
 			for (int r = firstRowInThisBand, i = 0, j = lastRowInThisBand - firstRowInThisBand; r <= lastRowInThisBand; r++, j--, i++) {
-				int fti = best == 5 ? filtersAdapt[i] : best;
+				int fti = filtersAdapt[i];
 				byte[] filtered = null;
 				if (r != lastRowInThisBand) {
 					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),	filteredRowTmp);
@@ -123,18 +130,17 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	}
 
 	protected void rebuildFiltersBank() {
-		for (CompressorStream c : filterBank)
-			c.close();
-		filterBank.clear();
 		for (int i = 0; i <= 5; i++) {// one for each filter plus one adaptive
-			CompressorStream cp = null;
-			if (useLz4)
-				cp = new CompressorStreamLz4(null, rowsPerBandCurrent, buflen);
-			else
-				cp = new CompressorStreamDeflater(null, rowsPerBandCurrent, buflen);
-			if (i == 5)
-				cp.setStoreFirstByte(true);
-			filterBank.add(cp);
+			CompressorStream cp = filterBank[i];
+			if(cp==null || cp.getNblocks()!= rowsPerBandCurrent) {
+				if(cp!=null) cp.close();
+				if (useLz4)
+					cp = new CompressorStreamLz4(null, rowsPerBandCurrent, buflen);
+				else
+					cp = new CompressorStreamDeflater(null, rowsPerBandCurrent, buflen);
+				filterBank[i]=cp;
+			} else cp.reset();
+			cp.setStoreFirstByte(true);
 		}
 	}
 
@@ -148,6 +154,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			int k = (imgInfo.rows + (r - 1)) / r;
 			r = (imgInfo.rows + k / 2) / k;
 		}
+		PngHelperInternal.logdebug("rows :" + r + "/"+ imgInfo.rows);
 		return r;
 	}
 
@@ -155,7 +162,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		double bestcr = Double.MAX_VALUE;
 		int bestb = -1;
 		for (int i = tryAdaptive ? 5 : 4; i >= 0; i--) {
-			CompressorStream fb = filterBank.get(i);
+			CompressorStream fb = filterBank[i];
 			double cr = fb.getCompressionRatio();
 			if (cr < bestcr) {
 				bestb = i;
@@ -177,7 +184,6 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		for (CompressorStream f : filterBank) {
 			f.close();
 		}
-		filterBank.clear();
 	}
 
 	public void setHintMemoryKb(int hintMemoryKb) {

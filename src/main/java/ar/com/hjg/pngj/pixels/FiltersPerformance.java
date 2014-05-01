@@ -25,7 +25,7 @@ public class FiltersPerformance {
 	// DONT MODIFY THIS
 	public static final double[] FILTER_WEIGHTS_DEFAULT = { 0.73, 1.03, 0.97, 1.11, 1.22 }; // lower is better!
 
-	private double[] filter_weights = new double[5];
+	private double[] filter_weights = new double[] { -1, -1, -1, -1, -1 };
 
 	private final static double LOG2NI = -1.0 / Math.log(2.0);
 
@@ -34,16 +34,18 @@ public class FiltersPerformance {
 	}
 
 	private void init() {
-		System.arraycopy(FILTER_WEIGHTS_DEFAULT, 0, filter_weights, 0, 5);
-		double wNone = filter_weights[0];
-		if (iminfo.bitDepth == 16)
-			wNone = 1.2;
-		else if (iminfo.alpha)
-			wNone = 0.8;
-		else if (iminfo.indexed || iminfo.bitDepth < 8)
-			wNone = 0.4; // we prefer NONE strongly
-		wNone /= preferenceForNone;
-		filter_weights[0] = wNone;
+		if (filter_weights[0] < 0) {// has not been set from outside 
+			System.arraycopy(FILTER_WEIGHTS_DEFAULT, 0, filter_weights, 0, 5);
+			double wNone = filter_weights[0];
+			if (iminfo.bitDepth == 16)
+				wNone = 1.2;
+			else if (iminfo.alpha)
+				wNone = 0.8;
+			else if (iminfo.indexed || iminfo.bitDepth < 8)
+				wNone = 0.4; // we prefer NONE strongly
+			wNone /= preferenceForNone;
+			filter_weights[0] = wNone;
+		}
 		Arrays.fill(cost, 1.0);
 		initdone = true;
 	}
@@ -65,8 +67,6 @@ public class FiltersPerformance {
 			Arrays.fill(entropy, Double.NaN);
 		}
 		lastrow = rown;
-		if (rown == 0 && ftype != FilterType.FILTER_NONE && ftype != FilterType.FILTER_SUB)
-			return;
 		if (rowff != null)
 			computeHistogram(rowff);
 		else
@@ -175,4 +175,21 @@ public class FiltersPerformance {
 		this.preferenceForNone = preferenceForNone;
 	}
 
+	/**
+	 * Values greater than 1.0 (towards infinite) increase the memory towards 1. Values smaller than 1.0 (towards zero)
+	 * decreases the memory .
+	 * 
+	 */
+	public void tuneMemory(double m) {
+		memoryA = Math.pow(memoryA, 1.0 / m);
+	}
+	
+	/**
+	 * To set manually the filter weights. This is not recommended, unless you know what you are doing.
+	 * Setting this ignores preferenceForNone and omits some heuristics
+	 * @param weights Five doubles around 1.0, one for each filter type. Lower is preferered
+	 */
+	public void setFilterWeights(double[] weights) {
+		System.arraycopy(weights, 0, filter_weights, 0, 5);
+	}
 }

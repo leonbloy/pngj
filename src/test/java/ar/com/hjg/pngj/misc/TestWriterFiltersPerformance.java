@@ -126,10 +126,10 @@ public class TestWriterFiltersPerformance {
 		this.times = repeat;
 	}
 
-	public String getSumm(boolean withFilename) { // filename, compression, msecs, extra info
+	public String getSumm(boolean withFilename) { // filename, compression, extra info
 		//extrainfo = String.format("(%d\t%d\t%d)\t",orig.length(),imgInfo.rows*(imgInfo.bytesPerRow+1),idatbytesOri);
 		String r = withFilename ? orig.getName() + "\t" : "";
-		return r + String.format("%.3f\t%d\t%s\n", compression, getMsecs(), extrainfo);
+		return r + String.format("%.3f\t%s\n", compression, extrainfo);
 	}
 
 	public static String processDir(File dir, IPngWriterFactory writerFactory, int repeat, boolean showFileName) {

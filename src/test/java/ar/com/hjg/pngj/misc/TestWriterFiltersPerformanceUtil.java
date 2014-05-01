@@ -19,6 +19,7 @@ import ar.com.hjg.pngj.IPngWriterFactory;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.NullOs;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.PngReaderDumb;
@@ -28,11 +29,11 @@ import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.pixels.FiltersPerformance;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
 import ar.com.hjg.pngj.pixels.PixelsWriterDefault;
-import ar.com.hjg.pngj.pixels.PixelsWriterMultiple;
 import ar.com.hjg.pngj.test.TestSupport;
 
 public class TestWriterFiltersPerformanceUtil {
 	private Collection<File> orig;
+	private long[] timeBySize = new long[3];
 	private double timeAv = 0;
 	private double timeWeighted = 0;
 	private double performanceAv = 0;
@@ -81,6 +82,7 @@ public class TestWriterFiltersPerformanceUtil {
 			nFiles++;
 			sb.append(p.getSumm(SHOW_FILENAME_FORCE != null ? SHOW_FILENAME_FORCE.booleanValue() : showFileName));
 			double msecs = p.getMsecs();
+			timeBySize[getSizeType(f)]+=msecs;
 			bytesOrigRaw += p.imgInfo.getTotalRawBytes();
 			timeAv += msecs;
 			timeWeighted += msecs * 1000.0 / p.imgInfo.getTotalRawBytes();
@@ -97,10 +99,26 @@ public class TestWriterFiltersPerformanceUtil {
 		return sb.toString();
 	}
 
+	static int times[] = new int[3];
+	
+	static int getSizeType(File f) {
+		int sizetype = 0;
+		switch( f.getName().charAt(0) ) {
+		case 'l': sizetype=0; break;
+		case 'm': sizetype=1; break;
+		case 's': sizetype=2; break;
+		default: throw new RuntimeException("bad name, not starting with s l m" + f.getName());
+		}
+		return sizetype;
+	}
+	static void printTimes() {
+		System.out.printf("%d\n%d\n%d\n",times[0],times[1],times[2]);
+		Arrays.fill(times, 0);
+	}
+	
 	public String getSummary() {
-		return desc
-				+ String.format("\t%.4f\t%.4f\t%.4f\t%d\t%.1f\t%s", 0.0, performanceAv, performanceWAv, (int) timeAv,
-						timeWeighted, extrainfo);
+		return  String.format("\n%d\n%d\n%d\n%.4f\t%.4f\t%d\t%.1f\t%s " , timeBySize[0],timeBySize[1],timeBySize[2], performanceAv, performanceWAv, (int) timeAv,
+						timeWeighted, extrainfo) + desc;
 	}
 
 	public void setDesc(String string) {
@@ -340,23 +358,38 @@ public class TestWriterFiltersPerformanceUtil {
 		}
 	}
 
+	public static void showCompressionWith2Filters(File f,FilterType ft1,FilterType ft2) {
+		int clevel =6;
+		TestWriterFiltersPerformance test1 = new TestWriterFiltersPerformance(f,new PngWriterGralFactory(ft1, clevel));
+		TestWriterFiltersPerformance test2 = new TestWriterFiltersPerformance(f,new PngWriterGralFactory(ft2, clevel));
+		TestWriterFiltersPerformance test12 = new TestWriterFiltersPerformance(f,new PngWriterAlternateFactory(ft1, ft2,clevel));
+		test1.doit();
+		test2.doit();
+		test12.doit();
+		System.out.printf("%s\t%.3f\t%.3f\t%.3f\n",f,test1.getCompression(),test2.getCompression(),test12.getCompression());
+	}
+	
 	public static void showCompressionWithJava(File f, boolean showFilename) {
 		if (f.isDirectory()) {
 			for (File ff : TestSupport.getPngsFromDir(f))
 				showCompressionWithJava(ff, showFilename);
+			System.out.println("");
+			printTimes();
 			return;
 		}
 		try {
 			BufferedImage img = ImageIO.read(f);
+
 			NullOs nos = new NullOs();
 			long t0 = System.currentTimeMillis();
 			ImageIO.write(img, "PNG", nos);
 			long t1 = System.currentTimeMillis();
+			times[getSizeType(f)]+=(t1 - t0);
 			long size = nos.getBytes();
 			if (showFilename)
-				System.out.printf("%s\t%d\t%d\n", f.getName(), size, t1 - t0);
+				System.out.printf("%s\t%d\n", f.getName(), size);
 			else
-				System.out.printf("%d\t%d\n", size, t1 - t0);
+				System.out.printf("%d\n", size);
 		} catch (IOException e) {
 			System.out.printf("%s %d %d %s\n", f.getName(), 0, 0, e.getMessage());
 		}
@@ -386,21 +419,21 @@ public class TestWriterFiltersPerformanceUtil {
 	public static void computeSpeedWithPngWriterPreserving(File f, int clevel) {
 		TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(f),
 				new PngWriterPreserveFactory(clevel));
-		System.out.println(test.doit(1));
+		System.out.print(test.doit(1));
 		System.out.println(test.getSummary());
 	}
 
 	public static void computeSpeedWithPngWriterDefault(File dir, int clevel) {
 		TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(dir),
 				new PngWriterGralFactory(FilterType.FILTER_DEFAULT, clevel));
-		System.out.println(test.doit(1));
+		System.out.print(test.doit(1));
 		System.out.println(test.getSummary());
 	}
 
 	public static void computeSpeedWithPngWriterNone(File dir, int clevel) {
 		TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(dir),
 				new PngWriterGralFactory(FilterType.FILTER_NONE, clevel));
-		System.out.println(test.doit(1));
+		System.out.print(test.doit(1));
 		System.out.println(test.getSummary());
 	}
 
@@ -411,14 +444,14 @@ public class TestWriterFiltersPerformanceUtil {
 	public static void computeSpeedWithPngWriterAdaptative(File dir, FilterType f, int clevel) {
 		TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(dir),
 				new PngWriterGralFactory(f, clevel));
-		System.out.println(test.doit(1));
+		System.out.print(test.doit(1));
 		System.out.println(test.getSummary());
 	}
 
 	public static void computeSpeedWithPngWriterSuperAdaptative(File dir, int clevel, int  memoryKb, boolean useLz4) {
 		TestWriterFiltersPerformanceUtil test = new TestWriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(dir),
 				new PngWriterSuperAdaptiveFactory(useLz4, memoryKb, clevel));
-		System.out.println(test.doit(1));
+		System.out.print(test.doit(1));
 		System.out.println(test.getSummary());
 	}
 
@@ -442,6 +475,7 @@ public class TestWriterFiltersPerformanceUtil {
 			pngw.getPixelsWriter().setDeflaterCompLevel(clevel);
 			pngw.getPixelWriterMultiple().setUseLz4(lz4);
 			pngw.getPixelWriterMultiple().setHintMemoryKb(memoryKb);
+			//pngw.getPixelsWriter().setDeflaterStrategy(Deflater.DEFAULT_STRATEGY);
 			return pngw;
 		}
 	}
@@ -467,24 +501,60 @@ public class TestWriterFiltersPerformanceUtil {
 			PngWriter pngw = new PngWriter(outputStream, imgInfo);
 			pngw.setFilterType(ftype);
 			pngw.getPixelsWriter().setDeflaterCompLevel(clevel);
+			//((PixelsWriterDefault)pngw.getPixelsWriter()).tuneMemory(2.0);
 			return pngw;
 		}
 	}
+	
+	// alternates two filtes
+	public static class PngWriterAlternateFactory implements IPngWriterFactory {
+		final  int clevel;
+		final FilterType ftype1;
+		final FilterType ftype2;
+
+
+		public PngWriterAlternateFactory(FilterType f1, FilterType f2,int clevel) {
+			this.clevel = clevel;
+			this.ftype1 = f1;
+			this.ftype2 = f2;
+		}
+
+		public PngWriter createPngWriter(OutputStream outputStream, ImageInfo imgInfo) {
+			PngWriter pngw = new PngWriter(outputStream, imgInfo) {
+				@Override
+				protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
+					return new PixelsWriterDefault(imgInfo) {
+						@Override
+						protected void decideCurFilterType() {
+							if((currentRow%2)==0) curfilterType = ftype1;
+							else curfilterType = ftype2;
+						}
+					};
+				}
+			};
+			pngw.getPixelsWriter().setDeflaterCompLevel(clevel);
+			return pngw;
+		}	
+	}
+	
 
 	public static void main(String[] args) {
 		Locale.setDefault(Locale.US);
 		long t0 = System.currentTimeMillis();
 		int clevel = 6;
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
-		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
+		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2"));
+		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\3"));
+		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2\\l\\l209.png"));
 		SHOW_FILENAME_FORCE = !files.isDirectory();
 		//computeSizeOriginal(files); // 1
-		// computeSpeedWithPngWriterPreserving(files,clevel); //2	
-		// showCompressionWithJava(files, false); // 3
-		//computeSpeedWithPngWriterDefault(files,clevel); //4
+		//computeSpeedWithPngWriterPreserving(files,clevel); //2	
+		//showCompressionWithJava(files, false); // 3
 		//computeSpeedWithPngWriterDefault(files,clevel); //4
 		//computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FULL, clevel);
-		computeSpeedWithPngWriterSuperAdaptative(files, clevel, -1, true);
+		//showCompressionWith2Filters(files, FilterType.FILTER_SUB, FilterType.FILTER_AVERAGE);
+		//PngHelperInternal.setDebug(true);
+		computeSpeedWithPngWriterSuperAdaptative(files, clevel, 150, true);
 		// computeSpeedWithPngWriterNone(files,clevel); //2
 		// computeSpeedWithPngWriterWithAdaptative(files,clevel); //2
 		// computeSpeedWithX(files,PngWriterBands.class); //2
