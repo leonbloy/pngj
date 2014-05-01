@@ -59,10 +59,10 @@ public class PngSuiteFullTest {
 			PngReader pngr = new PngReader(orig);
 			PngWriter pngw = null;
 			try {
-				if (pngr.imgInfo.bitDepth < 16 && rand.nextBoolean())
+				if (/*pngr.imgInfo.bitDepth < 16 &&*/ rand.nextBoolean())
 					pngr.setLineSetFactory(ImageLineSetDefault.getFactoryByte());
 				palete = pngr.imgInfo.indexed;
-				PngHelperInternal.initCrcForTests(pngr);
+				pngr.prepareSimpleDigestComputation();
 				interlaced = pngr.isInterlaced();
 				pngw = new PngWriter(mirror, pngr.imgInfo, true);
 				pngw.setFilterType(FilterType.FILTER_CYCLIC); // just to test all filters
@@ -73,7 +73,7 @@ public class PngSuiteFullTest {
 					pngw.writeRow(lines.getImageLine(row));
 				}
 				pngr.end();
-				crc0 = PngHelperInternal.getCrctestVal(pngr);
+				crc0 = PngHelperInternal.getDigest(pngr);
 				pngw.end();
 			} finally {
 				pngr.close();
@@ -89,7 +89,7 @@ public class PngSuiteFullTest {
 				if (pngr2.imgInfo.bitDepth < 16 && rand.nextBoolean())
 					pngr2.setLineSetFactory(ImageLineSetDefault.getFactoryByte());
 				pngw = new PngWriter(recov, pngr2.imgInfo, true);
-				pngw.setFilterType(FilterType.FILTER_AGGRESSIVE);
+				pngw.setFilterType(FilterType.FILTER_DEFAULT);
 				pngw.copyChunksFrom(pngr2.getChunksList());
 				for (int row = 0; row < pngr2.imgInfo.rows; row++) {
 					IImageLine line = pngr2.readRow();
@@ -177,10 +177,12 @@ public class PngSuiteFullTest {
 		int channels = iminfo.channels;
 		int[] imlinei = null;
 		byte[] imlineb = null;
+		byte[] imlineb2 = null;
 		if (imline instanceof ImageLineInt) { // INT
 			imlinei = ((ImageLineInt) imline).getScanline();
 		} else if (imline instanceof ImageLineByte) { // BYTE
-			imlineb = ((ImageLineByte) imline).getScanline();
+			imlineb = ((ImageLineByte) imline).getScanlineByte();
+			imlineb2 = ((ImageLineByte) imline).getScanlineByte2(); // only for 16bpp
 		}
 		for (int c1 = 0, c2 = iminfo.cols - 1; c1 < c2; c1++, c2--) {
 			for (int i = 0; i < channels; i++) {
@@ -194,6 +196,11 @@ public class PngSuiteFullTest {
 					byte aux = imlineb[s1];
 					imlineb[s1] = imlineb[s2];
 					imlineb[s2] = aux;
+					if(imlineb2!=null) {
+						aux = imlineb2[s1];
+						imlineb2[s1] = imlineb2[s2];
+						imlineb2[s2] = aux;
+					}
 				}
 			}
 		}

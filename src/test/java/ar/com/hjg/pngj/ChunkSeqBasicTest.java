@@ -12,7 +12,10 @@ import org.junit.Test;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 import ar.com.hjg.pngj.test.PngjTest;
 import ar.com.hjg.pngj.test.TestSupport;
-
+/**
+ * This shows how to read at low level a PNG, without PngReader, to add a chunk much more
+ * efficiently than by using PngReader/PngWriter
+ */
 public class ChunkSeqBasicTest extends PngjTest {
 
 	private static final String TEXT_TO_ADD_KEY = "Test";

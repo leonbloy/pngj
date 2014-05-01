@@ -2,6 +2,7 @@ package ar.com.hjg.pngj;
 
 import java.util.Arrays;
 import java.util.zip.CRC32;
+import java.util.zip.Checksum;
 import java.util.zip.Inflater;
 
 /**
@@ -208,9 +209,10 @@ public class IdatSet extends DeflatedChunksSet {
 		return deinterlacer;
 	}
 
-	void updateCrc(CRC32 idatCrc) {
-		if (idatCrc != null)// just for testing
-			idatCrc.update(getUnfilteredRow(), 1, getRowFilled() - 1);
+	void updateCrcs(Checksum... idatCrcs) {
+		for (Checksum idatCrca : idatCrcs)
+			if (idatCrca != null)// just for testing
+				idatCrca.update(getUnfilteredRow(), 1, getRowFilled() - 1);
 	}
 
 	@Override

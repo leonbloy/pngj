@@ -7,13 +7,13 @@ package ar.com.hjg.pngj;
  * <p>
  * See <code>scanline</code> field, to understand the format.
  * 
- * FOrmat: byte (one bytes per sample),
+ * Format: byte (one bytes per sample) (for 16bpp the extra byte is placed in an extra array)  
  */
 public class ImageLineByte implements IImageLine, IImageLineArray {
 	public final ImageInfo imgInfo;
 
 	final byte[] scanline;
-	final byte[] scanline2; // only used for 16 bpp (less significant byte)
+	final byte[] scanline2; // only used for 16 bpp (less significant byte) Normally you'd prefer ImageLineInt in this case
 
 	protected FilterType filterType; // informational ; only filled by the reader. not significant for interlaced
 	final int size; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
@@ -42,6 +42,10 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 		return filterType;
 	}
 
+	/**
+	 * One byte per sample. This can be used also for 16bpp images, but in this case
+	 * this loses the less significant 8-bits ; see also getScanlineByte2 and getElem.
+	 */
 	public byte[] getScanlineByte() {
 		return scanline;
 	}

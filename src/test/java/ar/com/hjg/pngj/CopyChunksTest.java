@@ -46,7 +46,7 @@ public class CopyChunksTest extends PngjTest {
 			pngw.end();
 			bytes1 = pngr.getChunkseq().getBytesCount();
 			chunks1 = TestSupport.showChunks(pngr.getChunksList().getChunks());
-			crc1 = PngHelperInternal.getCrctestVal(pngr);
+			crc1 = PngHelperInternal.getDigest(pngr);
 		}
 		File dest2 = TestSupport.addSuffixToName(dest, "XX");
 		dest.renameTo(dest2);// to check that it's closed
@@ -56,7 +56,7 @@ public class CopyChunksTest extends PngjTest {
 		for (int n = 0; n < pngr2.imgInfo.rows; n++)
 			// for a change, we here read line by line
 			pngr2.readRow();
-		long crc2 = PngHelperInternal.getCrctestVal(pngr2);
+		long crc2 = PngHelperInternal.getDigest(pngr2);
 		long bytes2 = pngr2.getChunkseq().getBytesCount();
 		pngr2.end();
 		dest2.renameTo(dest);// to check that it's closed

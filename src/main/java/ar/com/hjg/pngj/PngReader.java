@@ -3,6 +3,7 @@ package ar.com.hjg.pngj;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
@@ -64,7 +65,8 @@ public class PngReader {
 	protected final PngMetadata metadata; // this a wrapper over chunks
 	protected int rowNum = -1; // current row number (already read)
 
-	CRC32 idatCrc;//for internal testing
+	CRC32 idatCrca;//for internal testing
+	Adler32 idatCrcb;//for internal testing
 
 	protected IImageLineSet<? extends IImageLine> imlinesSet;
 	private IImageLineSetFactory<? extends IImageLine> imageLineSetFactory;
@@ -108,7 +110,7 @@ public class PngReader {
 			setSkipChunkMaxSize(MAX_CHUNK_SIZE_SKIP);
 			this.metadata = new PngMetadata(chunkseq.chunksList);
 			// sets a default factory (with ImageLineInt), 
-			// this can be overwrite by a extended constructor, or by a setter
+			// this can be overwriten by a extended constructor, or by a setter
 			setLineSetFactory(ImageLineSetDefault.getFactoryInt());
 			rowNum = -1;
 		} catch (RuntimeException e) {
@@ -223,7 +225,7 @@ public class PngReader {
 				while (!chunkseq.getIdatSet().isRowReady())
 					streamFeeder.feed(chunkseq);
 				rowNum++;
-				chunkseq.getIdatSet().updateCrc(idatCrc);
+				chunkseq.getIdatSet().updateCrcs(idatCrca,idatCrcb);
 				if (rowNum == nrow) {
 					line.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(), imgInfo.bytesPerRow + 1, 0, 1);
 					line.endReadFromPngRaw();
@@ -277,7 +279,7 @@ public class PngReader {
 				while (!chunkseq.getIdatSet().isRowReady())
 					streamFeeder.feed(chunkseq);
 				rowNum++;
-				chunkseq.getIdatSet().updateCrc(idatCrc);
+				chunkseq.getIdatSet().updateCrcs(idatCrca,idatCrcb);
 				m = (rowNum - rowOffset) / rowStep;
 				if (rowNum >= rowOffset && rowStep * m + rowOffset == rowNum) {
 					IImageLine line = imlinesSet.getImageLine(rowNum);
@@ -319,8 +321,7 @@ public class PngReader {
 		do {
 			while (!chunkseq.getIdatSet().isRowReady())
 				streamFeeder.feed(chunkseq);
-			if (idatCrc != null)
-				chunkseq.getIdatSet().updateCrc(idatCrc);
+			chunkseq.getIdatSet().updateCrcs(idatCrca,idatCrcb);
 			int rowNumreal = idat.rowinfo.rowNreal;
 			boolean inset = (rowNumreal - rowOffset) % rowStep == 0;
 			if (inset) {
@@ -458,6 +459,36 @@ public class PngReader {
 		return chunkseq;
 	}
 
+	public void prepareSimpleDigestComputation() {
+		if(idatCrca==null) idatCrca=new CRC32(); else idatCrca.reset();
+		if(idatCrcb==null) idatCrcb=new Adler32(); else idatCrcb.reset();
+		idatCrca.update((byte)imgInfo.rows);
+		idatCrca.update((byte)(imgInfo.rows>>8));
+		idatCrca.update((byte)(imgInfo.rows>>16));
+		idatCrca.update((byte)imgInfo.cols);
+		idatCrca.update((byte)(imgInfo.cols>>8));
+		idatCrca.update((byte)(imgInfo.cols>>16));
+		idatCrca.update((byte)(imgInfo.channels));
+		idatCrca.update((byte)(imgInfo.bitDepth));
+		idatCrca.update((byte)((imgInfo.indexed?10:20)));
+		idatCrcb.update((byte)((imgInfo.bytesPerRow)));
+		idatCrcb.update((byte)((imgInfo.channels)));
+		idatCrcb.update((byte)((imgInfo.rows)));// whatever
+	}
+	
+	long getSimpleDigest() {
+		if(idatCrca==null) return 0;
+		else return (idatCrca.getValue() ^ (idatCrcb.getValue()<<31));
+	}
+	
+	public String getSimpleDigestHex() {
+		String s = Long.toHexString(getSimpleDigest()).toUpperCase();
+		if(s.length()<16) {
+			s = "0000000000000000" + s;
+			return s.substring(s.length()-16);
+		} else return s;
+	}
+	
 	/**
 	 * Basic info, for debugging.
 	 */
