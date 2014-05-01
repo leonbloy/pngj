@@ -8,18 +8,18 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
 /**
  * Outputs the stream for IDAT chunk , fragmented at fixed size (64k default).
  */
-class PngIDatChunkOutputStream extends ProgressiveOutputStream {
+public class PngIDatChunkOutputStream extends ProgressiveOutputStream {
 	private static final int SIZE_DEFAULT = 65556; // 64k rather arbitrary
 	private final OutputStream outputStream;
 	// for some special IDAT (fDAT) that prepend some bytes to each chunk (this
 	// is not include in the size)
 	private byte[] prefix = null;
 
-	PngIDatChunkOutputStream(OutputStream outputStream) {
+	public PngIDatChunkOutputStream(OutputStream outputStream) {
 		this(outputStream, 0);
 	}
 
-	PngIDatChunkOutputStream(OutputStream outputStream, int size) {
+	public PngIDatChunkOutputStream(OutputStream outputStream, int size) {
 		super(size > 0 ? size : SIZE_DEFAULT);
 		this.outputStream = outputStream;
 	}

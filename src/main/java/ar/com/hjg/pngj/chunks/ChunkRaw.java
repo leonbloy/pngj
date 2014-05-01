@@ -81,7 +81,7 @@ public class ChunkRaw {
 	/**
 	 * Computes the CRC and writes to the stream. If error, a PngjOutputException is thrown
 	 * 
-	 * Note that this is only used for non
+	 * Note that this is only used for non idat chunks
 	 */
 	public void writeChunk(OutputStream os) {
 		if (idbytes.length != 4)

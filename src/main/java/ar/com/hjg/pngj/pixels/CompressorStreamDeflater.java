@@ -101,7 +101,6 @@ public class CompressorStreamDeflater extends CompressorStream {
 	public void reset() {
 		super.reset();
 		deflater.reset();
-
 	}
 
 }

@@ -64,6 +64,7 @@ public abstract class CompressorStream {
 		bytesIn = 0;
 		bytesOut = 0;
 		block = 0;
+		done=false;
 	}
 
 	/**

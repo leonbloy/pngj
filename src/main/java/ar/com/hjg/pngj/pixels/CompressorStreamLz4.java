@@ -97,12 +97,8 @@ public class CompressorStreamLz4 extends CompressorStream {
 
 	@Override
 	public void reset() {
-		if (closed)
-			throw new PngjOutputException("Cannot recycle discarded object");
+		super.reset();
 		bufpos = 0;
-		bytesIn = 0;
-		bytesOut = 0;
-		done = false;
 	}
 
 }

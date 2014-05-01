@@ -61,7 +61,7 @@ public class DeflatedChunksSet {
 	State state = State.WAITING; // never null
 
 	private Inflater inf;
-	private final boolean infOwn; // true if the inflater is our own 
+	private final boolean infOwn; // true if we own the inflater (we created it) 
 
 	private DeflatedChunkReader curChunk;
 
@@ -162,8 +162,10 @@ public class DeflatedChunksSet {
 				nextstate = State.WAITING;
 			else if (rowfilled > 0)
 				nextstate = State.READY; // complete row, process it
-			else
+			else {
 				nextstate = State.DONE; // eof, no more data
+				finished();
+			}
 			state = nextstate;
 			if (state == State.READY) {
 				preProcessRow();
@@ -191,6 +193,14 @@ public class DeflatedChunksSet {
 	protected int processRowCallback() {
 		throw new PngjInputException("not implemented");
 	}
+	
+	/**
+	 * callback, will be called when done
+	 * @return
+	 */
+	protected void finished() {
+		
+	}
 
 	/**
 	 * Inflated buffer.
@@ -208,15 +218,17 @@ public class DeflatedChunksSet {
 	 * <p>
 	 * This resets {@link #rowfilled}
 	 */
-	protected void prepareForNextRow(int len) {
+	public void prepareForNextRow(int len) {
 		rowfilled = 0;
 		rown++;
 		if (len < 1) {
 			rowlen = 0;
 			state = State.DONE;
+			finished();
 		} else if (inf.finished()) {
 			rowlen = 0;
 			state = State.DONE;
+			finished();
 		} else {
 			rowlen = len;
 			inflateData();
@@ -253,8 +265,10 @@ public class DeflatedChunksSet {
 	/** This should be called when discarding this object, or for aborting. Secure, idempotent */
 	public void close() {
 		try {
-			if (!state.isFinished())
+			if (!state.isFinished()) {
 				state = State.DONE;
+				finished();
+			}
 			if (infOwn && inf != null) {
 				inf.end();// we end the Inflater only if we created it
 				inf = null;
