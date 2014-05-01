@@ -13,6 +13,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 	public final ImageInfo imgInfo;
 
 	final byte[] scanline;
+	final byte[] scanline2; // only used for 16 bpp (less significant byte)
 
 	protected FilterType filterType; // informational ; only filled by the reader. not significant for interlaced
 	final int size; // = imgInfo.samplePerRowPacked, if packed:imgInfo.samplePerRow elswhere
@@ -26,6 +27,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 		filterType = FilterType.FILTER_UNKNOWN;
 		size = imgInfo.samplesPerRow;
 		scanline = sci != null && sci.length >= size ? sci : new byte[size];
+		scanline2 = imgInfo.bitDepth == 16 ? new byte[size] : null;
 	}
 
 	public static IImageLineFactory<ImageLineByte> getFactory(ImageInfo iminfo) {
@@ -42,6 +44,15 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 
 	public byte[] getScanlineByte() {
 		return scanline;
+	}
+
+	/**
+	 * only for 16bpp (less significant byte)
+	 * 
+	 * @return null for less than 16bpp
+	 */
+	public byte[] getScanlineByte2() {
+		return scanline2;
 	}
 
 	/**
@@ -70,12 +81,14 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 			}
 		} else if (imgInfo.bitDepth == 16) {
 			if (step == 1) {// 16bispp non-interlaced
-				for (int i = 0, s = 1; i < imgInfo.samplesPerRow; i++, s += 2) {
-					scanline[i] = raw[s]; //get the first byte
+				for (int i = 0, s = 1; i < imgInfo.samplesPerRow; i++) {
+					scanline[i] = raw[s++]; //get the first byte
+					scanline2[i] = raw[s++]; //get the first byte
 				}
 			} else {
-				for (int s = 1, c = 0, i = offset != 0 ? offset * imgInfo.channels : 0; s <= len1; s += 2, i++) {
-					scanline[i] = raw[s];
+				for (int s = 1, c = 0, i = offset != 0 ? offset * imgInfo.channels : 0; s <= len1; i++) {
+					scanline[i] = raw[s++];
+					scanline2[i] = raw[s++];
 					c++;
 					if (c == imgInfo.channels) {
 						c = 0;
@@ -115,7 +128,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 		} else if (imgInfo.bitDepth == 16) {
 			for (int i = 0, s = 1; i < size; i++) {
 				raw[s++] = scanline[i];
-				raw[s++] = 0;
+				raw[s++] = scanline2[i];
 			}
 		} else { // packed formats
 			int shi, bd, v;
@@ -142,7 +155,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
 	}
 
 	public int getElem(int i) {
-		return scanline[i];
+		return scanline2 == null ? scanline[i] & 0xFF : ((scanline[i] & 0xFF) << 8) | (scanline2[i] & 0xFF);
 	}
 
 	public byte[] getScanline() {
