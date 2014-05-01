@@ -9,6 +9,7 @@ import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
+import ar.com.hjg.pngj.pixels.PixelsWriterDefault;
 import ar.com.hjg.pngj.pixels.PixelsWriterMultiple;
 
 /**
@@ -20,13 +21,12 @@ public class SamplePngReencode {
 		PngWriter pngw = new PngWriter(new File(dest), pngr.imgInfo, true) {
 			@Override
 			protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
-				PixelsWriterMultiple pw = new PixelsWriterMultiple(imgInfo);
-				pw.setUseLz4(false);
-				pw.setHintMemoryKb(1500);
-				pw.setHintRowsPerBand(16);
+				PixelsWriterDefault pw = new PixelsWriterDefault(imgInfo);
+				pw.setFilterType(FilterType.FILTER_PRESERVE);
 				return pw;
 			}
 		};
+		pngw.setIdatMaxSize(10000000);
 		System.out.println(pngr.toString());
 		System.out.printf("Creating Image %s  superadaptive compLevel=%d \n", dest, cLevel);
 		pngw.setCompLevel(cLevel);

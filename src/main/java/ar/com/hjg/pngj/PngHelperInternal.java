@@ -31,8 +31,12 @@ public final class PngHelperInternal {
 	public static String charsetUTF8name = "UTF-8";
 	public static Charset charsetUTF8 = Charset.forName(charsetUTF8name);
 
-	static boolean DEBUG = false;
-
+	private static ThreadLocal<Boolean> DEBUG = new ThreadLocal<Boolean>() {
+		protected Boolean initialValue() {
+			return Boolean.FALSE;
+		}
+	};
+	
 	/**
 	 * PNG magic bytes
 	 */
@@ -198,8 +202,8 @@ public final class PngHelperInternal {
 	}
 
 	public static void logdebug(String msg) {
-		if (DEBUG)
-			System.out.println(msg);
+		if (isDebug())
+			System.err.println("logdebug: " + msg);
 	}
 
 	// / filters
@@ -239,21 +243,6 @@ public final class PngHelperInternal {
 			return b;
 		else
 			return c;
-	}
-
-	/*
-	 * we put this methods here so as to not pollute the public interface of PngReader
-	 */
-	final public static void initCrcForTests(PngReader pngr) {
-		if (pngr.idatCrc == null)
-			pngr.idatCrc = new CRC32();
-	}
-
-	final public static long getCrctestVal(PngReader pngr) {
-		if (pngr.idatCrc != null)
-			return pngr.idatCrc.getValue();
-		else
-			return -1;
 	}
 
 	/**
@@ -315,4 +304,24 @@ public final class PngHelperInternal {
 		System.out.println(steStr);
 	}
 
+	/**
+	 * Sets a global debug flag. This is bound to a thread.
+	 */
+	public static void setDebug(boolean b) {
+		DEBUG.set(b);
+	}
+	
+	public static boolean isDebug() {
+		return DEBUG.get().booleanValue();
+	}
+
+	public static long getDigest(PngReader pngr) {
+		return pngr.getSimpleDigest();
+	}
+
+	public static void initCrcForTests(PngReader pngr) {
+		pngr.prepareSimpleDigestComputation();
+	}
+	
+	
 }

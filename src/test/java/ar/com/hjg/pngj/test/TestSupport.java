@@ -102,38 +102,50 @@ public class TestSupport {
 	}
 
 	public static String showFilters(File pngr, int maxgroups, boolean usenewlines) {
-		if (maxgroups <= 0)
+		return showFilters(pngr, maxgroups, usenewlines,false,false);
+	}
+	
+	/** show detailed filter information (grouped by consecutive rows) eg: PAETH:337(103) means 103 rows of type PAETH starting from row 337 */
+	public static String showFilters(File pngr, int maxgroups, boolean usenewlines, boolean showSumm,
+			boolean showSummPercent) {
+		if (maxgroups == 0)
+			usenewlines = false;
+		if (maxgroups < 0)
 			maxgroups = Integer.MAX_VALUE;
 		int[] types = new int[5];
 		PngReaderByte png = new PngReaderByte(pngr);
 		StringBuilder sb = new StringBuilder();
-		FilterType ft1, ft0 = null;
-		int contgroups = 0;
-		int r1 = -1;
+		int[] ft = new int[png.imgInfo.rows + 1];
 		for (int r = 0; r < png.imgInfo.rows; r++) {
-			ft1 = ((IImageLineArray) png.readRow()).getFilterType();
-			types[ft1.val]++;
-			if (r == 0 || ft1 != ft0) {
-				if (r > 0) {
-					contgroups++;
-					sb.append(String.format("[%d %d]=%s", r1, r - r1, ft0)).append(usenewlines ? "\n" : " ");
-				}
-				r1 = r;
-				ft0 = ft1;
-			}
-			if (r == png.imgInfo.rows - 1) {
-				sb.append(String.format("[%d %d]=%s", r1, r - r1, ft0)).append(usenewlines ? "\n" : " ");
-			}
-			if (contgroups >= maxgroups) {
-				sb.append("...");
-				break;
-			}
+			ft[r] = ((IImageLineArray) png.readRow()).getFilterType().val;
+			types[ft[r]]++;
 		}
 		png.end();
-		for (int i = 0; i <= 4; i++) {
-			types[i] = (int) ((types[i] * 100) / png.imgInfo.rows);
+		ft[png.imgInfo.rows] = -1; // dummy end value to ease computation
+		if (showSummPercent) {
+			for (int i = 0; i <= 4; i++) {
+				types[i] = (int) ((types[i] * 100 + png.imgInfo.rows / 2) / png.imgInfo.rows);
+			}
 		}
-		sb.append(" " + Arrays.toString(types));
+		if (showSumm || showSummPercent)
+			sb.append(Arrays.toString(types) + (usenewlines ? "\n" : "\t"));
+		// groups
+		if (maxgroups != 0) {
+			int contgroups = 0;
+			int r0 = 0;
+			for (int r = 1; r < ft.length; r++) {
+				if (ft[r] != ft[r - 1]) { // found group
+					sb.append(String.format("%s:%d(%d)", FilterType.getByVal(ft[r - 1]),r0, r - r0)).append(
+							usenewlines ? "\n" : " ");
+					contgroups++;
+					r0 = r;
+					if (contgroups >= maxgroups && r < ft.length - 1) {
+						sb.append("...").append(usenewlines ? "\n" : " ");
+						break;
+					}
+				}
+			}
+		}
 		return sb.toString().trim().replaceAll("FILTER_", "");
 	}
 
@@ -305,8 +317,8 @@ public class TestSupport {
 		png2.readRow(png2.imgInfo.rows - 1);
 		png1.end();
 		png2.end();
-		long crc1 = PngHelperInternal.getCrctestVal(png1);
-		long crc2 = PngHelperInternal.getCrctestVal(png2);
+		long crc1 = PngHelperInternal.getDigest(png1);
+		long crc2 = PngHelperInternal.getDigest(png2);
 		TestCase.assertEquals("different crcs " + image1 + "=" + crc1 + " " + image2 + "=" + crc2, crc1, crc2);
 	}
 
@@ -315,7 +327,7 @@ public class TestSupport {
 		PngHelperInternal.initCrcForTests(png1);
 		png1.readRow(png1.imgInfo.rows - 1);
 		png1.end();
-		long crc1 = PngHelperInternal.getCrctestVal(png1);
+		long crc1 = PngHelperInternal.getDigest(png1);
 		TestCase.assertEquals(crc1, crc);
 	}
 

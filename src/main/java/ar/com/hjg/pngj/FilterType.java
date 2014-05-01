@@ -108,5 +108,9 @@ public enum FilterType {
 	public static FilterType[] getAllStandardExceptNone() {
 		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
 	}
+	
+	static FilterType[] getAllStandardForFirstRow() {
+		return new FilterType[] { FILTER_SUB,FILTER_NONE };
+	}
 
 }
