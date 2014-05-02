@@ -48,7 +48,7 @@ public class TestWriterFiltersPerformance {
 
 	}
 
-	/** return -1 if refused to run */
+	/** return -1 if refused to run, elsewhere the msecs spend (only) on writing pixels */
 	private long reencode() {
 		try {
 			PngReader reader = new PngReader(orig);

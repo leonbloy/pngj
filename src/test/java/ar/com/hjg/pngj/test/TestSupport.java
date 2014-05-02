@@ -423,7 +423,9 @@ public class TestSupport {
 	public static List<File> getPngsFromDir(File dirOrFile, boolean recurse) {
 		List<File> li = new ArrayList<File>();
 		if (dirOrFile.isDirectory()) {
-			for (File f : dirOrFile.listFiles()) {
+			File[] files = dirOrFile.listFiles();
+			Arrays.sort(files); // to guarantee predecible order
+			for (File f : files) {
 				if (recurse && f.isDirectory())
 					li.addAll(getPngsFromDir(f, true));
 				if (f.getName().toLowerCase().endsWith(".png"))

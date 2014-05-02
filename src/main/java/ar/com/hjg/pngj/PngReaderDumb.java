@@ -19,7 +19,8 @@ public class PngReaderDumb {
 	protected final BufferedStreamFeeder streamFeeder;
 	protected List<ChunkRaw> chunks = new ArrayList<ChunkRaw>();
 	protected boolean includeIdat = true;
-	protected ImageInfo info;
+	protected ImageInfo imgInfo;
+	private boolean interlaced=false;
 
 	public PngReaderDumb(InputStream inputStream) {
 		streamFeeder = new BufferedStreamFeeder(inputStream);
@@ -65,14 +66,15 @@ public class PngReaderDumb {
 	}
 
 	public ImageInfo getImageInfo() {
-		if (info == null) {
+		if (imgInfo == null) {
 			if (chunks.size() > 0) {
 				PngChunkIHDR ihdr = new PngChunkIHDR(null);
 				ihdr.parseFromRaw(chunks.get(0));
-				info = ihdr.createImageInfo();
+				imgInfo = ihdr.createImageInfo();
+				interlaced = ihdr.isInterlaced();
 			}
 		}
-		return info;
+		return imgInfo;
 	}
 
 	public ChunkSeqReader getChunkseq() {
@@ -100,4 +102,9 @@ public class PngReaderDumb {
 			chunkseq.close();
 		streamFeeder.close();
 	}
+	
+	public String toStringCompact() { 
+		return imgInfo.toStringBrief() + (interlaced? "i":"");
+	}
+	
 }

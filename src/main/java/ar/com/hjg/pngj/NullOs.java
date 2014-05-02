@@ -24,4 +24,5 @@ public class NullOs extends OutputStream {
 	public long getBytes() {
 		return cont;
 	}
+	
 }
