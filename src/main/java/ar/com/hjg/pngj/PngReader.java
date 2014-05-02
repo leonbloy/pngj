@@ -496,4 +496,14 @@ public class PngReader {
 		return imgInfo.toString() + " interlaced=" + interlaced;
 	}
 
+	/**
+	 * Basic info, in a compact format, apt for scripting
+	 * COLSxROWS[dBITDEPTH][a][p][g][i] ( the default dBITDEPTH='d8' is ommited) 
+	 * @return
+	 */
+	public String toStringCompact() { 
+		return imgInfo.toStringBrief() + (interlaced? "i":"");
+	}
+
+	
 }
