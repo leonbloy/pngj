@@ -1,7 +1,6 @@
 package ar.com.hjg.pngj;
 
 import java.util.Arrays;
-import java.util.zip.CRC32;
 import java.util.zip.Checksum;
 import java.util.zip.Inflater;
 
@@ -17,9 +16,12 @@ public class IdatSet extends DeflatedChunksSet {
 	protected byte rowUnfilteredPrev[];
 	protected final ImageInfo imgInfo;
 	protected final Deinterlacer deinterlacer;
-
+	
+	
 	final RowInfo rowinfo; // info for the last processed row
 
+	protected int filterUseStat[] = new int[5]; // for stats
+	
 	/**
 	 * @param id
 	 *            Chunk id (first chunk), should be shared by all concatenated chunks
@@ -69,9 +71,10 @@ public class IdatSet extends DeflatedChunksSet {
 
 		int ftn = row[0];
 		FilterType ft = FilterType.getByVal(ftn);
-		rowUnfiltered[0] = row[0]; // we copy the filter type, can be useful 
 		if (ft == null)
 			throw new PngjInputException("Filter type " + ftn + " invalid");
+		filterUseStat[ftn]++;
+		rowUnfiltered[0] = row[0]; // we copy the filter type, can be useful 
 		switch (ft) {
 		case FILTER_NONE:
 			unfilterRowNone(nbytes);
@@ -215,11 +218,22 @@ public class IdatSet extends DeflatedChunksSet {
 				idatCrca.update(getUnfilteredRow(), 1, getRowFilled() - 1);
 	}
 
+	
 	@Override
 	public void close() {
 		super.close();
 		rowUnfiltered = null;//not really necessary...
 		rowUnfilteredPrev = null;
 	}
+	
+	/**
+	 * Only for debug/stats
+	 * @return Array of 5 integers (sum equal numbers of rows) counting each filter use 
+	 */
+	public int[] getFilterUseStat() {
+		return filterUseStat;
+	}
 
+
+	
 }

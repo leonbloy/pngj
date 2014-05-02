@@ -155,10 +155,10 @@ public class ChunkSeqReader implements IBytesConsumer {
 				&& !curReaderDeflatedSet.allowOtherChunksInBetween(id)) {
 			if (!curReaderDeflatedSet.isDone())
 				throw new PngjInputException("unexpected chunk while reading IDAT(like) set " + id);
-			curReaderDeflatedSet = null;
+			curReaderDeflatedSet.close();
 		}
 		if (isIdatType && !skip) { // IDAT with HOT PROCESS mode
-			if (curReaderDeflatedSet == null) {
+			if (curReaderDeflatedSet == null || curReaderDeflatedSet.isDone()) {
 				curReaderDeflatedSet = createIdatSet(id); // new
 			}
 			curChunkReader = new DeflatedChunkReader(len, id, checkCrc, offset, curReaderDeflatedSet) {
@@ -287,8 +287,7 @@ public class ChunkSeqReader implements IBytesConsumer {
 	}
 
 	/**
-	 * The current deflated set (typically IDAT chunks) reader. This is not null only while reading that set. Notice
-	 * that there could be several idat sets (eg for APNG)
+	 * The latest deflated set (typically IDAT chunks) reader. Notice that there could be several idat sets (eg for APNG)
 	 */
 	public DeflatedChunksSet getCurReaderDeflatedSet() {
 		return curReaderDeflatedSet;
