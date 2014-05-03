@@ -7,6 +7,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
+ * Default implementation of PixelsWriter, with fixed filters and also adaptive strategies.
  */
 public class PixelsWriterDefault extends PixelsWriter {
 	private FiltersPerformance filtersPerformance;

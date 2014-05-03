@@ -75,7 +75,7 @@ public class TestWriterFiltersPerformance {
 				System.err.println("Result in " + tempFile);
 			return t1 - t0;
 		} catch (Exception e) {
-			throw new RuntimeException(e);
+			throw new RuntimeException("error with " + orig,e);
 		}
 
 	}

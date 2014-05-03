@@ -291,7 +291,7 @@ public class PngReader {
 		} else { // and now, for something completely different (interlaced)
 			loadAllInterlaced(nRows, rowOffset, rowStep);
 		}
-		chunkseq.getIdatSet().close();
+		chunkseq.getIdatSet().done();
 		end();
 		return imlinesSet;
 	}
@@ -331,7 +331,7 @@ public class PngReader {
 			}
 			idat.advanceToNextRow();
 		} while (nread < nRows || !idat.isDone());
-		idat.close();
+		idat.done();
 		for (int i = 0, j = rowOffset; i < nRows; i++, j += rowStep) {
 			imlinesSet.getImageLine(j).endReadFromPngRaw();
 		}
@@ -413,7 +413,7 @@ public class PngReader {
 			if (chunkseq.firstChunksNotYetRead())
 				readFirstChunks();
 			if (chunkseq.getIdatSet() != null && !chunkseq.getIdatSet().isDone())
-				chunkseq.getIdatSet().close();
+				chunkseq.getIdatSet().done();
 			while (!chunkseq.isDone())
 				streamFeeder.feed(chunkseq);
 		} finally {

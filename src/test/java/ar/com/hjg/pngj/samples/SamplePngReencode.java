@@ -64,8 +64,8 @@ public class SamplePngReencode {
 			System.exit(1);
 		}
 		long t0 = System.currentTimeMillis();
-		//reencode(args[0], args[1], FilterType.getByVal(Integer.parseInt(args[2])), Integer.parseInt(args[3]));
-		reencode2(args[0], args[1], Integer.parseInt(args[3]));
+		reencode(args[0], args[1], FilterType.getByVal(Integer.parseInt(args[2])), Integer.parseInt(args[3]));
+		//reencode2(args[0], args[1], Integer.parseInt(args[3]));
 		long t1 = System.currentTimeMillis();
 		System.out.println("Listo: " + (t1 - t0) + " msecs");
 	}

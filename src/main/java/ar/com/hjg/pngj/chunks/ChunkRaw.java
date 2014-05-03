@@ -84,16 +84,24 @@ public class ChunkRaw {
 	 * Note that this is only used for non idat chunks
 	 */
 	public void writeChunk(OutputStream os) {
-		if (idbytes.length != 4)
-			throw new PngjOutputException("bad chunkid [" + id + "]");
-		PngHelperInternal.writeInt4(os, len);
-		PngHelperInternal.writeBytes(os, idbytes);
+		writeChunkHeader(os);
 		if (len > 0) {
 			if (data == null)
 				throw new PngjOutputException("cannot write chunk, raw chunk data is null [" + id + "]");
 			PngHelperInternal.writeBytes(os, data, 0, len);
 		}
 		computeCrcForWriting();
+		writeChunkCrc(os);
+	}
+
+	public void writeChunkHeader(OutputStream os) {
+		if (idbytes.length != 4)
+			throw new PngjOutputException("bad chunkid [" + id + "]");
+		PngHelperInternal.writeInt4(os, len);
+		PngHelperInternal.writeBytes(os, idbytes);
+	}
+
+	public void writeChunkCrc(OutputStream os) {
 		PngHelperInternal.writeBytes(os, crcval, 0, 4);
 	}
 

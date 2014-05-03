@@ -26,8 +26,10 @@ public class ChunkSeqReader implements IBytesConsumer {
 
 	private long bytesCount = 0;
 
-	private ChunkReader curChunkReader;
+	
 	private DeflatedChunksSet curReaderDeflatedSet; // one instance is created for each "idat-like set". Normally one.
+
+	private ChunkReader curChunkReader;
 
 	private long idatBytes; // this is only for the IDAT (not mrerely "idat-like")
 
@@ -143,6 +145,8 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * preference to this; if overriden, this should be called first.
 	 * 
 	 * The respective {@link ChunkReader#chunkDone()} method is directed to this {@link #postProcessChunk(ChunkReader)}.
+	 * 
+	 * Instead of overriding this, see also {@link #createChunkReaderForNewChunk(String, int, long, boolean)}
 	 */
 	protected void startNewChunk(int len, String id, long offset) {
 		if (id.equals(ChunkHelper.IDAT))
@@ -151,15 +155,13 @@ public class ChunkSeqReader implements IBytesConsumer {
 		boolean skip = shouldSkipContent(len, id);
 		boolean isIdatType = isIdatKind(id);
 		// first see if we should terminate an active curReaderDeflatedSet
-		if (curReaderDeflatedSet != null && (!curReaderDeflatedSet.chunkid.equals(id))
-				&& !curReaderDeflatedSet.allowOtherChunksInBetween(id)) {
-			if (!curReaderDeflatedSet.isDone())
-				throw new PngjInputException("unexpected chunk while reading IDAT(like) set " + id);
-			curReaderDeflatedSet.close();
-		}
-		if (isIdatType && !skip) { // IDAT with HOT PROCESS mode
-			if (curReaderDeflatedSet == null || curReaderDeflatedSet.isDone()) {
-				curReaderDeflatedSet = createIdatSet(id); // new
+		boolean forCurrentIdatSet=false;
+		if (curReaderDeflatedSet != null) 
+			forCurrentIdatSet=curReaderDeflatedSet.ackNextChunkId(id);
+		if (isIdatType && !skip) { // IDAT with HOT PROCESS mode: create a DeflatedChunkReader owned by a idatSet
+			if(! forCurrentIdatSet) {
+				if(curReaderDeflatedSet!=null) throw new PngjInputException("too many IDAT (or idatlike) chunks");
+				curReaderDeflatedSet = createIdatSet(id); 
 			}
 			curChunkReader = new DeflatedChunkReader(len, id, checkCrc, offset, curReaderDeflatedSet) {
 				@Override
@@ -168,20 +170,24 @@ public class ChunkSeqReader implements IBytesConsumer {
 				}
 			};
 		} else { // BUFFER or SKIP (might include skipped Idat like chunks)
-			curChunkReader = new ChunkReader(len, id, offset, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
-				@Override
-				protected void chunkDone() {
-					postProcessChunk(this);
-				}
-
-				@Override
-				protected void processData(byte[] buf, int off, int len) {
-					throw new PngjExceptionInternal("should never happen");
-				}
-			};
+			curChunkReader = createChunkReaderForNewChunk(id, len, offset, skip);
 			if (!checkCrc)
 				curChunkReader.setCrcCheck(false);
 		}
+	}
+
+	protected ChunkReader createChunkReaderForNewChunk(String id, int len, long offset, boolean skip) {
+		return new ChunkReader(len, id, offset, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
+			@Override
+			protected void chunkDone() {
+				postProcessChunk(this);
+			}
+
+			@Override
+			protected void processData(byte[] buf, int off, int len) {
+				throw new PngjExceptionInternal("should never happen");
+			}
+		};
 	}
 
 	/**
@@ -287,7 +293,8 @@ public class ChunkSeqReader implements IBytesConsumer {
 	}
 
 	/**
-	 * The latest deflated set (typically IDAT chunks) reader. Notice that there could be several idat sets (eg for APNG)
+	 * The latest deflated set (typically IDAT chunks) reader. Notice that there could be several idat sets (eg for
+	 * APNG)
 	 */
 	public DeflatedChunksSet getCurReaderDeflatedSet() {
 		return curReaderDeflatedSet;

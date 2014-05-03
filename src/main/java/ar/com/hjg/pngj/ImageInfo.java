@@ -163,7 +163,8 @@ public class ImageInfo {
 	}
 
 	/**
-	 * total uncompressed bytes in IDAT, including filter byte
+	 * Total uncompressed bytes in IDAT, including filter byte.
+	 * This is not valid for interlaced. 
 	 */
 	public long getTotalRawBytes() {
 		if (totalRawBytes < 0)

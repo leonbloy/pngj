@@ -25,7 +25,7 @@ public class DeflatedChunksSet {
 	private int rown; // only coincide with image row if non-interlaced  - incremented by setNextRowSize()
 
 	/*
-	 * States
+	 * States WAITING READY DONE
 	 * 
 	 * processBytes() is externally called, prohibited in  READY
 	 * (in DONE it's ignored)
@@ -51,11 +51,16 @@ public class DeflatedChunksSet {
 	private enum State {
 		WAITING, // waiting for more input
 		READY, // ready for consumption (might be less than fully filled), ephemeral for CALLBACK mode
-		DONE;
+		DONE, // all data of interest has been read, but we might accept still more trailing chunks  (we'll ignore them)
+		TERMINATED; // we are done, but also won't accept more IDAT chunks
 
-		public boolean isFinished() {
-			return this == DONE;
+		public boolean isDone() {
+			return this == DONE || this == TERMINATED;
 		} // the caller has already uncompressed all the data of interest or EOF  
+
+		public boolean isTerminated() {
+			return this == TERMINATED;
+		} // we dont accept more chunks  
 	}
 
 	State state = State.WAITING; // never null
@@ -98,8 +103,9 @@ public class DeflatedChunksSet {
 		this.state = State.WAITING;
 		try {
 			prepareForNextRow(initialRowLen);
-		} catch (Exception e) {
+		} catch (RuntimeException e) {
 			close();
+			throw e;
 		}
 	}
 
@@ -128,7 +134,7 @@ public class DeflatedChunksSet {
 	protected void processBytes(byte[] buf, int off, int len) {
 		nFedBytes += len;
 		//PngHelperInternal.LOGGER.info("processing compressed bytes in chunkreader : " + len);
-		if (len < 1 || state.isFinished())
+		if (len < 1 || state.isDone())
 			return;
 		if (state == State.READY)
 			throw new PngjInputException("this should only be called if waitingForMoreInput");
@@ -164,7 +170,6 @@ public class DeflatedChunksSet {
 				nextstate = State.READY; // complete row, process it
 			else {
 				nextstate = State.DONE; // eof, no more data
-				finished();
 			}
 			state = nextstate;
 			if (state == State.READY) {
@@ -193,13 +198,14 @@ public class DeflatedChunksSet {
 	protected int processRowCallback() {
 		throw new PngjInputException("not implemented");
 	}
-	
+
 	/**
 	 * callback, will be called when done
+	 * 
 	 * @return
 	 */
 	protected void finished() {
-		
+
 	}
 
 	/**
@@ -223,12 +229,10 @@ public class DeflatedChunksSet {
 		rown++;
 		if (len < 1) {
 			rowlen = 0;
-			state = State.DONE;
-			finished();
+			done();
 		} else if (inf.finished()) {
 			rowlen = 0;
-			state = State.DONE;
-			finished();
+			done();
 		} else {
 			rowlen = len;
 			inflateData();
@@ -259,14 +263,47 @@ public class DeflatedChunksSet {
 	 * We can still feed this object, but the bytes will be swallowed/ignored.
 	 */
 	public boolean isDone() {
-		return state.isFinished();
+		return state.isDone();
 	}
 
-	/** This should be called when discarding this object, or for aborting. Secure, idempotent */
+	public boolean isTerminated() {
+		return state.isTerminated();
+	}
+
+	/**
+	 * This will be called by the owner to report us the next chunk to come. We can make our own internal changes and
+	 * checks. This returns true if we acknowledge the next chunk as part of this set
+	 */
+	public boolean ackNextChunkId(String id) {
+		if (state.isTerminated())
+			return false;
+		else if (id.equals(chunkid)) {
+			return true;
+		} else {
+			if (!allowOtherChunksInBetween(id)) {
+				if (state.isDone()) {
+					if(! isTerminated()) terminate();
+					return false;
+				} else {
+					throw new PngjInputException("Unexpected chunk " + id + " while " + chunkid + " set is not done");
+				}
+			} else
+				return true;
+		}
+	}
+	
+	protected void terminate() {
+		close();
+	}
+
+	/**
+	 * This should be called when discarding this object, or for aborting. Secure, idempotent Don't use this just to
+	 * notify this object that it has no more work to do, see {@link #done()}
+	 * */
 	public void close() {
 		try {
-			if (!state.isFinished()) {
-				state = State.DONE;
+			if (!state.isTerminated()) {
+				state = State.TERMINATED;
 				finished();
 			}
 			if (infOwn && inf != null) {
@@ -275,6 +312,15 @@ public class DeflatedChunksSet {
 			}
 		} catch (Exception e) {
 		}
+	}
+
+	/**
+	 * Forces the DONE state, this object won't uncompress more data. It's still not terminated, it will accept more
+	 * IDAT chunks, but will ignore them.
+	 */
+	public void done() {
+		if (!isDone())
+			state = State.DONE;
 	}
 
 	/**

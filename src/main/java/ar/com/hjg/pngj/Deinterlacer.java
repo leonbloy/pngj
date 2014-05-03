@@ -172,6 +172,22 @@ class Deinterlacer {
 		return totalRows;
 	}
 
+	/**
+	 * total unfiltered bytes in the image, including the filter byte
+	 */
+	public long getTotalRawBytes() { // including the filter byte
+		long bytes = 0;
+		for (int p = 1; p <= 7; p++) {
+			byte[] pp = paramsForPass(p); // dx dy ox oy
+			int rows = imi.rows > pp[3] ? (imi.rows + pp[1] - 1 - pp[3]) / pp[1] : 0;
+			int cols = imi.cols > pp[2] ? (imi.cols + pp[0] - 1 - pp[2]) / pp[0] : 0;
+			int bytesr= (imi.bitspPixel * cols + 7) / 8; // without filter byte
+			if (rows > 0 && cols > 0)
+				bytes += rows* (1+(long)bytesr);
+		}
+		return bytes;
+	}
+
 	public int getCurrRowSeq() {
 		return currRowSeq;
 	}

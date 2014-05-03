@@ -93,7 +93,7 @@ public class DeflatedChunkSetTest extends PngjTest {
 				getCurReaderDeflatedSet().prepareForNextRow(rowsize);
 			}
 			if (getCurReaderDeflatedSet() != null)
-				getCurReaderDeflatedSet().close();
+				getCurReaderDeflatedSet().done();
 
 			while (!isDone()) {
 				if (bf.feed(this) < 1)

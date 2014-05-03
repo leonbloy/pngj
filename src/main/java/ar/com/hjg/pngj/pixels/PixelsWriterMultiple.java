@@ -1,21 +1,20 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.util.Arrays;
 import java.util.LinkedList;
+import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 
-// TODO: check that filter for row 0 is NONE/SUB
 public class PixelsWriterMultiple extends PixelsWriter {
 
 	protected LinkedList<byte[]> rows; // unfiltered rowsperband elements [0] is the current (rowb). This should include all rows of current band, plus one
-	protected CompressorStream[] filterBank = new CompressorStream[6]; 
+	protected CompressorStream[] filterBank = new CompressorStream[6];
 	protected byte[][] filteredRows = new byte[5][]; // one for each filter (0=none is not allocated)
 	protected byte[] filteredRowTmp; // 
 	private FiltersPerformance fPerformance;
-	protected int rowsPerBand = 0;
+	protected int rowsPerBand = 0; // This is a 'nominal' size
 	protected int rowInBand = -1;
 	protected int bandNum = -1;
 	protected int firstRowInThisBand, lastRowInThisBand;
@@ -47,10 +46,11 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		byte[] rowbprev = rows.get(1);
 		for (FilterType ftype : FilterType.getAllStandardNoneLast()) {
 			// this has a special behaviour for NONE: filteredRows[0] is null, and the returned value is  rowb
-			if(currentRow == 0 && ftype!= FilterType.FILTER_NONE && ftype!= FilterType.FILTER_SUB) continue;
+			if (currentRow == 0 && ftype != FilterType.FILTER_NONE && ftype != FilterType.FILTER_SUB)
+				continue;
 			byte[] filtered = filterRowWithFilterType(ftype, rowb, rowbprev, filteredRows[ftype.val]);
 			filterBank[ftype.val].write(filtered);
-			if(currentRow == 0 && ftype == FilterType.FILTER_SUB) { // litle lie, only for first row
+			if (currentRow == 0 && ftype == FilterType.FILTER_SUB) { // litle lie, only for first row
 				filterBank[FilterType.FILTER_PAETH.val].write(filtered);
 				filterBank[FilterType.FILTER_AVERAGE.val].write(filtered);
 				filterBank[FilterType.FILTER_UP.val].write(filtered);
@@ -73,7 +73,8 @@ public class PixelsWriterMultiple extends PixelsWriter {
 				int fti = filtersAdapt[i];
 				byte[] filtered = null;
 				if (r != lastRowInThisBand) {
-					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),	filteredRowTmp);
+					filtered = filterRowWithFilterType(FilterType.getByVal(fti), rows.get(j), rows.get(j + 1),
+							filteredRowTmp);
 				} else { // no need to do this filtering, we already have it
 					filtered = filteredRows[fti];
 				}
@@ -130,22 +131,29 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	}
 
 	protected void rebuildFiltersBank() {
+		long bytesPerBandCurrent = rowsPerBandCurrent * (long) buflen;
+		final int DEFLATER_COMP_LEVEL = 4;
 		for (int i = 0; i <= 5; i++) {// one for each filter plus one adaptive
 			CompressorStream cp = filterBank[i];
-			if(cp==null || cp.getNblocks()!= rowsPerBandCurrent) {
-				if(cp!=null) cp.close();
+			if (cp == null || cp.totalLen != bytesPerBandCurrent) {
+				if (cp != null)
+					cp.close();
 				if (useLz4)
-					cp = new CompressorStreamLz4(null, rowsPerBandCurrent, buflen);
+					cp = new CompressorStreamLz4(null, buflen, rowsPerBandCurrent, bytesPerBandCurrent);
 				else
-					cp = new CompressorStreamDeflater(null, rowsPerBandCurrent, buflen);
-				filterBank[i]=cp;
-			} else cp.reset();
+					cp = new CompressorStreamDeflater(null, buflen, rowsPerBandCurrent, bytesPerBandCurrent,
+							DEFLATER_COMP_LEVEL, Deflater.DEFAULT_STRATEGY);
+				filterBank[i] = cp;
+			} else
+				cp.reset();
 			cp.setStoreFirstByte(true);
 		}
 	}
 
 	private int computeInitialRowsPerBand() {
 		int r = (int) ((hintMemoryKb * 1024.0) / (imgInfo.bytesPerRow + 1) - 5);
+		if (r < 1)
+			r = 1;
 		if (hintRowsPerBand > 0 && r > hintRowsPerBand)
 			r = hintRowsPerBand;
 		if (r > imgInfo.rows)
@@ -154,7 +162,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			int k = (imgInfo.rows + (r - 1)) / r;
 			r = (imgInfo.rows + k / 2) / k;
 		}
-		PngHelperInternal.logdebug("rows :" + r + "/"+ imgInfo.rows);
+		PngHelperInternal.logdebug("rows :" + r + "/" + imgInfo.rows);
 		return r;
 	}
 

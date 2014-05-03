@@ -28,20 +28,19 @@ public class CompressorStreamLz4 extends CompressorStream {
 	//
 	private final int buffer_size;
 
-	public CompressorStreamLz4(OutputStream os, int nblocks, int bytesPerBlock) {
-		super(os, nblocks, bytesPerBlock);
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen, int maxBlocks, long totalLen) {
+		super(os, maxBlockLen, maxBlocks, totalLen);
 		lz4 = new DeflaterEstimatorLz4();
-		long totalLen = nblocks * (long) bytesPerBlock;
 		int blen = 0;
 
-		if (bytesPerBlock >= MAX_BUFFER_SIZE || nblocks == 1) {
+		if (maxBlockLen >= MAX_BUFFER_SIZE || maxBlocks == 1) {
 			buffered = false;// not used, one shot
 		} else if (totalLen <= MAX_BUFFER_SIZE) {
 			blen = (int) totalLen;
 			buffered = true;
 		} else {
-			blen = bytesPerBlock * (MAX_BUFFER_SIZE / bytesPerBlock);
-			if (blen == bytesPerBlock)
+			blen = maxBlockLen * (MAX_BUFFER_SIZE / maxBlockLen);
+			if (blen == maxBlockLen)
 				blen *= 2;
 			buffered = true;
 		}
@@ -50,39 +49,42 @@ public class CompressorStreamLz4 extends CompressorStream {
 			buf = new byte[buffer_size];
 	}
 
-	public CompressorStreamLz4(OutputStream os, int nblocks, int bytesPerBlock, Deflater def) {
-		this(os, nblocks, bytesPerBlock);// edlfater ignored
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen, int maxBlocks, long totalLen, Deflater def) {
+		this(os, maxBlockLen, maxBlocks, totalLen);// edlfater ignored
 	}
 
-	public CompressorStreamLz4(OutputStream os, int nblocks, int bytesPerBlock, int deflaterCompLevel,
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen, int maxBlocks, long totalLen, int deflaterCompLevel,
 			int deflaterStrategy) {
-		this(os, nblocks, bytesPerBlock); // paramters ignored
+		this(os, maxBlockLen, maxBlocks, totalLen); // paramters ignored
 	}
 
-	public void write(byte[] b, int off) {
+	public void write(byte[] b, int off, int len) {
 		if (done || closed)
 			throw new PngjOutputException("write beyond end of stream");
 		if (storeFirstByte) {
 			if (firstBytes == null)
-				firstBytes = new byte[nblocks];
-			firstBytes[block] = b[0];
+				firstBytes = new byte[maxBlocks];
+			firstBytes[block] = b[off];
 		}
 		block++;
+		bytesIn += len;
 		if (!buffered) {
-			bytesOut += lz4.compressEstim(b, off, bytesPerBlock);
-			bytesIn += bytesPerBlock;
+			bytesOut += lz4.compressEstim(b, off, len);
 		} else { // buffer had content
-			System.arraycopy(b, off, buf, bufpos, bytesPerBlock);
-			bufpos += bytesPerBlock;
-			if (bufpos == buffer_size || block == nblocks) {
+			if (bufpos + len > buffer_size) {
 				bytesOut += lz4.compressEstim(buf, 0, bufpos);
-				bytesIn += bufpos;
+				bufpos = 0;
+			}
+			System.arraycopy(b, off, buf, bufpos, len);
+			bufpos += len;
+			if (bufpos == buffer_size || bytesIn == totalLen) {
+				bytesOut += lz4.compressEstim(buf, 0, bufpos);
 				bufpos = 0;
 			}
 		}
-		if (block == nblocks) {
+		if (bytesIn == totalLen) {
 			done = true;
-			if (bufpos != 0)
+			if (bufpos != 0)// assert
 				throw new PngjOutputException("??");
 		}
 	}

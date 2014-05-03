@@ -18,40 +18,41 @@ public class CompressorStreamDeflater extends CompressorStream {
 	protected Deflater deflater;
 	protected byte[] buf = new byte[4092]; // temporary storage of compressed bytes
 	protected boolean deflaterIsOwn = true;
-
-	public CompressorStreamDeflater(OutputStream os, int nblocks, int bytesPerBlock) {
-		this(os, nblocks, bytesPerBlock, null);
+	
+	public CompressorStreamDeflater(OutputStream os, int maxBlockLen, int maxBlocks,long totalLen) {
+		this(os, maxBlockLen, maxBlocks,totalLen,null);
 	}
 
 	/** if a deflater is passed, it must be already reset. It will not be released on close */
-	public CompressorStreamDeflater(OutputStream os, int nblocks, int bytesPerBlock, Deflater def) {
-		super(os, nblocks, bytesPerBlock);
+	public CompressorStreamDeflater(OutputStream os, int maxBlockLen, int maxBlocks,long totalLen, Deflater def) {
+		super(os, maxBlockLen, maxBlocks,totalLen);
 		this.deflater = def == null ? new Deflater() : def;
 		this.deflaterIsOwn = def == null;
 	}
 
-	public CompressorStreamDeflater(OutputStream os, int nblocks, int bytesPerBlock, int deflaterCompLevel,
+	public CompressorStreamDeflater(OutputStream os,  int maxBlockLen, int maxBlocks,long totalLen, int deflaterCompLevel,
 			int deflaterStrategy) {
-		this(os, nblocks, bytesPerBlock, new Deflater(deflaterCompLevel));
+		this(os, maxBlockLen, maxBlocks,totalLen,new Deflater(deflaterCompLevel));
 		this.deflaterIsOwn = true;
 		deflater.setStrategy(deflaterStrategy);
 	}
 
-	public void write(byte[] b, int off) {
+	@Override
+	public void write(byte[] b, int off,final int len) {
 		if (deflater.finished() || done || closed)
 			throw new PngjOutputException("write beyond end of stream");
 		if (storeFirstByte) {
-			firstBytes[block] = b[0];
+			firstBytes[block] = b[off];
 		}
-		int stride = buf.length;
-		for (int i = 0; i < bytesPerBlock; i += stride) {
-			deflater.setInput(b, off + i, Math.min(stride, bytesPerBlock - i));
+		int stride = len;
+		for (int i = 0; i < len; i += stride) {
+			deflater.setInput(b, off + i, Math.min(stride, len - i));
 			while (!deflater.needsInput())
 				deflate();
 		}
-		bytesIn += bytesPerBlock;
+		bytesIn += len;
 		block++;
-		if (block == nblocks) {
+		if (bytesIn == totalLen) {
 			done = true;
 			finish();
 		}

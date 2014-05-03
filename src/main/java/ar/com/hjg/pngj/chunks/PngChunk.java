@@ -32,6 +32,11 @@ public abstract class PngChunk {
 
 	protected ChunkRaw raw;
 
+	private boolean priority = false; // For writing. Queued chunks with high priority will be written as soon as
+	// possible
+	
+	protected int chunkGroup = -1; // chunk group where it was read or writen
+
 	/**
 	 * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks. Theoretically, there could
 	 * be more general constraints, but these cover the constraints for standard chunks.
@@ -90,11 +95,6 @@ public abstract class PngChunk {
 			return false;
 		}
 	}
-
-	private boolean priority = false; // For writing. Queued chunks with high priority will be written as soon as
-										// possible
-
-	protected int chunkGroup = -1; // chunk group where it was read or writen
 
 	public PngChunk(String id, ImageInfo imgInfo) {
 		this.id = id;

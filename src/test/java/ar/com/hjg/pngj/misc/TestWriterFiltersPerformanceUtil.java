@@ -619,20 +619,23 @@ public class TestWriterFiltersPerformanceUtil {
 		Locale.setDefault(Locale.US);
 		long t0 = System.currentTimeMillis();
 		int clevel = 6;
-		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
-		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2"));
+		boolean useBetterJavaEncoder=false;
 		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
+		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2"));
+		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0090.png"));
+		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0130.png"));
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\m\\m2230.png"));
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2\\l\\l209.png"));
 		SHOW_FILENAME_FORCE = !files.isDirectory();
 		//computeSizeOriginal(files); // 1
 		//computeSpeedWithPngWriterPreserving(files,clevel); //2	
-		showCompressionWithJava(files, false,false); // 3
+		//showCompressionWithJava(files, false,useBetterJavaEncoder); // 3
 		//computeSpeedWithPngWriterDefault(files,clevel); //4
+		//computeSpeedWithPngWriterNone(files, clevel);
 		//computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FAST, clevel);
 		//showCompressionWith2Filters(files, FilterType.FILTER_SUB, FilterType.FILTER_AVERAGE);
 		//PngHelperInternal.setDebug(true);
-		//computeSpeedWithPngWriterSuperAdaptative(files, clevel, 150, true);
+		computeSpeedWithPngWriterSuperAdaptative(files, clevel, 30, false);
 		// computeSpeedWithPngWriterNone(files,clevel); //2
 		// computeSpeedWithPngWriterWithAdaptative(files,clevel); //2
 		// computeSpeedWithX(files,PngWriterBands.class); //2

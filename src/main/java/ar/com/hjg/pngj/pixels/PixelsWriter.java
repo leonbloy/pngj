@@ -10,10 +10,10 @@ import ar.com.hjg.pngj.PngjOutputException;
 
 /**
  * Writes a set of rows (pixels) as a continuous deflated stream (does not know about IDAT chunk segmentation)
- * 
- * This includes the filter strategy
- * 
- * This can (could) be used for APGN
+ * <p>
+ * This includes the filter selection strategy
+ * <p>
+ * This can (could, we hope) be used for APGN
  */
 public abstract class PixelsWriter {
 
@@ -53,7 +53,7 @@ public abstract class PixelsWriter {
 	}
 
 	protected void sendToCompressedStream(byte[] rowf) {
-		compressorStream.write(rowf, 0);
+		compressorStream.write(rowf, 0,rowf.length);
 		filtersUsed[rowf[0]]++;
 	}
 
@@ -131,8 +131,8 @@ public abstract class PixelsWriter {
 		if (!initdone) {
 			initParams();
 			if (compressorStream == null) { // if not set, use the deflater
-				compressorStream = new CompressorStreamDeflater(os, imgInfo.rows, buflen, getDeflaterCompLevel(),
-						getDeflaterStrategy());
+				compressorStream = new CompressorStreamDeflater(os, buflen, imgInfo.rows,imgInfo.getTotalRawBytes(), 
+						getDeflaterCompLevel(),	getDeflaterStrategy());
 			}
 			initdone = true;
 		}
