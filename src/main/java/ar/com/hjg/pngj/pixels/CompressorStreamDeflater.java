@@ -42,51 +42,41 @@ public class CompressorStreamDeflater extends CompressorStream {
 		if (deflater.finished() || done || closed)
 			throw new PngjOutputException("write beyond end of stream");
 		deflater.setInput(b, off, len);
+		bytesIn += len;
 		while (!deflater.needsInput())
 			deflate();
-		bytesIn += len;
-		if (bytesIn == totalbytes) {
-			done = true;
-			finish();
-		}
 	}
 
 	protected void deflate() {
 		int len = deflater.deflate(buf, 0, buf.length);
 		if (len > 0) {
+			bytesOut += len;
 			try {
 				if (os != null)
 					os.write(buf, 0, len);
 			} catch (IOException e) {
 				throw new PngjOutputException(e);
 			}
-			bytesOut += len;
 		}
 	}
 
 	/** automatically called when done */
-	protected void finish() {
+	@Override
+	public void done() {
+		if(done) return;
 		if (!deflater.finished()) {
 			deflater.finish();
-			while (!deflater.finished()) {
-				deflate();
-			}
+			while (!deflater.finished()) 	deflate();
 		}
-		if (os != null) {
-			try {
-				os.flush();
-			} catch (Exception ee) {
-			}
-		}
+		done=true;
+		flush();
 	}
 
 	public void close() {
-		if (deflater != null)
-			finish();
+		done();
 		try {
-			if (deflaterIsOwn && deflater != null) {
+			if (deflaterIsOwn ) {
 				deflater.end();
-				deflater = null;
 			}
 		} catch (Exception e) {
 		}

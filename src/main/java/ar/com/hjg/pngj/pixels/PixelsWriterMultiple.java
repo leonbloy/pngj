@@ -67,7 +67,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		}
 		if (currentRow == lastRowInThisBand) {
 			int best = getBestCompressor();
-			//System.out.println("bes comp=" + best + " rows=" + firstRowInThisBand + ":" + lastRowInThisBand);
+			//if(currentRow>90&&currentRow<100) PngHelperInternal.debug(String.format("row=%d ft=%s",currentRow,FilterType.getByVal(best)));
 			byte[] filtersAdapt = filterBank[best].getFirstBytes();
 			for (int r = firstRowInThisBand, i = 0, j = lastRowInThisBand - firstRowInThisBand; r <= lastRowInThisBand; r++, j--, i++) {
 				int fti = filtersAdapt[i];
@@ -145,11 +145,12 @@ public class PixelsWriterMultiple extends PixelsWriter {
 				filterBank[i] = cp;
 			} else
 				cp.reset();
-			cp.setStoreFirstByte(true,rowsPerBandCurrent);
+			cp.setStoreFirstByte(true,rowsPerBandCurrent); //TODO: only for adaptive?
 		}
 	}
 
 	private int computeInitialRowsPerBand() {
+		// memory (only buffers) ~ (r+1+5) * bytesPerRow
 		int r = (int) ((hintMemoryKb * 1024.0) / (imgInfo.bytesPerRow + 1) - 5);
 		if (r < 1)
 			r = 1;
@@ -161,7 +162,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			int k = (imgInfo.rows + (r - 1)) / r;
 			r = (imgInfo.rows + k / 2) / k;
 		}
-		PngHelperInternal.logdebug("rows :" + r + "/" + imgInfo.rows);
+		PngHelperInternal.debug("rows :" + r + "/" + imgInfo.rows);
 		return r;
 	}
 
@@ -171,7 +172,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		for (int i = tryAdaptive ? 5 : 4; i >= 0; i--) {
 			CompressorStream fb = filterBank[i];
 			double cr = fb.getCompressionRatio();
-			if (cr < bestcr) {
+			if (cr <= bestcr) { // dirty trick, here the equality gains for row 0, so that SUB is prefered over PAETH, UP, AVE...
 				bestb = i;
 				bestcr = cr;
 			}
@@ -195,7 +196,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 
 	public void setHintMemoryKb(int hintMemoryKb) {
 		this.hintMemoryKb = hintMemoryKb <= 0 ? HINT_MEMORY_DEFAULT_KB
-				: (hintMemoryKb > 100000 ? 100000 : hintMemoryKb);
+				: (hintMemoryKb > 10000 ? 10000 : hintMemoryKb);
 	}
 
 	public void setHintRowsPerBand(int hintRowsPerBand) {
@@ -205,5 +206,11 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	public void setUseLz4(boolean lz4) {
 		this.useLz4 = lz4;
 	}
+
+	/** for tuning memory or other parameters*/
+	public FiltersPerformance getfPerformance() {
+		return fPerformance;
+	}
+	
 
 }

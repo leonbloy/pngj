@@ -1,6 +1,5 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.Deflater;
 
@@ -15,88 +14,74 @@ public class CompressorStreamLz4 extends CompressorStream {
 
 	private final DeflaterEstimatorLz4 lz4;
 
-	// 3 cases:
-	// large (bytesPerBlock>= MAX_BUFFER_SIZE), or 1 row, unbuffered (one shot)
-	// small (totalBytes <= MAX_BUFFER_SIZE), all buffered
-	// medium : buffered, buffer has a multiple of bytesPerBlock
-	private boolean buffered;
 	private byte[] buf; // lazily allocated, only if needed
-	// bufpos=bytes in buffer yet not compressed; bytesIn does not include this!
-	private int bufpos = 0;
-
-	// actually in some cases it can be up to almost twice this
-	private static final int MAX_BUFFER_SIZE = 4096;
-	//
 	private final int buffer_size;
+	// bufpos=bytes in buffer yet not compressed (bytesIn include this)
+	private int inbuf = 0;
+
+	private static final int MAX_BUFFER_SIZE = 16000;
 
 	public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen) {
 		super(os, maxBlockLen, totalLen);
 		lz4 = new DeflaterEstimatorLz4();
-		int blen = 0;
-
-		if (maxBlockLen >= MAX_BUFFER_SIZE || maxBlockLen == totalLen) {
-			buffered = false;// not used, one shot
-		} else if (totalLen <= MAX_BUFFER_SIZE) {
-			blen = (int) totalLen;
-			buffered = true;
-		} else {
-			blen = maxBlockLen * (MAX_BUFFER_SIZE / maxBlockLen);
-			if (blen == maxBlockLen)
-				blen *= 2;
-			buffered = true;
-		}
-		buffer_size = blen;
-		if (buffered)
-			buf = new byte[buffer_size];
+		buffer_size = (int) (totalLen > MAX_BUFFER_SIZE ? MAX_BUFFER_SIZE : totalLen);
 	}
 
-	public CompressorStreamLz4(OutputStream os, int maxBlockLen,  long totalLen, Deflater def) {
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen, Deflater def) {
 		this(os, maxBlockLen, totalLen);// edlfater ignored
 	}
 
-	public CompressorStreamLz4(OutputStream os, int maxBlockLen,  long totalLen, int deflaterCompLevel,
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen, int deflaterCompLevel,
 			int deflaterStrategy) {
 		this(os, maxBlockLen, totalLen); // paramters ignored
 	}
 
 	@Override
 	public void mywrite(byte[] b, int off, int len) {
+		if (len == 0)
+			return;
 		if (done || closed)
 			throw new PngjOutputException("write beyond end of stream");
 		bytesIn += len;
-		if (!buffered) {
-			bytesOut += lz4.compressEstim(b, off, len);
-		} else { // buffer had content
-			if (bufpos + len > buffer_size) {
-				bytesOut += lz4.compressEstim(buf, 0, bufpos);
-				bufpos = 0;
-			}
-			System.arraycopy(b, off, buf, bufpos, len);
-			bufpos += len;
-			if (bufpos == buffer_size || bytesIn == totalbytes) {
-				bytesOut += lz4.compressEstim(buf, 0, bufpos);
-				bufpos = 0;
+		while (len > 0) {
+			if (inbuf == 0 && (len >= MAX_BUFFER_SIZE || bytesIn==totalbytes )) { 
+				// direct copy (buffer might be null or empty)
+				bytesOut += lz4.compressEstim(b, off, len);
+				len = 0;
+			} else {
+				if (buf == null)
+					buf = new byte[buffer_size];
+				int len1 = inbuf + len <= buffer_size ? len : buffer_size - inbuf ; // to copy 
+				if (len1 > 0)
+					System.arraycopy(b, off, buf, inbuf, len1);
+				inbuf+=len1;
+				len -= len1;
+				off += len1;
+				if(inbuf==buffer_size)
+					compressFromBuffer();
 			}
 		}
-		if (bytesIn == totalbytes) {
-			done = true;
-			if (bufpos != 0)// assert
-				throw new PngjOutputException("??");
+	}
+
+	void compressFromBuffer() {
+		if (inbuf > 0) {
+			bytesOut += lz4.compressEstim(buf, 0, inbuf);
+			inbuf = 0;
 		}
 	}
 
 	@Override
-	public void flush()  {
-		if (bufpos >0) {
-			bytesOut += lz4.compressEstim(buf, 0, bufpos);
-			bufpos = 0;
+	public void done() {
+		if (!done) {
+			compressFromBuffer();
+			done = true;
+			flush();
 		}
-		super.flush();
 	}
 
 	@Override
 	public void close() {
-		flush();
+		done();
 		if (!closed) {
 			super.close();
 			buf = null;
@@ -105,8 +90,8 @@ public class CompressorStreamLz4 extends CompressorStream {
 
 	@Override
 	public void reset() {
+		done();
 		super.reset();
-		bufpos = 0;
 	}
 
 }

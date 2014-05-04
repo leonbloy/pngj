@@ -12,9 +12,9 @@ import ar.com.hjg.pngj.PngjOutputException;
 public class PixelsWriterDefault extends PixelsWriter {
 	private FiltersPerformance filtersPerformance;
 	protected FilterType curfilterType;
-	private byte[] rowb;
-	private byte[] rowbfilter;
-	private byte[] rowbprev;
+	protected byte[] rowb;
+	protected byte[] rowbfilter;
+	protected byte[] rowbprev;
 
 	protected int adaptMaxSkip; // set in initParams, does not change   
 	protected int adaptSkipIncreaseSinceRow; // set in initParams, does not change 

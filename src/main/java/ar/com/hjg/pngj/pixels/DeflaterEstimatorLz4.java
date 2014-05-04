@@ -2,6 +2,8 @@ package ar.com.hjg.pngj.pixels;
 
 import java.nio.ByteOrder;
 
+import ar.com.hjg.pngj.PngHelperInternal;
+
 /**
  * This estimator actually uses the LZ4 compression algorithm, and hopes that it's well correlated with Deflater. It's
  * about 3 to 4 times faster than Deflater.
@@ -10,7 +12,7 @@ import java.nio.ByteOrder;
  * other classes from LZ4 Java library: https://github.com/jpountz/lz4-java , originally licensed under the Apache
  * License 2.0
  */
-final class DeflaterEstimatorLz4 {
+final public class DeflaterEstimatorLz4 {
 
 	/**
 	 * This object is stateless, it's thread safe and can be reused
@@ -33,7 +35,11 @@ final class DeflaterEstimatorLz4 {
 	public int compressEstim(byte[] src, int srcOff, final int srcLen) {
 		if (srcLen < 10)
 			return srcLen; // too small
-		final int stride = LZ4_64K_LIMIT - 1;
+		int stride = LZ4_64K_LIMIT - 1;
+		int segments = (srcLen+stride-1)/stride;
+		stride = srcLen/segments;
+		if(stride>=LZ4_64K_LIMIT-1 || stride*segments>srcLen || segments<1 || stride<1)
+			throw new RuntimeException("?? " +srcLen);
 		int bytesIn = 0;
 		int bytesOut = 0;
 		int len = srcLen;
@@ -45,7 +51,8 @@ final class DeflaterEstimatorLz4 {
 			bytesIn += len;
 			len = srcLen - bytesIn;
 		}
-		return bytesIn == srcLen ? bytesOut : (int) ((bytesOut * (double) srcLen) / bytesIn);
+		double ratio= bytesOut /(double)bytesIn;
+		return bytesIn == srcLen ? bytesOut : (int) ( ratio * srcLen +0.5);
 	}
 
 	public int compressEstim(byte[] src) {

@@ -14,14 +14,13 @@ import ar.com.hjg.pngj.PngjOutputException;
  * 
  * It works as a stream (similar to DeflaterOutputStream), but it's peculiar in that it expects that each writes has a
  * fixed length (other lenghts are accepted, but it's less efficient) and that the total amount of bytes is known (so it
- * can close itself, but it can also be closed on demand) In out app, the block is a row (including filter byte).
+ * can close itself, but it can also be closed on demand) In PNGJ use, the block is typically a row (including filter
+ * byte).
  * 
  * We use this to do the real compression (with Deflate) but also to compute tentative estimators
  * 
  * If not closed, it can be recicled via reset()
  * 
- * It has 3 states: - working: 0 or more bytes received - done: targetLen bytes received and proceseed, only here
- * getCompressionRatio() can be called - closed: object discarded
  * 
  */
 public abstract class CompressorStream extends FilterOutputStream {
@@ -31,17 +30,30 @@ public abstract class CompressorStream extends FilterOutputStream {
 	public final long totalbytes;
 
 	boolean closed = false;
-	boolean done = false;
+	protected boolean done = false;
 	protected long bytesIn = 0;
 	protected long bytesOut = 0;
 	protected int block = -1;
 
-	/** stores the first byte of each row */
+	/** optionally stores the first byte of each block (row) */
 	private byte[] firstBytes;
 	protected boolean storeFirstByte = false;
 
+	/**
+	 * 
+	 * @param os
+	 *            Can be null (if we are only interested in compute compression ratio)
+	 * @param blockLen
+	 *            Estimated maximum block length. If unknown, use -1.
+	 * @param totalbytes
+	 *            Expected total bytes to be fed. If unknown, use -1.
+	 */
 	public CompressorStream(OutputStream os, int blockLen, long totalbytes) {
 		super(os);
+		if (blockLen < 0)
+			blockLen = 4096;
+		if (totalbytes < 0)
+			totalbytes = Long.MAX_VALUE;
 		if (blockLen < 1 || totalbytes < 1)
 			throw new RuntimeException(" maxBlockLen or totalLen invalid");
 		this.os = os;
@@ -49,27 +61,43 @@ public abstract class CompressorStream extends FilterOutputStream {
 		this.totalbytes = totalbytes;
 	}
 
-	/** Releases resources. Does NOT close the OuputStream. Idempotent. Should be called when done */
+	/** Releases resources. Does NOT close the OuputStream. Idempotent. */
 	@Override
 	public void close() {
-		flush();
+		done();
 		closed = true;
 	}
 
+	/**
+	 * Will be called automatically when the number of bytes reaches the total expected Can be also be called from
+	 * outside.
+	 * This should set the flag done=true
+	 */
+	public abstract void done();
+
 	public final void write(byte[] b, int off, int len) {
-		int stride = len > blockLen ? blockLen : len;
-		while (len > 0) {
-			block++;
-			mywrite(b, off, stride);
+		block++;
+		if (len <= blockLen) { // normal case
+			mywrite(b, off, len);
 			if (storeFirstByte && block < firstBytes.length) {
-				firstBytes[block] = b[off];
+				firstBytes[block] = b[off]; // only makes sense in this case 
 			}
-			off += stride;
-			len -= stride;
+		} else {
+			while (len > 0) {
+				mywrite(b, off, blockLen);
+				off += blockLen;
+				len -= blockLen;
+			}
 		}
+		if(bytesIn>=totalbytes) done();
+		
 	}
 
-	/** same as write, but guarantedd to not exceed blockLen */
+	/** 
+	 * same as write, but guarantedd to not exceed blockLen
+	 * The implementation should update bytesOut and bytesInt
+	 * but not check for totalBytes
+	 */
 	protected abstract void mywrite(byte[] b, int off, int len);
 
 	@Override
@@ -83,11 +111,23 @@ public abstract class CompressorStream extends FilterOutputStream {
 	}
 
 	public void reset() {
+		reset(os);
+	}
+
+	/**
+	 * resets and sets a new outputstream
+	 * 
+	 * @param os
+	 */
+	public void reset(OutputStream os) {
 		if (closed)
 			throw new PngjOutputException("cannot reset, discarded object");
+		done();
 		bytesIn = 0;
 		bytesOut = 0;
+		block=-1;
 		done = false;
+		this.os = os;
 	}
 
 	/**

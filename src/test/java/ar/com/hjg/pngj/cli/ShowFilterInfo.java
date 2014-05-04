@@ -18,7 +18,7 @@ public class ShowFilterInfo {
 		help.append("    -n: use newlines \n");
 		help.append("    -s: summary \n");
 		help.append("    -sp: summary with percentajes \n");
-		help.append("    -g[num]: maximum number of groups to show (0:none -1:all)   \n");
+		help.append("    -g[num]: maximum number of groups to show (0:none -1:all) (default:5)   \n");
 		help.append(" Accepts paths in the form 'mypath/*' (all pngs in dir) or 'mypath/**' (idem recursive)  \n");
 
 		CliArgs cli = CliArgs.buildFrom(args, help);

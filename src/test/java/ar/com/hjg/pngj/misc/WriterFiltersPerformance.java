@@ -8,10 +8,11 @@ import java.util.Locale;
 import ar.com.hjg.pngj.IPngWriterFactory;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.NullOs;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 
-public class TestWriterFiltersPerformance {
+public class WriterFiltersPerformance {
 	public final File orig;
 	private int times = 1;
 	private long msecs;
@@ -36,7 +37,7 @@ public class TestWriterFiltersPerformance {
 		Locale.setDefault(Locale.US);
 	}
 
-	public TestWriterFiltersPerformance(File orig, IPngWriterFactory writerFactory) {
+	public WriterFiltersPerformance(File orig, IPngWriterFactory writerFactory) {
 		this.orig = orig;
 		this.writerFactory = writerFactory;
 		init();
@@ -57,6 +58,7 @@ public class TestWriterFiltersPerformance {
 				return -1;
 			}
 			imgInfo = reader.imgInfo;
+			
 			OutputStream os = writeToFile ? new FileOutputStream(tempFile) : new NullOs();
 			PngWriter writer = writerFactory.createPngWriter(os, reader.imgInfo);
 			writer.copyChunksFrom(reader.getChunksList());
@@ -72,7 +74,7 @@ public class TestWriterFiltersPerformance {
 			extrainfo = writer.getDebuginfo() + " " + writer.getPixelsWriter().getFiltersUsed();
 			compression = writer.getPixelsWriter().getCompression();
 			if (writeToFile)
-				System.err.println("Result in " + tempFile);
+				PngHelperInternal.debug("Result in " + tempFile);
 			return t1 - t0;
 		} catch (Exception e) {
 			throw new RuntimeException("error with " + orig,e);
@@ -144,7 +146,7 @@ public class TestWriterFiltersPerformance {
 	}
 
 	public static String processFile(File f, IPngWriterFactory writerFactory, int repeat, boolean showFileName) {
-		TestWriterFiltersPerformance tp = new TestWriterFiltersPerformance(f, writerFactory);
+		WriterFiltersPerformance tp = new WriterFiltersPerformance(f, writerFactory);
 		tp.setRepeat(repeat);
 		tp.doit();
 		return tp.getSumm(showFileName);

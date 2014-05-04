@@ -76,7 +76,8 @@ public class FiltersPerformance {
 		else
 			absum[ftype.val] = computeAbsFromHistogram();
 	}
-
+	
+	/* WARNING: this is not idempotent, call it just once per cycle (sigh)*/
 	public FilterType getPreferred() {
 		int fi = 0;
 		double vali = Double.MAX_VALUE, val = 0; // lower wins
@@ -181,7 +182,8 @@ public class FiltersPerformance {
 	 * 
 	 */
 	public void tuneMemory(double m) {
-		memoryA = Math.pow(memoryA, 1.0 / m);
+		if(m==0) memoryA=0.0;
+		else memoryA = Math.pow(memoryA, 1.0 / m);
 	}
 	
 	/**
