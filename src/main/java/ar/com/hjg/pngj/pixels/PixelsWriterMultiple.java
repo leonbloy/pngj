@@ -135,18 +135,17 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		final int DEFLATER_COMP_LEVEL = 4;
 		for (int i = 0; i <= 5; i++) {// one for each filter plus one adaptive
 			CompressorStream cp = filterBank[i];
-			if (cp == null || cp.totalLen != bytesPerBandCurrent) {
+			if (cp == null || cp.totalbytes != bytesPerBandCurrent) {
 				if (cp != null)
 					cp.close();
 				if (useLz4)
-					cp = new CompressorStreamLz4(null, buflen, rowsPerBandCurrent, bytesPerBandCurrent);
+					cp = new CompressorStreamLz4(null, buflen, bytesPerBandCurrent);
 				else
-					cp = new CompressorStreamDeflater(null, buflen, rowsPerBandCurrent, bytesPerBandCurrent,
-							DEFLATER_COMP_LEVEL, Deflater.DEFAULT_STRATEGY);
+					cp = new CompressorStreamDeflater(null, buflen, bytesPerBandCurrent,DEFLATER_COMP_LEVEL, Deflater.DEFAULT_STRATEGY);
 				filterBank[i] = cp;
 			} else
 				cp.reset();
-			cp.setStoreFirstByte(true);
+			cp.setStoreFirstByte(true,rowsPerBandCurrent);
 		}
 	}
 

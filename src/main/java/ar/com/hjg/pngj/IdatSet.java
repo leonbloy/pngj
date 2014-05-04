@@ -166,6 +166,11 @@ public class IdatSet extends DeflatedChunksSet {
 		return bytesNextRow;
 	}
 
+	@Override
+	protected void processDoneCallback() {
+	}
+
+	
 	/**
 	 * Signals that we are done with the previous row, begin reading the next one.
 	 * <p>
@@ -184,8 +189,9 @@ public class IdatSet extends DeflatedChunksSet {
 			boolean more = deinterlacer.nextRow();
 			bytesNextRow = more ? deinterlacer.getBytesToRead() + 1 : 0;
 		}
-		if (!isCallbackMode()) // in callback mode, setNextRowLen() is called internally
+		if (!isCallbackMode()) { // in callback mode, setNextRowLen() is called internally
 			prepareForNextRow(bytesNextRow);
+		}
 		return bytesNextRow;
 	}
 

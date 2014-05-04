@@ -20,18 +20,13 @@ public class ChunkSequenceSkipTest extends PngjTest {
 
 	String stripesChunks = "IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ";
 
-	public static String getChunksSummary(String f) {
-		ChunkSequenceSkip c = new ChunkSequenceSkip();
-		TestSupport.feedFromStreamTest(c, f);
-		return TestSupport.showChunksRaw(c.getChunks());
-	}
 
 	/**
 	 * just reads the chunks, all skipped
 	 */
 	@Test
 	public void testReadChunksSkip() {
-		ChunkSequenceSkip c = new ChunkSequenceSkip();
+		ChunkSeqReaderSimple c = new ChunkSeqReaderSimple();
 		TestSupport.feedFromStreamTest(c, "test/stripes.png");
 		String chunksSummary = TestSupport.showChunksRaw(c.getChunks());
 		TestCase.assertEquals(6785, c.getBytesCount());
@@ -49,7 +44,7 @@ public class ChunkSequenceSkipTest extends PngjTest {
 	 */
 	@Test
 	public void testReadWithExtraTrailing() throws Exception {
-		ChunkSequenceSkip c = new ChunkSequenceSkip();
+		ChunkSeqReaderSimple c = new ChunkSeqReaderSimple();
 		TestSupport.feedFromStreamTest(c, "test/stripes_extratrailing.png", -1);
 		TestCase.assertEquals(6785, c.getBytesCount());
 		TestCase.assertEquals(stripesChunks, TestSupport.showChunksRaw(c.getChunks()));
@@ -62,7 +57,7 @@ public class ChunkSequenceSkipTest extends PngjTest {
 	public void testReadIncomplete() throws Exception {
 		expectedEx.expect(PngjInputException.class);
 		expectedEx.expectMessage("premature ending");
-		ChunkSequenceSkip c = new ChunkSequenceSkip();
+		ChunkSeqReaderSimple c = new ChunkSeqReaderSimple();
 		TestSupport.feedFromStreamTest(c, "test/bad_truncated.png");
 		throw new RuntimeException("should not reach here");
 	}

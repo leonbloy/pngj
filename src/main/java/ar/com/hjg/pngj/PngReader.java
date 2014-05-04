@@ -505,5 +505,6 @@ public class PngReader {
 		return imgInfo.toStringBrief() + (interlaced? "i":"");
 	}
 
+	 
 	
 }

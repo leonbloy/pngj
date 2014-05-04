@@ -11,7 +11,8 @@ import ar.com.hjg.pngj.chunks.PngChunkGAMA;
 /**
  * Remove GAMA chunk, if present
  * 
- * These could be done more efficienty, by treating IDAT chunks as ancillary chunks See ChunkSeqBasicTest for an example
+ * These could be done more efficienty, by treating IDAT chunks as ancillary chunks See RemoveChunks for an example
+ * 
  * 
  */
 public class SampleRemoveGama {

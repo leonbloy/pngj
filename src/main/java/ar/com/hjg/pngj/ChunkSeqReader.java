@@ -26,7 +26,6 @@ public class ChunkSeqReader implements IBytesConsumer {
 
 	private long bytesCount = 0;
 
-	
 	private DeflatedChunksSet curReaderDeflatedSet; // one instance is created for each "idat-like set". Normally one.
 
 	private ChunkReader curChunkReader;
@@ -136,9 +135,9 @@ public class ChunkSeqReader implements IBytesConsumer {
 	}
 
 	/**
-	 * Called when a chunk start has been read (id and length), before the chunk data itself is read. It creates a new
-	 * ChunkReader (field accesible via {@link #getCurChunkReader()}) in the corresponding mode, and eventually a
-	 * curReaderDeflatedSet.(field accesible via {@link #getCurReaderDeflatedSet()})
+	 * Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It
+	 * creates a new ChunkReader (field accesible via {@link #getCurChunkReader()}) in the corresponding mode, and
+	 * eventually a curReaderDeflatedSet.(field accesible via {@link #getCurReaderDeflatedSet()})
 	 * 
 	 * To decide the mode and options, it calls {@link #shouldCheckCrc(int, String)},
 	 * {@link #shouldSkipContent(int, String)}, {@link #isIdatKind(String)}. Those methods should be overriden in
@@ -155,13 +154,14 @@ public class ChunkSeqReader implements IBytesConsumer {
 		boolean skip = shouldSkipContent(len, id);
 		boolean isIdatType = isIdatKind(id);
 		// first see if we should terminate an active curReaderDeflatedSet
-		boolean forCurrentIdatSet=false;
-		if (curReaderDeflatedSet != null) 
-			forCurrentIdatSet=curReaderDeflatedSet.ackNextChunkId(id);
-		if (isIdatType && !skip) { // IDAT with HOT PROCESS mode: create a DeflatedChunkReader owned by a idatSet
-			if(! forCurrentIdatSet) {
-				if(curReaderDeflatedSet!=null) throw new PngjInputException("too many IDAT (or idatlike) chunks");
-				curReaderDeflatedSet = createIdatSet(id); 
+		boolean forCurrentIdatSet = false;
+		if (curReaderDeflatedSet != null)
+			forCurrentIdatSet = curReaderDeflatedSet.ackNextChunkId(id);
+		if (isIdatType && !skip) { // IDAT non skipped: create a DeflatedChunkReader owned by a idatSet
+			if (!forCurrentIdatSet) {
+				if (curReaderDeflatedSet != null)
+					throw new PngjInputException("too many IDAT (or idatlike) chunks");
+				curReaderDeflatedSet = createIdatSet(id);
 			}
 			curChunkReader = new DeflatedChunkReader(len, id, checkCrc, offset, curReaderDeflatedSet) {
 				@Override
@@ -169,13 +169,29 @@ public class ChunkSeqReader implements IBytesConsumer {
 					postProcessChunk(this);
 				}
 			};
-		} else { // BUFFER or SKIP (might include skipped Idat like chunks)
+		} else { // for non-idat chunks (or skipped idat like)
 			curChunkReader = createChunkReaderForNewChunk(id, len, offset, skip);
 			if (!checkCrc)
 				curChunkReader.setCrcCheck(false);
 		}
 	}
 
+	/**
+	 * This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
+	 * 
+	 * The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls
+	 * {@link #postProcessChunk(ChunkReader)} (always) when done.
+	 * 
+	 * @param id
+	 *            Chunk id
+	 * @param len
+	 *            Chunk length
+	 * @param offset
+	 *            offset inside PNG stream , merely informative
+	 * @param skip
+	 *            flag: is true, the content will not be buffered (nor processed)
+	 * @return a newly created ChunkReader that will create the ChunkRaw and then discarded
+	 */
 	protected ChunkReader createChunkReaderForNewChunk(String id, int len, long offset, boolean skip) {
 		return new ChunkReader(len, id, offset, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
 			@Override
@@ -184,14 +200,14 @@ public class ChunkSeqReader implements IBytesConsumer {
 			}
 
 			@Override
-			protected void processData(byte[] buf, int off, int len) {
+			protected void processData(int offsetinChhunk, byte[] buf, int off, int len) {
 				throw new PngjExceptionInternal("should never happen");
 			}
 		};
 	}
 
 	/**
-	 * This is called after a chunk is read, in all modes.
+	 * This is called after a chunk is read, in all modes
 	 * 
 	 * This implementation only chenks the id of the first chunk, and process the IEND chunk (sets done=true)
 	 ** 
@@ -219,12 +235,12 @@ public class ChunkSeqReader implements IBytesConsumer {
 	 * Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
 	 * will be created to deflate it and process+ the deflated data)
 	 * 
-	 * This implementation return false.
+	 * This implementation always returns always false
 	 * 
 	 * @param id
 	 */
 	protected boolean isIdatKind(String id) {
-		return false; // override in ChunkSequencePng
+		return false;
 	}
 
 	/**

@@ -1,6 +1,6 @@
 package ar.com.hjg.pngj;
 
-class Deinterlacer {
+public class Deinterlacer {
 	final ImageInfo imi;
 	private int pass; // 1-7
 	private int rows, cols;
@@ -16,7 +16,7 @@ class Deinterlacer {
 	int totalRows = 0; // lazy compute
 	private boolean ended = false;
 
-	Deinterlacer(ImageInfo iminfo) {
+	public Deinterlacer(ImageInfo iminfo) {
 		this.imi = iminfo;
 		pass = 0;
 		currRowSeq = 0;

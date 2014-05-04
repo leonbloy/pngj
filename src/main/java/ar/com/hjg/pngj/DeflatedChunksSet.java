@@ -12,20 +12,21 @@ import java.util.zip.Inflater;
  * Eg: For IDAT non-interlaced images, a row has bytesPerRow + 1 filter byte<br>
  * For interlaced images, the lengths are variable.
  * <p>
- * This class can work in sync (polled) mode or async (callback) mode
+ * This class can work in sync (polled) mode or async (callback) mode. But for callback mode the method
+ * processRowCallback() must be overriden
  * <p>
  * See {@link IdatSet}, which is mostly used and has a slightly simpler use.<br>
  * See <code>DeflatedChunkSetTest</code> for example of use.
  */
 public class DeflatedChunksSet {
 
-	protected byte[] row; // a "row" here means a raw (filtered) image row (or subimage row for interlaced) plus a filter byte
+	protected byte[] row; // a "row" here means a raw (uncopressed filtered) part of the IDAT stream, normally a image row (or subimage row for interlaced) plus a filter byte
 	private int rowfilled; //  effective/valid length of row
 	private int rowlen; // what amount of bytes is to be interpreted as a complete "row". can change (for interlaced)
 	private int rown; // only coincide with image row if non-interlaced  - incremented by setNextRowSize()
 
 	/*
-	 * States WAITING READY DONE
+	 * States WAITING_FOR_INPUT ROW_READY WORK_DONE TERMINATED
 	 * 
 	 * processBytes() is externally called, prohibited in  READY
 	 * (in DONE it's ignored)
@@ -33,7 +34,7 @@ public class DeflatedChunksSet {
 	 * WARNING: inflater.finished() != DONE (not enough, not neccesary)
 	 *  DONE means that we have already uncompressed all the data of interest.
 	 *  
-	 * In non-callback mode, prepareForNextRow() is also externally called, in NORMAL_MODE
+	 * In non-callback mode, prepareForNextRow() is also externally called, in 
 	 * 
 	 * Flow:
 	 *   - processBytes() calls inflateData()
@@ -49,13 +50,13 @@ public class DeflatedChunksSet {
 	 *   - end() goes to  DONE
 	 */
 	private enum State {
-		WAITING, // waiting for more input
-		READY, // ready for consumption (might be less than fully filled), ephemeral for CALLBACK mode
-		DONE, // all data of interest has been read, but we might accept still more trailing chunks  (we'll ignore them)
-		TERMINATED; // we are done, but also won't accept more IDAT chunks
+		WAITING_FOR_INPUT, // waiting for more input
+		ROW_READY, // ready for consumption (might be less than fully filled), ephemeral for CALLBACK mode
+		WORK_DONE, // all data of interest has been read, but we might accept still more trailing chunks  (we'll ignore them)
+		TERMINATED; // we are done, and also won't accept more IDAT chunks
 
 		public boolean isDone() {
-			return this == DONE || this == TERMINATED;
+			return this == WORK_DONE || this == TERMINATED;
 		} // the caller has already uncompressed all the data of interest or EOF  
 
 		public boolean isTerminated() {
@@ -63,7 +64,7 @@ public class DeflatedChunksSet {
 		} // we dont accept more chunks  
 	}
 
-	State state = State.WAITING; // never null
+	State state = State.WAITING_FOR_INPUT; // never null
 
 	private Inflater inf;
 	private final boolean infOwn; // true if we own the inflater (we created it) 
@@ -71,7 +72,8 @@ public class DeflatedChunksSet {
 	private DeflatedChunkReader curChunk;
 
 	private boolean callbackMode = true;
-	private int nFedBytes = 0; // count the total compressed bytes that have been fed
+	private long nBytesIn = 0; // count the total compressed bytes that have been fed
+	private long nBytesOut = 0; // count the total uncompressed bytes 
 
 	/**
 	 * All IDAT-like chunks that form a same DeflatedChunksSet should have the same id
@@ -100,7 +102,7 @@ public class DeflatedChunksSet {
 		}
 		this.row = buffer != null && buffer.length >= initialRowLen ? buffer : new byte[maxRowLen];
 		rown = -1;
-		this.state = State.WAITING;
+		this.state = State.WAITING_FOR_INPUT;
 		try {
 			prepareForNextRow(initialRowLen);
 		} catch (RuntimeException e) {
@@ -132,57 +134,69 @@ public class DeflatedChunksSet {
 	 * @param len
 	 */
 	protected void processBytes(byte[] buf, int off, int len) {
-		nFedBytes += len;
+		nBytesIn += len;
 		//PngHelperInternal.LOGGER.info("processing compressed bytes in chunkreader : " + len);
 		if (len < 1 || state.isDone())
 			return;
-		if (state == State.READY)
+		if (state == State.ROW_READY)
 			throw new PngjInputException("this should only be called if waitingForMoreInput");
 		if (inf.needsDictionary() || !inf.needsInput())
 			throw new RuntimeException("should not happen");
 		inf.setInput(buf, off, len);
-		inflateData();
+		//PngHelperInternal.debug("entering processs bytes, state=" + state + " callback="+callbackMode);
+		if (isCallbackMode()) {
+			while (inflateData()) {
+				int nextRowLen = processRowCallback();
+				prepareForNextRow(nextRowLen);
+				if(isDone()) processDoneCallback();
+			}
+		} else
+			inflateData();
 	}
 
 	/* 
 	 * This never inflates more than one row
-	 * (but it can recurse!) 
+	 * This returns true if this has resulted in a row being ready and preprocessed with preProcessRow
+	 * (in callback mode, we should call immediately processRowCallback() and prepareForNextRow(nextRowLen) 
 	 */
-	private void inflateData() {
+	private boolean inflateData() {
 		try {
+		//	PngHelperInternal.debug("entering inflateData bytes, state=" + state + " callback="+callbackMode);
+			if (state == State.ROW_READY)
+				throw new PngjException("invalid state");//assert
+			if(state.isDone()) return false;
 			int ninflated = 0;
 			if (row == null || row.length < rowlen)
 				row = new byte[rowlen]; // should not happen
-			if (rowfilled < rowlen) {
+			if (rowfilled < rowlen && !inf.finished()) {
 				try {
 					ninflated = inf.inflate(row, rowfilled, rowlen - rowfilled);
 				} catch (DataFormatException e) {
 					throw new PngjInputException("error decompressing zlib stream ", e);
 				}
 				rowfilled += ninflated;
+				nBytesOut += ninflated;
 			}
 			State nextstate = null;
 			if (rowfilled == rowlen)
-				nextstate = State.READY; // complete row, process it
+				nextstate = State.ROW_READY; // complete row, process it
 			else if (!inf.finished())
-				nextstate = State.WAITING;
+				nextstate = State.WAITING_FOR_INPUT;
 			else if (rowfilled > 0)
-				nextstate = State.READY; // complete row, process it
+				nextstate = State.ROW_READY; // complete row, process it
 			else {
-				nextstate = State.DONE; // eof, no more data
+				nextstate = State.WORK_DONE; // eof, no more data
 			}
 			state = nextstate;
-			if (state == State.READY) {
+			if (state == State.ROW_READY) {
 				preProcessRow();
-				if (isCallbackMode()) { // callback mode
-					int nextRowLen = processRowCallback();
-					prepareForNextRow(nextRowLen);
-				}
+				return true;
 			}
 		} catch (RuntimeException e) {
 			close();
 			throw e;
 		}
+		return false;
 	}
 
 	/**
@@ -193,19 +207,23 @@ public class DeflatedChunksSet {
 	}
 
 	/**
-	 * callback, must be implemented in callbackMode Must return byes of next row, for next callback
+	 * Callback, must be implemented in callbackMode
+	 * <p> 
+	 * This should use {@link #getRowFilled()} and {@link #getInflatedRow()} to access the row.
+	 * <p>
+	 * Must return byes of next row, for next callback.
 	 */
 	protected int processRowCallback() {
 		throw new PngjInputException("not implemented");
 	}
-
+	
 	/**
-	 * callback, will be called when done
-	 * 
-	 * @return
+	 * Callback, must be implemented in callbackMode
+	 * <p> 
+	 * This will be called once to notify state done
 	 */
-	protected void finished() {
-
+	protected void processDoneCallback() {
+		throw new PngjInputException("not implemented");
 	}
 
 	/**
@@ -223,6 +241,8 @@ public class DeflatedChunksSet {
 	 * Pass 0 or negative to signal that we are done (not expecting more bytes)
 	 * <p>
 	 * This resets {@link #rowfilled}
+	 * <p>
+	 * The
 	 */
 	public void prepareForNextRow(int len) {
 		rowfilled = 0;
@@ -234,8 +254,10 @@ public class DeflatedChunksSet {
 			rowlen = 0;
 			done();
 		} else {
+			state=State.WAITING_FOR_INPUT;
 			rowlen = len;
-			inflateData();
+			if (!callbackMode)
+				inflateData();
 		}
 	}
 
@@ -245,7 +267,7 @@ public class DeflatedChunksSet {
 	 * Only in this state it's legal to feed this
 	 */
 	public boolean isWaitingForMoreInput() {
-		return state == State.WAITING;
+		return state == State.WAITING_FOR_INPUT;
 	}
 
 	/**
@@ -254,7 +276,7 @@ public class DeflatedChunksSet {
 	 * Effective length: see {@link #getRowFilled()}
 	 */
 	public boolean isRowReady() {
-		return state == State.READY;
+		return state == State.ROW_READY;
 	}
 
 	/**
@@ -282,7 +304,8 @@ public class DeflatedChunksSet {
 		} else {
 			if (!allowOtherChunksInBetween(id)) {
 				if (state.isDone()) {
-					if(! isTerminated()) terminate();
+					if (!isTerminated())
+						terminate();
 					return false;
 				} else {
 					throw new PngjInputException("Unexpected chunk " + id + " while " + chunkid + " set is not done");
@@ -291,7 +314,7 @@ public class DeflatedChunksSet {
 				return true;
 		}
 	}
-	
+
 	protected void terminate() {
 		close();
 	}
@@ -304,7 +327,6 @@ public class DeflatedChunksSet {
 		try {
 			if (!state.isTerminated()) {
 				state = State.TERMINATED;
-				finished();
 			}
 			if (infOwn && inf != null) {
 				inf.end();// we end the Inflater only if we created it
@@ -320,7 +342,7 @@ public class DeflatedChunksSet {
 	 */
 	public void done() {
 		if (!isDone())
-			state = State.DONE;
+			state = State.WORK_DONE;
 	}
 
 	/**
@@ -372,14 +394,19 @@ public class DeflatedChunksSet {
 	}
 
 	/** total number of bytes that have been fed to this object */
-	public long getnFedBytes() {
-		return nFedBytes;
+	public long getBytesIn() {
+		return nBytesIn;
+	}
+
+	/** total number of bytes that have been uncompressed */
+	public long getBytesOut() {
+		return nBytesOut;
 	}
 
 	@Override
 	public String toString() {
 		StringBuilder sb = new StringBuilder("idatSet : " + curChunk.getChunkRaw().id + " state=" + state + " rows="
-				+ rown);
+				+ rown + " bytes=" + nBytesIn + "/" + nBytesOut);
 		return sb.toString();
 	}
 

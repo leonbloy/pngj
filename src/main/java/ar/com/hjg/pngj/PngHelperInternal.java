@@ -36,7 +36,7 @@ public final class PngHelperInternal {
 			return Boolean.FALSE;
 		}
 	};
-	
+
 	/**
 	 * PNG magic bytes
 	 */
@@ -251,7 +251,7 @@ public final class PngHelperInternal {
 	 * @param obj
 	 *            : Object to print
 	 */
-	static void debug(Object obj) {
+	public static void debug(Object obj) {
 		debug(obj, 1, true);
 	}
 
@@ -301,7 +301,7 @@ public final class PngHelperInternal {
 		int ind = steStr.lastIndexOf('.');
 		steStr = steStr.substring(ind + 1);
 		steStr += "." + ste.getMethodName() + "(" + ste.getLineNumber() + "): " + (obj == null ? null : obj.toString());
-		System.out.println(steStr);
+		System.err.println(steStr);
 	}
 
 	/**
@@ -310,7 +310,7 @@ public final class PngHelperInternal {
 	public static void setDebug(boolean b) {
 		DEBUG.set(b);
 	}
-	
+
 	public static boolean isDebug() {
 		return DEBUG.get().booleanValue();
 	}
@@ -322,6 +322,9 @@ public final class PngHelperInternal {
 	public static void initCrcForTests(PngReader pngr) {
 		pngr.prepareSimpleDigestComputation();
 	}
-	
-	
+
+	public static long getRawIdatBytes(PngReader r) {
+		return r.interlaced ? r.getChunkseq().getDeinterlacer().getTotalRawBytes() : r.imgInfo.getTotalRawBytes();
+	}
+
 }

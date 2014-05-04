@@ -131,8 +131,7 @@ public abstract class PixelsWriter {
 		if (!initdone) {
 			initParams();
 			if (compressorStream == null) { // if not set, use the deflater
-				compressorStream = new CompressorStreamDeflater(os, buflen, imgInfo.rows,imgInfo.getTotalRawBytes(), 
-						getDeflaterCompLevel(),	getDeflaterStrategy());
+				compressorStream = new CompressorStreamDeflater(os, buflen, imgInfo.getTotalRawBytes(),	getDeflaterCompLevel(),	getDeflaterStrategy());
 			}
 			initdone = true;
 		}

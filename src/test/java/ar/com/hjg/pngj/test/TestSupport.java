@@ -9,6 +9,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.util.AbstractList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -19,6 +20,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkSeqReader;
+import ar.com.hjg.pngj.ChunkSeqReaderSimple;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineArray;
@@ -50,9 +52,14 @@ public class TestSupport {
 
 	private static File resourcesDir = null;
 
+	// this files should be accessible from the classpath 
 	public static final String PNG_TEST_STRIPES = "test/stripes.png";
+	public static final String PNG_TEST_STRIPES2 = "test/stripes2.png"; 
+	public static final String PNG_TEST_BADCRC = "test/testg1badcrc.png"; 
+	public static final String PNG_TEST_BADTRUNCATED = "test/bad_truncated.png"; 
 	public static final String PNG_TEST_TESTG2 = "test/testg2.png";
-	public static final String PNG_TEST_TESTG2I = "test/testg2i.png";
+	public static final String PNG_TEST_TESTG2I = "test/testg2i.png";//interlaced
+	public static final String PNG_TEST_IDATTRICKY = "test/stripes0idat.png"; // Correct buttricky: several 0 length idats
 
 	public static final String PNG_TEST_BAD_MISSINGIDAT = "test/bad_missingidat.png";
 
@@ -101,6 +108,12 @@ public class TestSupport {
 		return chunk == null ? "null" : chunk.id + "[" + chunk.len + "]";
 	}
 
+	public static List<ChunkRaw> chunkListToChunksRaw(List<PngChunk> chunks) {
+		List<ChunkRaw> cr=new ArrayList<ChunkRaw>();
+		for(PngChunk c:chunks) cr.add(c.getRaw());
+		return cr;
+	}
+	
 	public static String showFilters(File pngr, int maxgroups, boolean usenewlines) {
 		return showFilters(pngr, maxgroups, usenewlines,false,false);
 	}
@@ -397,6 +410,7 @@ public class TestSupport {
 		return png;
 	}
 
+	/** creates a simple PNG image 32x32 RGB8 for test */
 	public static PngWriter prepareFileTmp(File f, boolean palette) {
 		return prepareFileTmp(f, new ImageInfo(32, 32, 8, false, false, palette));
 	}
@@ -438,6 +452,17 @@ public class TestSupport {
 
 	public static List<File> getPngsFromDir(File dir) {
 		return getPngsFromDir(dir, true);
+	}
+
+	public static String getChunksSummary(String f) {
+		return getChunksSummary(f,true);
+	}
+	
+	// if fast=true does not check CRCs
+	public static String getChunksSummary(String f,boolean fast) {
+		ChunkSeqReaderSimple c = new ChunkSeqReaderSimple(fast);
+		c.feedFromInputStream(TestSupport.istream(f));
+		return TestSupport.showChunksRaw(c.getChunks());
 	}
 
 }

@@ -357,11 +357,13 @@ public class PngWriter {
 	}
 
 	/**
-	 * Sets maximum size of IDAT fragments. This has little effect on performance you should rarely call this
+	 * Sets maximum size of IDAT fragments. Incrementing this from the default
+	 * has very little effect on compression and increments memory usage. 
+	 * You should rarely change this. 
 	 * <p>
 	 * 
 	 * @param idatMaxSize
-	 *            default=0 : use defaultSize (64K)
+	 *            default=0 : use defaultSize (32K)
 	 */
 	public void setIdatMaxSize(int idatMaxSize) {
 		this.idatMaxSize = idatMaxSize;

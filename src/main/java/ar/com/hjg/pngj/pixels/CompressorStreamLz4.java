@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj.pixels;
 
+import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.Deflater;
 
@@ -28,12 +29,12 @@ public class CompressorStreamLz4 extends CompressorStream {
 	//
 	private final int buffer_size;
 
-	public CompressorStreamLz4(OutputStream os, int maxBlockLen, int maxBlocks, long totalLen) {
-		super(os, maxBlockLen, maxBlocks, totalLen);
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen) {
+		super(os, maxBlockLen, totalLen);
 		lz4 = new DeflaterEstimatorLz4();
 		int blen = 0;
 
-		if (maxBlockLen >= MAX_BUFFER_SIZE || maxBlocks == 1) {
+		if (maxBlockLen >= MAX_BUFFER_SIZE || maxBlockLen == totalLen) {
 			buffered = false;// not used, one shot
 		} else if (totalLen <= MAX_BUFFER_SIZE) {
 			blen = (int) totalLen;
@@ -49,24 +50,19 @@ public class CompressorStreamLz4 extends CompressorStream {
 			buf = new byte[buffer_size];
 	}
 
-	public CompressorStreamLz4(OutputStream os, int maxBlockLen, int maxBlocks, long totalLen, Deflater def) {
-		this(os, maxBlockLen, maxBlocks, totalLen);// edlfater ignored
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen,  long totalLen, Deflater def) {
+		this(os, maxBlockLen, totalLen);// edlfater ignored
 	}
 
-	public CompressorStreamLz4(OutputStream os, int maxBlockLen, int maxBlocks, long totalLen, int deflaterCompLevel,
+	public CompressorStreamLz4(OutputStream os, int maxBlockLen,  long totalLen, int deflaterCompLevel,
 			int deflaterStrategy) {
-		this(os, maxBlockLen, maxBlocks, totalLen); // paramters ignored
+		this(os, maxBlockLen, totalLen); // paramters ignored
 	}
 
-	public void write(byte[] b, int off, int len) {
+	@Override
+	public void mywrite(byte[] b, int off, int len) {
 		if (done || closed)
 			throw new PngjOutputException("write beyond end of stream");
-		if (storeFirstByte) {
-			if (firstBytes == null)
-				firstBytes = new byte[maxBlocks];
-			firstBytes[block] = b[off];
-		}
-		block++;
 		bytesIn += len;
 		if (!buffered) {
 			bytesOut += lz4.compressEstim(b, off, len);
@@ -77,12 +73,12 @@ public class CompressorStreamLz4 extends CompressorStream {
 			}
 			System.arraycopy(b, off, buf, bufpos, len);
 			bufpos += len;
-			if (bufpos == buffer_size || bytesIn == totalLen) {
+			if (bufpos == buffer_size || bytesIn == totalbytes) {
 				bytesOut += lz4.compressEstim(buf, 0, bufpos);
 				bufpos = 0;
 			}
 		}
-		if (bytesIn == totalLen) {
+		if (bytesIn == totalbytes) {
 			done = true;
 			if (bufpos != 0)// assert
 				throw new PngjOutputException("??");
@@ -90,7 +86,17 @@ public class CompressorStreamLz4 extends CompressorStream {
 	}
 
 	@Override
+	public void flush()  {
+		if (bufpos >0) {
+			bytesOut += lz4.compressEstim(buf, 0, bufpos);
+			bufpos = 0;
+		}
+		super.flush();
+	}
+
+	@Override
 	public void close() {
+		flush();
 		if (!closed) {
 			super.close();
 			buf = null;

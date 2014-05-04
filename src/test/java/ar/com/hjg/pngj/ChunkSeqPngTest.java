@@ -37,6 +37,11 @@ public class ChunkSeqPngTest extends PngjTest {
 					summary.append(TestSupport.showRow(getUnfilteredRow(), getRowFilled(), getRown()));
 					return super.processRowCallback();
 				}
+				
+				@Override
+				protected void processDoneCallback() {
+				}
+				
 			};
 			ids.setCallbackMode(callbackMode);
 			return ids;

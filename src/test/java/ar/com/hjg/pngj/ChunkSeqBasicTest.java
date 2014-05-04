@@ -82,7 +82,7 @@ public class ChunkSeqBasicTest extends PngjTest {
 		TestSupport.getResourcesDir();
 		String dest = "test/temp/stripeswt.png";
 		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES), TestSupport.ostream(dest), true);
-		String s = ChunkSequenceSkipTest.getChunksSummary(dest);
+		String s = TestSupport.getChunksSummary(dest);
 		//PngHelperInternal.LOGGER.info(s);
 		TestCase.assertEquals(
 				"IHDR[13] pHYs[9] tEXt[16] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ", s);
@@ -92,7 +92,7 @@ public class ChunkSeqBasicTest extends PngjTest {
 	public void addTextualAfter() {
 		String dest = "test/temp/stripeswb.png";
 		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES), TestSupport.ostream(dest), false);
-		String s = ChunkSequenceSkipTest.getChunksSummary(dest);
+		String s = TestSupport.getChunksSummary(dest);
 		//PngHelperInternal.LOGGER.info(s);
 		TestCase.assertEquals(
 				"IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] tEXt[16] IEND[0] ", s);

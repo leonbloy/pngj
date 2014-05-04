@@ -16,12 +16,11 @@ public class DeflatedChunkReader extends ChunkReader {
 		iDatSet.appendNewChunk(this);
 	}
 
-
 	/**
 	 * Delegates to ChunkReaderDeflatedSet.processData()
 	 */
 	@Override
-	protected void processData(byte[] buf, int off, int len) {
+	protected void processData(int offsetInchunk, byte[] buf, int off, int len) {
 		if (len > 0) { // delegate to idatSet
 			deflatedChunksSet.processBytes(buf, off, len);
 			if (alsoBuffer) { // very rare!

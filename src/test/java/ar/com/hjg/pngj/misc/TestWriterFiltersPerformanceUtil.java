@@ -620,7 +620,7 @@ public class TestWriterFiltersPerformanceUtil {
 		long t0 = System.currentTimeMillis();
 		int clevel = 6;
 		boolean useBetterJavaEncoder=false;
-		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1"));
+		File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\m"));
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2"));
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0090.png"));
 		//File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0130.png"));

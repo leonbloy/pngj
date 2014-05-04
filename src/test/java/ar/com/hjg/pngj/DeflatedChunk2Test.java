@@ -45,35 +45,35 @@ public class DeflatedChunk2Test extends PngjTest {
 		StringBuilder sb = new StringBuilder();
 		while (c.isRowReady()) {
 			row++;
-			sb.append(c.state + " " + c.getnFedBytes() + " "
+			sb.append(c.state + " " + c.getBytesIn() + " "
 					+ TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
 			c.prepareForNextRow(row == nrows ? 0 : rowsize);
 		}
 		c.processBytes(compressed, 4, 2);
 		while (c.isRowReady()) {
 			row++;
-			sb.append(c.state + " " + c.getnFedBytes() + " "
+			sb.append(c.state + " " + c.getBytesIn() + " "
 					+ TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
 			c.prepareForNextRow(row == nrows ? 0 : rowsize);
 		}
 		c.processBytes(compressed, 6, 2);
 		while (c.isRowReady()) {
 			row++;
-			sb.append(c.state + " " + c.getnFedBytes() + " "
+			sb.append(c.state + " " + c.getBytesIn() + " "
 					+ TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
 			c.prepareForNextRow(row == nrows ? 0 : rowsize);
 		}
 		c.processBytes(compressed, 8, 2);
 		while (c.isRowReady()) {
 			row++;
-			sb.append(c.state + " " + c.getnFedBytes() + " "
+			sb.append(c.state + " " + c.getBytesIn() + " "
 					+ TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
 			c.prepareForNextRow(row == nrows - 1 ? 0 : rowsize);
 		}
 		c.processBytes(compressed, 10, 2);
 		while (c.isRowReady()) {
 			row++;
-			sb.append(c.state + " " + c.getnFedBytes() + " "
+			sb.append(c.state + " " + c.getBytesIn() + " "
 					+ TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
 			c.prepareForNextRow(row == nrows ? 0 : rowsize);
 		}
