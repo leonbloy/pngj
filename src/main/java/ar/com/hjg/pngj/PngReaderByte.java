@@ -10,21 +10,21 @@ import java.io.InputStream;
  */
 public class PngReaderByte extends PngReader {
 
-	public PngReaderByte(File file) {
-		super(file);
-		setLineSetFactory(ImageLineSetDefault.getFactoryByte());
-	}
+  public PngReaderByte(File file) {
+    super(file);
+    setLineSetFactory(ImageLineSetDefault.getFactoryByte());
+  }
 
-	public PngReaderByte(InputStream inputStream) {
-		super(inputStream);
-		setLineSetFactory(ImageLineSetDefault.getFactoryByte());
-	}
+  public PngReaderByte(InputStream inputStream) {
+    super(inputStream);
+    setLineSetFactory(ImageLineSetDefault.getFactoryByte());
+  }
 
-	/**
-	 * Utility method that casts {@link #readRow()} return to {@link ImageLineByte}.
-	 */
-	public ImageLineByte readRowByte() {
-		return (ImageLineByte) readRow();
-	}
+  /**
+   * Utility method that casts {@link #readRow()} return to {@link ImageLineByte}.
+   */
+  public ImageLineByte readRowByte() {
+    return (ImageLineByte) readRow();
+  }
 
 }

@@ -9,26 +9,26 @@ import ar.com.hjg.pngj.pixels.PixelsWriterMultiple;
 /** Pngwriter with High compression */
 public class PngWriterHc extends PngWriter {
 
-	public PngWriterHc(File file, ImageInfo imgInfo, boolean allowoverwrite) {
-		super(file, imgInfo, allowoverwrite);
-	}
+  public PngWriterHc(File file, ImageInfo imgInfo, boolean allowoverwrite) {
+    super(file, imgInfo, allowoverwrite);
+  }
 
-	public PngWriterHc(File file, ImageInfo imgInfo) {
-		super(file, imgInfo);
-	}
+  public PngWriterHc(File file, ImageInfo imgInfo) {
+    super(file, imgInfo);
+  }
 
-	public PngWriterHc(OutputStream outputStream, ImageInfo imgInfo) {
-		super(outputStream, imgInfo);
-	}
+  public PngWriterHc(OutputStream outputStream, ImageInfo imgInfo) {
+    super(outputStream, imgInfo);
+  }
 
-	@Override
-	protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
-		PixelsWriterMultiple pw = new PixelsWriterMultiple(imginfo);
-		return pw;
-	}
+  @Override
+  protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {
+    PixelsWriterMultiple pw = new PixelsWriterMultiple(imginfo);
+    return pw;
+  }
 
-	public PixelsWriterMultiple getPixelWriterMultiple() {
-		return (PixelsWriterMultiple) pixelsWriter;
-	}
+  public PixelsWriterMultiple getPixelWriterMultiple() {
+    return (PixelsWriterMultiple) pixelsWriter;
+  }
 
 }

@@ -19,187 +19,191 @@ import ar.com.hjg.pngj.PngjExceptionInternal;
  */
 public abstract class PngChunk {
 
-	/**
-	 * Chunk-id: 4 letters
-	 */
-	public final String id;
-	/**
-	 * Autocomputed at creation time
-	 */
-	public final boolean crit, pub, safe;
+  /**
+   * Chunk-id: 4 letters
+   */
+  public final String id;
+  /**
+   * Autocomputed at creation time
+   */
+  public final boolean crit, pub, safe;
 
-	protected final ImageInfo imgInfo;
+  protected final ImageInfo imgInfo;
 
-	protected ChunkRaw raw;
+  protected ChunkRaw raw;
 
-	private boolean priority = false; // For writing. Queued chunks with high priority will be written as soon as
-	// possible
-	
-	protected int chunkGroup = -1; // chunk group where it was read or writen
+  private boolean priority = false; // For writing. Queued chunks with high priority will be written
+                                    // as soon as
+  // possible
 
-	/**
-	 * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks. Theoretically, there could
-	 * be more general constraints, but these cover the constraints for standard chunks.
-	 */
-	public enum ChunkOrderingConstraint {
-		/**
-		 * no ordering constraint
-		 */
-		NONE,
-		/**
-		 * Must go before PLTE (and hence, also before IDAT)
-		 */
-		BEFORE_PLTE_AND_IDAT,
-		/**
-		 * Must go after PLTE (if exists) but before IDAT
-		 */
-		AFTER_PLTE_BEFORE_IDAT,
-		/**
-		 * Must go after PLTE (and it must exist) but before IDAT
-		 */
-		AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED,
-		/**
-		 * Must before IDAT (before or after PLTE)
-		 */
-		BEFORE_IDAT,
-		/**
-		 * Does not apply
-		 */
-		NA;
+  protected int chunkGroup = -1; // chunk group where it was read or writen
 
-		public boolean mustGoBeforePLTE() {
-			return this == BEFORE_PLTE_AND_IDAT;
-		}
+  /**
+   * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks.
+   * Theoretically, there could be more general constraints, but these cover the constraints for
+   * standard chunks.
+   */
+  public enum ChunkOrderingConstraint {
+    /**
+     * no ordering constraint
+     */
+    NONE,
+    /**
+     * Must go before PLTE (and hence, also before IDAT)
+     */
+    BEFORE_PLTE_AND_IDAT,
+    /**
+     * Must go after PLTE (if exists) but before IDAT
+     */
+    AFTER_PLTE_BEFORE_IDAT,
+    /**
+     * Must go after PLTE (and it must exist) but before IDAT
+     */
+    AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED,
+    /**
+     * Must before IDAT (before or after PLTE)
+     */
+    BEFORE_IDAT,
+    /**
+     * Does not apply
+     */
+    NA;
 
-		public boolean mustGoBeforeIDAT() {
-			return this == BEFORE_IDAT || this == BEFORE_PLTE_AND_IDAT || this == AFTER_PLTE_BEFORE_IDAT;
-		}
+    public boolean mustGoBeforePLTE() {
+      return this == BEFORE_PLTE_AND_IDAT;
+    }
 
-		/**
-		 * after pallete, if exists
-		 */
-		public boolean mustGoAfterPLTE() {
-			return this == AFTER_PLTE_BEFORE_IDAT || this == AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED;
-		}
+    public boolean mustGoBeforeIDAT() {
+      return this == BEFORE_IDAT || this == BEFORE_PLTE_AND_IDAT || this == AFTER_PLTE_BEFORE_IDAT;
+    }
 
-		public boolean isOk(int currentChunkGroup, boolean hasplte) {
-			if (this == NONE)
-				return true;
-			else if (this == BEFORE_IDAT)
-				return currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT;
-			else if (this == BEFORE_PLTE_AND_IDAT)
-				return currentChunkGroup < ChunksList.CHUNK_GROUP_2_PLTE;
-			else if (this == AFTER_PLTE_BEFORE_IDAT)
-				return hasplte ? currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT
-						: (currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT && currentChunkGroup > ChunksList.CHUNK_GROUP_2_PLTE);
-			return false;
-		}
-	}
+    /**
+     * after pallete, if exists
+     */
+    public boolean mustGoAfterPLTE() {
+      return this == AFTER_PLTE_BEFORE_IDAT || this == AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED;
+    }
 
-	public PngChunk(String id, ImageInfo imgInfo) {
-		this.id = id;
-		this.imgInfo = imgInfo;
-		this.crit = ChunkHelper.isCritical(id);
-		this.pub = ChunkHelper.isPublic(id);
-		this.safe = ChunkHelper.isSafeToCopy(id);
-	}
+    public boolean isOk(int currentChunkGroup, boolean hasplte) {
+      if (this == NONE)
+        return true;
+      else if (this == BEFORE_IDAT)
+        return currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT;
+      else if (this == BEFORE_PLTE_AND_IDAT)
+        return currentChunkGroup < ChunksList.CHUNK_GROUP_2_PLTE;
+      else if (this == AFTER_PLTE_BEFORE_IDAT)
+        return hasplte ? currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT
+            : (currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT && currentChunkGroup > ChunksList.CHUNK_GROUP_2_PLTE);
+      return false;
+    }
+  }
 
-	protected final ChunkRaw createEmptyChunk(int len, boolean alloc) {
-		ChunkRaw c = new ChunkRaw(len, ChunkHelper.toBytes(id), alloc);
-		return c;
-	}
+  public PngChunk(String id, ImageInfo imgInfo) {
+    this.id = id;
+    this.imgInfo = imgInfo;
+    this.crit = ChunkHelper.isCritical(id);
+    this.pub = ChunkHelper.isPublic(id);
+    this.safe = ChunkHelper.isSafeToCopy(id);
+  }
 
-	/**
-	 * In which "chunkGroup" (see {@link ChunksList}for definition) this chunks instance was read or written.
-	 * <p>
-	 * -1 if not read or written (eg, queued)
-	 */
-	final public int getChunkGroup() {
-		return chunkGroup;
-	}
+  protected final ChunkRaw createEmptyChunk(int len, boolean alloc) {
+    ChunkRaw c = new ChunkRaw(len, ChunkHelper.toBytes(id), alloc);
+    return c;
+  }
 
-	/**
-	 * @see #getChunkGroup()
-	 */
-	final void setChunkGroup(int chunkGroup) {
-		this.chunkGroup = chunkGroup;
-	}
+  /**
+   * In which "chunkGroup" (see {@link ChunksList}for definition) this chunks instance was read or
+   * written.
+   * <p>
+   * -1 if not read or written (eg, queued)
+   */
+  final public int getChunkGroup() {
+    return chunkGroup;
+  }
 
-	public boolean hasPriority() {
-		return priority;
-	}
+  /**
+   * @see #getChunkGroup()
+   */
+  final void setChunkGroup(int chunkGroup) {
+    this.chunkGroup = chunkGroup;
+  }
 
-	public void setPriority(boolean priority) {
-		this.priority = priority;
-	}
+  public boolean hasPriority() {
+    return priority;
+  }
 
-	final void write(OutputStream os) {
-		if (raw == null || raw.data == null)
-			raw = createRawChunk();
-		if (raw == null)
-			throw new PngjExceptionInternal("null chunk ! creation failed for " + this);
-		raw.writeChunk(os);
-	}
+  public void setPriority(boolean priority) {
+    this.priority = priority;
+  }
 
-	/**
-	 * Creates the physical chunk. This is used when writing (serialization). Each particular chunk class implements its
-	 * own logic.
-	 * 
-	 * @return A newly allocated and filled raw chunk
-	 */
-	protected abstract ChunkRaw createRawChunk();
+  final void write(OutputStream os) {
+    if (raw == null || raw.data == null)
+      raw = createRawChunk();
+    if (raw == null)
+      throw new PngjExceptionInternal("null chunk ! creation failed for " + this);
+    raw.writeChunk(os);
+  }
 
-	/**
-	 * Parses raw chunk and fill inside data. This is used when reading (deserialization). Each particular chunk class
-	 * implements its own logic.
-	 */
-	protected abstract void parseFromRaw(ChunkRaw c);
+  /**
+   * Creates the physical chunk. This is used when writing (serialization). Each particular chunk
+   * class implements its own logic.
+   * 
+   * @return A newly allocated and filled raw chunk
+   */
+  protected abstract ChunkRaw createRawChunk();
 
-	/**
-	 * See {@link PngChunkMultiple} and {@link PngChunkSingle}
-	 * 
-	 * @return true if PNG accepts multiple chunks of this class
-	 */
-	protected abstract boolean allowsMultiple();
+  /**
+   * Parses raw chunk and fill inside data. This is used when reading (deserialization). Each
+   * particular chunk class implements its own logic.
+   */
+  protected abstract void parseFromRaw(ChunkRaw c);
 
-	public ChunkRaw getRaw() {
-		return raw;
-	}
+  /**
+   * See {@link PngChunkMultiple} and {@link PngChunkSingle}
+   * 
+   * @return true if PNG accepts multiple chunks of this class
+   */
+  protected abstract boolean allowsMultiple();
 
-	void setRaw(ChunkRaw raw) {
-		this.raw = raw;
-	}
+  public ChunkRaw getRaw() {
+    return raw;
+  }
 
-	/**
-	 * @see ChunkRaw#len
-	 */
-	public int getLen() {
-		return raw != null ? raw.len : -1;
-	}
+  void setRaw(ChunkRaw raw) {
+    this.raw = raw;
+  }
 
-	/**
-	 * @see ChunkRaw#getOffset()
-	 */
-	public long getOffset() {
-		return raw != null ? raw.getOffset() : -1;
-	}
+  /**
+   * @see ChunkRaw#len
+   */
+  public int getLen() {
+    return raw != null ? raw.len : -1;
+  }
 
-	/**
-	 * This signals that the raw chunk (serialized data) as invalid, so that it's regenerated on write. This should be
-	 * called for the (infrequent) case of chunks that were copied from a PngReader and we want to manually modify it.
-	 */
-	public void invalidateRawData() {
-		raw = null;
-	}
+  /**
+   * @see ChunkRaw#getOffset()
+   */
+  public long getOffset() {
+    return raw != null ? raw.getOffset() : -1;
+  }
 
-	/**
-	 * see {@link ChunkOrderingConstraint}
-	 */
-	public abstract ChunkOrderingConstraint getOrderingConstraint();
+  /**
+   * This signals that the raw chunk (serialized data) as invalid, so that it's regenerated on
+   * write. This should be called for the (infrequent) case of chunks that were copied from a
+   * PngReader and we want to manually modify it.
+   */
+  public void invalidateRawData() {
+    raw = null;
+  }
 
-	@Override
-	public String toString() {
-		return "chunk id= " + id + " (len=" + getLen() + " offset=" + getOffset() + ")";
-	}
+  /**
+   * see {@link ChunkOrderingConstraint}
+   */
+  public abstract ChunkOrderingConstraint getOrderingConstraint();
+
+  @Override
+  public String toString() {
+    return "chunk id= " + id + " (len=" + getLen() + " offset=" + getOffset() + ")";
+  }
 
 }

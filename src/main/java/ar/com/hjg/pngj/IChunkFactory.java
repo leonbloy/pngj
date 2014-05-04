@@ -10,13 +10,12 @@ import ar.com.hjg.pngj.chunks.PngChunk;
  */
 public interface IChunkFactory {
 
-	/**
-	 * @param chunkRaw
-	 *            Chunk in raw form. Data can be null if it was skipped or processed directly (eg IDAT)
-	 * @param imgInfo
-	 *            Not normally necessary, but some chunks want this info
-	 * @return should never return null.
-	 */
-	public PngChunk createChunk(ChunkRaw chunkRaw, ImageInfo imgInfo);
+  /**
+   * @param chunkRaw Chunk in raw form. Data can be null if it was skipped or processed directly (eg
+   *        IDAT)
+   * @param imgInfo Not normally necessary, but some chunks want this info
+   * @return should never return null.
+   */
+  public PngChunk createChunk(ChunkRaw chunkRaw, ImageInfo imgInfo);
 
 }

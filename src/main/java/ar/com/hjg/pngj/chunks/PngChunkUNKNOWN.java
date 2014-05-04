@@ -9,32 +9,32 @@ import ar.com.hjg.pngj.ImageInfo;
  */
 public class PngChunkUNKNOWN extends PngChunkMultiple { // unkown, custom or not
 
-	public PngChunkUNKNOWN(String id, ImageInfo info) {
-		super(id, info);
-	}
+  public PngChunkUNKNOWN(String id, ImageInfo info) {
+    super(id, info);
+  }
 
-	@Override
-	public ChunkOrderingConstraint getOrderingConstraint() {
-		return ChunkOrderingConstraint.NONE;
-	}
+  @Override
+  public ChunkOrderingConstraint getOrderingConstraint() {
+    return ChunkOrderingConstraint.NONE;
+  }
 
-	@Override
-	public ChunkRaw createRawChunk() {
-		return raw;
-	}
+  @Override
+  public ChunkRaw createRawChunk() {
+    return raw;
+  }
 
-	@Override
-	public void parseFromRaw(ChunkRaw c) {
+  @Override
+  public void parseFromRaw(ChunkRaw c) {
 
-	}
+  }
 
-	/* does not do deep copy! */
-	public byte[] getData() {
-		return raw.data;
-	}
+  /* does not do deep copy! */
+  public byte[] getData() {
+    return raw.data;
+  }
 
-	/* does not do deep copy! */
-	public void setData(byte[] data) {
-		raw.data = data;
-	}
+  /* does not do deep copy! */
+  public void setData(byte[] data) {
+    raw.data = data;
+  }
 }
