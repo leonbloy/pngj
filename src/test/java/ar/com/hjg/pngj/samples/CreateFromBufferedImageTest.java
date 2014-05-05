@@ -13,7 +13,7 @@ import org.junit.Test;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngWriter;
-import ar.com.hjg.pngj.imageline.ImageLineSetARGBbi;
+import ar.com.hjg.pngj.pixels.ImageLineSetARGBbi;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**

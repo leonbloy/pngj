@@ -24,7 +24,7 @@ public abstract class PixelsWriter {
   protected final int bytesPixel;
   protected final int bytesRow;
 
-  private CompressorStream compressorStream;
+  private CompressorStream compressorStream; // to compress the idat stream
 
   private int deflaterCompLevel = 6;
   private int deflaterStrategy = Deflater.DEFAULT_STRATEGY;
