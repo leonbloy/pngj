@@ -3,16 +3,13 @@ package ar.com.hjg.pngj;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * Parses a PNG chunk, consuming bytes in one mode: {@link ChunkReaderMode#BUFFER},
- * {@link ChunkReaderMode#PROCESS}, {@link ChunkReaderMode#SKIP}.
+ * Parses a PNG chunk, consuming bytes in one mode: {@link ChunkReaderMode#BUFFER}, {@link ChunkReaderMode#PROCESS}, {@link ChunkReaderMode#SKIP}.
  * <p>
- * It calls {@link #chunkDone()} when done. Also calls {@link #processData(byte[], int, int)} if
- * <code>PROCESS</code> mode. Apart from thas, it's totally agnostic (it doesn't know about IDAT
- * chunks, or PNG general structure)
+ * It calls {@link #chunkDone()} when done. Also calls {@link #processData(byte[], int, int)} if <code>PROCESS</code> mode. Apart from thas, it's totally agnostic (it doesn't know
+ * about IDAT chunks, or PNG general structure)
  * <p>
- * The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it should be short
- * lived (one instance created for each chunk, and discarded after reading), but the wrapped
- * chunkRaw can be (usually is) long lived.
+ * The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it should be short lived (one instance created for each chunk, and discarded after reading), but the
+ * wrapped chunkRaw can be (usually is) long lived.
  */
 public abstract class ChunkReader {
 
@@ -93,21 +90,21 @@ public abstract class ChunkReader {
       throw new PngjException("negative length??");
     if (read == 0 && crcn == 0 && crcCheck)
       chunkRaw.updateCrc(chunkRaw.idbytes, 0, 4); // initializes crc calculation with the Chunk ID
-    int bytesForData = chunkRaw.len - read; // bytesForData : bytes to be actually read from chunk
-                                            // data
+    int bytesForData = chunkRaw.len - read; // bytesForData : bytes to be actually read from chunk data
     if (bytesForData > len)
       bytesForData = len;
-    if (bytesForData > 0 || crcn == 0) { // we want to call processData even for empty chunks (IEND:
-                                         // bytesForData=0) at least once
-      if (crcCheck && mode != ChunkReaderMode.BUFFER && bytesForData > 0) // in buffer mode we
-                                                                          // compute the CRC at the
-                                                                          // end
+    // we want to call processData even for empty chunks (IEND:bytesForData=0) at least once
+    if (bytesForData > 0 || crcn == 0) {
+      // in buffer mode we compute the CRC at the end
+      if (crcCheck && mode != ChunkReaderMode.BUFFER && bytesForData > 0)
         chunkRaw.updateCrc(buf, off, bytesForData);
-      if (mode == ChunkReaderMode.BUFFER) { // just copy the contents to the internal buffer
-        if (chunkRaw.data != buf && bytesForData > 0) // if the buffer passed if the same as this
-                                                      // one, we don't copy (the caller should know
-                                                      // what he's doing
+
+      if (mode == ChunkReaderMode.BUFFER) {
+        // just copy the contents to the internal buffer
+        if (chunkRaw.data != buf && bytesForData > 0) {
+          // if the buffer passed if the same as this one, we don't copy the caller should know what he's doing
           System.arraycopy(buf, off, chunkRaw.data, read, bytesForData);
+        }
       } else if (mode == ChunkReaderMode.PROCESS) {
         processData(read, buf, off, bytesForData);
       } else {
@@ -128,9 +125,9 @@ public abstract class ChunkReader {
         crcn += crcRead;
         if (crcn == 4) {
           if (crcCheck) {
-            if (mode == ChunkReaderMode.BUFFER) // in buffer mode we compute the CRC on one single
-                                                // call
+            if (mode == ChunkReaderMode.BUFFER) { // in buffer mode we compute the CRC on one single call
               chunkRaw.updateCrc(chunkRaw.data, 0, chunkRaw.len);
+            }
             chunkRaw.checkCrc();
           }
           chunkDone();
@@ -161,11 +158,10 @@ public abstract class ChunkReader {
   }
 
   /**
-   * This method will only be called in PROCESS mode, probably several times, each time with a new
-   * fragment of data inside the chunk.
+   * This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data inside the chunk. For chunks with zero-length data, this will
+   * still be called once.
    * 
-   * It's guaranteed that the data to read has non-zero length and it corresponds exclusively to
-   * this chunk data (no crc, no data from no other chunks, )
+   * It's guaranteed that the data corresponds exclusively to this chunk data (no crc, no data from no other chunks, )
    * 
    * @param offsetInchunk data bytes that had already been read/processed for this chunk
    * @param buf

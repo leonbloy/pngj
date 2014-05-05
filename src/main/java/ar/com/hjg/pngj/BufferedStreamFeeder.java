@@ -27,7 +27,7 @@ public class BufferedStreamFeeder {
 
   public BufferedStreamFeeder(InputStream is, int bufsize) {
     this.stream = is;
-    buf = new byte[bufsize];
+    buf = new byte[bufsize < 1 ? DEFAULTSIZE : bufsize];
   }
 
   /**
@@ -89,8 +89,7 @@ public class BufferedStreamFeeder {
   }
 
   /**
-   * If there are not pending bytes to be consumed tries to fill the buffer with bytes from the
-   * stream.
+   * If there are not pending bytes to be consumed tries to fill the buffer with bytes from the stream.
    */
   protected void refillBuffer() {
     if (pendinglen > 0 || eof)
@@ -110,8 +109,7 @@ public class BufferedStreamFeeder {
   }
 
   /**
-   * Returuns true if we have more data to fed the consumer. This internally tries to grabs more
-   * bytes from the stream if necessary
+   * Returuns true if we have more data to fed the consumer. This internally tries to grabs more bytes from the stream if necessary
    */
   public boolean hasMoreToFeed() {
     if (eof)
@@ -142,18 +140,19 @@ public class BufferedStreamFeeder {
     buf = null;
     pendinglen = 0;
     offset = 0;
-    try {
-      if (stream != null && closeStream)
+    if (stream != null && closeStream) {
+      try {
         stream.close();
-    } catch (Exception e) {
-      PngHelperInternal.LOGGER.log(Level.WARNING, "Exception closing stream", e);
+      } catch (Exception e) {
+        //PngHelperInternal.LOGGER.log(Level.WARNING, "Exception closing stream", e);
+      }
     }
     stream = null;
   }
 
   /**
-   * Sets a new underlying inputstream. This allows to reuse this object. The old underlying is not
-   * closed and the state is not reset (you should call close() previously if you want that)
+   * Sets a new underlying inputstream. This allows to reuse this object. The old underlying is not closed and the state is not reset (you should call close() previously if you
+   * want that)
    * 
    * @param is
    */
@@ -170,8 +169,8 @@ public class BufferedStreamFeeder {
   }
 
   /**
-   * If this flag is set (default: false), any call to feed() that returns zero (no byte feed) will
-   * throw an exception. This is useful to be sure of avoid infinite loops in some scenarios.
+   * If this flag is set (default: false), any call to feed() that returns zero (no byte feed) will throw an exception. This is useful to be sure of avoid infinite loops in some
+   * scenarios.
    * 
    * @param failIfNoFeed
    */

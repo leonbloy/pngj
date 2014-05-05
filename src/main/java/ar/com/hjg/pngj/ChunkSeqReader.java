@@ -20,7 +20,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   private int buf0len = 0;
 
   private boolean signatureDone = false;
-  private boolean done = false; // for end chunk, error, or abort
+  private boolean done = false; // ended, normally or not
 
   private int chunkCount = 0;
 
@@ -319,7 +319,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Forces a closing (abort)
+   * Closes this object and release resources. For normal termination or abort. Secure and idempotent. 
    */
   public void close() { // forced closing
     if (curReaderDeflatedSet != null)
