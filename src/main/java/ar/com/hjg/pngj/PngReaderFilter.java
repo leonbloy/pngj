@@ -11,24 +11,23 @@ import ar.com.hjg.pngj.chunks.PngChunk;
  * This class allows to use a simple PNG reader as an input filter, wrapping a ChunkSeqReaderPng in
  * callback mode.
  * 
- * In this implementation, all IDAT chunks are skipped and the rest are stored. An example of use,
- * to grab the Metadata and let the pixels go to a BufferedImage:
+ * In this sample implementation, all IDAT chunks are skipped and the rest are stored. An example of use,
+ * that lets us grab the Metadata and let the pixels go towards a BufferedImage:
  * 
  * 
  * <pre class="code">
- * ChunkReaderFilter reader = new ChunkReaderFilter(new FileInputStream(&quot;image.png&quot;));
+ * PngReaderFilter reader = new PngReaderFilter(new FileInputStream(&quot;image.png&quot;));
  * BufferedImage image1 = ImageIO.read(reader);
- * reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it
- *                                // happens)
+ * reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it happens)
  * System.out.println(reader.getChunksList());
  * </pre>
  * 
  */
-public class ChunkReaderFilter extends FilterInputStream {
+public class PngReaderFilter extends FilterInputStream {
 
   private ChunkSeqReaderPng chunkseq;
 
-  public ChunkReaderFilter(InputStream arg0) {
+  public PngReaderFilter(InputStream arg0) {
     super(arg0);
     chunkseq = createChunkSequenceReader();
   }

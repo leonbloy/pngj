@@ -9,7 +9,7 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
-import ar.com.hjg.pngj.ChunkReaderFilter;
+import ar.com.hjg.pngj.PngReaderFilter;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
 /** this shows how to use the Callback mode */
@@ -17,7 +17,7 @@ public class PngFilterStreamTest {
 
   @Test
   public void testBufferedImage() throws Exception {
-    ChunkReaderFilter reader = new ChunkReaderFilter(TestSupport.istream("test/stripes.png"));
+    PngReaderFilter reader = new PngReaderFilter(TestSupport.istream("test/stripes.png"));
     BufferedImage image1 = ImageIO.read(reader);
     reader.readUntilEndAndClose();
     List<PngChunk> chunks = reader.getChunksList();

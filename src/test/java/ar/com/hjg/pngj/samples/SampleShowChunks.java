@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.samples;
 
 import java.io.File;
 
-import ar.com.hjg.pngj.PngReaderDumb;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**

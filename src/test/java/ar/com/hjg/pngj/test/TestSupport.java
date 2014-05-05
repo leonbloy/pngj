@@ -19,7 +19,7 @@ import java.util.Random;
 import junit.framework.TestCase;
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkSeqReader;
-import ar.com.hjg.pngj.ChunkSeqReaderSimple;
+import ar.com.hjg.pngj.ChunkSeqSkipping;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineArray;
@@ -470,7 +470,7 @@ public class TestSupport {
 
   // if fast=true does not check CRCs
   public static String getChunksSummary(String f, boolean fast) {
-    ChunkSeqReaderSimple c = new ChunkSeqReaderSimple(fast);
+    ChunkSeqSkipping c = new ChunkSeqSkipping(fast);
     c.feedFromInputStream(TestSupport.istream(f));
     return TestSupport.showChunksRaw(c.getChunks());
   }

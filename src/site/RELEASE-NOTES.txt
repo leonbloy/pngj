@@ -14,7 +14,9 @@ Many improvements, specially in PngWriter filtering strategies
    -- PixelWriterMultiple implements new "super adaptive" strategy with compression estimated on the fly,
     in row bands, with Deflater or a pseudo LZ4 compressor. Experimental. Added PngWriterHc
    -- Old pseudo FilterType names FILTER_AGGRESSIVE.. deprecated (provisional)
- - Several improvements and fixes to PngReader and related classes.  ChunkSeqReaderOpaque added 
+ - Several improvements and fixes to PngReader and related classes.  ChunkSeqReaderOpaque added
+ - Fixed-clarified PngReader constructor: shouldCloseStream is true by default. 
+ - Added method PngReader.toStringCompat(), useful for scripting
  - New RemoveChunks with better performance, takes advantage of new ChunkSeqReaderOpaque class
  - ImageLineByte now includes an extra byte array to deal with 16bpp images with no loss. Only allocated if necessary
  - Removed recursion in DeflatedChunkSet.inflateData(), could lead to SO, and it was clumsy [5a076d59c78997ad2a]
@@ -24,7 +26,6 @@ Many improvements, specially in PngWriter filtering strategies
  - Fixed bug #27 with NPE with chunk invalidate() method. removed PngChunk.cloneForWrite [bc990dfebdbfd1272e6]
  - Added CLI package for command line sample - utilities programs. Included:
      RecompressIdat, DetectDuplicates, ShowFilterInfo, ShowPngInfo, RemoveChunks
- - Added method PngReader.toStringCompat(), useful for scripting
  - Removed ThreadLocal Inflater instance. Irrelevant optimization, it caused problems with Android. [366d68aef38e39873f5]     
  - Pseudo-64 digest in PngReader, useful for detecting duplicates or modifications at the pixel level.
  - Added pdf with classes hierarchy.  [5a076d59]

@@ -27,7 +27,6 @@ import ar.com.hjg.pngj.NullOs;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
-import ar.com.hjg.pngj.PngReaderDumb;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngWriterHc;
 import ar.com.hjg.pngj.PngjInputException;
@@ -35,6 +34,7 @@ import ar.com.hjg.pngj.pixels.DeflaterEstimatorLz4;
 import ar.com.hjg.pngj.pixels.FiltersPerformance;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
 import ar.com.hjg.pngj.pixels.PixelsWriterDefault;
+import ar.com.hjg.pngj.samples.PngReaderDumb;
 import ar.com.hjg.pngj.test.TestSupport;
 
 public class WriterFiltersPerformanceUtil {

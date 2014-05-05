@@ -1,6 +1,5 @@
 package ar.com.hjg.pngj;
 
-import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,10 +7,12 @@ import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * This class is ultra dummy, skips all chunks contents and stores the chunkRaw in a list Useful to
- * read chunks structure
+ * This simple reader skips all chunks contents and stores the chunkRaw in a list. 
+ * Useful to read chunks structure.
+ * 
+ * Optionally the contents might be processed. This doesn't distinguish IDAT chunks 
  */
-public class ChunkSeqReaderSimple extends ChunkSeqReader {
+public class ChunkSeqSkipping extends ChunkSeqReader {
 
   private List<ChunkRaw> chunks = new ArrayList<ChunkRaw>();
   private boolean skip = true;
@@ -19,12 +20,12 @@ public class ChunkSeqReaderSimple extends ChunkSeqReader {
   /**
    * @param skipAll if true, contents will be truly skipped, and CRC will not be computed
    */
-  public ChunkSeqReaderSimple(boolean skipAll) {
+  public ChunkSeqSkipping(boolean skipAll) {
     super(true);
     skip = skipAll;
   }
 
-  public ChunkSeqReaderSimple() {
+  public ChunkSeqSkipping() {
     this(true);
   }
 
@@ -67,10 +68,4 @@ public class ChunkSeqReaderSimple extends ChunkSeqReader {
     return chunks;
   }
 
-  public void feedFromInputStream(InputStream is) {
-    BufferedStreamFeeder sf = new BufferedStreamFeeder(is);
-    while (sf.hasMoreToFeed())
-      sf.feed(this);
-    close();
-  }
 }

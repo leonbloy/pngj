@@ -1,5 +1,9 @@
 package ar.com.hjg.pngj;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.Arrays;
 
 import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
@@ -8,8 +12,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
 /**
  * Consumes a stream of bytes that consist of a series of PNG-like chunks.
  * <p>
- * This has little intelligence, it's quite low-level and general (it could even be used for a MNG
- * stream, for example). It supports signature recognition and idat deflate
+ * This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example). It supports signature recognition and idat deflate
  */
 public class ChunkSeqReader implements IBytesConsumer {
 
@@ -49,15 +52,13 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Consumes (in general, partially) a number of bytes. A single call never involves more than one
-   * chunk.
+   * Consumes (in general, partially) a number of bytes. A single call never involves more than one chunk.
    * 
    * When the signature is read, it calls checkSignature()
    * 
    * When the start of a chunk is detected, it calls {@link #startNewChunk(int, String, long)}
    * 
-   * When data from a chunk is being read, it delegates to
-   * {@link ChunkReader#feedBytes(byte[], int, int)}
+   * When data from a chunk is being read, it delegates to {@link ChunkReader#feedBytes(byte[], int, int)}
    * 
    * The caller might want to call this method more than once in succesion
    * 
@@ -117,8 +118,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Trys to feeds exactly <tt>len</tt> bytes, calling {@link #consume(byte[], int, int)} retrying
-   * if necessary.
+   * Trys to feeds exactly <tt>len</tt> bytes, calling {@link #consume(byte[], int, int)} retrying if necessary.
    * 
    * This should only be used in callback mode
    * 
@@ -136,20 +136,15 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Called for all chunks when a chunk start has been read (id and length), before the chunk data
-   * itself is read. It creates a new ChunkReader (field accesible via {@link #getCurChunkReader()})
-   * in the corresponding mode, and eventually a curReaderDeflatedSet.(field accesible via
-   * {@link #getCurReaderDeflatedSet()})
+   * Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It creates a new ChunkReader (field accesible via
+   * {@link #getCurChunkReader()}) in the corresponding mode, and eventually a curReaderDeflatedSet.(field accesible via {@link #getCurReaderDeflatedSet()})
    * 
-   * To decide the mode and options, it calls {@link #shouldCheckCrc(int, String)},
-   * {@link #shouldSkipContent(int, String)}, {@link #isIdatKind(String)}. Those methods should be
+   * To decide the mode and options, it calls {@link #shouldCheckCrc(int, String)}, {@link #shouldSkipContent(int, String)}, {@link #isIdatKind(String)}. Those methods should be
    * overriden in preference to this; if overriden, this should be called first.
    * 
-   * The respective {@link ChunkReader#chunkDone()} method is directed to this
-   * {@link #postProcessChunk(ChunkReader)}.
+   * The respective {@link ChunkReader#chunkDone()} method is directed to this {@link #postProcessChunk(ChunkReader)}.
    * 
-   * Instead of overriding this, see also
-   * {@link #createChunkReaderForNewChunk(String, int, long, boolean)}
+   * Instead of overriding this, see also {@link #createChunkReaderForNewChunk(String, int, long, boolean)}
    */
   protected void startNewChunk(int len, String id, long offset) {
     if (id.equals(ChunkHelper.IDAT))
@@ -183,8 +178,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   /**
    * This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
    * 
-   * The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that
-   * calls {@link #postProcessChunk(ChunkReader)} (always) when done.
+   * The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls {@link #postProcessChunk(ChunkReader)} (always) when done.
    * 
    * @param id Chunk id
    * @param len Chunk length
@@ -209,8 +203,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   /**
    * This is called after a chunk is read, in all modes
    * 
-   * This implementation only chenks the id of the first chunk, and process the IEND chunk (sets
-   * done=true)
+   * This implementation only chenks the id of the first chunk, and process the IEND chunk (sets done=true)
    ** 
    * Further processing should be overriden (call this first!)
    **/
@@ -234,8 +227,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a
-   * DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+   * Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
    * 
    * This implementation always returns always false
    * 
@@ -246,8 +238,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but
-   * their data will be null, and CRC will never checked
+   * Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be null, and CRC will never checked
    * 
    * @param len
    * @param id
@@ -280,8 +271,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * If true, we either have processe the IEND chunk, or close() has been called, or a fatal error
-   * has happened
+   * If true, we either have processe the IEND chunk, or close() has been called, or a fatal error has happened
    */
   public boolean isDone() {
     return done;
@@ -311,15 +301,14 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * The latest deflated set (typically IDAT chunks) reader. Notice that there could be several idat
-   * sets (eg for APNG)
+   * The latest deflated set (typically IDAT chunks) reader. Notice that there could be several idat sets (eg for APNG)
    */
   public DeflatedChunksSet getCurReaderDeflatedSet() {
     return curReaderDeflatedSet;
   }
 
   /**
-   * Closes this object and release resources. For normal termination or abort. Secure and idempotent. 
+   * Closes this object and release resources. For normal termination or abort. Secure and idempotent.
    */
   public void close() { // forced closing
     if (curReaderDeflatedSet != null)
@@ -328,8 +317,7 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we
-   * are at the start, or end of signature, or we are done
+   * Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or end of signature, or we are done
    */
   public boolean isAtChunkBoundary() {
     return bytesCount == 0 || bytesCount == 8 || done || curChunkReader == null
@@ -363,4 +351,36 @@ public class ChunkSeqReader implements IBytesConsumer {
     return "IEND";
   }
 
+  /**
+   * Reads all content from a file. Helper method, only for callback mode
+   */
+  public void feedFromFile(File f) {
+    try {
+      feedFromInputStream(new FileInputStream(f), true);
+    } catch (FileNotFoundException e) {
+      throw new PngjInputException(e.getMessage());
+    }
+  }
+
+  /**
+   * Reads all content from an input stream. Helper method, only for callback mode
+   * 
+   * @param is
+   * @param closeStream Closes the input stream when done (or if error)
+   */
+  public void feedFromInputStream(InputStream is, boolean closeStream) {
+    BufferedStreamFeeder sf = new BufferedStreamFeeder(is);
+    sf.setCloseStream(closeStream);
+    try {
+      while (sf.hasMoreToFeed())
+        sf.feed(this);
+    } finally {
+      close();
+      sf.close();
+    }
+  }
+
+  public void feedFromInputStream(InputStream is) {
+    feedFromInputStream(is, true);
+  }
 }

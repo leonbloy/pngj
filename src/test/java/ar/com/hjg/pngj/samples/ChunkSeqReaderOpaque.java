@@ -1,23 +1,16 @@
 package ar.com.hjg.pngj.samples;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-
-import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkReader;
 import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.ChunkSeqReader;
 import ar.com.hjg.pngj.DeflatedChunksSet;
-import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
  * This is a general purpose, low level ChunkseqReader for callback mode.
  * 
- * It's "opaque" in the sense that it does not attempt to read the IHDR, and reads the IDAT in
- * arbitrary block sizes (not row per row) . All this can be overriden
+ * It's "opaque" in the sense that it does not parse the IHDR, and doesn't know the PNG properties. It uncompress the IDAT, but returns it in arbitrary block sizes (not row per
+ * row) . All this can be overriden
  */
 public class ChunkSeqReaderOpaque extends ChunkSeqReader {
   protected static int IDAT_BLOCK_SIZE_DEFAULT = 40000;
@@ -38,8 +31,7 @@ public class ChunkSeqReaderOpaque extends ChunkSeqReader {
 
       @Override
       protected void processData(int offsetInChunk, byte[] buf, int off, int len) {
-        processChunkContent(getChunkRaw(), offsetInChunk, buf, off, len); // only if
-                                                                          // bufferChunks=false
+        processChunkContent(getChunkRaw(), offsetInChunk, buf, off, len); // only if bufferChunks=false
       }
     };
   }
@@ -86,7 +78,9 @@ public class ChunkSeqReaderOpaque extends ChunkSeqReader {
    * @param len
    */
   protected void processChunkContent(ChunkRaw chunkRaw, int offsetinchunk, byte[] buf, int off,
-      int len) {}
+      int len) {
+
+  }
 
   /**
    * this will be called at the end of all chunks (even skipped and idat)
@@ -122,20 +116,7 @@ public class ChunkSeqReaderOpaque extends ChunkSeqReader {
     return super.shouldCheckCrc(len, id);
   }
 
-  public void feedFromFile(File f) {
-    try {
-      feedFromInputStream(new FileInputStream(f));
-    } catch (FileNotFoundException e) {
-      throw new PngjInputException(e.getMessage());
-    }
-  }
 
-  public void feedFromInputStream(InputStream is) {
-    BufferedStreamFeeder sf = new BufferedStreamFeeder(is);
-    while (sf.hasMoreToFeed())
-      sf.feed(this);
-    close();
-  }
 
   public void setBufferChunks(boolean bufferChunks) {
     this.bufferChunks = bufferChunks;

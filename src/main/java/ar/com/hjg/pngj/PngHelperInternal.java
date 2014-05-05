@@ -266,7 +266,7 @@ public final class PngHelperInternal {
     debug(obj, offset, true);
   }
 
-  static InputStream istreamFromFile(File f) {
+  public static InputStream istreamFromFile(File f) {
     FileInputStream is;
     try {
       is = new FileInputStream(f);

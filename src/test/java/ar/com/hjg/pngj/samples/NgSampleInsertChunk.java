@@ -7,7 +7,7 @@ import java.io.OutputStream;
 
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkReader;
-import ar.com.hjg.pngj.ChunkSeqBasic;
+import ar.com.hjg.pngj.ChunkSeqBuffering;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
@@ -17,7 +17,7 @@ import ar.com.hjg.pngj.chunks.PngChunkTEXT;
  */
 public class NgSampleInsertChunk {
 
-  private final ChunkSeqBasic cs;
+  private final ChunkSeqBuffering cs;
   private BufferedStreamFeeder streamFeeder;
   private OutputStream os;
 
@@ -27,7 +27,7 @@ public class NgSampleInsertChunk {
 
   public NgSampleInsertChunk(InputStream inputStream) {
     streamFeeder = new BufferedStreamFeeder(inputStream);
-    cs = new ChunkSeqBasic(false) {
+    cs = new ChunkSeqBuffering() {
       @Override
       protected void postProcessChunk(ChunkReader chunkR) {
         super.postProcessChunk(chunkR);
@@ -40,6 +40,7 @@ public class NgSampleInsertChunk {
         insertMyChunk(id); // insert the text chunk if appropiate
       }
     };
+    cs.setCheckCrc(false);
   }
 
   private void insertMyChunk(String nextChukn) {

@@ -17,13 +17,13 @@ import ar.com.hjg.pngj.test.TestSupport;
  * This shows how to read at low level a PNG, without PngReader, to add a chunk much more
  * efficiently than by using PngReader/PngWriter
  */
-public class ChunkSeqBasicTest extends PngjTest {
+public class ChunkSeqSkippingTest extends PngjTest {
 
   private static final String TEXT_TO_ADD_KEY = "Test";
   private static final String TEXT_TO_ADD = "Hi! testing";
 
   public static class InsertChunk {
-    private final ChunkSeqBasic cs;
+    private final ChunkSeqSkipping cs;
     private BufferedStreamFeeder streamFeeder;
     private OutputStream os;
 
@@ -35,7 +35,7 @@ public class ChunkSeqBasicTest extends PngjTest {
       streamFeeder = new BufferedStreamFeeder(inputStream);
       this.beforeIdat = beforeIdat;
       this.os = osx;
-      cs = new ChunkSeqBasic(false) {
+      cs = new ChunkSeqSkipping(false) {
         @Override
         protected void postProcessChunk(ChunkReader chunkR) {
           super.postProcessChunk(chunkR);

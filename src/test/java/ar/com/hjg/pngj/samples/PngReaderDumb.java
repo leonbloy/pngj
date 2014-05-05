@@ -1,17 +1,25 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.samples;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.imageio.stream.FileImageInputStream;
+
+import ar.com.hjg.pngj.BufferedStreamFeeder;
+import ar.com.hjg.pngj.ChunkReader;
+import ar.com.hjg.pngj.ChunkSeqReader;
+import ar.com.hjg.pngj.ChunkSeqSkipping;
+import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.PngChunkIHDR;
 
 /**
- * Sample implementation of a very basic reader that only loads the empty chunks (except the IHDR).
- * The IDAT are optional.
+ * Sample implementation of a very basic reader that only loads the empty chunks (except the IHDR). The IDAT are optional.
  */
 public class PngReaderDumb {
 
@@ -28,7 +36,6 @@ public class PngReaderDumb {
 
   public PngReaderDumb(File file) {
     this(PngHelperInternal.istreamFromFile(file));
-    setShouldCloseStream(true);
   }
 
   public void readAll() {
@@ -42,7 +49,7 @@ public class PngReaderDumb {
   }
 
   protected ChunkSeqReader createChunkSeqReader() {
-    ChunkSeqBasic cs = new ChunkSeqBasic(false) { // don't check CRC
+    ChunkSeqSkipping cs = new ChunkSeqSkipping(false) { // don't check CRC
           @Override
           protected void postProcessChunk(ChunkReader chunkR) {
             super.postProcessChunk(chunkR);
