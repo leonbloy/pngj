@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkFactory (PNGJ 2.0.0 API)</title>
+<title>ChunkFactory (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkFactory (PNGJ 2.0.0 API)";
+        parent.document.title="ChunkFactory (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -227,8 +227,8 @@ implements <a href="../../../../../ar/com/hjg/pngj/IChunkFactory.html" title="in
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../../ar/com/hjg/pngj/IChunkFactory.html#createChunk(ar.com.hjg.pngj.chunks.ChunkRaw, ar.com.hjg.pngj.ImageInfo)">createChunk</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj">IChunkFactory</a></code></dd>
-<dt><span class="strong">Parameters:</span></dt><dd><code>chunkRaw</code> - Chunk in raw form. Data can be null if it was skipped or
-            processed directly (eg IDAT)</dd><dd><code>imgInfo</code> - Not normally necessary, but some chunks want this info</dd>
+<dt><span class="strong">Parameters:</span></dt><dd><code>chunkRaw</code> - Chunk in raw form. Data can be null if it was skipped or processed directly (eg
+        IDAT)</dd><dd><code>imgInfo</code> - Not normally necessary, but some chunks want this info</dd>
 <dt><span class="strong">Returns:</span></dt><dd>should never return null.</dd></dl>
 </li>
 </ul>
@@ -263,8 +263,8 @@ implements <a href="../../../../../ar/com/hjg/pngj/IChunkFactory.html" title="in
 <h4>createEmptyChunkExtended</h4>
 <pre>protected&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;createEmptyChunkExtended(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                                 <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</pre>
-<div class="block">Factory for chunks that are not in the original PNG standard. This can be
- overriden (but dont forget to call this also)</div>
+<div class="block">Factory for chunks that are not in the original PNG standard. This can be overriden (but dont
+ forget to call this also)</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - Chunk id , 4 letters</dd><dd><code>imgInfo</code> - Usually not needed</dd>
 <dt><span class="strong">Returns:</span></dt><dd>null if chunk id not recognized</dd></dl>
 </li>
@@ -336,6 +336,6 @@ implements <a href="../../../../../ar/com/hjg/pngj/IChunkFactory.html" title="in
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

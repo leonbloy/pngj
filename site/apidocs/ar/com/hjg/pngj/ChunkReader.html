@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkReader (PNGJ 2.0.0 API)</title>
+<title>ChunkReader (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkReader (PNGJ 2.0.0 API)";
+        parent.document.title="ChunkReader (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -101,18 +101,13 @@
 <br>
 <pre>public abstract class <span class="strong">ChunkReader</span>
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
-<div class="block">Parses a PNG chunk, consuming bytes in one mode:
- <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>,
- <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.
+<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.
  <p>
- It calls <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>chunkDone()</code></a> when done. Also calls
- <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#processData(byte[], int, int)"><code>processData(byte[], int, int)</code></a> if <code>PROCESS</code> mode. Apart
- from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG
- general structure)
+ It calls <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>chunkDone()</code></a> when done. Also calls <code>#processData(byte[], int, int)</code> if <code>PROCESS</code> mode. Apart from thas, it's totally agnostic (it doesn't know
+ about IDAT chunks, or PNG general structure)
  <p>
- The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it
- should be short lived (one instance created for each chunk, and discarded
- after reading), but the wrapped chunkRaw can be (usually is) long lived.</div>
+ The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it should be short lived (one instance created for each chunk, and discarded after reading), but the
+ wrapped chunkRaw can be (usually is) long lived.</div>
 </li>
 </ul>
 </div>
@@ -153,8 +148,10 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj">ChunkReader.ChunkReaderMode</a></code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#mode">mode</a></strong></code>&nbsp;</td>
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj">ChunkReader.ChunkReaderMode</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#mode">mode</a></strong></code>
+<div class="block">see <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj"><code>ChunkReader.ChunkReaderMode</code></a></div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected int</code></td>
@@ -181,8 +178,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
            <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
            long&nbsp;offsetInPng,
            <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj">ChunkReader.ChunkReaderMode</a>&nbsp;mode)</code>
-<div class="block">The constructor creates also a chunkRaw, preallocated if mode =
- ChunkReaderMode.BUFFER</div>
+<div class="block">The constructor creates also a chunkRaw, preallocated if mode = ChunkReaderMode.BUFFER</div>
 </td>
 </tr>
 </table>
@@ -203,8 +199,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()">chunkDone</a></strong>()</code>
-<div class="block">This method will be called (in all modes) when the full chunk -including
- crc- has been read</div>
+<div class="block">This method will be called (in all modes) when the full chunk -including crc- has been read</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -224,8 +219,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#getChunkRaw()">getChunkRaw</a></strong>()</code>
-<div class="block">Returns raw chunk (data can be empty or not, depending on
- ChunkReaderMode)</div>
+<div class="block">Returns raw chunk (data can be empty or not, depending on ChunkReaderMode)</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -240,15 +234,11 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#processData(byte[], int, int)">processData</a></strong>(byte[]&nbsp;buf,
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#processData(int, byte[], int, int)">processData</a></strong>(int&nbsp;offsetInchunk,
+           byte[]&nbsp;buf,
            int&nbsp;off,
            int&nbsp;len)</code>
-<div class="block">This method will only be called in PROCESS mode, probably several times,
- each time with a new fragment of data
- 
- It's guaranteed that the data to read has non-zero length and it
- corresponds exclusively to this chunk data (no crc, no data from no other
- chunks, )</div>
+<div class="block">This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data inside the chunk.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -289,7 +279,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <ul class="blockList">
 <li class="blockList">
 <h4>mode</h4>
-<pre>protected final&nbsp;<a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj">ChunkReader.ChunkReaderMode</a> mode</pre>
+<pre>public final&nbsp;<a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj">ChunkReader.ChunkReaderMode</a> mode</pre>
+<div class="block">see <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj"><code>ChunkReader.ChunkReaderMode</code></a></div>
 </li>
 </ul>
 <a name="read">
@@ -320,8 +311,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
            <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
            long&nbsp;offsetInPng,
            <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj">ChunkReader.ChunkReaderMode</a>&nbsp;mode)</pre>
-<div class="block">The constructor creates also a chunkRaw, preallocated if mode =
- ChunkReaderMode.BUFFER</div>
+<div class="block">The constructor creates also a chunkRaw, preallocated if mode = ChunkReaderMode.BUFFER</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>clen</code> - </dd><dd><code>id</code> - </dd><dd><code>offsetInPng</code> - Informational, is stored in chunkRaw</dd><dd><code>mode</code> - </dd></dl>
 </li>
 </ul>
@@ -340,8 +330,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getChunkRaw</h4>
 <pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;getChunkRaw()</pre>
-<div class="block">Returns raw chunk (data can be empty or not, depending on
- ChunkReaderMode)</div>
+<div class="block">Returns raw chunk (data can be empty or not, depending on ChunkReaderMode)</div>
 <dl><dt><span class="strong">Returns:</span></dt><dd>Raw chunk - never null</dd></dl>
 </li>
 </ul>
@@ -354,13 +343,11 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <pre>public final&nbsp;int&nbsp;feedBytes(byte[]&nbsp;buf,
             int&nbsp;off,
             int&nbsp;len)</pre>
-<div class="block">Consumes data for the chunk (data and CRC). This never consumes more
- bytes than for this chunk.
+<div class="block">Consumes data for the chunk (data and CRC). This never consumes more bytes than for this chunk.
  
  In HOT_PROCESS can call processData() (not more than once)
  
- If this ends the chunk (included CRC) it checks CRC (if checking) and
- calls chunkDone()</div>
+ If this ends the chunk (included CRC) it checks CRC (if checking) and calls chunkDone()</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>buf</code> - </dd><dd><code>off</code> - </dd><dd><code>len</code> - </dd>
 <dt><span class="strong">Returns:</span></dt><dd>How many bytes have been consumed</dd></dl>
 </li>
@@ -383,26 +370,25 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>setCrcCheck</h4>
 <pre>public&nbsp;void&nbsp;setCrcCheck(boolean&nbsp;crcCheck)</pre>
-<div class="block">Determines if CRC should be checked. This should be called before
- starting reading.</div>
+<div class="block">Determines if CRC should be checked. This should be called before starting reading.</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>crcCheck</code> - </dd></dl>
 </li>
 </ul>
-<a name="processData(byte[], int, int)">
+<a name="processData(int, byte[], int, int)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
 <h4>processData</h4>
-<pre>protected abstract&nbsp;void&nbsp;processData(byte[]&nbsp;buf,
+<pre>protected abstract&nbsp;void&nbsp;processData(int&nbsp;offsetInchunk,
+               byte[]&nbsp;buf,
                int&nbsp;off,
                int&nbsp;len)</pre>
-<div class="block">This method will only be called in PROCESS mode, probably several times,
- each time with a new fragment of data
+<div class="block">This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data inside the chunk. For chunks with zero-length data, this will
+ still be called once.
  
- It's guaranteed that the data to read has non-zero length and it
- corresponds exclusively to this chunk data (no crc, no data from no other
- chunks, )</div>
+ It's guaranteed that the data corresponds exclusively to this chunk data (no crc, no data from no other chunks, )</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>offsetInchunk</code> - data bytes that had already been read/processed for this chunk</dd><dd><code>buf</code> - </dd><dd><code>off</code> - </dd><dd><code>len</code> - </dd></dl>
 </li>
 </ul>
 <a name="chunkDone()">
@@ -412,8 +398,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>chunkDone</h4>
 <pre>protected abstract&nbsp;void&nbsp;chunkDone()</pre>
-<div class="block">This method will be called (in all modes) when the full chunk -including
- crc- has been read</div>
+<div class="block">This method will be called (in all modes) when the full chunk -including crc- has been read</div>
 </li>
 </ul>
 <a name="hashCode()">
@@ -523,6 +508,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

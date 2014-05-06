@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ImageLineInt (PNGJ 2.0.0 API)</title>
+<title>ImageLineInt (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ImageLineInt (PNGJ 2.0.0 API)";
+        parent.document.title="ImageLineInt (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -102,8 +102,8 @@
 <pre>public class <span class="strong">ImageLineInt</span>
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>
 implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>, <a href="../../../../ar/com/hjg/pngj/IImageLineArray.html" title="interface in ar.com.hjg.pngj">IImageLineArray</a></pre>
-<div class="block">Represents an image line, integer format (one integer by sample). See
- <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#scanline"><code>scanline</code></a> to understand the format.</div>
+<div class="block">Represents an image line, integer format (one integer by sample). See <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#scanline"><code>scanline</code></a> to
+ understand the format.</div>
 </li>
 </ul>
 </div>
@@ -135,8 +135,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <tr class="altColor">
 <td class="colFirst"><code>protected int[]</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#scanline">scanline</a></strong></code>
-<div class="block">The 'scanline' is an array of integers, corresponds to an image line
- (row).</div>
+<div class="block">The 'scanline' is an array of integers, corresponds to an image line (row).</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -189,7 +188,9 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#getElem(int)">getElem</a></strong>(int&nbsp;i)</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#getElem(int)">getElem</a></strong>(int&nbsp;i)</code>
+<div class="block">Get i-th element of array (for 0 to size-1).</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>static <a href="../../../../ar/com/hjg/pngj/IImageLineFactory.html" title="interface in ar.com.hjg.pngj">IImageLineFactory</a>&lt;<a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj">ImageLineInt</a>&gt;</code></td>
@@ -211,7 +212,9 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#getSize()">getSize</a></strong>()</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#getSize()">getSize</a></strong>()</code>
+<div class="block">length of array (should correspond to samples)</div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -223,7 +226,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>void</code></td>
+<td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#setFilterType(ar.com.hjg.pngj.FilterType)">setFilterType</a></strong>(<a href="../../../../ar/com/hjg/pngj/FilterType.html" title="enum in ar.com.hjg.pngj">FilterType</a>&nbsp;ft)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
@@ -235,9 +238,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html#writeToPngRaw(byte[])">writeToPngRaw</a></strong>(byte[]&nbsp;raw)</code>
-<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format
- Notice that the first byte is the filter type, you should write it only
- if you know it.</div>
+<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format Notice that the first
+ byte is the filter type, you should write it only if you know it.</div>
 </td>
 </tr>
 </table>
@@ -278,16 +280,13 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <li class="blockList">
 <h4>scanline</h4>
 <pre>protected final&nbsp;int[] scanline</pre>
-<div class="block">The 'scanline' is an array of integers, corresponds to an image line
- (row).
+<div class="block">The 'scanline' is an array of integers, corresponds to an image line (row).
  <p>
- Each <code>int</code> is a "sample" (one for channel), (0-255 or 0-65535)
- in the corresponding PNG sequence: <code>R G B R G B...</code> or
- <code>R G B A R G B A...</tt> 
+ Each <code>int</code> is a "sample" (one for channel), (0-255 or 0-65535) in the corresponding
+ PNG sequence: <code>R G B R G B...</code> or <code>R G B A R G B A...</tt> 
  or <code>g g g ...</code> or <code>i i i</code> (palette index)
  <p>
- For bitdepth=1/2/4 the value is not scaled (hence, eg, if bitdepth=2 the
- range will be 0-4)
+ For bitdepth=1/2/4 the value is not scaled (hence, eg, if bitdepth=2 the range will be 0-4)
  <p>
  To convert a indexed line to RGB values, see
  <a href="../../../../ar/com/hjg/pngj/ImageLineHelper.html#palette2rgb(ar.com.hjg.pngj.ImageLineInt, ar.com.hjg.pngj.chunks.PngChunkPLTE, int[])"><code>ImageLineHelper.palette2rgb(ImageLineInt, ar.com.hjg.pngj.chunks.PngChunkPLTE, int[])</code></a>
@@ -329,8 +328,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <li class="blockList">
 <h4>ImageLineInt</h4>
 <pre>public&nbsp;ImageLineInt(<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</pre>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>imgInfo</code> - Inmutable ImageInfo, basic parameters of the image we are
-            reading or writing</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>imgInfo</code> - Inmutable ImageInfo, basic parameters of the image we are reading or writing</dd></dl>
 </li>
 </ul>
 <a name="ImageLineInt(ar.com.hjg.pngj.ImageInfo, int[])">
@@ -341,8 +339,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <h4>ImageLineInt</h4>
 <pre>public&nbsp;ImageLineInt(<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo,
             int[]&nbsp;sci)</pre>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>imgInfo</code> - Inmutable ImageInfo, basic parameters of the image we are
-            reading or writing</dd><dd><code>sci</code> - prealocated buffer (can be null)</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>imgInfo</code> - Inmutable ImageInfo, basic parameters of the image we are reading or writing</dd><dd><code>sci</code> - prealocated buffer (can be null)</dd></dl>
 </li>
 </ul>
 </li>
@@ -372,7 +369,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <ul class="blockList">
 <li class="blockList">
 <h4>setFilterType</h4>
-<pre>public&nbsp;void&nbsp;setFilterType(<a href="../../../../ar/com/hjg/pngj/FilterType.html" title="enum in ar.com.hjg.pngj">FilterType</a>&nbsp;ft)</pre>
+<pre>protected&nbsp;void&nbsp;setFilterType(<a href="../../../../ar/com/hjg/pngj/FilterType.html" title="enum in ar.com.hjg.pngj">FilterType</a>&nbsp;ft)</pre>
 </li>
 </ul>
 <a name="toString()">
@@ -400,13 +397,12 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
                   int&nbsp;offset,
                   int&nbsp;step)</pre>
 <div class="block"><strong>Description copied from interface:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLine.html#readFromPngRaw(byte[], int, int, int)">IImageLine</a></code></strong></div>
-<div class="block">Extract pixels from a raw unlfilterd PNG row. Len is the total amount of
- bytes in the array, including the first byte (filter type)
+<div class="block">Extract pixels from a raw unlfilterd PNG row. Len is the total amount of bytes in the array,
+ including the first byte (filter type)
  
  offset and step (0 and 1 for non interlaced) are in PIXELS
  
- Notice that when step!=1 the data is partial, this method will be called
- several times</div>
+ Notice that when step!=1 the data is partial, this method will be called several times</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/IImageLine.html#readFromPngRaw(byte[], int, int, int)">readFromPngRaw</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a></code></dd>
@@ -421,9 +417,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <h4>writeToPngRaw</h4>
 <pre>public&nbsp;void&nbsp;writeToPngRaw(byte[]&nbsp;raw)</pre>
 <div class="block"><strong>Description copied from interface:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLine.html#writeToPngRaw(byte[])">IImageLine</a></code></strong></div>
-<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format
- Notice that the first byte is the filter type, you should write it only
- if you know it.</div>
+<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format Notice that the first
+ byte is the filter type, you should write it only if you know it.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/IImageLine.html#writeToPngRaw(byte[])">writeToPngRaw</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a></code></dd>
@@ -451,6 +446,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <li class="blockList">
 <h4>getSize</h4>
 <pre>public&nbsp;int&nbsp;getSize()</pre>
+<div class="block"><strong>Description copied from interface:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html#getSize()">IImageLineArray</a></code></strong></div>
+<div class="block">length of array (should correspond to samples)</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html#getSize()">getSize</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html" title="interface in ar.com.hjg.pngj">IImageLineArray</a></code></dd>
@@ -464,6 +461,9 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <li class="blockList">
 <h4>getElem</h4>
 <pre>public&nbsp;int&nbsp;getElem(int&nbsp;i)</pre>
+<div class="block"><strong>Description copied from interface:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html#getElem(int)">IImageLineArray</a></code></strong></div>
+<div class="block">Get i-th element of array (for 0 to size-1). The meaning of this is type dependent. For
+ ImageLineInt and ImageLineByte is the sample value.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html#getElem(int)">getElem</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html" title="interface in ar.com.hjg.pngj">IImageLineArray</a></code></dd>
@@ -571,6 +571,6 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interfac
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PngChunk (PNGJ 2.0.0 API)</title>
+<title>PngChunk (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PngChunk (PNGJ 2.0.0 API)";
+        parent.document.title="PngChunk (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -103,17 +103,13 @@
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Represents a instance of a PNG chunk.
  <p>
- See <a
- href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www
+ See <a href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www
  .libpng.org/pub/png/spec/1.2/PNG-Chunks .html</a> </a>
  <p>
- Concrete classes should extend <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkSingle</code></a> or
- <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkMultiple</code></a>
+ Concrete classes should extend <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkSingle</code></a> or <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkMultiple</code></a>
  <p>
- Note that some methods/fields are type-specific (getOrderingConstraint(),
- allowsMultiple()),<br>
- some are 'almost' type-specific (id,crit,pub,safe; the exception is
- PngUKNOWN), <br>
+ Note that some methods/fields are type-specific (getOrderingConstraint(), allowsMultiple()),<br>
+ some are 'almost' type-specific (id,crit,pub,safe; the exception is PngUKNOWN), <br>
  and the rest are instance-specific</div>
 </li>
 </ul>
@@ -136,8 +132,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="altColor">
 <td class="colFirst"><code>static class&nbsp;</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.ChunkOrderingConstraint.html" title="enum in ar.com.hjg.pngj.chunks">PngChunk.ChunkOrderingConstraint</a></strong></code>
-<div class="block">Possible ordering constraint for a PngChunk type -only relevant for
- ancillary chunks.</div>
+<div class="block">Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks.</div>
 </td>
 </tr>
 </table>
@@ -226,53 +221,56 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract boolean</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#allowsMultiple()">allowsMultiple</a></strong>()</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected abstract <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>
-<div class="block">Makes a copy of the chunk.</div>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#allowsMultiple()">allowsMultiple</a></strong>()</code>
+<div class="block">See <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkMultiple</code></a> and <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkSingle</code></a></div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createEmptyChunk(int, boolean)">createEmptyChunk</a></strong>(int&nbsp;len,
                 boolean&nbsp;alloc)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected abstract <a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">createRawChunk</a></strong>()</code>
 <div class="block">Creates the physical chunk.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getChunkGroup()">getChunkGroup</a></strong>()</code>
-<div class="block">In which "chunkGroup" (see <a href="../../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks"><code>ChunksList</code></a>for definition) this chunks
- instance was read or written.</div>
+<div class="block">In which "chunkGroup" (see <a href="../../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks"><code>ChunksList</code></a>for definition) this chunks instance was read or
+ written.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getLen()">getLen</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOffset()">getOffset</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>abstract <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.ChunkOrderingConstraint.html" title="enum in ar.com.hjg.pngj.chunks">PngChunk.ChunkOrderingConstraint</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOrderingConstraint()">getOrderingConstraint</a></strong>()</code>
 <div class="block">see <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.ChunkOrderingConstraint.html" title="enum in ar.com.hjg.pngj.chunks"><code>PngChunk.ChunkOrderingConstraint</code></a></div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getRaw()">getRaw</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#hasPriority()">hasPriority</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#invalidateRawData()">invalidateRawData</a></strong>()</code>
+<div class="block">This signals that the raw chunk (serialized data) as invalid, so that it's regenerated on
+ write.</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected abstract void</code></td>
@@ -420,8 +418,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getChunkGroup</h4>
 <pre>public final&nbsp;int&nbsp;getChunkGroup()</pre>
-<div class="block">In which "chunkGroup" (see <a href="../../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks"><code>ChunksList</code></a>for definition) this chunks
- instance was read or written.
+<div class="block">In which "chunkGroup" (see <a href="../../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks"><code>ChunksList</code></a>for definition) this chunks instance was read or
+ written.
  <p>
  -1 if not read or written (eg, queued)</div>
 </li>
@@ -451,8 +449,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>createRawChunk</h4>
 <pre>protected abstract&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;createRawChunk()</pre>
-<div class="block">Creates the physical chunk. This is used when writing (serialization).
- Each particular chunk class implements its own logic.</div>
+<div class="block">Creates the physical chunk. This is used when writing (serialization). Each particular chunk
+ class implements its own logic.</div>
 <dl><dt><span class="strong">Returns:</span></dt><dd>A newly allocated and filled raw chunk</dd></dl>
 </li>
 </ul>
@@ -463,23 +461,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>parseFromRaw</h4>
 <pre>protected abstract&nbsp;void&nbsp;parseFromRaw(<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;c)</pre>
-<div class="block">Parses raw chunk and fill inside data. This is used when reading
- (deserialization). Each particular chunk class implements its own logic.</div>
-</li>
-</ul>
-<a name="cloneForWrite(ar.com.hjg.pngj.ImageInfo)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>cloneForWrite</h4>
-<pre>protected abstract&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;cloneForWrite(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</pre>
-<div class="block">Makes a copy of the chunk.
- <p>
- This is used when copying chunks from a reader to a writer
- <p>
- This is usually a (shallow) copy, and after the cloning
- this.equals(other) should return true</div>
+<div class="block">Parses raw chunk and fill inside data. This is used when reading (deserialization). Each
+ particular chunk class implements its own logic.</div>
 </li>
 </ul>
 <a name="allowsMultiple()">
@@ -489,6 +472,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>allowsMultiple</h4>
 <pre>protected abstract&nbsp;boolean&nbsp;allowsMultiple()</pre>
+<div class="block">See <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkMultiple</code></a> and <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkSingle</code></a></div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>true if PNG accepts multiple chunks of this class</dd></dl>
 </li>
 </ul>
 <a name="getRaw()">
@@ -507,6 +492,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getLen</h4>
 <pre>public&nbsp;int&nbsp;getLen()</pre>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#len"><code>ChunkRaw.len</code></a></dd></dl>
 </li>
 </ul>
 <a name="getOffset()">
@@ -516,6 +502,19 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getOffset</h4>
 <pre>public&nbsp;long&nbsp;getOffset()</pre>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#getOffset()"><code>ChunkRaw.getOffset()</code></a></dd></dl>
+</li>
+</ul>
+<a name="invalidateRawData()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>invalidateRawData</h4>
+<pre>public&nbsp;void&nbsp;invalidateRawData()</pre>
+<div class="block">This signals that the raw chunk (serialized data) as invalid, so that it's regenerated on
+ write. This should be called for the (infrequent) case of chunks that were copied from a
+ PngReader and we want to manually modify it.</div>
 </li>
 </ul>
 <a name="getOrderingConstraint()">
@@ -608,6 +607,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Class ar.com.hjg.pngj.ChunkReader (PNGJ 2.0.0 API)</title>
+<title>Uses of Class ar.com.hjg.pngj.ChunkReader (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Class ar.com.hjg.pngj.ChunkReader (PNGJ 2.0.0 API)";
+        parent.document.title="Uses of Class ar.com.hjg.pngj.ChunkReader (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -113,6 +113,24 @@ PNGJ main package</div>
 </tr>
 <tbody>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a></code></td>
+<td class="colLast"><span class="strong">ChunkSeqSkipping.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html#createChunkReaderForNewChunk(java.lang.String, int, long, boolean)">createChunkReaderForNewChunk</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
+                            int&nbsp;len,
+                            long&nbsp;offset,
+                            boolean&nbsp;skip)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a></code></td>
+<td class="colLast"><span class="strong">ChunkSeqReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createChunkReaderForNewChunk(java.lang.String, int, long, boolean)">createChunkReaderForNewChunk</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
+                            int&nbsp;len,
+                            long&nbsp;offset,
+                            boolean&nbsp;skip)</code>
+<div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
+ 
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>ChunkSeqReader.postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a></code></td>
 <td class="colLast"><span class="strong">ChunkSeqReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()">getCurChunkReader</a></strong>()</code>
 <div class="block">Currently reading chunk, or just ended reading</div>
@@ -129,12 +147,20 @@ PNGJ main package</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
-<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)">postProcessChunk</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</code>&nbsp;</td>
+<td class="colLast"><span class="strong">ChunkSeqSkipping.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)">postProcessChunk</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)">postProcessChunk</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><span class="strong">ChunkSeqReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)">postProcessChunk</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</code>
-<div class="block">This is called after a chunk is read, in all modes.</div>
+<div class="block">This is called after a chunk is read, in all modes
+ 
+ This implementation only chenks the id of the first chunk, and process the IEND chunk (sets done=true)
+ 
+ Further processing should be overriden (call this first!)</div>
 </td>
 </tr>
 </tbody>
@@ -189,6 +215,6 @@ PNGJ main package</div>
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

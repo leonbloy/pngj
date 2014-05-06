@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkReaderFilter (PNGJ 2.0.0 API)</title>
+<title>ChunkReaderFilter (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkReaderFilter (PNGJ 2.0.0 API)";
+        parent.document.title="ChunkReaderFilter (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -36,7 +36,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/ChunkSeqBasic.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/ChunkReaderFilter.html" target="_top">Frames</a></li>
@@ -111,18 +111,18 @@
 <br>
 <pre>public class <span class="strong">ChunkReaderFilter</span>
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterInputStream.html?is-external=true" title="class or interface in java.io">FilterInputStream</a></pre>
-<div class="block">This class allows to use a simple PNG reader as an input filter, wrapping a
- ChunkSeqReaderPng in callback mode.
+<div class="block">This class allows to use a simple PNG reader as an input filter, wrapping a ChunkSeqReaderPng in
+ callback mode.
  
- In this implementation, all IDAT chunks are skipped and the rest are stored.
- An example of use, to grab the Metadata and let the pixels go to a
- BufferedImage:
+ In this implementation, all IDAT chunks are skipped and the rest are stored. An example of use,
+ to grab the Metadata and let the pixels go to a BufferedImage:
  
  
  <pre class="code">
  ChunkReaderFilter reader = new ChunkReaderFilter(new FileInputStream(&quot;image.png&quot;));
  BufferedImage image1 = ImageIO.read(reader);
- reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it happens)
+ reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it
+                                // happens)
  System.out.println(reader.getChunksList());
  </pre></div>
 </li>
@@ -387,7 +387,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterInpu
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html" title="enum in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/ChunkSeqBasic.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/ChunkReaderFilter.html" target="_top">Frames</a></li>
@@ -427,6 +427,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterInpu
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

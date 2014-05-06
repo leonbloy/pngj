@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>IBytesConsumer (PNGJ 2.0.0 API)</title>
+<title>IBytesConsumer (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="IBytesConsumer (PNGJ 2.0.0 API)";
+        parent.document.title="IBytesConsumer (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -35,7 +35,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/FilterWriteStrategy.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/FilterType.html" title="enum in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -87,13 +87,13 @@
 <li class="blockList">
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a></dd>
+<dd><a href="../../../../ar/com/hjg/pngj/ChunkSeqBuffering.html" title="class in ar.com.hjg.pngj">ChunkSeqBuffering</a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html" title="class in ar.com.hjg.pngj">ChunkSeqSkipping</a></dd>
 </dl>
 <hr>
 <br>
 <pre>public interface <span class="strong">IBytesConsumer</span></pre>
-<div class="block">Bytes consumer. Objects implementing this interface can act as bytes
- consumers, that are "fed" with bytes.</div>
+<div class="block">Bytes consumer. Objects implementing this interface can act as bytes consumers, that are "fed"
+ with bytes.</div>
 </li>
 </ul>
 </div>
@@ -117,8 +117,8 @@
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html#consume(byte[], int, int)">consume</a></strong>(byte[]&nbsp;buf,
        int&nbsp;offset,
        int&nbsp;len)</code>
-<div class="block">Returns bytes actually consumed, -1 if we are done Should return some
- value between 1 and len should never return 0 (unless len=0)</div>
+<div class="block">Returns bytes actually consumed, -1 if we are done Should return some value between 1 and len
+ should never return 0 (unless len=0)</div>
 </td>
 </tr>
 </table>
@@ -145,8 +145,8 @@
 <pre>int&nbsp;consume(byte[]&nbsp;buf,
           int&nbsp;offset,
           int&nbsp;len)</pre>
-<div class="block">Returns bytes actually consumed, -1 if we are done Should return some
- value between 1 and len should never return 0 (unless len=0)</div>
+<div class="block">Returns bytes actually consumed, -1 if we are done Should return some value between 1 and len
+ should never return 0 (unless len=0)</div>
 </li>
 </ul>
 </li>
@@ -175,7 +175,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/FilterWriteStrategy.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/FilterType.html" title="enum in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -216,6 +216,6 @@
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

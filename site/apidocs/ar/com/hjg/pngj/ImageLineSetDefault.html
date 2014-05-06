@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ImageLineSetDefault (PNGJ 2.0.0 API)</title>
+<title>ImageLineSetDefault (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ImageLineSetDefault (PNGJ 2.0.0 API)";
+        parent.document.title="ImageLineSetDefault (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -36,7 +36,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/PngHelperInternal.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IPngWriterFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/ImageLineSetDefault.html" target="_top">Frames</a></li>
@@ -212,8 +212,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="inter
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#imageRowToMatrixRowStrict(int)">imageRowToMatrixRowStrict</a></strong>(int&nbsp;imrow)</code>
-<div class="block">Same as <a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#imageRowToMatrixRow(int)"><code>imageRowToMatrixRow(int)</code></a>, but returns negative if
- invalid</div>
+<div class="block">Same as <a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#imageRowToMatrixRow(int)"><code>imageRowToMatrixRow(int)</code></a>, but returns negative if invalid</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -353,8 +352,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="inter
  <p>
  Warning: the argument is the row number in the original image
  <p>
- If this works as cursor, this returns true only if that is the number of
- its "current" line</div>
+ If this works as cursor, this returns true only if that is the number of its "current" line</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#hasImageLine(int)">hasImageLine</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;<a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html" title="type parameter in ImageLineSetDefault">T</a> extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></dd>
@@ -382,8 +380,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="inter
 <li class="blockList">
 <h4>imageRowToMatrixRowStrict</h4>
 <pre>public&nbsp;int&nbsp;imageRowToMatrixRowStrict(int&nbsp;imrow)</pre>
-<div class="block">Same as <a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#imageRowToMatrixRow(int)"><code>imageRowToMatrixRow(int)</code></a>, but returns negative if
- invalid</div>
+<div class="block">Same as <a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#imageRowToMatrixRow(int)"><code>imageRowToMatrixRow(int)</code></a>, but returns negative if invalid</div>
 </li>
 </ul>
 <a name="matrixRowToImageRow(int)">
@@ -407,11 +404,9 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="inter
 <pre>public&nbsp;int&nbsp;imageRowToMatrixRow(int&nbsp;imrow)</pre>
 <div class="block">Converts from real image row to this object row number.
  <p>
- Warning: this always returns a valid matrix row (clamping on 0 : nrows-1,
- and rounding down)
+ Warning: this always returns a valid matrix row (clamping on 0 : nrows-1, and rounding down)
  <p>
- Eg: rowOffset=4,rowStep=2 imageRowToMatrixRow(17) returns 6 ,
- imageRowToMatrixRow(1) returns 0</div>
+ Eg: rowOffset=4,rowStep=2 imageRowToMatrixRow(17) returns 6 , imageRowToMatrixRow(1) returns 0</div>
 </li>
 </ul>
 <a name="getFactoryInt()">
@@ -461,7 +456,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="inter
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/PngHelperInternal.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IPngWriterFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/ImageLineSetDefault.html" target="_top">Frames</a></li>
@@ -501,6 +496,6 @@ implements <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="inter
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

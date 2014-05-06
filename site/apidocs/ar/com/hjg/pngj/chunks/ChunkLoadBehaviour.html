@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkLoadBehaviour (PNGJ 2.0.0 API)</title>
+<title>ChunkLoadBehaviour (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkLoadBehaviour (PNGJ 2.0.0 API)";
+        parent.document.title="ChunkLoadBehaviour (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -136,6 +136,11 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Enum.htm
 </td>
 </tr>
 <tr class="altColor">
+<td class="colOne"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html#LOAD_CHUNK_MOST_IMPORTANT">LOAD_CHUNK_MOST_IMPORTANT</a></strong></code>
+<div class="block">Load only most important chunk: TRNS</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colOne"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html#LOAD_CHUNK_NEVER">LOAD_CHUNK_NEVER</a></strong></code>
 <div class="block">All non-critical chunks are skipped</div>
 </td>
@@ -217,6 +222,16 @@ the order they are declared.</div>
 <div class="block">Load chunk if "safe to copy"</div>
 </li>
 </ul>
+<a name="LOAD_CHUNK_MOST_IMPORTANT">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>LOAD_CHUNK_MOST_IMPORTANT</h4>
+<pre>public static final&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks">ChunkLoadBehaviour</a> LOAD_CHUNK_MOST_IMPORTANT</pre>
+<div class="block">Load only most important chunk: TRNS</div>
+</li>
+</ul>
 <a name="LOAD_CHUNK_ALWAYS">
 <!--   -->
 </a>
@@ -225,8 +240,8 @@ the order they are declared.</div>
 <h4>LOAD_CHUNK_ALWAYS</h4>
 <pre>public static final&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks">ChunkLoadBehaviour</a> LOAD_CHUNK_ALWAYS</pre>
 <div class="block">Load all chunks. <br>
- Notice that other restrictions might apply, see
- PngReader.skipChunkMaxSize PngReader.skipChunkIds</div>
+ Notice that other restrictions might apply, see PngReader.skipChunkMaxSize
+ PngReader.skipChunkIds</div>
 </li>
 </ul>
 </li>
@@ -341,6 +356,6 @@ with the specified name</dd>
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ImageInfo (PNGJ 2.0.0 API)</title>
+<title>ImageInfo (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ImageInfo (PNGJ 2.0.0 API)";
+        parent.document.title="ImageInfo (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -99,8 +99,7 @@
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Simple immutable wrapper for basic image info.
  <p>
- Some parameters are redundant, but the constructor receives an 'orthogonal'
- subset.
+ Some parameters are redundant, but the constructor receives an 'orthogonal' subset.
  <p>
  ref: http://www.w3.org/TR/PNG/#11IHDR</div>
 </li>
@@ -154,8 +153,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#channels">channels</a></strong></code>
-<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA
- (gray with alpha), 1 for grayscale or indexed.</div>
+<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1
+ for grayscale or indexed.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -177,29 +176,34 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#packed">packed</a></strong></code>
-<div class="block">Flag: true if image internally uses less than one byte per sample (bit
- depth 1-2-4)</div>
+<td class="colFirst"><code>static int</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#MAX_COLS_ROW">MAX_COLS_ROW</a></strong></code>
+<div class="block">Absolute allowed maximum value for rows and cols (2^24 ~16 million).</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#packed">packed</a></strong></code>
+<div class="block">Flag: true if image internally uses less than one byte per sample (bit depth 1-2-4)</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#rows">rows</a></strong></code>
 <div class="block">Rows= Image height, in pixels</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#samplesPerRow">samplesPerRow</a></strong></code>
 <div class="block">Equals cols * channels</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#samplesPerRowPacked">samplesPerRowPacked</a></strong></code>
-<div class="block">Amount of "packed samples" : when several samples are stored in a single
- byte (bitdepth 1,2 4) they are counted as one "packed sample".</div>
+<div class="block">Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4)
+ they are counted as one "packed sample".</div>
 </td>
 </tr>
 </table>
@@ -254,12 +258,32 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#equals(java.lang.Object)">equals</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a>&nbsp;obj)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#getTotalPixels()">getTotalPixels</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#getTotalRawBytes()">getTotalRawBytes</a></strong>()</code>
+<div class="block">Total uncompressed bytes in IDAT, including filter byte.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#hashCode()">hashCode</a></strong>()</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#toString()">toString</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#toStringBrief()">toStringBrief</a></strong>()</code>
+<div class="block">Brief info: COLSxROWS[dBITDEPTH][a][p][g] ( the default dBITDEPTH='d8' is ommited)</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#toStringDetail()">toStringDetail</a></strong>()</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -283,6 +307,18 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a>
 <h3>Field Detail</h3>
+<a name="MAX_COLS_ROW">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>MAX_COLS_ROW</h4>
+<pre>public static final&nbsp;int MAX_COLS_ROW</pre>
+<div class="block">Absolute allowed maximum value for rows and cols (2^24 ~16 million). (bytesPerRow must fit in a
+ 32bit integer, though total amount of pixels not necessarily).</div>
+<dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#ar.com.hjg.pngj.ImageInfo.MAX_COLS_ROW">Constant Field Values</a></dd></dl>
+</li>
+</ul>
 <a name="cols">
 <!--   -->
 </a>
@@ -310,9 +346,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>bitDepth</h4>
 <pre>public final&nbsp;int bitDepth</pre>
-<div class="block">Bits per sample (per channel) in the buffer (1-2-4-8-16). This is 8-16
- for RGB/ARGB images, 1-2-4-8 for grayscale. For indexed images, number of
- bits per palette index (1-2-4-8)</div>
+<div class="block">Bits per sample (per channel) in the buffer (1-2-4-8-16). This is 8-16 for RGB/ARGB images,
+ 1-2-4-8 for grayscale. For indexed images, number of bits per palette index (1-2-4-8)</div>
 </li>
 </ul>
 <a name="channels">
@@ -322,8 +357,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>channels</h4>
 <pre>public final&nbsp;int channels</pre>
-<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA
- (gray with alpha), 1 for grayscale or indexed.</div>
+<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1
+ for grayscale or indexed.</div>
 </li>
 </ul>
 <a name="alpha">
@@ -363,8 +398,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>packed</h4>
 <pre>public final&nbsp;boolean packed</pre>
-<div class="block">Flag: true if image internally uses less than one byte per sample (bit
- depth 1-2-4)</div>
+<div class="block">Flag: true if image internally uses less than one byte per sample (bit depth 1-2-4)</div>
 </li>
 </ul>
 <a name="bitspPixel">
@@ -414,12 +448,11 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>samplesPerRowPacked</h4>
 <pre>public final&nbsp;int samplesPerRowPacked</pre>
-<div class="block">Amount of "packed samples" : when several samples are stored in a single
- byte (bitdepth 1,2 4) they are counted as one "packed sample". This is
- less that samplesPerRow only when bitdepth is 1-2-4 (flag packed = true)
+<div class="block">Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4)
+ they are counted as one "packed sample". This is less that samplesPerRow only when bitdepth is
+ 1-2-4 (flag packed = true)
  <p>
- This equals the number of elements in the scanline array if working with
- packedMode=true
+ This equals the number of elements in the scanline array if working with packedMode=true
  <p>
  For internal use, client code should rarely access this.</div>
 </li>
@@ -458,8 +491,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
          boolean&nbsp;grayscale,
          boolean&nbsp;indexed)</pre>
 <div class="block">Full constructor</div>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>cols</code> - Width in pixels</dd><dd><code>rows</code> - Height in pixels</dd><dd><code>bitdepth</code> - Bits per sample, in the buffer : 8-16 for RGB true color and
-            greyscale</dd><dd><code>alpha</code> - Flag: has an alpha channel (RGBA or GA)</dd><dd><code>grayscale</code> - Flag: is gray scale (any bitdepth, with or without alpha)</dd><dd><code>indexed</code> - Flag: has palette</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>cols</code> - Width in pixels</dd><dd><code>rows</code> - Height in pixels</dd><dd><code>bitdepth</code> - Bits per sample, in the buffer : 8-16 for RGB true color and greyscale</dd><dd><code>alpha</code> - Flag: has an alpha channel (RGBA or GA)</dd><dd><code>grayscale</code> - Flag: is gray scale (any bitdepth, with or without alpha)</dd><dd><code>indexed</code> - Flag: has palette</dd></dl>
 </li>
 </ul>
 </li>
@@ -470,6 +502,25 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="getTotalPixels()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getTotalPixels</h4>
+<pre>public&nbsp;long&nbsp;getTotalPixels()</pre>
+</li>
+</ul>
+<a name="getTotalRawBytes()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getTotalRawBytes</h4>
+<pre>public&nbsp;long&nbsp;getTotalRawBytes()</pre>
+<div class="block">Total uncompressed bytes in IDAT, including filter byte. This is not valid for interlaced.</div>
+</li>
+</ul>
 <a name="toString()">
 <!--   -->
 </a>
@@ -481,6 +532,25 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true#toString()" title="class or interface in java.lang">toString</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></code></dd>
 </dl>
+</li>
+</ul>
+<a name="toStringBrief()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toStringBrief</h4>
+<pre>public&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;toStringBrief()</pre>
+<div class="block">Brief info: COLSxROWS[dBITDEPTH][a][p][g] ( the default dBITDEPTH='d8' is ommited)</div>
+</li>
+</ul>
+<a name="toStringDetail()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>toStringDetail</h4>
+<pre>public&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;toStringDetail()</pre>
 </li>
 </ul>
 <a name="hashCode()">
@@ -576,6 +646,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PngChunkGAMA (PNGJ 2.0.0 API)</title>
+<title>PngChunkGAMA (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PngChunkGAMA (PNGJ 2.0.0 API)";
+        parent.document.title="PngChunkGAMA (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -187,34 +187,28 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>
-<div class="block">Makes a copy of the chunk.</div>
-</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#createRawChunk()">createRawChunk</a></strong>()</code>
 <div class="block">Creates the physical chunk.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#getGamma()">getGamma</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.ChunkOrderingConstraint.html" title="enum in ar.com.hjg.pngj.chunks">PngChunk.ChunkOrderingConstraint</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#getOrderingConstraint()">getOrderingConstraint</a></strong>()</code>
 <div class="block">see <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.ChunkOrderingConstraint.html" title="enum in ar.com.hjg.pngj.chunks"><code>PngChunk.ChunkOrderingConstraint</code></a></div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">parseFromRaw</a></strong>(<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;chunk)</code>
 <div class="block">Parses raw chunk and fill inside data.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#setGamma(double)">setGamma</a></strong>(double&nbsp;gamma)</code>&nbsp;</td>
 </tr>
@@ -231,7 +225,7 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;ar.com.hjg.pngj.chunks.<a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></h3>
-<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createEmptyChunk(int, boolean)">createEmptyChunk</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getChunkGroup()">getChunkGroup</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getLen()">getLen</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOffset()">getOffset</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getRaw()">getRaw</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#hasPriority()">hasPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#setPriority(boolean)">setPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#toString()">toString</a></code></li>
+<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createEmptyChunk(int, boolean)">createEmptyChunk</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getChunkGroup()">getChunkGroup</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getLen()">getLen</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOffset()">getOffset</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getRaw()">getRaw</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#hasPriority()">hasPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#invalidateRawData()">invalidateRawData</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#setPriority(boolean)">setPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#toString()">toString</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
@@ -312,8 +306,8 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <h4>createRawChunk</h4>
 <pre>public&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;createRawChunk()</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">PngChunk</a></code></strong></div>
-<div class="block">Creates the physical chunk. This is used when writing (serialization).
- Each particular chunk class implements its own logic.</div>
+<div class="block">Creates the physical chunk. This is used when writing (serialization). Each particular chunk
+ class implements its own logic.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">createRawChunk</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></dd>
@@ -328,31 +322,11 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <h4>parseFromRaw</h4>
 <pre>public&nbsp;void&nbsp;parseFromRaw(<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;chunk)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">PngChunk</a></code></strong></div>
-<div class="block">Parses raw chunk and fill inside data. This is used when reading
- (deserialization). Each particular chunk class implements its own logic.</div>
+<div class="block">Parses raw chunk and fill inside data. This is used when reading (deserialization). Each
+ particular chunk class implements its own logic.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">parseFromRaw</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></dd>
-</dl>
-</li>
-</ul>
-<a name="cloneForWrite(ar.com.hjg.pngj.ImageInfo)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>cloneForWrite</h4>
-<pre>public&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;cloneForWrite(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</pre>
-<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">PngChunk</a></code></strong></div>
-<div class="block">Makes a copy of the chunk.
- <p>
- This is used when copying chunks from a reader to a writer
- <p>
- This is usually a (shallow) copy, and after the cloning
- this.equals(other) should return true</div>
-<dl>
-<dt><strong>Specified by:</strong></dt>
-<dd><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -441,6 +415,6 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

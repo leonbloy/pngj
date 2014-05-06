@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>IImageLine (PNGJ 2.0.0 API)</title>
+<title>IImageLine (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="IImageLine (PNGJ 2.0.0 API)";
+        parent.document.title="IImageLine (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -35,7 +35,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/IFilterWriteStrategy.html" title="interface in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IdatSet.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -87,20 +87,19 @@
 <li class="blockList">
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj">ImageLineByte</a>, <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj">ImageLineInt</a></dd>
+<dd><a href="../../../../ar/com/hjg/pngj/pixels/ImageLineARGBbi.html" title="class in ar.com.hjg.pngj.pixels">ImageLineARGBbi</a>, <a href="../../../../ar/com/hjg/pngj/pixels/ImageLineBufferedImage.html" title="class in ar.com.hjg.pngj.pixels">ImageLineBufferedImage</a>, <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj">ImageLineByte</a>, <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj">ImageLineInt</a></dd>
 </dl>
 <hr>
 <br>
 <pre>public interface <span class="strong">IImageLine</span></pre>
 <div class="block">General format-translated image line.
  <p>
- The methods from this interface provides translation from/to PNG raw
- unfiltered pixel data, for each image line. This doesn't make any assumptions
- of underlying storage.
+ The methods from this interface provides translation from/to PNG raw unfiltered pixel data, for
+ each image line. This doesn't make any assumptions of underlying storage.
  <p>
- The user of this library will not normally use this methods, but instead will
- cast to a more concrete implementation, as <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> or
- <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a> with its methods for accessing the pixel values.</div>
+ The user of this library will not normally use this methods, but instead will cast to a more
+ concrete implementation, as <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> or <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a> with its methods for
+ accessing the pixel values.</div>
 </li>
 </ul>
 </div>
@@ -122,8 +121,7 @@
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLine.html#endReadFromPngRaw()">endReadFromPngRaw</a></strong>()</code>
-<div class="block">This is called when the read for the line has been completed (eg for
- interlaced).</div>
+<div class="block">This is called when the read for the line has been completed (eg for interlaced).</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -138,9 +136,8 @@
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLine.html#writeToPngRaw(byte[])">writeToPngRaw</a></strong>(byte[]&nbsp;raw)</code>
-<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format
- Notice that the first byte is the filter type, you should write it only
- if you know it.</div>
+<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format Notice that the first
+ byte is the filter type, you should write it only if you know it.</div>
 </td>
 </tr>
 </table>
@@ -168,13 +165,12 @@
                   int&nbsp;len,
                   int&nbsp;offset,
                   int&nbsp;step)</pre>
-<div class="block">Extract pixels from a raw unlfilterd PNG row. Len is the total amount of
- bytes in the array, including the first byte (filter type)
+<div class="block">Extract pixels from a raw unlfilterd PNG row. Len is the total amount of bytes in the array,
+ including the first byte (filter type)
  
  offset and step (0 and 1 for non interlaced) are in PIXELS
  
- Notice that when step!=1 the data is partial, this method will be called
- several times</div>
+ Notice that when step!=1 the data is partial, this method will be called several times</div>
 </li>
 </ul>
 <a name="endReadFromPngRaw()">
@@ -184,9 +180,8 @@
 <li class="blockList">
 <h4>endReadFromPngRaw</h4>
 <pre>void&nbsp;endReadFromPngRaw()</pre>
-<div class="block">This is called when the read for the line has been completed (eg for
- interlaced). It's called exactly once for each line. This is provided in
- case the class needs to to some postprocessing.</div>
+<div class="block">This is called when the read for the line has been completed (eg for interlaced). It's called
+ exactly once for each line. This is provided in case the class needs to to some postprocessing.</div>
 </li>
 </ul>
 <a name="writeToPngRaw(byte[])">
@@ -196,9 +191,8 @@
 <li class="blockList">
 <h4>writeToPngRaw</h4>
 <pre>void&nbsp;writeToPngRaw(byte[]&nbsp;raw)</pre>
-<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format
- Notice that the first byte is the filter type, you should write it only
- if you know it.</div>
+<div class="block">Writes the line to a PNG raw byte array, in the unfiltered PNG format Notice that the first
+ byte is the filter type, you should write it only if you know it.</div>
 </li>
 </ul>
 </li>
@@ -227,7 +221,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/IFilterWriteStrategy.html" title="interface in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IdatSet.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -268,6 +262,6 @@
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkRaw (PNGJ 2.0.0 API)</title>
+<title>ChunkRaw (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkRaw (PNGJ 2.0.0 API)";
+        parent.document.title="ChunkRaw (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -99,8 +99,8 @@
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Raw (physical) chunk.
  <p>
- Short lived object, to be created while serialing/deserializing Do not reuse
- it for different chunks. <br>
+ Short lived object, to be created while serialing/deserializing Do not reuse it for different
+ chunks. <br>
  See http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html</div>
 </li>
 </ul>
@@ -123,9 +123,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="altColor">
 <td class="colFirst"><code>byte[]</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#crcval">crcval</a></strong></code>
-<div class="block">A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes
- in the chunk, including the chunk type code and chunk data fields, but
- not including the length field.</div>
+<div class="block">A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk,
+ including the chunk type code and chunk data fields, but not including the length field.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -147,8 +146,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#len">len</a></strong></code>
-<div class="block">The length counts only the data field, not itself, the chunk type code,
- or the CRC.</div>
+<div class="block">The length counts only the data field, not itself, the chunk type code, or the CRC.</div>
 </td>
 </tr>
 </table>
@@ -204,7 +202,9 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>long</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#getOffset()">getOffset</a></strong>()</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#getOffset()">getOffset</a></strong>()</code>
+<div class="block">offset in the full PNG stream, in bytes.</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
@@ -229,6 +229,14 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#writeChunk(java.io.OutputStream)">writeChunk</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</code>
 <div class="block">Computes the CRC and writes to the stream.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#writeChunkCrc(java.io.OutputStream)">writeChunkCrc</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html#writeChunkHeader(java.io.OutputStream)">writeChunkHeader</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -259,9 +267,9 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>len</h4>
 <pre>public final&nbsp;int len</pre>
-<div class="block">The length counts only the data field, not itself, the chunk type code,
- or the CRC. Zero is a valid length. Although encoders and decoders should
- treat the length as unsigned, its value must not exceed 231-1 bytes.</div>
+<div class="block">The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a
+ valid length. Although encoders and decoders should treat the length as unsigned, its value
+ must not exceed 231-1 bytes.</div>
 </li>
 </ul>
 <a name="idbytes">
@@ -290,9 +298,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>data</h4>
 <pre>public&nbsp;byte[] data</pre>
-<div class="block">The data bytes appropriate to the chunk type, if any. This field can be
- of zero length. Does not include crc. If it's null, it means that the
- data is ot available</div>
+<div class="block">The data bytes appropriate to the chunk type, if any. This field can be of zero length. Does
+ not include crc. If it's null, it means that the data is ot available</div>
 </li>
 </ul>
 <a name="crcval">
@@ -302,9 +309,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>crcval</h4>
 <pre>public&nbsp;byte[] crcval</pre>
-<div class="block">A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes
- in the chunk, including the chunk type code and chunk data fields, but
- not including the length field.</div>
+<div class="block">A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk,
+ including the chunk type code and chunk data fields, but not including the length field.</div>
 </li>
 </ul>
 </li>
@@ -361,10 +367,27 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>writeChunk</h4>
 <pre>public&nbsp;void&nbsp;writeChunk(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</pre>
-<div class="block">Computes the CRC and writes to the stream. If error, a
- PngjOutputException is thrown
+<div class="block">Computes the CRC and writes to the stream. If error, a PngjOutputException is thrown
  
- Note that this is only used for non</div>
+ Note that this is only used for non idat chunks</div>
+</li>
+</ul>
+<a name="writeChunkHeader(java.io.OutputStream)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeChunkHeader</h4>
+<pre>public&nbsp;void&nbsp;writeChunkHeader(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</pre>
+</li>
+</ul>
+<a name="writeChunkCrc(java.io.OutputStream)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>writeChunkCrc</h4>
+<pre>public&nbsp;void&nbsp;writeChunkCrc(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</pre>
 </li>
 </ul>
 <a name="checkCrc()">
@@ -394,6 +417,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getOffset</h4>
 <pre>public&nbsp;long&nbsp;getOffset()</pre>
+<div class="block">offset in the full PNG stream, in bytes. only informational, for read chunks (0=NA)</div>
 </li>
 </ul>
 <a name="setOffset(long)">
@@ -511,6 +535,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

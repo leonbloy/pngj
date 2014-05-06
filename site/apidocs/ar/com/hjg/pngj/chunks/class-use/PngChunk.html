@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Class ar.com.hjg.pngj.chunks.PngChunk (PNGJ 2.0.0 API)</title>
+<title>Uses of Class ar.com.hjg.pngj.chunks.PngChunk (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Class ar.com.hjg.pngj.chunks.PngChunk (PNGJ 2.0.0 API)";
+        parent.document.title="Uses of Class ar.com.hjg.pngj.chunks.PngChunk (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -124,7 +124,7 @@ Contains the code related to chunk management for the PNGJ library.</div>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&gt;</code></td>
-<td class="colLast"><span class="strong">ChunkReaderFilter.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/ChunkReaderFilter.html#getChunksList()">getChunksList</a></strong>()</code>&nbsp;</td>
+<td class="colLast"><span class="strong">PngReaderFilter.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/PngReaderFilter.html#getChunksList()">getChunksList</a></strong>()</code>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -137,7 +137,9 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><span class="strong">PngWriter.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/PngWriter.html#queueChunk(ar.com.hjg.pngj.chunks.PngChunk)">queueChunk</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;chunk)</code>&nbsp;</td>
+<td class="colLast"><span class="strong">PngWriter.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/PngWriter.html#queueChunk(ar.com.hjg.pngj.chunks.PngChunk)">queueChunk</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;chunk)</code>
+<div class="block">Queues an ancillary chunk for writing.</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -240,8 +242,7 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
 <td class="colLast"><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks">PngChunkSingle</a></strong></code>
-<div class="block">PNG chunk type (abstract) that does not allow multiple instances in same
- image.</div>
+<div class="block">PNG chunk type (abstract) that does not allow multiple instances in same image.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -309,129 +310,42 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkZTXT.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkZTXT.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkUNKNOWN.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkUNKNOWN.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkTRNS.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkTIME.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkTIME.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkTEXT.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkTEXT.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkSTER.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkSTER.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkSRGB.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkSRGB.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkSPLT.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkSPLT.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkSBIT.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkSBIT.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkPLTE.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkPLTE.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkPHYS.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkPHYS.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkOFFS.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkOFFS.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkITXT.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkITXT.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkIHDR.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkIHDR.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkICCP.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkICCP.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkHIST.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkHIST.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkGAMA.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkCHRM.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkCHRM.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunkBKGD.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunkBKGD.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>protected abstract <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">PngChunk.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>
-<div class="block">Makes a copy of the chunk.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">ChunkHelper.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkHelper.html#cloneForWrite(ar.com.hjg.pngj.chunks.PngChunk, ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;chunk,
-             <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunkFactory.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkFactory.html#createChunk(ar.com.hjg.pngj.chunks.ChunkRaw, ar.com.hjg.pngj.ImageInfo)">createChunk</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;chunkRaw,
            <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunkFactory.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkFactory.html#createEmptyChunkExtended(java.lang.String, ar.com.hjg.pngj.ImageInfo)">createEmptyChunkExtended</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                         <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>
 <div class="block">Factory for chunks that are not in the original PNG standard.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunkFactory.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkFactory.html#createEmptyChunkKnown(java.lang.String, ar.com.hjg.pngj.ImageInfo)">createEmptyChunkKnown</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                      <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunkFactory.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkFactory.html#createEmptyChunkUnknown(java.lang.String, ar.com.hjg.pngj.ImageInfo)">createEmptyChunkUnknown</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                        <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>
 <div class="block">This is used as last resort factory method.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunksList.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksList.html#getById1(java.lang.String)">getById1</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
 <div class="block">Returns only one chunk</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunksList.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksList.html#getById1(java.lang.String, boolean)">getById1</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
         boolean&nbsp;failIfMultiple)</code>
 <div class="block">Returns only one chunk or null if nothing found - does not include queued</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunksList.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksList.html#getById1(java.lang.String, java.lang.String, boolean)">getById1</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
         <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;innerid,
@@ -439,20 +353,20 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <div class="block">Returns only one chunk or null if nothing found - does not include queued</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunksListForWrite.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksListForWrite.html#getQueuedById1(java.lang.String)">getQueuedById1</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
 <div class="block">Same as getById1(), but looking in the queued chunks</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunksListForWrite.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksListForWrite.html#getQueuedById1(java.lang.String, boolean)">getQueuedById1</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
               boolean&nbsp;failIfMultiple)</code>
 <div class="block">Same as getById1(), but looking in the queued chunks</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
 <td class="colLast"><span class="strong">ChunksListForWrite.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksListForWrite.html#getQueuedById1(java.lang.String, java.lang.String, boolean)">getQueuedById1</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
               <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;innerid,
@@ -488,8 +402,7 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;? extends <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&gt;</code></td>
 <td class="colLast"><span class="strong">ChunksList.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksList.html#getById(java.lang.String, java.lang.String)">getById</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
        <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;innerid)</code>
-<div class="block">If innerid!=null and the chunk is PngChunkTextVar or PngChunkSPLT, it's
- filtered by that id</div>
+<div class="block">If innerid!=null and the chunk is PngChunkTextVar or PngChunkSPLT, it's filtered by that id</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -552,56 +465,50 @@ Contains the code related to chunk management for the PNGJ library.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></td>
-<td class="colLast"><span class="strong">ChunkHelper.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkHelper.html#cloneForWrite(ar.com.hjg.pngj.chunks.PngChunk, ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;chunk,
-             <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
 <td class="colFirst"><code>static boolean</code></td>
 <td class="colLast"><span class="strong">ChunkHelper.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkHelper.html#equivalent(ar.com.hjg.pngj.chunks.PngChunk, ar.com.hjg.pngj.chunks.PngChunk)">equivalent</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c1,
           <a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c2)</code>
-<div class="block">Adhoc criteria: two ancillary chunks are "equivalent"
- ("practically same type") if they have same id and (perhaps, if multiple
- are allowed) if the match also in some "internal key" (eg: key for string
- values, palette for sPLT, etc)
+<div class="block">Adhoc criteria: two ancillary chunks are "equivalent" ("practically same type") if they have
+ same id and (perhaps, if multiple are allowed) if the match also in some "internal key" (eg:
+ key for string values, palette for sPLT, etc)
  
- When we use this method, we implicitly assume that we don't allow/expect
- two "equivalent" chunks in a single PNG
+ When we use this method, we implicitly assume that we don't allow/expect two "equivalent"
+ chunks in a single PNG
  
- Notice that the use of this is optional, and that the PNG standard
- actually allows text chunks that have same key</div>
+ Notice that the use of this is optional, and that the PNG standard actually allows text chunks
+ that have same key</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&gt;</code></td>
 <td class="colLast"><span class="strong">ChunksList.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksList.html#getEquivalent(ar.com.hjg.pngj.chunks.PngChunk)">getEquivalent</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c2)</code>
 <div class="block">Finds all chunks "equivalent" to this one</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&gt;</code></td>
 <td class="colLast"><span class="strong">ChunksListForWrite.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksListForWrite.html#getQueuedEquivalent(ar.com.hjg.pngj.chunks.PngChunk)">getQueuedEquivalent</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c2)</code>
 <div class="block">Finds all chunks "equivalent" to this one</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>static boolean</code></td>
 <td class="colLast"><span class="strong">ChunkHelper.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkHelper.html#isText(ar.com.hjg.pngj.chunks.PngChunk)">isText</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>static boolean</code></td>
 <td class="colLast"><span class="strong">ChunkHelper.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkHelper.html#isUnknown(ar.com.hjg.pngj.chunks.PngChunk)">isUnknown</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c)</code>
-<div class="block">"Unknown" just means that our chunk factory (even when it has been
- augmented by client code) did not recognize its id</div>
+<div class="block">"Unknown" just means that our chunk factory (even when it has been augmented by client code)
+ did not recognize its id</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><span class="strong">ChunkPredicate.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkPredicate.html#match(ar.com.hjg.pngj.chunks.PngChunk)">match</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;chunk)</code>
 <div class="block">The other chunk matches with this one</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><span class="strong">ChunksListForWrite.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksListForWrite.html#queue(ar.com.hjg.pngj.chunks.PngChunk)">queue</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c)</code>
 <div class="block">Adds chunk to queue
@@ -609,24 +516,23 @@ Contains the code related to chunk management for the PNGJ library.</div>
  If there</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><span class="strong">PngMetadata.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngMetadata.html#queueChunk(ar.com.hjg.pngj.chunks.PngChunk)">queueChunk</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><span class="strong">PngMetadata.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/PngMetadata.html#queueChunk(ar.com.hjg.pngj.chunks.PngChunk, boolean)">queueChunk</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c,
           boolean&nbsp;lazyOverwrite)</code>
 <div class="block">Queues the chunk at the writer</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><span class="strong">ChunksListForWrite.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunksListForWrite.html#removeChunk(ar.com.hjg.pngj.chunks.PngChunk)">removeChunk</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a>&nbsp;c)</code>
 <div class="block">Remove Chunk: only from queued
  
- WARNING: this depends on c.equals() implementation, which is
- straightforward for SingleChunks.</div>
+ WARNING: this depends on c.equals() implementation, which is straightforward for SingleChunks.</div>
 </td>
 </tr>
 </tbody>
@@ -714,6 +620,6 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

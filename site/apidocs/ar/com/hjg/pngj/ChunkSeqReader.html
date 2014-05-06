@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkSeqReader (PNGJ 2.0.0 API)</title>
+<title>ChunkSeqReader (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkSeqReader (PNGJ 2.0.0 API)";
+        parent.document.title="ChunkSeqReader (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -35,7 +35,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/ChunkReaderFilter.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/ChunkSeqBuffering.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -99,7 +99,7 @@
 </dl>
 <dl>
 <dt>Direct Known Subclasses:</dt>
-<dd><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a></dd>
+<dd><a href="../../../../ar/com/hjg/pngj/ChunkSeqBuffering.html" title="class in ar.com.hjg.pngj">ChunkSeqBuffering</a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html" title="class in ar.com.hjg.pngj">ChunkSeqSkipping</a></dd>
 </dl>
 <hr>
 <br>
@@ -108,8 +108,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="interface in ar.com.hjg.pngj">IBytesConsumer</a></pre>
 <div class="block">Consumes a stream of bytes that consist of a series of PNG-like chunks.
  <p>
- This has little intelligence, it's quite low-level and general (it could even
- be used for a MNG stream, for example). It supports signature recognition.</div>
+ This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example). It supports signature recognition and idat deflate</div>
 </li>
 </ul>
 </div>
@@ -182,7 +181,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#close()">close</a></strong>()</code>
-<div class="block">Forces a closing (abort)</div>
+<div class="block">Closes this object and release resources.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -194,24 +193,51 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createChunkReaderForNewChunk(java.lang.String, int, long, boolean)">createChunkReaderForNewChunk</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
+                            int&nbsp;len,
+                            long&nbsp;offset,
+                            boolean&nbsp;skip)</code>
+<div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
+ 
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createIdatSet(java.lang.String)">createIdatSet</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
 <div class="block">DeflatedChunksSet factory.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#endChunkId()">endChunkId</a></strong>()</code>
 <div class="block">Which should be the id of the last chunk</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#feedAll(byte[], int, int)">feedAll</a></strong>(byte[]&nbsp;buf,
        int&nbsp;off,
        int&nbsp;len)</code>
-<div class="block">Trys to feeds exactly <tt>len</tt> bytes, calling
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#consume(byte[], int, int)"><code>consume(byte[], int, int)</code></a> retrying if necessary.</div>
+<div class="block">Trys to feeds exactly <tt>len</tt> bytes, calling <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#consume(byte[], int, int)"><code>consume(byte[], int, int)</code></a> retrying if necessary.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#feedFromFile(java.io.File)">feedFromFile</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</a>&nbsp;f)</code>
+<div class="block">Reads all content from a file.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#feedFromInputStream(java.io.InputStream)">feedFromInputStream</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io">InputStream</a>&nbsp;is)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#feedFromInputStream(java.io.InputStream, boolean)">feedFromInputStream</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io">InputStream</a>&nbsp;is,
+                   boolean&nbsp;closeStream)</code>
+<div class="block">Reads all content from an input stream.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -239,65 +265,69 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()">getCurReaderDeflatedSet</a></strong>()</code>
-<div class="block">The current deflated set (typically IDAT chunks) reader.</div>
+<div class="block">The latest deflated set (typically IDAT chunks) reader.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getIdatBytes()">getIdatBytes</a></strong>()</code>
+<div class="block">Helper method, reports amount of bytes inside IDAT chunks.</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isAtChunkBoundary()">isAtChunkBoundary</a></strong>()</code>
-<div class="block">Returns true if we are not in middle of a chunk: we have just ended
- reading past chunk , or we are at the start, or end of signature, or we
- are done</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isDone()">isDone</a></strong>()</code>
-<div class="block">If true, we either have processe the IEND chunk, or close() has been
- called, or a fatal error has happened</div>
+<div class="block">Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or end of signature, or we are done</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected boolean</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)">isIdatKind</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if
- it's not to be skiped, a DeflatedChunksSet will be created to deflate it
- and process+ the deflated data)
- 
- This implementation return false.</div>
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isDone()">isDone</a></strong>()</code>
+<div class="block">If true, we either have processe the IEND chunk, or close() has been called, or a fatal error has happened</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)">isIdatKind</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+ 
+ This implementation always returns always false</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isSignatureDone()">isSignatureDone</a></strong>()</code>
 <div class="block">If false, we are still reading the signature</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)">postProcessChunk</a></strong>(<a href="../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</code>
-<div class="block">This is called after a chunk is read, in all modes.</div>
+<div class="block">This is called after a chunk is read, in all modes
+ 
+ This implementation only chenks the id of the first chunk, and process the IEND chunk (sets done=true)
+ 
+ Further processing should be overriden (call this first!)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)">shouldCheckCrc</a></strong>(int&nbsp;len,
               <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)">shouldSkipContent</a></strong>(int&nbsp;len,
                  <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
 <div class="block">Chunks can be skipped depending on id and/or length.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#startNewChunk(int, java.lang.String, long)">startNewChunk</a></strong>(int&nbsp;len,
              <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
              long&nbsp;offset)</code>
-<div class="block">Called when a chunk start has been read (id and length), before the chunk
- data itself is read.</div>
+<div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read.</div>
 </td>
 </tr>
 </table>
@@ -386,16 +416,13 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <pre>public&nbsp;int&nbsp;consume(byte[]&nbsp;buffer,
           int&nbsp;offset,
           int&nbsp;len)</pre>
-<div class="block">Consumes (in general, partially) a number of bytes. A single call never
- involves more than one chunk.
+<div class="block">Consumes (in general, partially) a number of bytes. A single call never involves more than one chunk.
  
  When the signature is read, it calls checkSignature()
  
- When the start of a chunk is detected, it calls
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#startNewChunk(int, java.lang.String, long)"><code>startNewChunk(int, String, long)</code></a>
+ When the start of a chunk is detected, it calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#startNewChunk(int, java.lang.String, long)"><code>startNewChunk(int, String, long)</code></a>
  
- When data from a chunk is being read, it delegates to
- <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#feedBytes(byte[], int, int)"><code>ChunkReader.feedBytes(byte[], int, int)</code></a>
+ When data from a chunk is being read, it delegates to <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#feedBytes(byte[], int, int)"><code>ChunkReader.feedBytes(byte[], int, int)</code></a>
  
  The caller might want to call this method more than once in succesion
  
@@ -404,8 +431,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html#consume(byte[], int, int)">consume</a></code>&nbsp;in interface&nbsp;<code><a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="interface in ar.com.hjg.pngj">IBytesConsumer</a></code></dd>
 <dt><span class="strong">Parameters:</span></dt><dd><code>buffer</code> - </dd><dd><code>offset</code> - Offset in buffer</dd><dd><code>len</code> - Valid bytes that can be consumed</dd>
-<dt><span class="strong">Returns:</span></dt><dd>processed bytes, in the 1-len range. -1 if done. Only returns 0
-         if len=0.</dd></dl>
+<dt><span class="strong">Returns:</span></dt><dd>processed bytes, in the 1-len range. -1 if done. Only returns 0 if len=0.</dd></dl>
 </li>
 </ul>
 <a name="feedAll(byte[], int, int)">
@@ -417,8 +443,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <pre>public&nbsp;boolean&nbsp;feedAll(byte[]&nbsp;buf,
               int&nbsp;off,
               int&nbsp;len)</pre>
-<div class="block">Trys to feeds exactly <tt>len</tt> bytes, calling
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#consume(byte[], int, int)"><code>consume(byte[], int, int)</code></a> retrying if necessary.
+<div class="block">Trys to feeds exactly <tt>len</tt> bytes, calling <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#consume(byte[], int, int)"><code>consume(byte[], int, int)</code></a> retrying if necessary.
  
  This should only be used in callback mode</div>
 <dl><dt><span class="strong">Returns:</span></dt><dd>true if succceded</dd></dl>
@@ -433,19 +458,32 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <pre>protected&nbsp;void&nbsp;startNewChunk(int&nbsp;len,
                  <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                  long&nbsp;offset)</pre>
-<div class="block">Called when a chunk start has been read (id and length), before the chunk
- data itself is read. It creates a new ChunkReader (field accesible via
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()"><code>getCurChunkReader()</code></a>) in the corresponding mode, and eventually a
- curReaderDeflatedSet.(field accesible via
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()"><code>getCurReaderDeflatedSet()</code></a>)
+<div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It creates a new ChunkReader (field accesible via
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()"><code>getCurChunkReader()</code></a>) in the corresponding mode, and eventually a curReaderDeflatedSet.(field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()"><code>getCurReaderDeflatedSet()</code></a>)
  
- To decide the mode and options, it calls
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)"><code>shouldCheckCrc(int, String)</code></a>,
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)"><code>shouldSkipContent(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)"><code>isIdatKind(String)</code></a>.
- Those methods should be overriden in preference to this.
+ To decide the mode and options, it calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)"><code>shouldCheckCrc(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)"><code>shouldSkipContent(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)"><code>isIdatKind(String)</code></a>. Those methods should be
+ overriden in preference to this; if overriden, this should be called first.
  
- The respective <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>ChunkReader.chunkDone()</code></a> method is directed to this
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a>.</div>
+ The respective <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>ChunkReader.chunkDone()</code></a> method is directed to this <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a>.
+ 
+ Instead of overriding this, see also <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createChunkReaderForNewChunk(java.lang.String, int, long, boolean)"><code>createChunkReaderForNewChunk(String, int, long, boolean)</code></a></div>
+</li>
+</ul>
+<a name="createChunkReaderForNewChunk(java.lang.String, int, long, boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createChunkReaderForNewChunk</h4>
+<pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;createChunkReaderForNewChunk(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
+                                       int&nbsp;len,
+                                       long&nbsp;offset,
+                                       boolean&nbsp;skip)</pre>
+<div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
+ 
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - Chunk id</dd><dd><code>len</code> - Chunk length</dd><dd><code>offset</code> - offset inside PNG stream , merely informative</dd><dd><code>skip</code> - flag: is true, the content will not be buffered (nor processed)</dd>
+<dt><span class="strong">Returns:</span></dt><dd>a newly created ChunkReader that will create the ChunkRaw and then discarded</dd></dl>
 </li>
 </ul>
 <a name="postProcessChunk(ar.com.hjg.pngj.ChunkReader)">
@@ -455,10 +493,9 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>postProcessChunk</h4>
 <pre>protected&nbsp;void&nbsp;postProcessChunk(<a href="../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</pre>
-<div class="block">This is called after a chunk is read, in all modes.
+<div class="block">This is called after a chunk is read, in all modes
  
- This implementation only chenks the id of the first chunk, and process
- the IEND chunk (sets done=true)
+ This implementation only chenks the id of the first chunk, and process the IEND chunk (sets done=true)
  
  Further processing should be overriden (call this first!)</div>
 </li>
@@ -470,8 +507,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>createIdatSet</h4>
 <pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a>&nbsp;createIdatSet(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">DeflatedChunksSet factory. This implementation is quite dummy, it usually
- should be overriden.</div>
+<div class="block">DeflatedChunksSet factory. This implementation is quite dummy, it usually should be overriden.</div>
 </li>
 </ul>
 <a name="isIdatKind(java.lang.String)">
@@ -481,11 +517,9 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>isIdatKind</h4>
 <pre>protected&nbsp;boolean&nbsp;isIdatKind(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if
- it's not to be skiped, a DeflatedChunksSet will be created to deflate it
- and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
  
- This implementation return false.</div>
+ This implementation always returns always false</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - </dd></dl>
 </li>
 </ul>
@@ -497,8 +531,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <h4>shouldSkipContent</h4>
 <pre>protected&nbsp;boolean&nbsp;shouldSkipContent(int&nbsp;len,
                         <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are
- still processed, but their data will be null, and CRC will never checked</div>
+<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be null, and CRC will never checked</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>len</code> - </dd><dd><code>id</code> - </dd></dl>
 </li>
 </ul>
@@ -541,8 +574,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>isDone</h4>
 <pre>public&nbsp;boolean&nbsp;isDone()</pre>
-<div class="block">If true, we either have processe the IEND chunk, or close() has been
- called, or a fatal error has happened</div>
+<div class="block">If true, we either have processe the IEND chunk, or close() has been called, or a fatal error has happened</div>
 </li>
 </ul>
 <a name="getBytesCount()">
@@ -562,8 +594,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>getChunkCount</h4>
 <pre>public&nbsp;int&nbsp;getChunkCount()</pre>
-<dl><dt><span class="strong">Returns:</span></dt><dd>Chunks already read, including partial reading (currently
-         reading)</dd></dl>
+<dl><dt><span class="strong">Returns:</span></dt><dd>Chunks already read, including partial reading (currently reading)</dd></dl>
 </li>
 </ul>
 <a name="getCurChunkReader()">
@@ -584,9 +615,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>getCurReaderDeflatedSet</h4>
 <pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a>&nbsp;getCurReaderDeflatedSet()</pre>
-<div class="block">The current deflated set (typically IDAT chunks) reader. This is not null
- only while reading that set. Notice that there could be several idat sets
- (eg for APNG)</div>
+<div class="block">The latest deflated set (typically IDAT chunks) reader. Notice that there could be several idat sets (eg for APNG)</div>
 </li>
 </ul>
 <a name="close()">
@@ -596,7 +625,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>close</h4>
 <pre>public&nbsp;void&nbsp;close()</pre>
-<div class="block">Forces a closing (abort)</div>
+<div class="block">Closes this object and release resources. For normal termination or abort. Secure and idempotent.</div>
 </li>
 </ul>
 <a name="isAtChunkBoundary()">
@@ -606,9 +635,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>isAtChunkBoundary</h4>
 <pre>public&nbsp;boolean&nbsp;isAtChunkBoundary()</pre>
-<div class="block">Returns true if we are not in middle of a chunk: we have just ended
- reading past chunk , or we are at the start, or end of signature, or we
- are done</div>
+<div class="block">Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or end of signature, or we are done</div>
 </li>
 </ul>
 <a name="firstChunkId()">
@@ -622,15 +649,57 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <dl><dt><span class="strong">Returns:</span></dt><dd>null if you don't want to check it</dd></dl>
 </li>
 </ul>
+<a name="getIdatBytes()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getIdatBytes</h4>
+<pre>public&nbsp;long&nbsp;getIdatBytes()</pre>
+<div class="block">Helper method, reports amount of bytes inside IDAT chunks.</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>Bytes in IDAT chunks</dd></dl>
+</li>
+</ul>
 <a name="endChunkId()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>endChunkId</h4>
 <pre>protected&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;endChunkId()</pre>
 <div class="block">Which should be the id of the last chunk</div>
 <dl><dt><span class="strong">Returns:</span></dt><dd>"IEND"</dd></dl>
+</li>
+</ul>
+<a name="feedFromFile(java.io.File)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>feedFromFile</h4>
+<pre>public&nbsp;void&nbsp;feedFromFile(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</a>&nbsp;f)</pre>
+<div class="block">Reads all content from a file. Helper method, only for callback mode</div>
+</li>
+</ul>
+<a name="feedFromInputStream(java.io.InputStream, boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>feedFromInputStream</h4>
+<pre>public&nbsp;void&nbsp;feedFromInputStream(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io">InputStream</a>&nbsp;is,
+                       boolean&nbsp;closeStream)</pre>
+<div class="block">Reads all content from an input stream. Helper method, only for callback mode</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>is</code> - </dd><dd><code>closeStream</code> - Closes the input stream when done (or if error)</dd></dl>
+</li>
+</ul>
+<a name="feedFromInputStream(java.io.InputStream)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>feedFromInputStream</h4>
+<pre>public&nbsp;void&nbsp;feedFromInputStream(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io">InputStream</a>&nbsp;is)</pre>
 </li>
 </ul>
 </li>
@@ -659,7 +728,7 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/ChunkReaderFilter.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/ChunkSeqBuffering.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -700,6 +769,6 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

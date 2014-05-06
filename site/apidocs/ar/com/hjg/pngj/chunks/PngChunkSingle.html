@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PngChunkSingle (PNGJ 2.0.0 API)</title>
+<title>PngChunkSingle (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PngChunkSingle (PNGJ 2.0.0 API)";
+        parent.document.title="PngChunkSingle (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -106,8 +106,7 @@
 <br>
 <pre>public abstract class <span class="strong">PngChunkSingle</span>
 extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></pre>
-<div class="block">PNG chunk type (abstract) that does not allow multiple instances in same
- image.</div>
+<div class="block">PNG chunk type (abstract) that does not allow multiple instances in same image.</div>
 </li>
 </ul>
 </div>
@@ -178,7 +177,9 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="cla
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html#allowsMultiple()">allowsMultiple</a></strong>()</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html#allowsMultiple()">allowsMultiple</a></strong>()</code>
+<div class="block">See <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkMultiple</code></a> and <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkSingle</code></a></div>
+</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
@@ -194,7 +195,7 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="cla
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;ar.com.hjg.pngj.chunks.<a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></h3>
-<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#cloneForWrite(ar.com.hjg.pngj.ImageInfo)">cloneForWrite</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createEmptyChunk(int, boolean)">createEmptyChunk</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">createRawChunk</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getChunkGroup()">getChunkGroup</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getLen()">getLen</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOffset()">getOffset</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOrderingConstraint()">getOrderingConstraint</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getRaw()">getRaw</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#hasPriority()">hasPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">parseFromRaw</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#setPriority(boolean)">setPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#toString()">toString</a></code></li>
+<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createEmptyChunk(int, boolean)">createEmptyChunk</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">createRawChunk</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getChunkGroup()">getChunkGroup</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getLen()">getLen</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOffset()">getOffset</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getOrderingConstraint()">getOrderingConstraint</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#getRaw()">getRaw</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#hasPriority()">hasPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#invalidateRawData()">invalidateRawData</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">parseFromRaw</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#setPriority(boolean)">setPriority</a>, <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#toString()">toString</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
@@ -242,10 +243,12 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="cla
 <li class="blockList">
 <h4>allowsMultiple</h4>
 <pre>public final&nbsp;boolean&nbsp;allowsMultiple()</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#allowsMultiple()">PngChunk</a></code></strong></div>
+<div class="block">See <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkMultiple</code></a> and <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" title="class in ar.com.hjg.pngj.chunks"><code>PngChunkSingle</code></a></div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#allowsMultiple()">allowsMultiple</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></dd>
-</dl>
+<dt><span class="strong">Returns:</span></dt><dd>true if PNG accepts multiple chunks of this class</dd></dl>
 </li>
 </ul>
 <a name="hashCode()">
@@ -341,6 +344,6 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="cla
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

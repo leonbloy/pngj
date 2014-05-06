@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>IdatSet (PNGJ 2.0.0 API)</title>
+<title>IdatSet (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="IdatSet (PNGJ 2.0.0 API)";
+        parent.document.title="IdatSet (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -36,7 +36,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/IFilterWriteStrategy.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/IdatSet.html" target="_top">Frames</a></li>
@@ -104,9 +104,8 @@
 extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></pre>
 <div class="block">This object process the concatenation of IDAT chunks.
  <p>
- It extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj"><code>DeflatedChunksSet</code></a>, adding the intelligence to unfilter
- rows, and to understand row lenghts in terms of ImageInfo and (eventually)
- Deinterlacer</div>
+ It extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj"><code>DeflatedChunksSet</code></a>, adding the intelligence to unfilter rows, and to understand
+ row lenghts in terms of ImageInfo and (eventually) Deinterlacer</div>
 </li>
 </ul>
 </div>
@@ -126,18 +125,22 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <th class="colLast" scope="col">Field and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected ar.com.hjg.pngj.Deinterlacer</code></td>
+<td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#deinterlacer">deinterlacer</a></strong></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected int[]</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#filterUseStat">filterUseStat</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected byte[]</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#rowUnfiltered">rowUnfiltered</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected byte[]</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#rowUnfilteredPrev">rowUnfilteredPrev</a></strong></code>&nbsp;</td>
 </tr>
@@ -165,12 +168,12 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <tr class="altColor">
 <td class="colOne"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer)">IdatSet</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
        <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo,
-       ar.com.hjg.pngj.Deinterlacer&nbsp;deinterlacer)</code>&nbsp;</td>
+       <a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a>&nbsp;deinterlacer)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer, java.util.zip.Inflater, byte[])">IdatSet</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
        <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo,
-       ar.com.hjg.pngj.Deinterlacer&nbsp;deinterlacer,
+       <a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a>&nbsp;deinterlacer,
        <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/zip/Inflater.html?is-external=true" title="class or interface in java.util.zip">Inflater</a>&nbsp;inf,
        byte[]&nbsp;buffer)</code>
 <div class="block">Special constructor with preallocated buffer.</div>
@@ -194,13 +197,24 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <tr class="altColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#advanceToNextRow()">advanceToNextRow</a></strong>()</code>
-<div class="block">Signals that we are done with the previous row, begin reading the next
- one.</div>
+<div class="block">Signals that we are done with the previous row, begin reading the next one.</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>ar.com.hjg.pngj.Deinterlacer</code></td>
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#close()">close</a></strong>()</code>
+<div class="block">This should be called when discarding this object, or for aborting.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#getDeinterlacer()">getDeinterlacer</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>int[]</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#getFilterUseStat()">getFilterUseStat</a></strong>()</code>
+<div class="block">Only for debug/stats</div>
+</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>byte[]</code></td>
@@ -221,18 +235,24 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#processDoneCallback()">processDoneCallback</a></strong>()</code>
+<div class="block">Callback, must be implemented in callbackMode</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#processRowCallback()">processRowCallback</a></strong>()</code>
 <div class="block">Method for async/callback mode .</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#unfilterRow()">unfilterRow</a></strong>()</code>
 <div class="block">Applies PNG un-filter to inflated raw line.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#unfilterRow(int)">unfilterRow</a></strong>(int&nbsp;nbytes)</code>&nbsp;</td>
 </tr>
@@ -242,7 +262,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;ar.com.hjg.pngj.<a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></h3>
-<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#allowOtherChunksInBetween(java.lang.String)">allowOtherChunksInBetween</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#appendNewChunk(ar.com.hjg.pngj.DeflatedChunkReader)">appendNewChunk</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#end()">end</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getInflatedRow()">getInflatedRow</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getnFedBytes()">getnFedBytes</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowFilled()">getRowFilled</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowLen()">getRowLen</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRown()">getRown</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isCallbackMode()">isCallbackMode</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isDone()">isDone</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isWaitingForMoreInput()">isWaitingForMoreInput</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#prepareForNextRow(int)">prepareForNextRow</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processBytes(byte[], int, int)">processBytes</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#setCallbackMode(boolean)">setCallbackMode</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#toString()">toString</a></code></li>
+<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#ackNextChunkId(java.lang.String)">ackNextChunkId</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#allowOtherChunksInBetween(java.lang.String)">allowOtherChunksInBetween</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#appendNewChunk(ar.com.hjg.pngj.DeflatedChunkReader)">appendNewChunk</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#done()">done</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getBytesIn()">getBytesIn</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getBytesOut()">getBytesOut</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getInflatedRow()">getInflatedRow</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowFilled()">getRowFilled</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowLen()">getRowLen</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRown()">getRown</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isCallbackMode()">isCallbackMode</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isDone()">isDone</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isTerminated()">isTerminated</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isWaitingForMoreInput()">isWaitingForMoreInput</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#prepareForNextRow(int)">prepareForNextRow</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processBytes(byte[], int, int)">processBytes</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#setCallbackMode(boolean)">setCallbackMode</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#terminate()">terminate</a>, <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#toString()">toString</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
@@ -295,10 +315,19 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <a name="deinterlacer">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>deinterlacer</h4>
-<pre>protected final&nbsp;ar.com.hjg.pngj.Deinterlacer deinterlacer</pre>
+<pre>protected final&nbsp;<a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a> deinterlacer</pre>
+</li>
+</ul>
+<a name="filterUseStat">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>filterUseStat</h4>
+<pre>protected&nbsp;int[] filterUseStat</pre>
 </li>
 </ul>
 </li>
@@ -317,9 +346,8 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <h4>IdatSet</h4>
 <pre>public&nbsp;IdatSet(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
        <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo,
-       ar.com.hjg.pngj.Deinterlacer&nbsp;deinterlacer)</pre>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - Chunk id (first chunk), should be shared by all concatenated
-            chunks</dd><dd><code>iminfo</code> - Image info</dd><dd><code>deinterlacer</code> - Not null if interlaced</dd></dl>
+       <a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a>&nbsp;deinterlacer)</pre>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - Chunk id (first chunk), should be shared by all concatenated chunks</dd><dd><code>iminfo</code> - Image info</dd><dd><code>deinterlacer</code> - Not null if interlaced</dd></dl>
 </li>
 </ul>
 <a name="IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer, java.util.zip.Inflater, byte[])">
@@ -330,15 +358,14 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <h4>IdatSet</h4>
 <pre>public&nbsp;IdatSet(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
        <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo,
-       ar.com.hjg.pngj.Deinterlacer&nbsp;deinterlacer,
+       <a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a>&nbsp;deinterlacer,
        <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/zip/Inflater.html?is-external=true" title="class or interface in java.util.zip">Inflater</a>&nbsp;inf,
        byte[]&nbsp;buffer)</pre>
 <div class="block">Special constructor with preallocated buffer.
  <p>
  <p>
- Same as <a href="../../../../ar/com/hjg/pngj/IdatSet.html#IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer)"><code>IdatSet(String, ImageInfo, Deinterlacer)</code></a>, but you can
- pass a Inflater (will be reset internally), and a buffer (will be used
- only if size is enough)</div>
+ Same as <a href="../../../../ar/com/hjg/pngj/IdatSet.html#IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer)"><code>IdatSet(String, ImageInfo, Deinterlacer)</code></a>, but you can pass a Inflater (will be
+ reset internally), and a buffer (will be used only if size is enough)</div>
 </li>
 </ul>
 </li>
@@ -356,8 +383,8 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <li class="blockList">
 <h4>unfilterRow</h4>
 <pre>public&nbsp;void&nbsp;unfilterRow()</pre>
-<div class="block">Applies PNG un-filter to inflated raw line. Result in
- <a href="../../../../ar/com/hjg/pngj/IdatSet.html#getUnfilteredRow()"><code>getUnfilteredRow()</code></a> <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowLen()"><code>DeflatedChunksSet.getRowLen()</code></a></div>
+<div class="block">Applies PNG un-filter to inflated raw line. Result in <a href="../../../../ar/com/hjg/pngj/IdatSet.html#getUnfilteredRow()"><code>getUnfilteredRow()</code></a>
+ <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowLen()"><code>DeflatedChunksSet.getRowLen()</code></a></div>
 </li>
 </ul>
 <a name="unfilterRow(int)">
@@ -392,8 +419,8 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <pre>protected&nbsp;int&nbsp;processRowCallback()</pre>
 <div class="block">Method for async/callback mode .
  <p>
- In callback mode will be called as soon as each row is retrieved
- (inflated and unfiltered), after <a href="../../../../ar/com/hjg/pngj/IdatSet.html#preProcessRow()"><code>preProcessRow()</code></a>
+ In callback mode will be called as soon as each row is retrieved (inflated and unfiltered),
+ after <a href="../../../../ar/com/hjg/pngj/IdatSet.html#preProcessRow()"><code>preProcessRow()</code></a>
  <p>
  This is a dummy implementation that does nothing.
  <p>
@@ -402,8 +429,24 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <dl>
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processRowCallback()">processRowCallback</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></dd>
-<dt><span class="strong">Returns:</span></dt><dd>Length of next row, in bytes (including filter byte),
-         non-positive if done</dd></dl>
+<dt><span class="strong">Returns:</span></dt><dd>Length of next row, in bytes (including filter byte), non-positive if done</dd></dl>
+</li>
+</ul>
+<a name="processDoneCallback()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>processDoneCallback</h4>
+<pre>protected&nbsp;void&nbsp;processDoneCallback()</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processDoneCallback()">DeflatedChunksSet</a></code></strong></div>
+<div class="block">Callback, must be implemented in callbackMode
+ <p>
+ This will be called once to notify state done</div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processDoneCallback()">processDoneCallback</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></dd>
+</dl>
 </li>
 </ul>
 <a name="advanceToNextRow()">
@@ -413,8 +456,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <li class="blockList">
 <h4>advanceToNextRow</h4>
 <pre>public&nbsp;int&nbsp;advanceToNextRow()</pre>
-<div class="block">Signals that we are done with the previous row, begin reading the next
- one.
+<div class="block">Signals that we are done with the previous row, begin reading the next one.
  <p>
  In polled mode, calls setNextRowLen()
  <p>
@@ -458,10 +500,37 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <a name="getDeinterlacer()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getDeinterlacer</h4>
-<pre>public&nbsp;ar.com.hjg.pngj.Deinterlacer&nbsp;getDeinterlacer()</pre>
+<pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a>&nbsp;getDeinterlacer()</pre>
+</li>
+</ul>
+<a name="close()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>close</h4>
+<pre>public&nbsp;void&nbsp;close()</pre>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#close()">DeflatedChunksSet</a></code></strong></div>
+<div class="block">This should be called when discarding this object, or for aborting. Secure, idempotent Don't
+ use this just to notify this object that it has no more work to do, see <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#done()"><code>DeflatedChunksSet.done()</code></a></div>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#close()">close</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></dd>
+</dl>
+</li>
+</ul>
+<a name="getFilterUseStat()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getFilterUseStat</h4>
+<pre>public&nbsp;int[]&nbsp;getFilterUseStat()</pre>
+<div class="block">Only for debug/stats</div>
+<dl><dt><span class="strong">Returns:</span></dt><dd>Array of 5 integers (sum equal numbers of rows) counting each filter use</dd></dl>
 </li>
 </ul>
 </li>
@@ -491,7 +560,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/IFilterWriteStrategy.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/IdatSet.html" target="_top">Frames</a></li>
@@ -531,6 +600,6 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

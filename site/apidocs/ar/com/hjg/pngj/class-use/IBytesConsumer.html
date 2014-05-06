@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.0.0 API)</title>
+<title>Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.0.0 API)";
+        parent.document.title="Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -99,15 +99,28 @@ PNGJ main package</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></strong></code>
-<div class="block">Consumes a stream of bytes that consist of a series of PNG-like chunks.</div>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqBuffering.html" title="class in ar.com.hjg.pngj">ChunkSeqBuffering</a></strong></code>
+<div class="block">This loads the png as a plain sequence of chunks, buffering all
+ 
+ Useful to do things like insert or delete a ancilllary chunk.</div>
 </td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>class&nbsp;</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></strong></code>
+<div class="block">Consumes a stream of bytes that consist of a series of PNG-like chunks.</div>
+</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a></strong></code>
-<div class="block">Adds to ChunkSeqReader the storing of PngChunk, with a PngFactory, and
- imageInfo + deinterlacer.</div>
+<div class="block">Adds to ChunkSeqReader the storing of PngChunk, with a PngFactory, and imageInfo + deinterlacer.</div>
+</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>class&nbsp;</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html" title="class in ar.com.hjg.pngj">ChunkSeqSkipping</a></strong></code>
+<div class="block">This simple reader skips all chunks contents and stores the chunkRaw in a list.</div>
 </td>
 </tr>
 </tbody>
@@ -194,6 +207,6 @@ PNGJ main package</div>
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Class ar.com.hjg.pngj.chunks.ChunkRaw (PNGJ 2.0.0 API)</title>
+<title>Uses of Class ar.com.hjg.pngj.chunks.ChunkRaw (PNGJ 2.1.0-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Class ar.com.hjg.pngj.chunks.ChunkRaw (PNGJ 2.0.0 API)";
+        parent.document.title="Uses of Class ar.com.hjg.pngj.chunks.ChunkRaw (PNGJ 2.1.0-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -97,19 +97,6 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <!--   -->
 </a>
 <h3>Uses of <a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a> in <a href="../../../../../../ar/com/hjg/pngj/package-summary.html">ar.com.hjg.pngj</a></h3>
-<table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing fields, and an explanation">
-<caption><span>Fields in <a href="../../../../../../ar/com/hjg/pngj/package-summary.html">ar.com.hjg.pngj</a> with type parameters of type <a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colLast" scope="col">Field and Description</th>
-</tr>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>protected <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&gt;</code></td>
-<td class="colLast"><span class="strong">PngReaderDummy.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/PngReaderDummy.html#chunks">chunks</a></strong></code>&nbsp;</td>
-</tr>
-</tbody>
-</table>
 <table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing methods, and an explanation">
 <caption><span>Methods in <a href="../../../../../../ar/com/hjg/pngj/package-summary.html">ar.com.hjg.pngj</a> that return <a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></span><span class="tabEnd">&nbsp;</span></caption>
 <tr>
@@ -120,8 +107,7 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a></code></td>
 <td class="colLast"><span class="strong">ChunkReader.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/ChunkReader.html#getChunkRaw()">getChunkRaw</a></strong>()</code>
-<div class="block">Returns raw chunk (data can be empty or not, depending on
- ChunkReaderMode)</div>
+<div class="block">Returns raw chunk (data can be empty or not, depending on ChunkReaderMode)</div>
 </td>
 </tr>
 </tbody>
@@ -135,7 +121,7 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/List.html?is-external=true" title="class or interface in java.util">List</a>&lt;<a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&gt;</code></td>
-<td class="colLast"><span class="strong">PngReaderDummy.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/PngReaderDummy.html#getChunks()">getChunks</a></strong>()</code>&nbsp;</td>
+<td class="colLast"><span class="strong">ChunkSeqSkipping.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html#getChunks()">getChunks</a></strong>()</code>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -152,8 +138,12 @@ Contains the code related to chunk management for the PNGJ library.</div>
            <a href="../../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected boolean</code></td>
-<td class="colLast"><span class="strong">PngReaderDummy.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/PngReaderDummy.html#shouldStoreChunkOnList(ar.com.hjg.pngj.chunks.ChunkRaw)">shouldStoreChunkOnList</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;raw)</code>&nbsp;</td>
+<td class="colFirst"><code>protected void</code></td>
+<td class="colLast"><span class="strong">ChunkSeqSkipping.</span><code><strong><a href="../../../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html#processChunkContent(ar.com.hjg.pngj.chunks.ChunkRaw, int, byte[], int, int)">processChunkContent</a></strong>(<a href="../../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;chunkRaw,
+                   int&nbsp;offsetinChhunk,
+                   byte[]&nbsp;buf,
+                   int&nbsp;off,
+                   int&nbsp;len)</code>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -437,6 +427,6 @@ Contains the code related to chunk management for the PNGJ library.</div>
 <!--   -->
 </a></div>
 <!-- ======== END OF BOTTOM NAVBAR ======= -->
-<p class="legalCopy"><small>Copyright &#169; 2013. All rights reserved.</small></p>
+<p class="legalCopy"><small>Copyright &#169; 2014. All rights reserved.</small></p>
 </body>
 </html>
