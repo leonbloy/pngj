@@ -6,6 +6,7 @@ import java.io.OutputStream;
 import java.util.List;
 
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
+import ar.com.hjg.pngj.chunks.ChunkHelper;
 import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.ChunksListForWrite;
@@ -40,11 +41,8 @@ public class PngWriter {
    */
   protected int currentChunkGroup = -1;
 
-  /**
-   * Some writes might require two passes
-   */
-  protected int passes = 1;
-  protected int currentpass = 0; // numbered from 1
+  private int passes = 1; //Some writes might require two passes
+  private int currentpass = 0; // numbered from 1
 
   private boolean shouldCloseStream = true;
 
@@ -196,6 +194,15 @@ public class PngWriter {
     }
   }
 
+  /**
+   * Queues an ancillary chunk for writing. 
+   * <p>
+   * If a "equivalent" chunk is already queued (see {@link ChunkHelper#equivalent(PngChunk, PngChunk)), this overwrites it. 
+   * <p>
+   * The chunk will be written as late as possible, unless the priority is set.
+   * 
+   * @param chunk
+   */
   public void queueChunk(PngChunk chunk) {
     for (PngChunk other : chunksList.getQueuedEquivalent(chunk)) {
       getChunksList().removeChunk(other);
@@ -229,7 +236,6 @@ public class PngWriter {
 
   /**
    * Copy all chunks from origin. See {@link #copyChunksFrom(ChunksList, int)} for more info
-   * 
    */
   public void copyChunksFrom(ChunksList chunks) {
     copyChunksFrom(chunks, ChunkCopyBehaviour.COPY_ALL);

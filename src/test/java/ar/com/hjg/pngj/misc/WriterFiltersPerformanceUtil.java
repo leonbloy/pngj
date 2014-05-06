@@ -23,7 +23,6 @@ import ar.com.hjg.pngj.IImageLineArray;
 import ar.com.hjg.pngj.IPngWriterFactory;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineInt;
-import ar.com.hjg.pngj.NullOs;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;

@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.misc;
 
 /**
  * Utility class that wraps two objects in one

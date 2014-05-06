@@ -11,11 +11,11 @@ import java.util.List;
 import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.ChunkReader;
-import ar.com.hjg.pngj.NullOs;
 import ar.com.hjg.pngj.PngIDatChunkOutputStream;
 import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.PngjOutputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
+import ar.com.hjg.pngj.misc.NullOs;
 import ar.com.hjg.pngj.pixels.CompressorStream;
 import ar.com.hjg.pngj.pixels.CompressorStreamDeflater;
 import ar.com.hjg.pngj.samples.ChunkSeqReaderOpaque;

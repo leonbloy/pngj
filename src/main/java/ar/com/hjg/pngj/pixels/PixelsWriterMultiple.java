@@ -7,33 +7,43 @@ import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 
+/** Special pixels writer for experimental super adaptive strategy */
 public class PixelsWriterMultiple extends PixelsWriter {
+  /**
+   * unfiltered rowsperband elements, 0 is the current (rowb). This should include all rows of current band, plus one
+   */
+  protected LinkedList<byte[]> rows;
 
-  protected LinkedList<byte[]> rows; // unfiltered rowsperband elements [0] is the current (rowb).
-                                     // This should include all rows of current band, plus one
+  /**
+   * bank of compressor estimators, one for each filter and (perhaps) an adaptive strategy
+   */
   protected CompressorStream[] filterBank = new CompressorStream[6];
-  protected byte[][] filteredRows = new byte[5][]; // one for each filter (0=none is not allocated)
+  /**
+   * stored filtered rows, one for each filter (0=none is not allocated but linked)
+   */
+  protected byte[][] filteredRows = new byte[5][];
   protected byte[] filteredRowTmp; //
-  private FiltersPerformance fPerformance;
+
+  protected FiltersPerformance filtersPerf;
   protected int rowsPerBand = 0; // This is a 'nominal' size
+  protected int rowsPerBandCurrent = 0; // lastRowInThisBand-firstRowInThisBand +1 : might be
+  // smaller than rowsPerBand
   protected int rowInBand = -1;
   protected int bandNum = -1;
   protected int firstRowInThisBand, lastRowInThisBand;
-  protected int rowsPerBandCurrent = 0; // lastRowInThisBand-firstRowInThisBand +1 : might be
-                                        // smaller than rowsPerBand
   private boolean tryAdaptive = true;
 
   protected static final int HINT_MEMORY_DEFAULT_KB = 100;
-  protected int hintMemoryKb = HINT_MEMORY_DEFAULT_KB; // we will consume about (not more than) this
-                                                       // memory (in buffers, not couting the
-                                                       // deflaters)
-  private int hintRowsPerBand = 1000; // very large number
+  // we will consume about (not more than) this memory (in buffers, not counting the compressors)
+  protected int hintMemoryKb = HINT_MEMORY_DEFAULT_KB;
+
+  private int hintRowsPerBand = 1000; // default: very large number, can be changed
 
   private boolean useLz4 = true;
 
   public PixelsWriterMultiple(ImageInfo imgInfo) {
     super(imgInfo);
-    fPerformance = new FiltersPerformance(imgInfo);
+    filtersPerf = new FiltersPerformance(imgInfo);
     rows = new LinkedList<byte[]>();
     for (int i = 0; i < 2; i++)
       rows.add(new byte[buflen]); // we preallocate 2 rows (rowb and rowbprev)
@@ -62,12 +72,12 @@ public class PixelsWriterMultiple extends PixelsWriter {
       }
       // adptive: report each filterted
       if (tryAdaptive) {
-        fPerformance.updateFromFiltered(ftype, filtered, currentRow);
+        filtersPerf.updateFromFiltered(ftype, filtered, currentRow);
       }
     }
     filteredRows[0] = rowb;
     if (tryAdaptive) {
-      FilterType preferredAdaptive = fPerformance.getPreferred();
+      FilterType preferredAdaptive = filtersPerf.getPreferred();
       filterBank[5].write(filteredRows[preferredAdaptive.val]);
     }
     if (currentRow == lastRowInThisBand) {
@@ -100,18 +110,6 @@ public class PixelsWriterMultiple extends PixelsWriter {
     return rows.get(0);
   }
 
-  @Override
-  protected void init() {
-    if (!initdone) {
-      super.init();
-      for (int i = 1; i <= 4; i++) { // element 0 is not allocated
-        if (filteredRows[i] == null || filteredRows[i].length < buflen)
-          filteredRows[i] = new byte[buflen];
-      }
-      if (rowsPerBand == 0)
-        rowsPerBand = computeInitialRowsPerBand();
-    }
-  }
 
   private void setBandFromNewRown() {
     boolean newBand = currentRow == 0 || currentRow > lastRowInThisBand;
@@ -139,7 +137,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
     }
   }
 
-  protected void rebuildFiltersBank() {
+  private void rebuildFiltersBank() {
     long bytesPerBandCurrent = rowsPerBandCurrent * (long) buflen;
     final int DEFLATER_COMP_LEVEL = 4;
     for (int i = 0; i <= 5; i++) {// one for each filter plus one adaptive
@@ -177,7 +175,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
     return r;
   }
 
-  protected int getBestCompressor() {
+  private int getBestCompressor() {
     double bestcr = Double.MAX_VALUE;
     int bestb = -1;
     for (int i = tryAdaptive ? 5 : 4; i >= 0; i--) {
@@ -194,7 +192,17 @@ public class PixelsWriterMultiple extends PixelsWriter {
 
   @Override
   protected void initParams() {
-    super.initParams();
+    // if adaptative but too few rows or columns, use default
+    if (imgInfo.cols < 3 && !FilterType.isValidStandard(filterType))
+      filterType = FilterType.FILTER_DEFAULT;
+    if (imgInfo.rows < 3 && !FilterType.isValidStandard(filterType))
+      filterType = FilterType.FILTER_DEFAULT;
+    for (int i = 1; i <= 4; i++) { // element 0 is not allocated
+      if (filteredRows[i] == null || filteredRows[i].length < buflen)
+        filteredRows[i] = new byte[buflen];
+    }
+    if (rowsPerBand == 0)
+      rowsPerBand = computeInitialRowsPerBand();
   }
 
   @Override
@@ -220,8 +228,8 @@ public class PixelsWriterMultiple extends PixelsWriter {
   }
 
   /** for tuning memory or other parameters */
-  public FiltersPerformance getfPerformance() {
-    return fPerformance;
+  public FiltersPerformance getFiltersPerf() {
+    return filtersPerf;
   }
 
 }

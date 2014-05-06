@@ -9,33 +9,43 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
- * Writes a set of rows (pixels) as a continuous deflated stream (does not know about IDAT chunk
- * segmentation)
+ * Encodes a set of rows (pixels) as a continuous deflated stream (does not know about IDAT chunk segmentation).
  * <p>
- * This includes the filter selection strategy
+ * This includes the filter selection strategy, plus the filtering itself and the deflating. Only supports fixed length rows (no interlaced writing).
  * <p>
- * This can (could, we hope) be used for APGN
+ * Typically an instance of this is hold by a PngWriter - but more instances could be used (for APGN)
  */
 public abstract class PixelsWriter {
 
   protected final ImageInfo imgInfo;
+  /**
+   * row buffer length, including filter byte (imgInfo.bytesPerRow + 1)
+   */
+  protected final int buflen;
 
-  protected final int buflen; // including filter byte = imgInfo.bytesPerRow + 1
   protected final int bytesPixel;
   protected final int bytesRow;
 
   private CompressorStream compressorStream; // to compress the idat stream
 
-  private int deflaterCompLevel = 6;
-  private int deflaterStrategy = Deflater.DEFAULT_STRATEGY;
+  protected int deflaterCompLevel = 6;
+  protected int deflaterStrategy = Deflater.DEFAULT_STRATEGY;
+
   protected boolean initdone = false;
 
-  protected FilterType filterType = FilterType.FILTER_DEFAULT;
+  /**
+   * This is the globally configured filter type - it can be a concrete type or a pseudo type (hint or strategy)
+   */
+  protected FilterType filterType;
+
   // counts the filters used - just for stats
   private int[] filtersUsed = new int[5];
 
   private OutputStream os;
 
+  /**
+   * row being processed, couting from zero
+   */
   protected int currentRow;
 
   public PixelsWriter(ImageInfo imgInfo) {
@@ -44,8 +54,11 @@ public abstract class PixelsWriter {
     buflen = bytesRow + 1;
     bytesPixel = imgInfo.bytesPixel;
     currentRow = -1;
+    filterType = FilterType.FILTER_DEFAULT;
   }
 
+  /** main internal point for external call. 
+   * It does the lazy initializion if necessary, sets current row, and call {@link #filterAndWrite(byte[])} */
   public final void processRow(final byte[] rowb) {
     if (!initdone)
       init();
@@ -59,17 +72,17 @@ public abstract class PixelsWriter {
   }
 
   /**
-   * This does the filtering and send to stream. Typically should decide the filtering, call
-   * {@link #filterRowWithFilterType(FilterType, byte[], byte[], byte[])} and and
+   * This does the filtering and send to stream. Typically should decide the filtering, call {@link #filterRowWithFilterType(FilterType, byte[], byte[], byte[])} and and
    * {@link #sendToCompressedStream(byte[])}
    * 
    * @param rowb
-   * @param currentRow
    */
   protected abstract void filterAndWrite(final byte[] rowb);
 
   /**
-   * Does the real filtering. This must be called with the real (standard) filterType
+   * Does the real filtering. This must be called with the real (standard) filterType. This should rarely be overriden.
+   * <p>
+   * WARNING: look out the contract 
    * 
    * @param _filterType
    * @param _rowb current row (the first byte might be modified)
@@ -120,57 +133,41 @@ public abstract class PixelsWriter {
   }
 
   /**
-   * This will be called by the PngWrite to store the raw pixels for each row. This can change from
-   * call to call. Warning: this can be called before the object is init, call init() o be sure
+   * This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call. 
+   * Warning: this can be called before the object is init, implementations should call init() to be sure
    */
   public abstract byte[] getRowb();
 
   /**
-   * This will be called lazily just before writing row 0
+   * This will be called lazily just before writing row 0. Idempotent.
    */
-  protected void init() {
+  protected final void init() {
     if (!initdone) {
       initParams();
-      if (compressorStream == null) { // if not set, use the deflater
-        compressorStream =
-            new CompressorStreamDeflater(os, buflen, imgInfo.getTotalRawBytes(),
-                getDeflaterCompLevel(), getDeflaterStrategy());
-      }
       initdone = true;
     }
   }
 
-  /** called by init(); if override, call this first */
+  /** called by init(); override (calling this first) to do additional initialization */
   protected void initParams() {
-    // if adaptative but two few rows or columns, use default
-    if (imgInfo.cols < 3 && !FilterType.isValidStandard(filterType))
-      filterType = FilterType.FILTER_DEFAULT;
-    if (imgInfo.rows < 3 && !FilterType.isValidStandard(filterType))
-      filterType = FilterType.FILTER_DEFAULT;
+    if (compressorStream == null) { // if not set, use the deflater
+      compressorStream =  new CompressorStreamDeflater(os, buflen, imgInfo.getTotalRawBytes(),
+              deflaterCompLevel, deflaterStrategy);
+    }
   }
 
-  /** cleanup. This should be called explicitly. This must be idempotent and not throw exceptions */
+  /** cleanup. This should be called explicitly. Idempotent and secure */
   public void close() {
     if (compressorStream != null) {
       compressorStream.close();
     }
   }
 
-  public Integer getDeflaterStrategy() {
-    return deflaterStrategy;
-  }
-
   /**
-   * Deflater (ZLIB) strategy. You should rarely change this from the default
-   * (Deflater.DEFAULT_STRATEGY) to Deflater.FILTERED (Deflater.HUFFMAN_ONLY is fast but compress
-   * poorly)
+   * Deflater (ZLIB) strategy. You should rarely change this from the default (Deflater.DEFAULT_STRATEGY) to Deflater.FILTERED (Deflater.HUFFMAN_ONLY is fast but compress poorly)
    */
   public void setDeflaterStrategy(Integer deflaterStrategy) {
     this.deflaterStrategy = deflaterStrategy;
-  }
-
-  public Integer getDeflaterCompLevel() {
-    return deflaterCompLevel;
   }
 
   /**
@@ -180,6 +177,11 @@ public abstract class PixelsWriter {
     this.deflaterCompLevel = deflaterCompLevel;
   }
 
+  public Integer getDeflaterCompLevel() {
+    return deflaterCompLevel;
+  }
+
+
   public final void setOs(OutputStream datStream) {
     this.os = datStream;
   }
@@ -188,22 +190,14 @@ public abstract class PixelsWriter {
     return os;
   }
 
+  /** @see #filterType */
   final public FilterType getFilterType() {
     return filterType;
   }
 
-  /**
-   * this is a hint, for all the image; it can be a concrete filter type or a strategy
-   */
+  /** @see #filterType */
   final public void setFilterType(FilterType filterType) {
     this.filterType = filterType;
-  }
-
-  final public String getFiltersUsed() {
-    return String.format("%d,%d,%d,%d,%d", (int) (filtersUsed[0] * 100.0 / imgInfo.rows + 0.5),
-        (int) (filtersUsed[1] * 100.0 / imgInfo.rows + 0.5), (int) (filtersUsed[2] * 100.0
-            / imgInfo.rows + 0.5), (int) (filtersUsed[3] * 100.0 / imgInfo.rows + 0.5),
-        (int) (filtersUsed[4] * 100.0 / imgInfo.rows + 0.5));
   }
 
   /* out/in This should be called only after end() to get reliable results */
@@ -219,6 +213,10 @@ public abstract class PixelsWriter {
     return imgInfo.getTotalRawBytes();
   }
 
+  /**
+   * computed default fixed filter type to use, if specified DEFAULT; wilde guess based on image properties
+   * @return One of the five concrete filter types
+   */
   protected FilterType getDefaultFilter() {
     if (imgInfo.indexed || imgInfo.bitDepth < 8)
       return FilterType.FILTER_NONE;
@@ -232,4 +230,11 @@ public abstract class PixelsWriter {
       return FilterType.FILTER_PAETH;
   }
 
+  /** informational stats : filter used, in percentages */
+  final public String getFiltersUsed() {
+    return String.format("%d,%d,%d,%d,%d", (int) (filtersUsed[0] * 100.0 / imgInfo.rows + 0.5),
+        (int) (filtersUsed[1] * 100.0 / imgInfo.rows + 0.5), (int) (filtersUsed[2] * 100.0
+            / imgInfo.rows + 0.5), (int) (filtersUsed[3] * 100.0 / imgInfo.rows + 0.5),
+        (int) (filtersUsed[4] * 100.0 / imgInfo.rows + 0.5));
+  }
 }

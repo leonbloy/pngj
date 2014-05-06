@@ -10,12 +10,12 @@ import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.ImageLineInt;
-import ar.com.hjg.pngj.NullOs;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderInt;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.PngChunkTextVar;
+import ar.com.hjg.pngj.misc.NullOs;
 
 public class Sandbox {
   public static void reencodeWithJavaIo(File s, File d) throws IOException {

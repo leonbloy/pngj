@@ -6,11 +6,12 @@ import java.io.OutputStream;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
 import ar.com.hjg.pngj.pixels.PixelsWriterMultiple;
 
-/** Pngwriter with High compression */
+/** Pngwriter with High compression EXPERIMENTAL */
 public class PngWriterHc extends PngWriter {
 
   public PngWriterHc(File file, ImageInfo imgInfo, boolean allowoverwrite) {
     super(file, imgInfo, allowoverwrite);
+    setFilterType(FilterType.FILTER_SUPER_ADAPTIVE);
   }
 
   public PngWriterHc(File file, ImageInfo imgInfo) {
