@@ -9,16 +9,15 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 import ar.com.hjg.pngj.test.PngjTest;
 import ar.com.hjg.pngj.test.TestSupport;
 
 /**
- * Same as {@link ChunkSeqBufferingTest} but with hot processing mode
- * 
+ * This shows how to read at low level a PNG, without PngReader, to add a chunk much more
+ * efficiently than by using PngReader/PngWriter
  */
-public class ChunkSeqSkippingTest extends PngjTest {
+public class ChunkSeqBufferingTest extends PngjTest {
 
   private static final String TEXT_TO_ADD_KEY = "Test";
   private static final String TEXT_TO_ADD = "Hi! testing";
@@ -36,23 +35,12 @@ public class ChunkSeqSkippingTest extends PngjTest {
       streamFeeder = new BufferedStreamFeeder(inputStream);
       this.beforeIdat = beforeIdat;
       this.os = osx;
-      cs = new ChunkSeqSkipping(false) {
+      cs = new ChunkSeqBuffering() {
         @Override
         protected void postProcessChunk(ChunkReader chunkR) {
           super.postProcessChunk(chunkR);
-          chunkR.getChunkRaw().writeChunkCrc(os); // send only the crc
+          chunkR.getChunkRaw().writeChunk(os); // send the chunk straight to the os
         }
-        
-
-        @Override
-        protected void processChunkContent(ChunkRaw chunkRaw, int offsetinChhunk, byte[] buf,
-            int off, int len) {
-          if(offsetinChhunk==0) {
-            chunkRaw.writeChunkHeader(os); // send only the header
-          }
-          PngHelperInternal.writeBytes(os, buf,off,len);
-        }
-
 
         @Override
         protected void startNewChunk(int len, String id, long offset) {

@@ -55,7 +55,7 @@ public class SuiteCrcsByteTest extends PngjTest {
     for (int i = 0; i < png.imgInfo.rows; i++) {
       ImageLineByte line = (ImageLineByte) png.readRow(i);
       for (int j = 0; j < line.getSize(); j++) {
-        int x = (byte) (line.getElem(j));
+        int x = line.getScanline()[j];
         crc.update(x);
       }
     }

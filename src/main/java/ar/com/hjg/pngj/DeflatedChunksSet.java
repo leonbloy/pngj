@@ -219,12 +219,11 @@ public class DeflatedChunksSet {
   }
 
   /**
-   * Callback, must be implemented in callbackMode
+   * Callback, to be implemented in callbackMode
    * <p>
    * This will be called once to notify state done
    */
   protected void processDoneCallback() {
-    throw new PngjInputException("not implemented");
   }
 
   /**
@@ -281,7 +280,7 @@ public class DeflatedChunksSet {
   }
 
   /**
-   * In this state, all relevant data has been uncompressed and retrieved.
+   * In this state, all relevant data has been uncompressed and retrieved (exceptionally, the reading has ended prematurely). 
    * <p>
    * We can still feed this object, but the bytes will be swallowed/ignored.
    */

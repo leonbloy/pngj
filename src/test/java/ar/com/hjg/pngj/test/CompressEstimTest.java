@@ -125,7 +125,7 @@ public class CompressEstimTest {
   }
 
   @Test
-  public void testDeflater1() {
+  public void testDeflater1() { // this is a little slow
     for (int i = 0; i < buffers.length; i++) {
       byte[] b = buffers[i];
       double ctarget = cbufd[i];
@@ -137,7 +137,7 @@ public class CompressEstimTest {
       TestCase.assertEquals(cr1, cr1b);
       TestCase.assertEquals(ctarget, cr1, 0.00001);
       ds.reset();
-      for (int stride = 1; stride < b.length - 10; stride += 1 + b.length / 100) {
+      for (int stride = 1; stride < b.length - 10; stride += 1 + b.length / 20) {
         writeWithStride(stride, ds, b);
         cr1 = ds.getCompressionRatio();
         ds.done(); // should not change

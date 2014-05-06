@@ -5,8 +5,7 @@ import java.util.HashMap;
 /**
  * Internal PNG predictor filter type
  * 
- * Negative values are pseudo types, actually global strategies for writing, that (can) result on
- * different real filters for different rows
+ * Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters for different rows
  */
 public enum FilterType {
   /**
@@ -42,12 +41,20 @@ public enum FilterType {
    */
   FILTER_VERYAGGRESSIVE(-4),
   /**
-	 * 
-	 */
-  FILTER_ADAPTIVE_FAST(-2), // samples each 8 or 16 rows
+   * Adaptative strategy, sampling each row, or almost
+   */
+  FILTER_ADAPTIVE_FULL(-4),
+  /**
+   * Adaptive strategy, skippping some rows
+   */
   FILTER_ADAPTIVE_MEDIUM(-3), // samples about 1/4 row
-  FILTER_ADAPTIVE_FULL(-4), // all rows
-
+  /**
+   * Adaptative strategy, skipping many rows - more speed
+   */
+  FILTER_ADAPTIVE_FAST(-2), // samples each 8 or 16 rows
+  /**
+ * Experimental 
+ */
   FILTER_SUPER_ADAPTIVE(-10), //
   /**
    * Preserves the filter passed in original row.

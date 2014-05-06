@@ -78,7 +78,7 @@ public class DeflatedChunk2Test extends PngjTest {
           + TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
       c.prepareForNextRow(row == nrows ? 0 : rowsize);
     }
-    TestCase.assertEquals("READY 6 r=0[  0| 42  43], READY 10 r=1[  0| 44  41], ", sb.toString());
+    TestCase.assertEquals("ROW_READY 6 r=0[  0| 42  43], ROW_READY 10 r=1[  0| 44  41], ", sb.toString());
   }
 
   @Before
