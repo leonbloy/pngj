@@ -65,6 +65,6 @@ public class Sandbox {
   }
 
   public static void main(String[] args) throws Exception {
-    convert("C:/temp/orange.png", "C:/temp/x2.png");
+    reencodeWithFilter(new File("d:\\devel\\repositories\\pngj\\src\\test\\resources\\test\\bad_truncated.png"), FilterType.FILTER_NONE);
   }
 }

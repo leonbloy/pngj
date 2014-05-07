@@ -88,7 +88,7 @@ public class TestSupport {
     while (!as.isDone()) {
       if (!bf.hasMoreToFeed())
         throw new PngjInputException("premature ending");
-      if (bf.feed(as) == 0)
+      if (bf.feed(as) <= 0)
         break;
     }
     bf.close();

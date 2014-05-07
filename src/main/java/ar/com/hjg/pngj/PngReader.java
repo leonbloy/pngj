@@ -159,7 +159,7 @@ public class PngReader {
    */
   protected void readFirstChunks() {
     while (chunkseq.currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT)
-      streamFeeder.feed(chunkseq);
+      if(streamFeeder.feed(chunkseq)<=0) throw new PngjInputException("premature ending reading first chunks");
   }
 
   /**
@@ -237,7 +237,7 @@ public class PngReader {
         throw new PngjInputException("rows must be read in increasing order: " + nrow);
       while (rowNum < nrow) {
         while (!chunkseq.getIdatSet().isRowReady())
-          streamFeeder.feed(chunkseq);
+          if(streamFeeder.feed(chunkseq)<1) throw new PngjInputException("premature ending");
         rowNum++;
         chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
         if (rowNum == nrow) {
@@ -289,7 +289,7 @@ public class PngReader {
       int m = -1; // last row already read in
       while (m < nRows - 1) {
         while (!chunkseq.getIdatSet().isRowReady())
-          streamFeeder.feed(chunkseq);
+          if(streamFeeder.feed(chunkseq)<1) throw new PngjInputException("Premature ending");
         rowNum++;
         chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
         m = (rowNum - rowOffset) / rowStep;
@@ -333,7 +333,9 @@ public class PngReader {
     int nread = 0;
     do {
       while (!chunkseq.getIdatSet().isRowReady())
-        streamFeeder.feed(chunkseq);
+        if(streamFeeder.feed(chunkseq)<=0) break;
+      if(! chunkseq.getIdatSet().isRowReady())
+        throw new PngjInputException("Premature ending?");
       chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
       int rowNumreal = idat.rowinfo.rowNreal;
       boolean inset = (rowNumreal - rowOffset) % rowStep == 0;
@@ -423,7 +425,8 @@ public class PngReader {
       if (chunkseq.getIdatSet() != null && !chunkseq.getIdatSet().isDone())
         chunkseq.getIdatSet().done();
       while (!chunkseq.isDone())
-        streamFeeder.feed(chunkseq);
+        if (streamFeeder.feed(chunkseq) <= 0)
+          break;
     } finally {
       close();
     }

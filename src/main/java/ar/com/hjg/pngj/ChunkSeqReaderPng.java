@@ -152,14 +152,6 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
     }
   }
 
-  /** check that the last inserted chunk had the correct ordering */
-  /*
-   * protected void checkOrdering() { PngChunk c = chunksList.getChunks().get(chunksList.getChunks().size() - 1); ChunkOrderingConstraint oc = c.getOrderingConstraint();
-   * //chunksList.getById1(); PngHelperInternal.LOGGER.warning("check ordering not implemented");
-   * 
-   * }
-   */
-
   @Override
   protected DeflatedChunksSet createIdatSet(String id) {
     IdatSet ids = new IdatSet(id, imageInfo, deinterlacer);

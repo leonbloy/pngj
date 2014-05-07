@@ -30,7 +30,7 @@ public class RemoveChunks {
     help.append("    -i: inplace (does not require input and output files) \n");
     help.append("    -r: list of chunks to remove, comma separated. Case insensitive \n");
     help.append("    -k: list of ancillary chunks to keep, comma separated. Case insensitive \n");
-    help.append("    -q: quite mode\n");
+    help.append("    -q: quiet mode\n");
     help.append("    -f: faster mode: don't check CRC\n");
     help.append(" With -i accepts paths in the form 'mypath/*' (all pngs in dir) or 'mypath/**' (idem recursive)  \n");
     help.append(" Examples:  \n");

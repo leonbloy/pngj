@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.test;
 
 import junit.framework.TestCase;
 
@@ -6,9 +6,9 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import ar.com.hjg.pngj.ChunkSeqSkipping;
+import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
-import ar.com.hjg.pngj.test.PngjTest;
-import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  * Very basic reading

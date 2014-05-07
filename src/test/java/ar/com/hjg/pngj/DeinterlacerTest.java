@@ -6,6 +6,8 @@ import junit.framework.TestCase;
 
 import org.junit.Test;
 
+import ar.com.hjg.pngj.Deinterlacer;
+import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.test.PngjTest;
 
 public class DeinterlacerTest extends PngjTest {

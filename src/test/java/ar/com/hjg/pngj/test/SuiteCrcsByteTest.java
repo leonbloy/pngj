@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.test;
 
 import java.io.File;
 import java.util.LinkedHashMap;
@@ -9,8 +9,9 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import ar.com.hjg.pngj.test.PngjTest;
-import ar.com.hjg.pngj.test.TestSupport;
+import ar.com.hjg.pngj.ImageLineByte;
+import ar.com.hjg.pngj.PngHelperInternal;
+import ar.com.hjg.pngj.PngReaderByte;
 
 /**
  * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines (bytes 0 and 1), comparing with precomputed

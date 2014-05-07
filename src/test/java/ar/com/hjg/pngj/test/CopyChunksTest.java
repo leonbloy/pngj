@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.test;
 
 import java.io.File;
 import java.util.Arrays;
@@ -9,14 +9,15 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
+import ar.com.hjg.pngj.PngHelperInternal;
+import ar.com.hjg.pngj.PngReader;
+import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTIME;
-import ar.com.hjg.pngj.test.PngjTest;
-import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  *   

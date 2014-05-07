@@ -1,12 +1,14 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.test;
 
 import junit.framework.TestCase;
 
 import org.junit.Before;
 import org.junit.Test;
 
-import ar.com.hjg.pngj.test.PngjTest;
-import ar.com.hjg.pngj.test.TestSupport;
+import ar.com.hjg.pngj.IImageLineArray;
+import ar.com.hjg.pngj.IImageLineSet;
+import ar.com.hjg.pngj.ImageLineInt;
+import ar.com.hjg.pngj.PngReader;
 
 public class PngReaderTest extends PngjTest {
 

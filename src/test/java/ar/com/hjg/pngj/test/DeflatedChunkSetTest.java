@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj;
+package ar.com.hjg.pngj.test;
 
 import java.io.InputStream;
 
@@ -7,8 +7,10 @@ import junit.framework.TestCase;
 import org.junit.Before;
 import org.junit.Test;
 
-import ar.com.hjg.pngj.test.PngjTest;
-import ar.com.hjg.pngj.test.TestSupport;
+import ar.com.hjg.pngj.BufferedStreamFeeder;
+import ar.com.hjg.pngj.ChunkSeqReader;
+import ar.com.hjg.pngj.DeflatedChunksSet;
+import ar.com.hjg.pngj.PngjInputException;
 
 /**
  * Test the DeflatedChunkSet using a ChunkSetReader2 that reads the IDATs with no knowledge of filters, etc
@@ -82,12 +84,14 @@ public class DeflatedChunkSetTest extends PngjTest {
       while (!idatFound) {
         if (bf.feed(this) < 1)
           break;
+
       }
+      if (!idatFound || getCurReaderDeflatedSet() == null)
+        throw new PngjInputException("premature ending before IDAT");
       for (rown = 0; rown < nrows; rown++) {
-        while (getCurReaderDeflatedSet() != null
-            && getCurReaderDeflatedSet().isWaitingForMoreInput()) {
+        while (getCurReaderDeflatedSet().isWaitingForMoreInput()) {
           if (bf.feed(this) < 1)
-            break;
+            throw new PngjInputException("premature ending inflating rows");
         }
         if (getCurReaderDeflatedSet().isRowReady()) {
           summary.append(
@@ -102,7 +106,7 @@ public class DeflatedChunkSetTest extends PngjTest {
         getCurReaderDeflatedSet().done();
       while (!isDone()) {
         if (bf.feed(this) < 1)
-          break;
+          throw new PngjInputException("premature ending ");
       }
       bf.close();
     }

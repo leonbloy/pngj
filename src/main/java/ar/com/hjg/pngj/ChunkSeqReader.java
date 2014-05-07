@@ -86,8 +86,8 @@ public class ChunkSeqReader implements IBytesConsumer {
         buf0len += read0;
         processed += read0;
         bytesCount += read0;
-        len -= read0;
-        offset += read0;
+        //len -= read0;
+        //offset += read0;
         if (buf0len == 8) { // end reading chunk length and id
           chunkCount++;
           int clen = PngHelperInternal.readInt4fromBytes(buf0, 0);
@@ -372,8 +372,7 @@ public class ChunkSeqReader implements IBytesConsumer {
     BufferedStreamFeeder sf = new BufferedStreamFeeder(is);
     sf.setCloseStream(closeStream);
     try {
-      while (sf.hasMoreToFeed())
-        sf.feed(this);
+       sf.feedAll(this);
     } finally {
       close();
       sf.close();

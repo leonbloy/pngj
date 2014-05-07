@@ -5,10 +5,10 @@ package ar.com.hjg.pngj;
  */
 public interface IBytesConsumer {
   /**
-   * 
-   * 
-   * Returns bytes actually consumed, -1 if we are done Should return some value between 1 and len should never return 0 (unless len=0)
-   * 
+   * Eats some bytes, at most len.<p>
+   * Returns bytes actually consumed.
+   * A negative return value signals that the consumer is done, it refuses to eat more bytes.
+   * This should only return 0 if len is 0
    */
   int consume(byte[] buf, int offset, int len);
 }

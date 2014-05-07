@@ -44,19 +44,19 @@ public class BufferedStreamFeeder {
    * This should return 0 only if the stream is EOF or the consumer is done
    */
   public int feed(IBytesConsumer consumer) {
-    return feed(consumer, -1);
+    return feed(consumer, Integer.MAX_VALUE);
   }
 
   /**
    * Feeds the consumer (with at most maxbytes) <br>
-   * This should return 0 only if the stream is EOF or the consumer is done
+   * Returns 0 only if the stream is EOF (or maxbytes=0). Returns negative is the consumer is done.<br>
+   * It can return less than maxbytes (that doesn't mean that the consumer or the input stream is done)
    */
   public int feed(IBytesConsumer consumer, int maxbytes) {
-    int n = 0;
-    if (pendinglen == 0) {
+    if (pendinglen == 0)
       refillBuffer();
-    }
-    int tofeed = maxbytes > 0 && maxbytes < pendinglen ? maxbytes : pendinglen;
+    int tofeed = maxbytes >= 0 && maxbytes < pendinglen ? maxbytes : pendinglen;
+    int n = 0;
     if (tofeed > 0) {
       n = consumer.consume(buf, offset, tofeed);
       if (n > 0) {
@@ -65,9 +65,27 @@ public class BufferedStreamFeeder {
       }
     }
     if (n < 1 && failIfNoFeed)
-      throw new PngjInputException("failed feed bytes");
+      throw new PngjInputException("Failed to feed bytes (premature ending?)");
     return n;
   }
+
+
+  /**
+   * Feeds as much bytes as it can to the consumer, in a loop. <br>
+   * Returns bytes actually consumed <br>
+   * This will stop when either the input stream is eof, or when the consumer refuses to eat more bytes. The caller can distinguish both cases by calling {@link #hasMoreToFeed()}
+   */
+  public long feedAll(IBytesConsumer consumer) {
+    long n = 0;
+    while (hasMoreToFeed()) {
+      int n1 = feed(consumer);
+      if (n1 < 1)
+        break;
+      n += n1;
+    }
+    return n;
+  }
+
 
   /**
    * Feeds exactly nbytes, retrying if necessary

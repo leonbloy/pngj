@@ -16,7 +16,7 @@ public class IdatSet extends DeflatedChunksSet {
   protected final ImageInfo imgInfo;
   protected final Deinterlacer deinterlacer;
 
-  final RowInfo rowinfo; // info for the last processed row
+  final RowInfo rowinfo; // info for the last processed row, for debug
 
   protected int filterUseStat[] = new int[5]; // for stats
 
@@ -147,7 +147,7 @@ public class IdatSet extends DeflatedChunksSet {
    * <p>
    * In callback mode will be called as soon as each row is retrieved (inflated and unfiltered), after {@link #preProcessRow()}
    * <p>
-   * This is a dummy implementation that does nothing.
+   * This is a dummy implementation (this normally should be overriden) that does nothing more than compute the length of next row. 
    * <p>
    * The return value is essential
    * <p>
@@ -161,7 +161,9 @@ public class IdatSet extends DeflatedChunksSet {
   }
 
   @Override
-  protected void processDoneCallback() {}
+  protected void processDoneCallback() {
+    super.processDoneCallback();
+  }
 
   /**
    * Signals that we are done with the previous row, begin reading the next one.
@@ -231,5 +233,6 @@ public class IdatSet extends DeflatedChunksSet {
   public int[] getFilterUseStat() {
     return filterUseStat;
   }
+
 
 }

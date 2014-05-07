@@ -56,8 +56,7 @@ public class SampleBufferedImage {
       default:
         ;
     }
-    ImageInfo imi =
-        new ImageInfo(buf.getWidth(), buf.getHeight(), depth16 ? 16 : 8, alpha, gray, indexed);
+    //ImageInfo imi =  new ImageInfo(buf.getWidth(), buf.getHeight(), depth16 ? 16 : 8, alpha, gray, indexed);
 
   }
 

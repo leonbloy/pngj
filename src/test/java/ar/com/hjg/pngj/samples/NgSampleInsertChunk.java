@@ -9,6 +9,7 @@ import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkReader;
 import ar.com.hjg.pngj.ChunkSeqBuffering;
 import ar.com.hjg.pngj.PngHelperInternal;
+import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
 /**
@@ -29,6 +30,7 @@ public class NgSampleInsertChunk {
 
   public NgSampleInsertChunk(InputStream inputStream) {
     streamFeeder = new BufferedStreamFeeder(inputStream);
+    streamFeeder.setFailIfNoFeed(true);
     cs = new ChunkSeqBuffering() {
       @Override
       protected void postProcessChunk(ChunkReader chunkR) {
@@ -64,9 +66,12 @@ public class NgSampleInsertChunk {
     this.beforeIdat = beforeIdat;
     this.text = text;
     PngHelperInternal.writeBytes(os, PngHelperInternal.getPngIdSignature());
-    while (streamFeeder.hasMoreToFeed())
-      // async feeding
-      streamFeeder.feed(cs);
+    // async feeding
+    streamFeeder.feedAll(cs);
+    if(!cs.isDone()) {
+      cs.close();
+      throw new PngjException("premature ending?");
+    }
   }
 
   public static void insert(String orig, String to, boolean beforeIdat) throws Exception {

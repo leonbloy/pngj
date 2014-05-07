@@ -38,8 +38,7 @@ public class PngReaderDumb {
   public void readAll() {
     chunkseq = createChunkSeqReader();
     try {
-      while (!chunkseq.isDone())
-        streamFeeder.feed(chunkseq);
+      streamFeeder.feedAll(chunkseq);
     } finally {
       close();
     }

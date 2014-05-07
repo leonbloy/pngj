@@ -63,6 +63,10 @@ public abstract class PngChunk {
      */
     BEFORE_IDAT,
     /**
+     * After IDAT (this restriction does not apply to the standard PNG chunks)
+     */
+    AFTER_IDAT,
+    /**
      * Does not apply
      */
     NA;
@@ -82,6 +86,10 @@ public abstract class PngChunk {
       return this == AFTER_PLTE_BEFORE_IDAT || this == AFTER_PLTE_BEFORE_IDAT_PLTE_REQUIRED;
     }
 
+    public boolean mustGoAfterIDAT() {
+      return this == AFTER_IDAT;
+    }
+
     public boolean isOk(int currentChunkGroup, boolean hasplte) {
       if (this == NONE)
         return true;
@@ -92,6 +100,8 @@ public abstract class PngChunk {
       else if (this == AFTER_PLTE_BEFORE_IDAT)
         return hasplte ? currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT
             : (currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT && currentChunkGroup > ChunksList.CHUNK_GROUP_2_PLTE);
+      else if (this == AFTER_IDAT)
+        return currentChunkGroup > ChunksList.CHUNK_GROUP_4_IDAT;
       return false;
     }
   }
