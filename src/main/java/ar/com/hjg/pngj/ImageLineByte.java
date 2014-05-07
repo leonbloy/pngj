@@ -45,8 +45,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
   }
 
   /**
-   * One byte per sample. This can be used also for 16bpp images, but in this case this loses the
-   * less significant 8-bits ; see also getScanlineByte2 and getElem.
+   * One byte per sample. This can be used also for 16bpp images, but in this case this loses the less significant 8-bits ; see also getScanlineByte2 and getElem.
    */
   public byte[] getScanlineByte() {
     return scanline;

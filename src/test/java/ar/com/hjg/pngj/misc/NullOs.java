@@ -4,8 +4,7 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * Trivial output stream that discards written bytes.
- * It keeps a count of sent bytes.
+ * Trivial output stream that discards written bytes. It keeps a count of sent bytes.
  */
 public class NullOs extends OutputStream {
   private long cont = 0;

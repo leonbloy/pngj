@@ -8,8 +8,7 @@ import ar.com.hjg.pngj.PngjExceptionInternal;
 /**
  * Represents a instance of a PNG chunk.
  * <p>
- * See <a href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www
- * .libpng.org/pub/png/spec/1.2/PNG-Chunks .html</a> </a>
+ * See <a href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www .libpng.org/pub/png/spec/1.2/PNG-Chunks .html</a> </a>
  * <p>
  * Concrete classes should extend {@link PngChunkSingle} or {@link PngChunkMultiple}
  * <p>
@@ -39,9 +38,8 @@ public abstract class PngChunk {
   protected int chunkGroup = -1; // chunk group where it was read or writen
 
   /**
-   * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks.
-   * Theoretically, there could be more general constraints, but these cover the constraints for
-   * standard chunks.
+   * Possible ordering constraint for a PngChunk type -only relevant for ancillary chunks. Theoretically, there could be more general constraints, but these cover the constraints
+   * for standard chunks.
    */
   public enum ChunkOrderingConstraint {
     /**
@@ -112,8 +110,7 @@ public abstract class PngChunk {
   }
 
   /**
-   * In which "chunkGroup" (see {@link ChunksList}for definition) this chunks instance was read or
-   * written.
+   * In which "chunkGroup" (see {@link ChunksList}for definition) this chunks instance was read or written.
    * <p>
    * -1 if not read or written (eg, queued)
    */
@@ -145,16 +142,14 @@ public abstract class PngChunk {
   }
 
   /**
-   * Creates the physical chunk. This is used when writing (serialization). Each particular chunk
-   * class implements its own logic.
+   * Creates the physical chunk. This is used when writing (serialization). Each particular chunk class implements its own logic.
    * 
    * @return A newly allocated and filled raw chunk
    */
   protected abstract ChunkRaw createRawChunk();
 
   /**
-   * Parses raw chunk and fill inside data. This is used when reading (deserialization). Each
-   * particular chunk class implements its own logic.
+   * Parses raw chunk and fill inside data. This is used when reading (deserialization). Each particular chunk class implements its own logic.
    */
   protected abstract void parseFromRaw(ChunkRaw c);
 
@@ -188,9 +183,8 @@ public abstract class PngChunk {
   }
 
   /**
-   * This signals that the raw chunk (serialized data) as invalid, so that it's regenerated on
-   * write. This should be called for the (infrequent) case of chunks that were copied from a
-   * PngReader and we want to manually modify it.
+   * This signals that the raw chunk (serialized data) as invalid, so that it's regenerated on write. This should be called for the (infrequent) case of chunks that were copied
+   * from a PngReader and we want to manually modify it.
    */
   public void invalidateRawData() {
     raw = null;

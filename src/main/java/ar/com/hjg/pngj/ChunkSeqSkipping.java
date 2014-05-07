@@ -7,10 +7,9 @@ import ar.com.hjg.pngj.ChunkReader.ChunkReaderMode;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * This simple reader skips all chunks contents and stores the chunkRaw in a list. 
- * Useful to read chunks structure.
+ * This simple reader skips all chunks contents and stores the chunkRaw in a list. Useful to read chunks structure.
  * 
- * Optionally the contents might be processed. This doesn't distinguish IDAT chunks 
+ * Optionally the contents might be processed. This doesn't distinguish IDAT chunks
  */
 public class ChunkSeqSkipping extends ChunkSeqReader {
 

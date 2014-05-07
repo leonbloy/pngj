@@ -6,14 +6,12 @@ import java.util.zip.Inflater;
 /**
  * A set of IDAT-like chunks which, concatenated, form a zlib stream.
  * <p>
- * The inflated stream is intented to be read as a sequence of "rows", of which the caller knows the
- * lengths (not necessary equal) and number.
+ * The inflated stream is intented to be read as a sequence of "rows", of which the caller knows the lengths (not necessary equal) and number.
  * <p>
  * Eg: For IDAT non-interlaced images, a row has bytesPerRow + 1 filter byte<br>
  * For interlaced images, the lengths are variable.
  * <p>
- * This class can work in sync (polled) mode or async (callback) mode. But for callback mode the
- * method processRowCallback() must be overriden
+ * This class can work in sync (polled) mode or async (callback) mode. But for callback mode the method processRowCallback() must be overriden
  * <p>
  * See {@link IdatSet}, which is mostly used and has a slightly simpler use.<br>
  * See <code>DeflatedChunkSetTest</code> for example of use.
@@ -33,17 +31,13 @@ public class DeflatedChunksSet {
    * 
    * processBytes() is externally called, prohibited in READY (in DONE it's ignored)
    * 
-   * WARNING: inflater.finished() != DONE (not enough, not neccesary) DONE means that we have
-   * already uncompressed all the data of interest.
+   * WARNING: inflater.finished() != DONE (not enough, not neccesary) DONE means that we have already uncompressed all the data of interest.
    * 
    * In non-callback mode, prepareForNextRow() is also externally called, in
    * 
-   * Flow: - processBytes() calls inflateData() - inflateData() : if buffer is filled goes to READY
-   * else if ! inf.finished goes to WAITING else if any data goes to READY (incomplete data to be
-   * read) else goes to DONE - in Callback mode, after going to READY, n=processCallback() is called
-   * and then prepareForNextRow(n) is called. - in Polled mode, prepareForNextRow(n) must be called
-   * from outside (after checking state=READY) - prepareForNextRow(n) goes to DONE if n==0 calls
-   * inflateData() again - end() goes to DONE
+   * Flow: - processBytes() calls inflateData() - inflateData() : if buffer is filled goes to READY else if ! inf.finished goes to WAITING else if any data goes to READY
+   * (incomplete data to be read) else goes to DONE - in Callback mode, after going to READY, n=processCallback() is called and then prepareForNextRow(n) is called. - in Polled
+   * mode, prepareForNextRow(n) must be called from outside (after checking state=READY) - prepareForNextRow(n) goes to DONE if n==0 calls inflateData() again - end() goes to DONE
    */
   private enum State {
     WAITING_FOR_INPUT, // waiting for more input
@@ -81,8 +75,7 @@ public class DeflatedChunksSet {
   /**
    * @param initialRowLen Length in bytes of first "row" (see description)
    * @param maxRowLen Max length in bytes of "rows"
-   * @param inflater Can be null. If not null, must be already reset (and it must be closed/released
-   *        by caller!)
+   * @param inflater Can be null. If not null, must be already reset (and it must be closed/released by caller!)
    */
   public DeflatedChunksSet(String chunkid, int initialRowLen, int maxRowLen, Inflater inflater,
       byte[] buffer) {
@@ -123,8 +116,7 @@ public class DeflatedChunksSet {
   /**
    * Feeds the inflater with the compressed bytes
    * 
-   * In poll mode, the caller should not call repeatedly this, without consuming first, checking
-   * isDataReadyForConsumer()
+   * In poll mode, the caller should not call repeatedly this, without consuming first, checking isDataReadyForConsumer()
    * 
    * @param buf
    * @param off
@@ -154,9 +146,8 @@ public class DeflatedChunksSet {
   }
 
   /*
-   * This never inflates more than one row This returns true if this has resulted in a row being
-   * ready and preprocessed with preProcessRow (in callback mode, we should call immediately
-   * processRowCallback() and prepareForNextRow(nextRowLen)
+   * This never inflates more than one row This returns true if this has resulted in a row being ready and preprocessed with preProcessRow (in callback mode, we should call
+   * immediately processRowCallback() and prepareForNextRow(nextRowLen)
    */
   private boolean inflateData() {
     try {
@@ -223,8 +214,7 @@ public class DeflatedChunksSet {
    * <p>
    * This will be called once to notify state done
    */
-  protected void processDoneCallback() {
-  }
+  protected void processDoneCallback() {}
 
   /**
    * Inflated buffer.
@@ -280,7 +270,7 @@ public class DeflatedChunksSet {
   }
 
   /**
-   * In this state, all relevant data has been uncompressed and retrieved (exceptionally, the reading has ended prematurely). 
+   * In this state, all relevant data has been uncompressed and retrieved (exceptionally, the reading has ended prematurely).
    * <p>
    * We can still feed this object, but the bytes will be swallowed/ignored.
    */
@@ -293,9 +283,8 @@ public class DeflatedChunksSet {
   }
 
   /**
-   * This will be called by the owner to report us the next chunk to come. We can make our own
-   * internal changes and checks. This returns true if we acknowledge the next chunk as part of this
-   * set
+   * This will be called by the owner to report us the next chunk to come. We can make our own internal changes and checks. This returns true if we acknowledge the next chunk as
+   * part of this set
    */
   public boolean ackNextChunkId(String id) {
     if (state.isTerminated())
@@ -322,8 +311,8 @@ public class DeflatedChunksSet {
   }
 
   /**
-   * This should be called when discarding this object, or for aborting. Secure, idempotent Don't
-   * use this just to notify this object that it has no more work to do, see {@link #done()}
+   * This should be called when discarding this object, or for aborting. Secure, idempotent Don't use this just to notify this object that it has no more work to do, see
+   * {@link #done()}
    * */
   public void close() {
     try {
@@ -339,8 +328,7 @@ public class DeflatedChunksSet {
   }
 
   /**
-   * Forces the DONE state, this object won't uncompress more data. It's still not terminated, it
-   * will accept more IDAT chunks, but will ignore them.
+   * Forces the DONE state, this object won't uncompress more data. It's still not terminated, it will accept more IDAT chunks, but will ignore them.
    */
   public void done() {
     if (!isDone())
@@ -363,8 +351,7 @@ public class DeflatedChunksSet {
   /**
    * Get current (last) row number.
    * <p>
-   * This corresponds to the raw numeration of rows as seen by the deflater. Not the same as the
-   * real image row, if interlaced.
+   * This corresponds to the raw numeration of rows as seen by the deflater. Not the same as the real image row, if interlaced.
    * 
    */
   public int getRown() {

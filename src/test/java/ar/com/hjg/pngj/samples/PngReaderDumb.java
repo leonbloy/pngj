@@ -1,12 +1,9 @@
 package ar.com.hjg.pngj.samples;
 
 import java.io.File;
-import java.io.FileInputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
-
-import javax.imageio.stream.FileImageInputStream;
 
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkReader;

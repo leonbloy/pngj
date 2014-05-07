@@ -112,8 +112,7 @@ public class RecompressIdat {
     private boolean checkCrc = true;
 
     /**
-     * This reader writes the chunks directly to the rawOs output, except that the IDAT stream is
-     * decompressed and writen to idatOs
+     * This reader writes the chunks directly to the rawOs output, except that the IDAT stream is decompressed and writen to idatOs
      * 
      * @param is
      * @param rawOs
@@ -195,11 +194,9 @@ public class RecompressIdat {
 
   /** reads a PNG and writes to a file the raw (unfiltered) IDAT stream */
   /*
-   * public static void writeRawIdatToFile(File png, File rawIdat) { try { InputStream is = new
-   * FileInputStream(png); OutputStream osIdat = new FileOutputStream(rawIdat); OutputStream osRaw =
-   * new NullOs(); ChunkSeqReaderIdatRaw1 reader = new ChunkSeqReaderIdatRaw1(is, osRaw, osIdat);
-   * reader.readAll(); is.close(); osIdat.close(); osRaw.close(); } catch (IOException e) { throw
-   * new PngjException(e); } }
+   * public static void writeRawIdatToFile(File png, File rawIdat) { try { InputStream is = new FileInputStream(png); OutputStream osIdat = new FileOutputStream(rawIdat);
+   * OutputStream osRaw = new NullOs(); ChunkSeqReaderIdatRaw1 reader = new ChunkSeqReaderIdatRaw1(is, osRaw, osIdat); reader.readAll(); is.close(); osIdat.close(); osRaw.close();
+   * } catch (IOException e) { throw new PngjException(e); } }
    */
 
   /** reads a PNG and rewrites it recompressing the IDAT stream . this closes all streams */

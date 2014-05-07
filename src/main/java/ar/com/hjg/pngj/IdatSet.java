@@ -7,8 +7,7 @@ import java.util.zip.Inflater;
 /**
  * This object process the concatenation of IDAT chunks.
  * <p>
- * It extends {@link DeflatedChunksSet}, adding the intelligence to unfilter rows, and to understand
- * row lenghts in terms of ImageInfo and (eventually) Deinterlacer
+ * It extends {@link DeflatedChunksSet}, adding the intelligence to unfilter rows, and to understand row lenghts in terms of ImageInfo and (eventually) Deinterlacer
  */
 public class IdatSet extends DeflatedChunksSet {
 
@@ -34,8 +33,7 @@ public class IdatSet extends DeflatedChunksSet {
    * Special constructor with preallocated buffer.
    * <p>
    * <p>
-   * Same as {@link #IdatSet(String, ImageInfo, Deinterlacer)}, but you can pass a Inflater (will be
-   * reset internally), and a buffer (will be used only if size is enough)
+   * Same as {@link #IdatSet(String, ImageInfo, Deinterlacer)}, but you can pass a Inflater (will be reset internally), and a buffer (will be used only if size is enough)
    */
   public IdatSet(String id, ImageInfo iminfo, Deinterlacer deinterlacer, Inflater inf, byte[] buffer) {
     super(id, deinterlacer != null ? deinterlacer.getBytesToRead() + 1 : iminfo.bytesPerRow + 1,
@@ -46,8 +44,7 @@ public class IdatSet extends DeflatedChunksSet {
   }
 
   /**
-   * Applies PNG un-filter to inflated raw line. Result in {@link #getUnfilteredRow()}
-   * {@link #getRowLen()}
+   * Applies PNG un-filter to inflated raw line. Result in {@link #getUnfilteredRow()} {@link #getRowLen()}
    */
   public void unfilterRow() {
     unfilterRow(rowinfo.bytesRow);
@@ -148,8 +145,7 @@ public class IdatSet extends DeflatedChunksSet {
   /**
    * Method for async/callback mode .
    * <p>
-   * In callback mode will be called as soon as each row is retrieved (inflated and unfiltered),
-   * after {@link #preProcessRow()}
+   * In callback mode will be called as soon as each row is retrieved (inflated and unfiltered), after {@link #preProcessRow()}
    * <p>
    * This is a dummy implementation that does nothing.
    * <p>

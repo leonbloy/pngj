@@ -12,8 +12,7 @@ import ar.com.hjg.pngj.PngReader;
  */
 public class SampleImgDiff {
   /**
-   * asume que las imagenes son equivalentes res[0]=maxima diferencia (suma valores absoluto sobre
-   * todos los canales) res[1]=columna en que se produce
+   * asume que las imagenes son equivalentes res[0]=maxima diferencia (suma valores absoluto sobre todos los canales) res[1]=columna en que se produce
    * 
    * ignores alpha
    */

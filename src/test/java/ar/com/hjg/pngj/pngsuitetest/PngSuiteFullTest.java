@@ -31,11 +31,9 @@ import ar.com.hjg.pngj.test.TestSupport;
 /**
  * To test all images in PNG test suite doing a horizontal mirror on all them
  * 
- * Instructions: Original images from PNG test suite is supposed to be in local dir
- * resources/testsuite1/ (images supposed to fail, because are erroneous, must start with 'x')
- * Output dir is hardcoded in static "outdir" field - it should be empty After running main, no
- * error should be thrown Errors: 0/141 Result images are mirrored, with a 'z' appended to their
- * names, and the originals are laso copied. Suggestion: sort by name, and watch them in sequence
+ * Instructions: Original images from PNG test suite is supposed to be in local dir resources/testsuite1/ (images supposed to fail, because are erroneous, must start with 'x')
+ * Output dir is hardcoded in static "outdir" field - it should be empty After running main, no error should be thrown Errors: 0/141 Result images are mirrored, with a 'z' appended
+ * to their names, and the originals are laso copied. Suggestion: sort by name, and watch them in sequence
  * 
  */
 public class PngSuiteFullTest {
@@ -47,8 +45,7 @@ public class PngSuiteFullTest {
   private int imagesToCheck = -1; // -1 to check all
 
   /**
-   * Takes a image, mirrors it using row-per-row int reading, mirror it again using byte (if
-   * possible) and compares
+   * Takes a image, mirrors it using row-per-row int reading, mirror it again using byte (if possible) and compares
    * 
    * IF the original was interlaced, compares with origni
    * */

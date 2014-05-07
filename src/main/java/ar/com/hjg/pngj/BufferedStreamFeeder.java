@@ -2,7 +2,6 @@ package ar.com.hjg.pngj;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
 
 /**
  * Reads bytes from an input stream, and feeds a IBytesConsumer.
@@ -144,7 +143,7 @@ public class BufferedStreamFeeder {
       try {
         stream.close();
       } catch (Exception e) {
-        //PngHelperInternal.LOGGER.log(Level.WARNING, "Exception closing stream", e);
+        // PngHelperInternal.LOGGER.log(Level.WARNING, "Exception closing stream", e);
       }
     }
     stream = null;

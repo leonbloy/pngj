@@ -12,8 +12,10 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
 /**
- * This example shows how to insert a textual chunk in the most efficient manner, using just a
- * ChunkSequenceDumb (This does not check for duplicated textual chunks)
+ * This example shows how to insert a textual chunk efficiently, without decoding and reencoding the pixels, using just a ChunkSeqBuffering (This does not check for duplicated
+ * textual chunks)
+ * 
+ * This could be made even more efficiently (not buffering the chunks to memory), by using a ChunkSeqSkipping, see for example class RemoveChunks.
  */
 public class NgSampleInsertChunk {
 
@@ -37,13 +39,13 @@ public class NgSampleInsertChunk {
       @Override
       protected void startNewChunk(int len, String id, long offset) {
         super.startNewChunk(len, id, offset);
-        insertMyChunk(id); // insert the text chunk if appropiate
+        insertMyChunkEventually(id); // insert the text chunk if appropiate
       }
     };
     cs.setCheckCrc(false);
   }
 
-  private void insertMyChunk(String nextChukn) {
+  private void insertMyChunkEventually(String nextChukn) {
     if (inserted)
       return;
     // this logic puts the text chunk just before first IDAT or just after it

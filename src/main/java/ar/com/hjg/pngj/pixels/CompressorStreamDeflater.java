@@ -9,8 +9,7 @@ import ar.com.hjg.pngj.PngjOutputException;
 /**
  * CompressorStream backed by a Deflater.
  * 
- * Note that the Deflater is not disposed after done, you should either recycle this with reset() or
- * dispose it with close()
+ * Note that the Deflater is not disposed after done, you should either recycle this with reset() or dispose it with close()
  * 
  */
 public class CompressorStreamDeflater extends CompressorStream {

@@ -122,8 +122,7 @@ public class TestSupport {
   }
 
   /**
-   * show detailed filter information (grouped by consecutive rows) eg: PAETH:337(103) means 103
-   * rows of type PAETH starting from row 337
+   * show detailed filter information (grouped by consecutive rows) eg: PAETH:337(103) means 103 rows of type PAETH starting from row 337
    */
   public static String showFilters(File pngr, int maxgroups, boolean usenewlines, boolean showSumm,
       boolean showSummPercent) {
@@ -169,8 +168,7 @@ public class TestSupport {
   }
 
   /**
-   * First byte is the filter type, nbytes is the valid content (including filter byte) This shows
-   * at most 9 bytes
+   * First byte is the filter type, nbytes is the valid content (including filter byte) This shows at most 9 bytes
    */
   public static String showRow(byte[] row, int nbytes, int rown, int dx, int ox) {
     StringBuilder sb = new StringBuilder();
@@ -273,8 +271,7 @@ public class TestSupport {
   }
 
   /**
-   * The resources dir for the tests should include PNG_TEST_STRIPES (and testsuite1) Typically
-   * target/tests-classes
+   * The resources dir for the tests should include PNG_TEST_STRIPES (and testsuite1) Typically target/tests-classes
    * */
   public static File getResourcesDir() {
     if (resourcesDir == null) {

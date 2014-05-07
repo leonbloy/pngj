@@ -13,6 +13,8 @@ import java.util.Set;
 
 import junit.framework.TestCase;
 
+import org.junit.Test;
+
 /**
  * 
  * checks that the compiled classes are apt for sandboxed environment
@@ -84,6 +86,7 @@ public class WhiteListedCheck {
     return false;
   }
 
+  @Test
   public void maintest() {
     // this should include every directory except "nosandnbox" and "test"
     int[] res = checkDir(new File("target/classes/ar/com/hjg/pngj"), false);
@@ -95,6 +98,8 @@ public class WhiteListedCheck {
     TestCase.assertTrue("More than 10 classes", res[1] > 10);
     // checker.checkDir(new File("bin/ar/com/hjg/pngj/test"), false); // This fails, it's ok
   }
+
+
 
   public static void main(String[] args) {
     new WhiteListedCheck().maintest();

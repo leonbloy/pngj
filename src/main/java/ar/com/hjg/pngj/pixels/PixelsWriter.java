@@ -57,8 +57,9 @@ public abstract class PixelsWriter {
     filterType = FilterType.FILTER_DEFAULT;
   }
 
-  /** main internal point for external call. 
-   * It does the lazy initializion if necessary, sets current row, and call {@link #filterAndWrite(byte[])} */
+  /**
+   * main internal point for external call. It does the lazy initializion if necessary, sets current row, and call {@link #filterAndWrite(byte[])}
+   */
   public final void processRow(final byte[] rowb) {
     if (!initdone)
       init();
@@ -82,7 +83,7 @@ public abstract class PixelsWriter {
   /**
    * Does the real filtering. This must be called with the real (standard) filterType. This should rarely be overriden.
    * <p>
-   * WARNING: look out the contract 
+   * WARNING: look out the contract
    * 
    * @param _filterType
    * @param _rowb current row (the first byte might be modified)
@@ -133,8 +134,8 @@ public abstract class PixelsWriter {
   }
 
   /**
-   * This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call. 
-   * Warning: this can be called before the object is init, implementations should call init() to be sure
+   * This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call. Warning: this can be called before the object is init,
+   * implementations should call init() to be sure
    */
   public abstract byte[] getRowb();
 
@@ -151,8 +152,9 @@ public abstract class PixelsWriter {
   /** called by init(); override (calling this first) to do additional initialization */
   protected void initParams() {
     if (compressorStream == null) { // if not set, use the deflater
-      compressorStream =  new CompressorStreamDeflater(os, buflen, imgInfo.getTotalRawBytes(),
-              deflaterCompLevel, deflaterStrategy);
+      compressorStream =
+          new CompressorStreamDeflater(os, buflen, imgInfo.getTotalRawBytes(), deflaterCompLevel,
+              deflaterStrategy);
     }
   }
 
@@ -215,6 +217,7 @@ public abstract class PixelsWriter {
 
   /**
    * computed default fixed filter type to use, if specified DEFAULT; wilde guess based on image properties
+   * 
    * @return One of the five concrete filter types
    */
   protected FilterType getDefaultFilter() {

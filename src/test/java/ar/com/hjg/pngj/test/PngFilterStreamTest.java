@@ -22,8 +22,7 @@ public class PngFilterStreamTest {
     reader.readUntilEndAndClose();
     List<PngChunk> chunks = reader.getChunksList();
     /*
-     * System.out.println(chunks.size()); System.out.println(reader.getChunksList());
-     * System.out.println(TestSupport.showChunks(reader.getChunksList()));
+     * System.out.println(chunks.size()); System.out.println(reader.getChunksList()); System.out.println(TestSupport.showChunks(reader.getChunksList()));
      * System.out.println(chunks.size());
      */
 

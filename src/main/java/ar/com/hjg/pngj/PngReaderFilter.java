@@ -8,11 +8,10 @@ import java.util.List;
 import ar.com.hjg.pngj.chunks.PngChunk;
 
 /**
- * This class allows to use a simple PNG reader as an input filter, wrapping a ChunkSeqReaderPng in
- * callback mode.
+ * This class allows to use a simple PNG reader as an input filter, wrapping a ChunkSeqReaderPng in callback mode.
  * 
- * In this sample implementation, all IDAT chunks are skipped and the rest are stored. An example of use,
- * that lets us grab the Metadata and let the pixels go towards a BufferedImage:
+ * In this sample implementation, all IDAT chunks are skipped and the rest are stored. An example of use, that lets us grab the Metadata and let the pixels go towards a
+ * BufferedImage:
  * 
  * 
  * <pre class="code">

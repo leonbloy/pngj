@@ -42,15 +42,15 @@ public class ChunkSeqSkippingTest extends PngjTest {
           super.postProcessChunk(chunkR);
           chunkR.getChunkRaw().writeChunkCrc(os); // send only the crc
         }
-        
+
 
         @Override
         protected void processChunkContent(ChunkRaw chunkRaw, int offsetinChhunk, byte[] buf,
             int off, int len) {
-          if(offsetinChhunk==0) {
+          if (offsetinChhunk == 0) {
             chunkRaw.writeChunkHeader(os); // send only the header
           }
-          PngHelperInternal.writeBytes(os, buf,off,len);
+          PngHelperInternal.writeBytes(os, buf, off, len);
         }
 
 

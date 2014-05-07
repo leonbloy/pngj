@@ -53,8 +53,8 @@ public enum FilterType {
    */
   FILTER_ADAPTIVE_FAST(-2), // samples each 8 or 16 rows
   /**
- * Experimental 
- */
+   * Experimental
+   */
   FILTER_SUPER_ADAPTIVE(-10), //
   /**
    * Preserves the filter passed in original row.

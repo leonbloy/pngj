@@ -6,11 +6,9 @@ import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 /**
  * Bunch of utility static methods to proces an image line at the pixel level.
  * <p>
- * WARNING: this has little testing/optimizing, and this API is not stable. some methods will
- * probably be changed or removed if future releases.
+ * WARNING: this has little testing/optimizing, and this API is not stable. some methods will probably be changed or removed if future releases.
  * <p>
- * WARNING: most methods for getting/setting values work currently only for ImageLine or
- * ImageLineByte
+ * WARNING: most methods for getting/setting values work currently only for ImageLine or ImageLineByte
  */
 public class ImageLineHelper {
 
@@ -33,8 +31,8 @@ public class ImageLineHelper {
   }
 
   /**
-   * When the bitdepth is less than 8, the imageLine is usually returned/expected unscaled. This
-   * method upscales it in place. Eg, if bitdepth=1, values 0-1 will be converted to 0-255
+   * When the bitdepth is less than 8, the imageLine is usually returned/expected unscaled. This method upscales it in place. Eg, if bitdepth=1, values 0-1 will be converted to
+   * 0-255
    */
   public static void scaleUp(IImageLineArray line) {
     if (line.getImageInfo().indexed || line.getImageInfo().bitDepth >= 8)
@@ -84,8 +82,7 @@ public class ImageLineHelper {
   }
 
   /**
-   * Given an indexed line with a palette, unpacks as a RGB array, or RGBA if a non nul PngChunkTRNS
-   * chunk is passed
+   * Given an indexed line with a palette, unpacks as a RGB array, or RGBA if a non nul PngChunkTRNS chunk is passed
    * 
    * @param line ImageLine as returned from PngReader
    * @param pal Palette chunk

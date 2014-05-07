@@ -143,8 +143,8 @@ public final class PngHelperInternal {
     b[offset + 1] = (byte) ((n >> 16) & 0xff);
     b[offset + 2] = (byte) ((n >> 8) & 0xff);
     b[offset + 3] = (byte) (n & 0xff);
-  } 
-  
+  }
+
 
   /**
    * guaranteed to read exactly len bytes. throws error if it can't

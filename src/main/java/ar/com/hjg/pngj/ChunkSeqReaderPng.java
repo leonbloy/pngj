@@ -18,8 +18,7 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 /**
  * Adds to ChunkSeqReader the storing of PngChunk, with a PngFactory, and imageInfo + deinterlacer.
  * <p>
- * Most usual PNG reading should use this class, or a {@link PngReader}, which is a thin wrapper
- * over this.
+ * Most usual PNG reading should use this class, or a {@link PngReader}, which is a thin wrapper over this.
  */
 public class ChunkSeqReaderPng extends ChunkSeqReader {
 
@@ -155,10 +154,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
 
   /** check that the last inserted chunk had the correct ordering */
   /*
-   * protected void checkOrdering() { PngChunk c =
-   * chunksList.getChunks().get(chunksList.getChunks().size() - 1); ChunkOrderingConstraint oc =
-   * c.getOrderingConstraint(); //chunksList.getById1();
-   * PngHelperInternal.LOGGER.warning("check ordering not implemented");
+   * protected void checkOrdering() { PngChunk c = chunksList.getChunks().get(chunksList.getChunks().size() - 1); ChunkOrderingConstraint oc = c.getOrderingConstraint();
+   * //chunksList.getById1(); PngHelperInternal.LOGGER.warning("check ordering not implemented");
    * 
    * }
    */
@@ -186,8 +183,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
   }
 
   /**
-   * sets a custom chunk factory. This is typically called with a custom class extends ChunkFactory,
-   * to adds custom chunks to the default well-know ones
+   * sets a custom chunk factory. This is typically called with a custom class extends ChunkFactory, to adds custom chunks to the default well-know ones
    * 
    * @param chunkFactory
    */
@@ -281,8 +277,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
   }
 
   /**
-   * If true, the chunks with no data (because skipped or because processed like IDAT-type) are
-   * still stored in the PngChunks list, which might be more informative.
+   * If true, the chunks with no data (because skipped or because processed like IDAT-type) are still stored in the PngChunks list, which might be more informative.
    * 
    * Setting this to false saves a few bytes
    * 

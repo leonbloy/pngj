@@ -16,13 +16,13 @@ public class PixelsWriterDefault extends PixelsWriter {
   protected byte[] rowbprev;
   /** buffer for filtered row */
   protected byte[] rowbfilter;
-  
+
   /** evaluates different filters, for adaptive strategy */
   protected FiltersPerformance filtersPerformance;
-  
+
   /** currently concrete selected filter type */
   protected FilterType curfilterType;
-  
+
   /** parameters for adaptive strategy */
   protected int adaptMaxSkip; // set in initParams, does not change
   protected int adaptSkipIncreaseSinceRow; // set in initParams, does not change
@@ -37,7 +37,7 @@ public class PixelsWriterDefault extends PixelsWriter {
   @Override
   protected void initParams() {
     super.initParams();
-    
+
     if (rowb == null || rowb.length < buflen)
       rowb = new byte[buflen];
     if (rowbfilter == null || rowbfilter.length < buflen)
@@ -52,10 +52,10 @@ public class PixelsWriterDefault extends PixelsWriter {
       filterType = FilterType.FILTER_DEFAULT;
     if (imgInfo.rows < 3 && !FilterType.isValidStandard(filterType))
       filterType = FilterType.FILTER_DEFAULT;
-    
+
     if (imgInfo.getTotalPixels() <= 1024 && !FilterType.isValidStandard(filterType))
       filterType = getDefaultFilter();
-    
+
     if (FilterType.isAdaptive(filterType)) {
       // adaptCurSkip = 0;
       adaptNextRow = 0;

@@ -20,8 +20,7 @@ public enum ChunkLoadBehaviour {
   LOAD_CHUNK_MOST_IMPORTANT,
   /**
    * Load all chunks. <br>
-   * Notice that other restrictions might apply, see PngReader.skipChunkMaxSize
-   * PngReader.skipChunkIds
+   * Notice that other restrictions might apply, see PngReader.skipChunkMaxSize PngReader.skipChunkIds
    */
   LOAD_CHUNK_ALWAYS;
 }

@@ -1,9 +1,7 @@
 package ar.com.hjg.pngj;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.InputStream;
-import java.io.ObjectInputStream.GetField;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
