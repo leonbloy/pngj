@@ -46,6 +46,18 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
     scanline = sci != null && sci.length >= size ? sci : new int[size];
   }
 
+  /**
+   * Helper method, returns a default factory for this object
+   * 
+   */
+  public static IImageLineFactory<ImageLineInt> getFactory() {
+    return new IImageLineFactory<ImageLineInt>() {
+      public ImageLineInt createImageLine(ImageInfo iminfo) {
+        return new ImageLineInt(iminfo);
+      }
+    };
+  }
+
   public FilterType getFilterType() {
     return filterType;
   }
@@ -172,18 +184,5 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 
   public ImageInfo getImageInfo() {
     return imgInfo;
-  }
-
-  /**
-   * Helper method, returns a default factory for this object
-   * 
-   * @param iminfo
-   */
-  public static IImageLineFactory<ImageLineInt> getFactory(ImageInfo iminfo) {
-    return new IImageLineFactory<ImageLineInt>() {
-      public ImageLineInt createImageLine(ImageInfo iminfo) {
-        return new ImageLineInt(iminfo);
-      }
-    };
   }
 }

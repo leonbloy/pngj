@@ -83,7 +83,7 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
    */
   public int imageRowToMatrixRowStrict(int imrow) {
     imrow -= offset;
-    int mrow = imrow >= 0 && imrow % step == 0 ? imrow / step : -1;
+    int mrow = imrow >= 0 && (step==1 || imrow % step == 0) ? imrow / step : -1;
     return mrow < nlines ? mrow : -1;
   }
 
@@ -109,34 +109,29 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
     return r < 0 ? 0 : (r < nlines ? r : nlines - 1);
   }
 
-  /** utility function, returns default factory for {@link ImageLineInt} */
-  public static IImageLineSetFactory<ImageLineInt> getFactoryInt() {
-    return new IImageLineSetFactory<ImageLineInt>() {
-      public IImageLineSet<ImageLineInt> create(ImageInfo iminfo, boolean singleCursor, int nlines,
+  /** utility function, given a factory for one line, returns a factory for a set */
+  public static <T extends IImageLine> IImageLineSetFactory<T> createImageLineSetFactoryFromImageLineFactory(
+      final IImageLineFactory<T> ifactory) { // ugly method must have ugly name. don't let this intimidate you
+    return new IImageLineSetFactory<T>() {
+      public IImageLineSet<T> create(final ImageInfo iminfo, boolean singleCursor, int nlines,
           int noffset, int step) {
-        return new ImageLineSetDefault<ImageLineInt>(iminfo, singleCursor, nlines, noffset, step) {
+        return new ImageLineSetDefault<T>(iminfo, singleCursor, nlines, noffset, step) {
           @Override
-          protected ImageLineInt createImageLine() {
-            return new ImageLineInt(imgInfo);
+          protected T createImageLine() {
+            return ifactory.createImageLine(iminfo);
           }
         };
       };
     };
+  }
+
+  /** utility function, returns default factory for {@link ImageLineInt} */
+  public static IImageLineSetFactory<ImageLineInt> getFactoryInt() {
+    return createImageLineSetFactoryFromImageLineFactory(ImageLineInt.getFactory());
   }
 
   /** utility function, returns default factory for {@link ImageLineByte} */
   public static IImageLineSetFactory<ImageLineByte> getFactoryByte() {
-    return new IImageLineSetFactory<ImageLineByte>() {
-      public IImageLineSet<ImageLineByte> create(ImageInfo iminfo, boolean singleCursor,
-          int nlines, int noffset, int step) {
-        return new ImageLineSetDefault<ImageLineByte>(iminfo, singleCursor, nlines, noffset, step) {
-          @Override
-          protected ImageLineByte createImageLine() {
-            return new ImageLineByte(imgInfo);
-          }
-        };
-      };
-    };
+    return createImageLineSetFactoryFromImageLineFactory(ImageLineByte.getFactory());
   }
-
 }

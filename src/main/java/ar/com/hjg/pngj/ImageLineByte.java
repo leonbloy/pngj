@@ -32,7 +32,10 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
     scanline2 = imgInfo.bitDepth == 16 ? new byte[size] : null;
   }
 
-  public static IImageLineFactory<ImageLineByte> getFactory(ImageInfo iminfo) {
+  /**
+   * Returns a factory for this object
+   */
+  public static IImageLineFactory<ImageLineByte> getFactory() {
     return new IImageLineFactory<ImageLineByte>() {
       public ImageLineByte createImageLine(ImageInfo iminfo) {
         return new ImageLineByte(iminfo);
@@ -68,8 +71,7 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
   }
 
   public void readFromPngRaw(byte[] raw, final int len, final int offset, final int step) {
-    filterType = FilterType.getByVal(raw[0]); // only for non interlaced line the filter is
-                                              // significative
+    filterType = FilterType.getByVal(raw[0]); // only for non interlaced line the filter is significative
     int len1 = len - 1;
     int step1 = (step - 1) * imgInfo.channels;
     if (imgInfo.bitDepth == 8) {
@@ -175,5 +177,4 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
   public FilterType getFilterType() {
     return filterType;
   }
-
 }
