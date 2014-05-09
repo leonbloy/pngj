@@ -10,11 +10,9 @@ import java.util.Set;
 
 // very simple cli parser - because we all know the wheel has not yet been invented -
 // http://jewelcli.lexicalscope.com/related.html */
-// it supports special pseudo args : 'path/*' (all png files in directory) and 'path/**' idem
-// recursive
+// it supports special pseudo args : 'path/*' (all png files in directory) and 'path/**' idem recursive
 public class CliArgs {
-  private Map<String, String> opts = new LinkedHashMap<String, String>(); // key: opt (single char,
-                                                                          // no dash)
+  private Map<String, String> opts = new LinkedHashMap<String, String>(); // key: opt (single char no dash)
   private Set<String> unCheckedOpts = new HashSet<String>();
   private List<String> argslist = new ArrayList<String>();
   private boolean allfiles = false;
