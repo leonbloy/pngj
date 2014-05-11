@@ -17,8 +17,8 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
   protected T imageLine; // null unless single cursor
   protected int currentRow = -1; // only relevant (and not much) for cursor
 
-  public ImageLineSetDefault(ImageInfo imgInfo, final boolean singleCursor, final int nlines,
-      final int noffset, final int step) {
+  public ImageLineSetDefault(ImageInfo imgInfo, final boolean singleCursor, final int nlinesx,
+      final int noffsetx, final int stepx) {
     this.imgInfo = imgInfo;
     this.singleCursor = singleCursor;
     if (singleCursor) {
@@ -26,9 +26,9 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
       offset = 0;
       this.step = 1;// don't matter
     } else {
-      this.nlines = imgInfo.rows; // note that it can also be 1
-      offset = 0;
-      this.step = 1;// don't matter
+      this.nlines = nlinesx; // note that it can also be 1
+      offset = noffsetx;
+      this.step = stepx;// don't matter
     }
     createImageLines();
   }
@@ -56,8 +56,12 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
     currentRow = n;
     if (singleCursor)
       return imageLine;
-    else
-      return imageLines.get(imageRowToMatrixRowStrict(n));
+    else {
+      int r = imageRowToMatrixRowStrict(n);
+      if (r < 0)
+        throw new PngjException("Invalid row number");
+      return imageLines.get(r);
+    }
   }
 
   /**
@@ -83,7 +87,7 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
    */
   public int imageRowToMatrixRowStrict(int imrow) {
     imrow -= offset;
-    int mrow = imrow >= 0 && (step==1 || imrow % step == 0) ? imrow / step : -1;
+    int mrow = imrow >= 0 && (step == 1 || imrow % step == 0) ? imrow / step : -1;
     return mrow < nlines ? mrow : -1;
   }
 
