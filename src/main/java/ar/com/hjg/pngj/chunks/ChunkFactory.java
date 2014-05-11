@@ -69,7 +69,13 @@ public class ChunkFactory implements IChunkFactory {
       return new PngChunkHIST(imgInfo);
     if (id.equals(ChunkHelper.sPLT))
       return new PngChunkSPLT(imgInfo);
-
+    // apng
+    if (id.equals(PngChunkFDAT.ID))
+      return new PngChunkFDAT(imgInfo);
+    if (id.equals(PngChunkACTL.ID))
+      return new PngChunkACTL(imgInfo);
+    if (id.equals(PngChunkFCTL.ID))
+      return new PngChunkFCTL(imgInfo);
     return null;
   }
 

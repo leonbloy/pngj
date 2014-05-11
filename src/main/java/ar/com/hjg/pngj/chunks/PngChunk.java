@@ -156,7 +156,7 @@ public abstract class PngChunk {
    * 
    * @return A newly allocated and filled raw chunk
    */
-  protected abstract ChunkRaw createRawChunk();
+  public abstract ChunkRaw createRawChunk();
 
   /**
    * Parses raw chunk and fill inside data. This is used when reading (deserialization). Each particular chunk class implements its own logic.
