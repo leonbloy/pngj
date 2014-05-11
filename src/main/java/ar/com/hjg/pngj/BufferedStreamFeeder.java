@@ -31,7 +31,6 @@ public class BufferedStreamFeeder {
 
   /**
    * Returns inputstream
-   * 
    * @return Input Stream from which bytes are read
    */
   public InputStream getStream() {

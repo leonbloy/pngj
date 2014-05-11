@@ -7,6 +7,8 @@ import java.util.zip.CRC32;
 
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
 import ar.com.hjg.pngj.chunks.ChunksList;
+import ar.com.hjg.pngj.chunks.PngChunkFCTL;
+import ar.com.hjg.pngj.chunks.PngChunkFDAT;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 
@@ -32,25 +34,27 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * See also {@link PngReaderInt} (esentially the same as this, and slightly preferred) and {@link PngReaderByte} (uses byte instead of int to store the samples).
  */
 public class PngReader {
+
   // some performance/defensive limits
   /**
    * Defensive limit: refuse to read more than 900MB, can be changed with {@link #setMaxTotalBytesRead(long)}
    */
   public static final long MAX_TOTAL_BYTES_READ_DEFAULT = 901001001L; // ~ 900MB
+
   /**
    * Defensive limit: refuse to load more than 5MB of ancillary metadata, see {@link #setMaxBytesMetadata(long)} and also {@link #addChunkToSkip(String)}
    */
   public static final long MAX_BYTES_METADATA_DEFAULT = 5024024; // for ancillary chunks
+
   /**
    * Skip ancillary chunks greater than 2MB, see {@link #setSkipChunkMaxSize(long)}
    */
-  public static final long MAX_CHUNK_SIZE_SKIP = 2024024; // chunks exceeding this size will be
-                                                          // skipped (nor even CRC checked)
+  public static final long MAX_CHUNK_SIZE_SKIP = 2024024; // chunks exceeding this size will be skipped (nor even CRC checked)
 
   /**
    * Basic image info - final and inmutable.
    */
-  public final ImageInfo imgInfo;
+  public final ImageInfo imgInfo; // People always told me: be careful what you do, and don't go around declaring public fields...
   /**
    * flag: image was in interlaced format
    */
@@ -59,12 +63,12 @@ public class PngReader {
   /**
    * This object has most of the intelligence to parse the chunks and decompress the IDAT stream
    */
-  protected ChunkSeqReaderPng chunkseq;
+  protected final ChunkSeqReaderPng chunkseq;
 
   /**
    * Takes bytes from the InputStream and passes it to the ChunkSeqReaderPng. Never null.
    */
-  protected BufferedStreamFeeder streamFeeder;
+  protected final BufferedStreamFeeder streamFeeder;
 
   /**
    * @see #getMetadata()
@@ -76,9 +80,6 @@ public class PngReader {
    */
   protected int rowNum = -1;
 
-  CRC32 idatCrca;// for internal testing
-  Adler32 idatCrcb;// for internal testing
-
   /**
    * Represents the set of lines (rows) being read. Normally this works as a cursor, storing only one (the current) row. This stores several (perhaps all) rows only if calling
    * {@link #readRows()} or for interlaced images (this later is transparent to the user)
@@ -89,6 +90,9 @@ public class PngReader {
    * This factory decides the concrete type of the ImageLine that will be used. See {@link ImageLineSetDefault} for examples
    */
   private IImageLineSetFactory<? extends IImageLine> imageLineSetFactory;
+
+  CRC32 idatCrca;// for internal testing
+  Adler32 idatCrcb;// for internal testing
 
   /**
    * Constructs a PngReader object from a stream, with default options. This reads the signature and the first IHDR chunk only.
@@ -111,10 +115,10 @@ public class PngReader {
    * @param shouldCloseStream The stream will be closed in case of exception (constructor included) or normal termination.
    */
   public PngReader(InputStream inputStream, boolean shouldCloseStream) {
+    streamFeeder = new BufferedStreamFeeder(inputStream);
+    streamFeeder.setCloseStream(shouldCloseStream);
+    chunkseq = createChunkSeqReader();
     try {
-      streamFeeder = new BufferedStreamFeeder(inputStream);
-      streamFeeder.setCloseStream(shouldCloseStream);
-      this.chunkseq = new ChunkSeqReaderPng(false); // this works only in polled mode
       streamFeeder.setFailIfNoFeed(true);
       if (!streamFeeder.feedFixed(chunkseq, 36)) // 8+13+12=36 PNG signature+IHDR chunk
         throw new PngjInputException("error reading first 21 bytes");
@@ -123,6 +127,8 @@ public class PngReader {
       setMaxBytesMetadata(MAX_BYTES_METADATA_DEFAULT);
       setMaxTotalBytesRead(MAX_TOTAL_BYTES_READ_DEFAULT);
       setSkipChunkMaxSize(MAX_CHUNK_SIZE_SKIP);
+      chunkseq.addChunkToSkip(PngChunkFDAT.ID);// default: skip fdAT chunks!
+      chunkseq.addChunkToSkip(PngChunkFCTL.ID);// default: skip fctl chunks!
       this.metadata = new PngMetadata(chunkseq.chunksList);
       // sets a default factory (with ImageLineInt),
       // this can be overwriten by a extended constructor, or by a setter
@@ -130,11 +136,11 @@ public class PngReader {
       rowNum = -1;
     } catch (RuntimeException e) {
       streamFeeder.close();
-      if (chunkseq != null)
-        chunkseq.close();
+      chunkseq.close();
       throw e;
     }
   }
+
 
   /**
    * Constructs a PngReader opening a file. Sets <tt>shouldCloseStream=true</tt>, so that the stream will be closed with this object.
@@ -159,7 +165,8 @@ public class PngReader {
    */
   protected void readFirstChunks() {
     while (chunkseq.currentChunkGroup < ChunksList.CHUNK_GROUP_4_IDAT)
-      if(streamFeeder.feed(chunkseq)<=0) throw new PngjInputException("premature ending reading first chunks");
+      if (streamFeeder.feed(chunkseq) <= 0)
+        throw new PngjInputException("premature ending reading first chunks");
   }
 
   /**
@@ -183,7 +190,11 @@ public class PngReader {
    * @see #getMetadata()
    */
   public ChunksList getChunksList() {
-    if (chunkseq.firstChunksNotYetRead())
+    return getChunksList(true);
+  }
+
+  public ChunksList getChunksList(boolean forceLoadingOfFirstChunks) {
+    if (forceLoadingOfFirstChunks && chunkseq.firstChunksNotYetRead())
       readFirstChunks();
     return chunkseq.chunksList;
   }
@@ -218,7 +229,7 @@ public class PngReader {
    * True if last row has not yet been read
    */
   public boolean hasMoreRows() {
-    return rowNum < imgInfo.rows - 1;
+    return rowNum < getCurImgInfo().rows - 1;
   }
 
   /**
@@ -237,12 +248,13 @@ public class PngReader {
         throw new PngjInputException("rows must be read in increasing order: " + nrow);
       while (rowNum < nrow) {
         while (!chunkseq.getIdatSet().isRowReady())
-          if(streamFeeder.feed(chunkseq)<1) throw new PngjInputException("premature ending");
+          if (streamFeeder.feed(chunkseq) < 1)
+            throw new PngjInputException("premature ending");
         rowNum++;
         chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
         if (rowNum == nrow) {
-          line.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(), imgInfo.bytesPerRow + 1, 0,
-              1);
+          line.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(),
+              getCurImgInfo().bytesPerRow + 1, 0, 1);
           line.endReadFromPngRaw();
         }
         chunkseq.getIdatSet().advanceToNextRow();
@@ -250,8 +262,8 @@ public class PngReader {
       return line;
     } else { // and now, for something completely different (interlaced!)
       if (imlinesSet == null) {
-        imlinesSet = createLineSet(false, imgInfo.rows, 0, 1);
-        loadAllInterlaced(imgInfo.rows, 0, 1);
+        imlinesSet = createLineSet(false, getCurImgInfo().rows, 0, 1);
+        loadAllInterlaced(getCurImgInfo().rows, 0, 1);
       }
       rowNum = nrow;
       return imlinesSet.getImageLine(nrow);
@@ -263,7 +275,7 @@ public class PngReader {
    * Reads all rows in a ImageLineSet This is handy, but less memory-efficient (except for interlaced)
    */
   public IImageLineSet<? extends IImageLine> readRows() {
-    return readRows(imgInfo.rows, 0, 1);
+    return readRows(getCurImgInfo().rows, 0, 1);
   }
 
   /**
@@ -271,7 +283,7 @@ public class PngReader {
    * <p>
    * This method should called once, and not be mixed with {@link #readRow()}
    * 
-   * @param nRows how many rows to read (default: imageInfo.rows)
+   * @param nRows how many rows to read (default: imageInfo.rows; negative: autocompute)
    * @param rowOffset rows to skip (default:0)
    * @param rowStep step between rows to load( default:1)
    */
@@ -279,8 +291,9 @@ public class PngReader {
     if (chunkseq.firstChunksNotYetRead())
       readFirstChunks();
     if (nRows < 0)
-      nRows = (imgInfo.rows - rowOffset) / rowStep;
-    if (rowStep < 1 || rowOffset < 0 || nRows == 0 || nRows * rowStep + rowOffset > imgInfo.rows)
+      nRows = (getCurImgInfo().rows - rowOffset) / rowStep;
+    if (rowStep < 1 || rowOffset < 0 || nRows == 0
+        || nRows * rowStep + rowOffset > getCurImgInfo().rows)
       throw new PngjInputException("bad args");
     if (rowNum >= 0)
       throw new PngjInputException("readRows cannot be mixed with readRow");
@@ -289,14 +302,15 @@ public class PngReader {
       int m = -1; // last row already read in
       while (m < nRows - 1) {
         while (!chunkseq.getIdatSet().isRowReady())
-          if(streamFeeder.feed(chunkseq)<1) throw new PngjInputException("Premature ending");
+          if (streamFeeder.feed(chunkseq) < 1)
+            throw new PngjInputException("Premature ending");
         rowNum++;
         chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
         m = (rowNum - rowOffset) / rowStep;
         if (rowNum >= rowOffset && rowStep * m + rowOffset == rowNum) {
           IImageLine line = imlinesSet.getImageLine(rowNum);
-          line.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(), imgInfo.bytesPerRow + 1, 0,
-              1);
+          line.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(),
+              getCurImgInfo().bytesPerRow + 1, 0, 1);
           line.endReadFromPngRaw();
         }
         chunkseq.getIdatSet().advanceToNextRow();
@@ -305,7 +319,6 @@ public class PngReader {
       loadAllInterlaced(nRows, rowOffset, rowStep);
     }
     chunkseq.getIdatSet().done();
-    end();
     return imlinesSet;
   }
 
@@ -325,7 +338,7 @@ public class PngReader {
    */
   protected IImageLineSet<? extends IImageLine> createLineSet(boolean singleCursor, int nlines,
       int noffset, int step) {
-    return imageLineSetFactory.create(imgInfo, singleCursor, nlines, noffset, step);
+    return imageLineSetFactory.create(getCurImgInfo(), singleCursor, nlines, noffset, step);
   }
 
   protected void loadAllInterlaced(int nRows, int rowOffset, int rowStep) {
@@ -333,12 +346,13 @@ public class PngReader {
     int nread = 0;
     do {
       while (!chunkseq.getIdatSet().isRowReady())
-        if(streamFeeder.feed(chunkseq)<=0) break;
-      if(! chunkseq.getIdatSet().isRowReady())
+        if (streamFeeder.feed(chunkseq) <= 0)
+          break;
+      if (!chunkseq.getIdatSet().isRowReady())
         throw new PngjInputException("Premature ending?");
       chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
       int rowNumreal = idat.rowinfo.rowNreal;
-      boolean inset = (rowNumreal - rowOffset) % rowStep == 0;
+      boolean inset = imlinesSet.hasImageLine(rowNumreal);
       if (inset) {
         imlinesSet.getImageLine(rowNumreal).readFromPngRaw(idat.getUnfilteredRow(),
             idat.rowinfo.buflen, idat.rowinfo.oX, idat.rowinfo.dX);
@@ -358,6 +372,7 @@ public class PngReader {
    */
   public void readSkippingAllRows() {
     chunkseq.addChunkToSkip(PngChunkIDAT.ID);
+    chunkseq.addChunkToSkip(PngChunkFDAT.ID);
     if (chunkseq.firstChunksNotYetRead())
       readFirstChunks();
     end();
@@ -398,6 +413,11 @@ public class PngReader {
   public void addChunkToSkip(String chunkToSkip) {
     chunkseq.addChunkToSkip(chunkToSkip);
   }
+
+  public void dontSkipChunk(String chunkToSkip) {
+    chunkseq.dontSkipChunk(chunkToSkip);
+  }
+
 
   /**
    * if true, input stream will be closed after ending read
@@ -469,6 +489,12 @@ public class PngReader {
     return chunkseq;
   }
 
+  /** called on construction time. Override if you want an alternative class */
+  protected ChunkSeqReaderPng createChunkSeqReader() {
+    return new ChunkSeqReaderPng(false);
+  }
+
+
   /**
    * Enables and prepare the simple digest computation. Must be called before reading the pixels. See {@link #getSimpleDigestHex()}
    */
@@ -481,18 +507,8 @@ public class PngReader {
       idatCrcb = new Adler32();
     else
       idatCrcb.reset();
-    idatCrca.update((byte) imgInfo.rows);
-    idatCrca.update((byte) (imgInfo.rows >> 8));
-    idatCrca.update((byte) (imgInfo.rows >> 16));
-    idatCrca.update((byte) imgInfo.cols);
-    idatCrca.update((byte) (imgInfo.cols >> 8));
-    idatCrca.update((byte) (imgInfo.cols >> 16));
-    idatCrca.update((byte) (imgInfo.channels));
-    idatCrca.update((byte) (imgInfo.bitDepth));
-    idatCrca.update((byte) ((imgInfo.indexed ? 10 : 20)));
-    idatCrcb.update((byte) ((imgInfo.bytesPerRow)));
-    idatCrcb.update((byte) ((imgInfo.channels)));
-    idatCrcb.update((byte) ((imgInfo.rows)));// whatever
+    imgInfo.updateCrc(idatCrca);
+    idatCrcb.update((byte) imgInfo.rows); // not important
   }
 
   long getSimpleDigest() {
@@ -528,5 +544,15 @@ public class PngReader {
   public String toStringCompact() {
     return imgInfo.toStringBrief() + (interlaced ? "i" : "");
   }
+
+  public ImageInfo getImgInfo() {
+    return imgInfo;
+  }
+
+  public ImageInfo getCurImgInfo() {
+    return chunkseq.getCurImgInfo();
+  }
+
+
 
 }

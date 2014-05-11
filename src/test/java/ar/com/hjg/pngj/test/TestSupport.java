@@ -186,12 +186,17 @@ public class TestSupport {
     return sb.append("]").toString();
   }
 
-  public static String showLine(IImageLineArray line) {
+  public static String showLine(IImageLine linex) {
+    return showLine(linex, 9);
+  }
+
+  public static String showLine(IImageLine linex, int maxtoshow) {
+    IImageLineArray line = (IImageLineArray) linex;
     StringBuilder sb = new StringBuilder();
 
     int n = line.getSize();
-    if (n > 9)
-      n = 9;
+    if (n > maxtoshow)
+      n = maxtoshow;
     sb.append(n == line.getSize() ? String.format("[") : String.format(" b(%d/%d)=[", n,
         line.getSize()));
     for (int i = 0; i < n; i++) {
@@ -241,6 +246,7 @@ public class TestSupport {
     }
   }
 
+  // if relative, it's assumed to be realtive to resources dir
   public static File absFile(File f) {
     if (!f.isAbsolute())
       f = new File(getResourcesDir(), f.getPath());

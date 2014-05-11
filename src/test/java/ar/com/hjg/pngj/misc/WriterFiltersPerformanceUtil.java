@@ -309,7 +309,7 @@ public class WriterFiltersPerformanceUtil {
       test.doit(1);
       int files = test.nFiles;
       double goal = test.performanceWAv;
-      double ganancia = lastgoal >= Double.MAX_VALUE/2 ? 1.0 : lastgoal - goal;
+      double ganancia = lastgoal >= Double.MAX_VALUE / 2 ? 1.0 : lastgoal - goal;
       accepted = true;
       if (ganancia < 0) {
         if (r.nextDouble() > Math.exp(ganancia / 0.00001))

@@ -12,6 +12,7 @@ public class ChunkSeqReaderIdatRaw extends ChunkSeqReaderOpaque {
   private final OutputStream idatOs;
   public boolean checkCrc = true;
   public boolean omitFilterByte = false;
+
   /**
    * This reader writes the chunks directly to the rawOs output, except that the IDAT stream is decompressed and writen to idatOs
    * 
@@ -36,8 +37,7 @@ public class ChunkSeqReaderIdatRaw extends ChunkSeqReaderOpaque {
   }
 
   @Override
-  protected void processChunkContent(ChunkRaw chunkRaw, int offInChunk, byte[] buf, int off,
-      int len) {
+  protected void processChunkContent(ChunkRaw chunkRaw, int offInChunk, byte[] buf, int off, int len) {
     if (offInChunk == 0 && rawOs != null) { // this can be called several times for a single
                                             // chunk, we do this only the first time
       chunkRaw.writeChunkHeader(rawOs);

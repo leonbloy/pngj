@@ -66,6 +66,8 @@ public class DeflatedChunksSet {
   private boolean callbackMode = true;
   private long nBytesIn = 0; // count the total compressed bytes that have been fed
   private long nBytesOut = 0; // count the total uncompressed bytes
+  int chunkNum = -1; // incremented at each new chunk start
+  int firstChunqSeqNum = -1; // expected seq num for first chunk. used only for fDAT (APNG)
 
   /**
    * All IDAT-like chunks that form a same DeflatedChunksSet should have the same id
@@ -111,6 +113,9 @@ public class DeflatedChunksSet {
       throw new PngjInputException("Bad chunk inside IdatSet, id:" + cr.getChunkRaw().id
           + ", expected:" + this.chunkid);
     this.curChunk = cr;
+    chunkNum++;
+    if (firstChunqSeqNum >= 0)
+      cr.setSeqNumExpected(chunkNum + firstChunqSeqNum);
   }
 
   /**

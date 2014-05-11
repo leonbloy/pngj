@@ -8,18 +8,22 @@ public class Deinterlacer {
   int oXsamples, dXsamples; // step in samples
 
   // current row in the virtual subsampled image; this increments (by 1) from 0 to rows/dy 7 times
-  private int currRowSubimg = -1;
+  private int currRowSubimg;
   // in the real image, this will cycle from 0 to im.rows in different steps, 7 times
-  private int currRowReal = -1;
+  private int currRowReal;
   private int currRowSeq; // not counting empty rows
 
-  int totalRows = 0; // lazy compute
+  int totalRows;
   private boolean ended = false;
 
   public Deinterlacer(ImageInfo iminfo) {
     this.imi = iminfo;
     pass = 0;
+    currRowSubimg = -1;
+    currRowReal = -1;
     currRowSeq = 0;
+    ended = false;
+    totalRows = 0; // lazy compute
     setPass(1);
     setRow(0);
   }

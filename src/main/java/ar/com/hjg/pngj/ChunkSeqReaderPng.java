@@ -23,6 +23,7 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 public class ChunkSeqReaderPng extends ChunkSeqReader {
 
   protected ImageInfo imageInfo; // initialized at parsing the IHDR
+  protected ImageInfo curImageInfo; // can vary, for apng
   protected Deinterlacer deinterlacer;
   protected int currentChunkGroup = -1;
 
@@ -31,8 +32,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
    */
   protected ChunksList chunksList = null;
   protected final boolean callbackMode;
-  private long bytesChunksLoaded = 0; // bytes loaded from buffered chunks non-critical chunks (data
-                                      // only)
+  private long bytesAncChunksLoaded = 0; // bytes loaded from buffered chunks non-critical chunks (data only)
+
   private boolean checkCrc = true;
 
   // --- parameters to be set prior to reading ---
@@ -95,7 +96,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
       return true; // specific skip
     if (skipChunkMaxSize > 0 && len > skipChunkMaxSize)
       return true; // too big chunk
-    if (maxBytesMetadata > 0 && len > maxBytesMetadata - bytesChunksLoaded)
+    if (maxBytesMetadata > 0 && len > maxBytesMetadata - bytesAncChunksLoaded)
       return true; // too much ancillary chunks loaded
     switch (chunkLoadBehaviour) {
       case LOAD_CHUNK_IF_SAFE:
@@ -111,7 +112,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
   }
 
   public long getBytesChunksLoaded() {
-    return bytesChunksLoaded;
+    return bytesAncChunksLoaded;
   }
 
   public int getCurrentChunkGroup() {
@@ -128,6 +129,10 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
     this.chunksToSkip.add(chunkToSkip);
   }
 
+  public void dontSkipChunk(String chunkToSkip) {
+    this.chunksToSkip.remove(chunkToSkip);
+  }
+
   public boolean firstChunksNotYetRead() {
     return getCurrentChunkGroup() < ChunksList.CHUNK_GROUP_4_IDAT;
   }
@@ -139,9 +144,13 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
       PngChunkIHDR ch = new PngChunkIHDR(null);
       ch.parseFromRaw(chunkR.getChunkRaw());
       imageInfo = ch.createImageInfo();
+      curImageInfo = imageInfo;
       if (ch.isInterlaced())
-        deinterlacer = new Deinterlacer(imageInfo);
+        deinterlacer = new Deinterlacer(curImageInfo);
       chunksList = new ChunksList(imageInfo);
+    }
+    if (chunkR.mode == ChunkReaderMode.BUFFER && countChunkTypeAsAncillary(chunkR.getChunkRaw().id)) {
+      bytesAncChunksLoaded += chunkR.getChunkRaw().len;
     }
     if (chunkR.mode == ChunkReaderMode.BUFFER || includeNonBufferedChunks) {
       PngChunk chunk = chunkFactory.createChunk(chunkR.getChunkRaw(), getImageInfo());
@@ -152,9 +161,13 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
     }
   }
 
+  protected boolean countChunkTypeAsAncillary(String id) {
+    return !ChunkHelper.isCritical(id);
+  }
+
   @Override
   protected DeflatedChunksSet createIdatSet(String id) {
-    IdatSet ids = new IdatSet(id, imageInfo, deinterlacer);
+    IdatSet ids = new IdatSet(id, getCurImgInfo(), deinterlacer);
     ids.setCallbackMode(callbackMode);
     return ids;
   }
@@ -268,6 +281,18 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
     this.chunkLoadBehaviour = chunkLoadBehaviour;
   }
 
+  public ImageInfo getCurImgInfo() {
+    return curImageInfo;
+  }
+
+  public void updateCurImgInfo(ImageInfo iminfo) {
+    if (!iminfo.equals(curImageInfo)) {
+      curImageInfo = iminfo;
+    }
+    if (deinterlacer != null)
+      deinterlacer = new Deinterlacer(curImageInfo); // we could reset it, but...
+  }
+
   /**
    * If true, the chunks with no data (because skipped or because processed like IDAT-type) are still stored in the PngChunks list, which might be more informative.
    * 
@@ -280,5 +305,7 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
   public void setIncludeNonBufferedChunks(boolean includeNonBufferedChunks) {
     this.includeNonBufferedChunks = includeNonBufferedChunks;
   }
+
+
 
 }

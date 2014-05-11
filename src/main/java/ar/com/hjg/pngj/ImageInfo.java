@@ -1,5 +1,7 @@
 package ar.com.hjg.pngj;
 
+import java.util.zip.Checksum;
+
 /**
  * Simple immutable wrapper for basic image info.
  * <p>
@@ -186,13 +188,26 @@ public class ImageInfo {
         + indexed + ", packed=" + packed + "]";
   }
 
+
+  void updateCrc(Checksum crc) {
+    crc.update((byte) rows);
+    crc.update((byte) (rows >> 8));
+    crc.update((byte) (rows >> 16));
+    crc.update((byte) cols);
+    crc.update((byte) (cols >> 8));
+    crc.update((byte) (cols >> 16));
+    crc.update((byte) (bitDepth));
+    crc.update((byte) (indexed ? 1 : 2));
+    crc.update((byte) (greyscale ? 3 : 4));
+    crc.update((byte) (alpha ? 3 : 4));
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;
     int result = 1;
     result = prime * result + (alpha ? 1231 : 1237);
     result = prime * result + bitDepth;
-    result = prime * result + channels;
     result = prime * result + cols;
     result = prime * result + (greyscale ? 1231 : 1237);
     result = prime * result + (indexed ? 1231 : 1237);
@@ -213,8 +228,6 @@ public class ImageInfo {
       return false;
     if (bitDepth != other.bitDepth)
       return false;
-    if (channels != other.channels)
-      return false;
     if (cols != other.cols)
       return false;
     if (greyscale != other.greyscale)
@@ -225,5 +238,4 @@ public class ImageInfo {
       return false;
     return true;
   }
-
 }

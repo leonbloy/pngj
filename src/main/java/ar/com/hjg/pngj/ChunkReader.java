@@ -175,6 +175,10 @@ public abstract class ChunkReader {
    */
   protected abstract void chunkDone();
 
+  public boolean isFromDeflatedSet() {
+    return false;
+  }
+
   @Override
   public int hashCode() {
     final int prime = 31;

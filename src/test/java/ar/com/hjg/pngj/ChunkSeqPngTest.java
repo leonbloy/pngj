@@ -9,12 +9,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.ExpectedException;
 
-import ar.com.hjg.pngj.BufferedStreamFeeder;
-import ar.com.hjg.pngj.ChunkSeqReaderPng;
-import ar.com.hjg.pngj.DeflatedChunksSet;
-import ar.com.hjg.pngj.IdatSet;
-import ar.com.hjg.pngj.PngjInputException;
-import ar.com.hjg.pngj.RowInfo;
 import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTIME;
 import ar.com.hjg.pngj.test.PngjTest;
@@ -131,7 +125,7 @@ public class ChunkSeqPngTest extends PngjTest {
     while (c.firstChunksNotYetRead()) {
       bf.feed(c);
     }
-    //byte[][] im = new byte[c.getImageInfo().rows][c.getImageInfo().cols];
+    // byte[][] im = new byte[c.getImageInfo().rows][c.getImageInfo().cols];
     RowInfo rowInfo = c.getIdatSet().rowinfo;
     boolean morerows = true;
     while (morerows) {

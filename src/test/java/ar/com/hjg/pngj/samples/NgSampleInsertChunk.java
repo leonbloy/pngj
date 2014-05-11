@@ -68,7 +68,7 @@ public class NgSampleInsertChunk {
     PngHelperInternal.writeBytes(os, PngHelperInternal.getPngIdSignature());
     // async feeding
     streamFeeder.feedAll(cs);
-    if(!cs.isDone()) {
+    if (!cs.isDone()) {
       cs.close();
       throw new PngjException("premature ending?");
     }

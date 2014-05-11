@@ -13,11 +13,11 @@ public interface IImageLine {
   /**
    * Extract pixels from a raw unlfilterd PNG row. Len is the total amount of bytes in the array, including the first byte (filter type)
    * 
-   * (0 and 1 for non interlaced) are in PIXELS. It's guaranteed that when step==1 then offset=0  
+   * (0 and 1 for non interlaced) are in PIXELS. It's guaranteed that when step==1 then offset=0
    * 
    * Notice that when step!=1 the data is partial, this method will be called several times
    * 
-   * Warning: the data in array 'raw' starts at position 0 and has 'len' consecutive bytes. 'offset' and 'step' refer to the pixels in destination  
+   * Warning: the data in array 'raw' starts at position 0 and has 'len' consecutive bytes. 'offset' and 'step' refer to the pixels in destination
    */
   void readFromPngRaw(byte[] raw, int len, int offset, int step);
 

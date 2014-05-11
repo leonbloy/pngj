@@ -13,7 +13,7 @@ public class IdatSet extends DeflatedChunksSet {
 
   protected byte rowUnfiltered[];
   protected byte rowUnfilteredPrev[];
-  protected final ImageInfo imgInfo;
+  protected final ImageInfo imgInfo; // in the case of APNG this is the frame image
   protected final Deinterlacer deinterlacer;
 
   final RowInfo rowinfo; // info for the last processed row, for debug
@@ -64,9 +64,9 @@ public class IdatSet extends DeflatedChunksSet {
     rowUnfilteredPrev = tmp;
 
     int ftn = row[0];
-    FilterType ft = FilterType.getByVal(ftn);
-    if (ft == null)
+    if (!FilterType.isValidStandard(ftn))
       throw new PngjInputException("Filter type " + ftn + " invalid");
+    FilterType ft = FilterType.getByVal(ftn);
     filterUseStat[ftn]++;
     rowUnfiltered[0] = row[0]; // we copy the filter type, can be useful
     switch (ft) {
@@ -147,7 +147,7 @@ public class IdatSet extends DeflatedChunksSet {
    * <p>
    * In callback mode will be called as soon as each row is retrieved (inflated and unfiltered), after {@link #preProcessRow()}
    * <p>
-   * This is a dummy implementation (this normally should be overriden) that does nothing more than compute the length of next row. 
+   * This is a dummy implementation (this normally should be overriden) that does nothing more than compute the length of next row.
    * <p>
    * The return value is essential
    * <p>

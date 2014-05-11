@@ -86,8 +86,8 @@ public class ChunkSeqReader implements IBytesConsumer {
         buf0len += read0;
         processed += read0;
         bytesCount += read0;
-        //len -= read0;
-        //offset += read0;
+        // len -= read0;
+        // offset += read0;
         if (buf0len == 8) { // end reading chunk length and id
           chunkCount++;
           int clen = PngHelperInternal.readInt4fromBytes(buf0, 0);
@@ -152,22 +152,25 @@ public class ChunkSeqReader implements IBytesConsumer {
     boolean checkCrc = shouldCheckCrc(len, id);
     boolean skip = shouldSkipContent(len, id);
     boolean isIdatType = isIdatKind(id);
+    // PngHelperInternal.debug("start new chunk  id=" + id + " off=" + offset + " skip=" + skip + " idat=" + isIdatType);
     // first see if we should terminate an active curReaderDeflatedSet
     boolean forCurrentIdatSet = false;
     if (curReaderDeflatedSet != null)
       forCurrentIdatSet = curReaderDeflatedSet.ackNextChunkId(id);
     if (isIdatType && !skip) { // IDAT non skipped: create a DeflatedChunkReader owned by a idatSet
       if (!forCurrentIdatSet) {
-        if (curReaderDeflatedSet != null)
-          throw new PngjInputException("too many IDAT (or idatlike) chunks");
+        if (curReaderDeflatedSet != null && !curReaderDeflatedSet.isDone())
+          throw new PngjInputException("new IDAT-like chunk when previous was not done");
         curReaderDeflatedSet = createIdatSet(id);
       }
       curChunkReader = new DeflatedChunkReader(len, id, checkCrc, offset, curReaderDeflatedSet) {
         @Override
         protected void chunkDone() {
+          super.chunkDone();
           postProcessChunk(this);
         }
       };
+
     } else { // for non-idat chunks (or skipped idat like)
       curChunkReader = createChunkReaderForNewChunk(id, len, offset, skip);
       if (!checkCrc)
@@ -372,7 +375,7 @@ public class ChunkSeqReader implements IBytesConsumer {
     BufferedStreamFeeder sf = new BufferedStreamFeeder(is);
     sf.setCloseStream(closeStream);
     try {
-       sf.feedAll(this);
+      sf.feedAll(this);
     } finally {
       close();
       sf.close();

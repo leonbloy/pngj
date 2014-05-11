@@ -321,8 +321,8 @@ public final class PngHelperInternal {
     pngr.prepareSimpleDigestComputation();
   }
 
-  public static long getRawIdatBytes(PngReader r) {
-    return r.interlaced ? r.getChunkseq().getDeinterlacer().getTotalRawBytes() : r.imgInfo
+  public static long getRawIdatBytes(PngReader r) { // in case of image with frames, returns the current one
+    return r.interlaced ? r.getChunkseq().getDeinterlacer().getTotalRawBytes() : r.getCurImgInfo()
         .getTotalRawBytes();
   }
 
