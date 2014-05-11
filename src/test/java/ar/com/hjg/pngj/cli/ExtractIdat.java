@@ -54,7 +54,7 @@ public class ExtractIdat {
   private boolean automaticRename;
   private boolean quietMode;
   private boolean fastMode;
-  private List<File> listpng=new ArrayList<File>();
+  private List<File> listpng = new ArrayList<File>();
 
   private void doit() {
     if (automaticRename)
@@ -133,7 +133,7 @@ public class ExtractIdat {
 
     @Override
     protected void postProcessChunk(ChunkReader chunkR) {
-     // System.out.println("chunk processed " + chunkR.getChunkRaw().id + " mode " + chunkR.mode);
+      // System.out.println("chunk processed " + chunkR.getChunkRaw().id + " mode " + chunkR.mode);
       super.postProcessChunk(chunkR);
     }
 

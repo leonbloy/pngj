@@ -1,7 +1,26 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-Version 2.1.0 (May/2014)
+Version 2.1.1 (15/May/2014)
+  - APNG support: 
+    -- PngReaderApng: supports practically all the APGN standard (but it's low level, it doesn't do the frames composition)
+    -- ApngTests: unit tests and examples 
+  - Reader: Several minor issues fixed and changes in architecture to prepare for APNG. 
+    -- PngReader.readRows() does not call end() anymore 
+    -- Pngreader by default skips fdAT and fctl  
+    -- PngReader (and ChunkSeqReaderPng) now has a getCurImgInfo() (same as imgInfo, but can vary if reading APNG)
+    -- ChunkSeqReaderPng.updateCurImgInfo() updates the current frame properties (and reset the deinterlacer)
+    -- ChunkSeqReaderPng.countChunkTypeAsAncillary() by default does not count the fDAT (by default skipped) as ancillary bytes
+    -- ChunkSeqReaderPng.dontSkipChunk() added, to ease toggle of chunks skip behaviour
+    -- DeflatedChunkReader knows how to treat fDAT chunks
+  - ImageLineSet factory now uses the respective ImageLine factory.
+  - Fixed old issue with PngReader.readRows() : it allocated a full rowset even when a subset was specified.
+  - Several fixes and API clarification regarding BufferedReader and consumers  
+  - Cli script: ExtractIdat (separated  ChunkSeqReaderIdatRaw)
+  - Cli script: ApngExtractFrames : extracts APNG frames (low level)
+
+
+Version 2.1.0 (5/May/2014)
 ----------------------------------------------------------------------
 Many improvements, specially in PngWriter filtering strategies
  - PngWriter changes, mostly backwards compatible. More work to optimize the news strategies is required.
