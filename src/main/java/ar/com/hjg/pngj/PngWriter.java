@@ -148,20 +148,6 @@ public class PngWriter {
     PngHelperInternal.writeBytes(os, PngHelperInternal.getPngIdSignature()); // signature
     PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
     // http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
-    ihdr.setCols(imgInfo.cols);
-    ihdr.setRows(imgInfo.rows);
-    ihdr.setBitspc(imgInfo.bitDepth);
-    int colormodel = 0;
-    if (imgInfo.alpha)
-      colormodel += 0x04;
-    if (imgInfo.indexed)
-      colormodel += 0x01;
-    if (!imgInfo.greyscale)
-      colormodel += 0x02;
-    ihdr.setColormodel(colormodel);
-    ihdr.setCompmeth(0); // compression method 0=deflate
-    ihdr.setFilmeth(0); // filter method (0)
-    ihdr.setInterlaced(0); // we never interlace
     ihdr.createRawChunk().writeChunk(os);
     chunksList.getChunks().add(ihdr);
   }

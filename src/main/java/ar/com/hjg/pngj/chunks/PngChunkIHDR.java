@@ -27,9 +27,12 @@ public class PngChunkIHDR extends PngChunkSingle {
 
   // http://www.w3.org/TR/PNG/#11IHDR
   //
-  public PngChunkIHDR(ImageInfo info) { // argument is normally null here, not used
+  public PngChunkIHDR(ImageInfo info) { // argument is normally null here, if not null is used to fill the fields
     super(ID, info);
+    if (info != null)
+      fillFromInfo(info);
   }
+
 
   @Override
   public ChunkOrderingConstraint getOrderingConstraint() {
@@ -125,6 +128,23 @@ public class PngChunkIHDR extends PngChunkSingle {
 
   public boolean isInterlaced() {
     return getInterlaced() == 1;
+  }
+
+  public void fillFromInfo(ImageInfo info) {
+    setCols(imgInfo.cols);
+    setRows(imgInfo.rows);
+    setBitspc(imgInfo.bitDepth);
+    int colormodel = 0;
+    if (imgInfo.alpha)
+      colormodel += 0x04;
+    if (imgInfo.indexed)
+      colormodel += 0x01;
+    if (!imgInfo.greyscale)
+      colormodel += 0x02;
+    setColormodel(colormodel);
+    setCompmeth(0); // compression method 0=deflate
+    setFilmeth(0); // filter method (0)
+    setInterlaced(0); // we never interlace
   }
 
   /** throws PngInputException if unexpected values */
