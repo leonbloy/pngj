@@ -1,0 +1,74 @@
+
+BufferedImage 
+   |    
+   |
+   |---ColorModel  ('abstract pixel value' to concrete 'color component value')
+   |       |         ComponentColorModel 
+   |       |         IndexColorModel
+   |       |         PackedColorModel 
+   |       |
+   |        ----- ColorSpace (typically sRGB)
+   |
+    --- Raster  
+          |
+          |                    (must be compatible with ColorModel)       
+          |----- SampleModel   (a pixel is composed of 'samples')
+          |           ComponentSampleModel
+          |           MultiPixelPackedSampleModel
+          |           SinglePixelPackedSampleModel
+          |
+          |Y
+           ----- Raster
+                   |
+                   |
+                    --- DataBuffer  (one or more arrays , or "banks")
+                           DataBufferByte 
+                           DataBufferDouble 
+                           DataBufferFloat 
+                           DataBufferInt 
+                           DataBufferShort 
+                           DataBufferUShort                               
+   
+ImageTypeSpecifier = (ColorModel,SampleModel)
+
+
+Empirical mapping PNG <-> BufferedImage
+
+G1/P1  b_BINARY;cm=Index,ps=1,ha=N,ap=N,cs=[8, 8, 8];srgb=true;sm=MultiPixelPacked;db=Byte,0  [*]
+G2/P2  b_BINARY;cm=Index,ps=2,ha=N,ap=N,cs=[8, 8, 8];srgb=true;sm=MultiPixelPacked;db=Byte,0  [*]
+G4/P4  b_BINARY;cm=Index,ps=4,ha=N,ap=N,cs=[8, 8, 8];srgb=true;sm=MultiPixelPacked;db=Byte,0  [*]
+P4t    b_BINARY;cm=Index,ps=4,ha=Y,ap=N,cs=[8, 8, 8, 8];srgb=true;sm=MultiPixelPacked;db=Byte,0
+
+P8     b_INDEXED;cm=Index,ps=8,ha=N,ap=N,cs=[8, 8, 8];srgb=true;sm=PixelInterleaved;db=Byte,0
+P8t    b_INDEXED;cm=Index,ps=8,ha=Y,ap=N,cs=[8, 8, 8, 8];srgb=true;sm=PixelInterleaved;db=Byte,0
+
+G8     b_GRAY;cm=Component,ps=8,ha=N,ap=N,cs=[8];srgb=false;sm=PixelInterleaved;db=Byte,0 [*]
+GA8    CUSTOM;cm=Component,ps=16,ha=Y,ap=N,cs=[8, 8];srgb=false;sm=PixelInterleaved;db=Byte,0 
+RGB8   3b_BGR;cm=Component,ps=24,ha=N,ap=N,cs=[8, 8, 8];srgb=true;sm=PixelInterleaved;db=Byte,0 Sum   [*]
+RGBA8  4b_ABGR;cm=Component,ps=32,ha=Y,ap=N,cs=[8, 8, 8, 8];srgb=true;sm=PixelInterleaved;db=Byte,0 
+G16    u_GRAY;cm=Component,ps=16,ha=N,ap=N,cs=[16];srgb=false;sm=PixelInterleaved;db=UShort,1 [*]
+GA16   CUSTOM;cm=Component,ps=32,ha=Y,ap=N,cs=[16, 16];srgb=false;sm=PixelInterleaved;db=UShort,1
+RGB16  CUSTOM;cm=Component,ps=48,ha=N,ap=N,cs=[16, 16, 16];srgb=true;sm=PixelInterleaved;db=UShort,1 [*]
+RGBA16 CUSTOM;cm=Component,ps=64,ha=Y,ap=N,cs=[16, 16, 16, 16];srgb=true;sm=PixelInterleaved;db=UShort,1
+
+
+[*] looses TRNS if not paletted
+
+      
+
+
+
+
+
+
+
+looses TRNS if not paletted (RGB or G): tbwn0g16.png tbrn2c08.png tbbn0g04.png tbbn2c16.png 
+1p -> 1g  (if palette is gray)
+8p -> 8g         "
+
+
+
+
+
+
+

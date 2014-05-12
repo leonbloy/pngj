@@ -9,10 +9,14 @@ package ar.com.hjg.pngj;
 public interface IImageLineSetFactory<T extends IImageLine> {
   /**
    * Creates a new {@link IImageLineSet}
-   * 
+   *  
+   * If singleCursor=true, the caller will read and write one row fully at a time, 
+   * in order (it'll never try to read out of order lines), so the implementation can
+   * opt for allocate only one line.
+   *  
    * @param imgInfo Image info
-   * @param singleCursor : we intend to read one row at a time, if possible, and we are not interested in keeping the line in memory
-   * @param nlines : how many lines we want the ImageLineSet to store
+   * @param singleCursor : will read/write one row at a time
+   * @param nlines : how many lines we plan to read 
    * @param noffset : how many lines we want to skip from the original image (normally 0)
    * @param step : row step (normally 1)
    */

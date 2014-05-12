@@ -13,7 +13,7 @@ public interface IImageLine {
   /**
    * Extract pixels from a raw unlfilterd PNG row. Len is the total amount of bytes in the array, including the first byte (filter type)
    * 
-   * (0 and 1 for non interlaced) are in PIXELS. It's guaranteed that when step==1 then offset=0
+   * Arguments offset and step (0 and 1 for non interlaced) are in PIXELS. It's guaranteed that when step==1 then offset=0
    * 
    * Notice that when step!=1 the data is partial, this method will be called several times
    * 

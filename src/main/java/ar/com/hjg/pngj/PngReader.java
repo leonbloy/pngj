@@ -240,7 +240,7 @@ public class PngReader {
       readFirstChunks();
     if (!interlaced) {
       if (imlinesSet == null)
-        imlinesSet = createLineSet(true, 1, 0, 1);
+        imlinesSet = createLineSet(true, -1, 0, 1);
       IImageLine line = imlinesSet.getImageLine(nrow);
       if (nrow == rowNum)
         return line; // already read??
@@ -335,6 +335,8 @@ public class PngReader {
 
   /**
    * By default this uses the factory (which, by default creates ImageLineInt). You should rarely override this.
+   * <p> 
+   * See doc in {@link IImageLineSetFactory#create(ImageInfo, boolean, int, int, int)}
    */
   protected IImageLineSet<? extends IImageLine> createLineSet(boolean singleCursor, int nlines,
       int noffset, int step) {

@@ -29,6 +29,7 @@ import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngWriterHc;
 import ar.com.hjg.pngj.PngjInputException;
+import ar.com.hjg.pngj.awt.ImageIoUtils;
 import ar.com.hjg.pngj.pixels.DeflaterEstimatorLz4;
 import ar.com.hjg.pngj.pixels.FiltersPerformance;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
@@ -406,7 +407,7 @@ public class WriterFiltersPerformanceUtil {
   public static void showCompressionWithJava(List<File> files, boolean showFilename,
       boolean preferBetter) {
     int times[] = new int[3];
-    ImageWriter iw = getJavaImageWriter(preferBetter);
+    ImageWriter iw = ImageIoUtils.getJavaImageWriter(preferBetter);
     StringBuilder msg = new StringBuilder();
     for (File f : files) {
       long size = f.length();
@@ -699,31 +700,7 @@ public class WriterFiltersPerformanceUtil {
     }
   }
 
-  private static ImageWriter getJavaImageWriter(boolean preferBetter) {
-
-    if (imwriter == null) {
-      // com.sun.media.imageioimpl.plugins.png.CLibPNGImageWriter (better)
-      // com.sun.imageio.plugins.png.PNGImageWriter
-      List<ImageWriter> list = new ArrayList<ImageWriter>();
-      for (Iterator<ImageWriter> iter = ImageIO.getImageWritersByFormatName("PNG"); iter.hasNext();)
-        list.add(iter.next());
-      for (ImageWriter iw : list) {
-        String cname = iw.getOriginatingProvider().getPluginClassName();
-        if (cname.startsWith("com.sun.media.imageio") && preferBetter) {
-          imwriter = iw;
-          break;
-        }
-        if (cname.startsWith("com.sun.imageio.plugins.png.") && !preferBetter) {
-          imwriter = iw;
-          break;
-        }
-      }
-      if (imwriter == null)
-        imwriter = list.get(0);
-    }
-    return imwriter;
-
-  }
+ 
 
   public static void main(String[] args) {
     Locale.setDefault(Locale.US);

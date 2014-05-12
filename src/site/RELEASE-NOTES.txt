@@ -1,7 +1,7 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
-Version 2.1.1 (15/May/2014)
+Version 2.1.1 (?)
   - APNG support: 
     -- PngReaderApng: supports practically all the APGN standard (but it's low level, it doesn't do the frames composition)
     -- ApngTests: unit tests and examples 
@@ -18,7 +18,7 @@ Version 2.1.1 (15/May/2014)
   - Several fixes and API clarification regarding BufferedReader and consumers  
   - Cli script: ExtractIdat (separated  ChunkSeqReaderIdatRaw)
   - Cli script: ApngExtractFrames : extracts APNG frames (low level)
-
+  - Added 
 
 Version 2.1.0 (5/May/2014)
 ----------------------------------------------------------------------

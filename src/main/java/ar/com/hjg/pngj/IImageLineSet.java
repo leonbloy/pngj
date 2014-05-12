@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+
 /**
  * Set of {@link IImageLine} elements.
  * <p>
@@ -21,7 +22,7 @@ public interface IImageLineSet<T extends IImageLine> {
    * <p>
    * Throws exception if not available. The caller is supposed to know what he/she is doing
    **/
-  public T getImageLine(int n);
+  public IImageLine getImageLine(int n);
 
   /**
    * Returns true if the set contain row <tt>n</tt> (in the original image,zero based) currently allocated.

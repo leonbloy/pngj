@@ -6,7 +6,8 @@ import java.util.List;
 /**
  * Default implementation of {@link IImageLineSet}.
  * <P>
- * Supports all modes: single cursor, full rows, or partial
+ * Supports all modes: single cursor, full rows, or partial.
+ * This should not be used for 
  */
 public abstract class ImageLineSetDefault<T extends IImageLine> implements IImageLineSet<T> {
 
@@ -22,7 +23,7 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
     this.imgInfo = imgInfo;
     this.singleCursor = singleCursor;
     if (singleCursor) {
-      this.nlines = 1;
+      this.nlines = 1; // we store only one line, no matter how many will be read
       offset = 0;
       this.step = 1;// don't matter
     } else {

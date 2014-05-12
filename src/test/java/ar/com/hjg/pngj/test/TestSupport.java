@@ -25,16 +25,19 @@ import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineArray;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineByte;
+import ar.com.hjg.pngj.ImageLineHelper;
 import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
+import ar.com.hjg.pngj.PngReaderInt;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
+import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
  * Methods of this class are designed for debug and testing PNGJ library, they are not optimized
@@ -330,10 +333,15 @@ public class TestSupport {
     }
   }
 
-  public static void testSameCrc(File image1, File image2) {
-    PngReader png1 = new PngReader(image1);
+  public static void testSameCrc(File ori, File dest) {
+    String oriname = ori.getName();
+    if("testsuite1".equals(ori.getParentFile().getName())
+        && oriname.matches(".*i.....png")) {// interlaced? change it
+      ori=TestSupport.addSuffixToName(ori, "_ni");
+    }
+    PngReader png1 = new PngReader(ori);
     PngHelperInternal.initCrcForTests(png1);
-    PngReader png2 = new PngReader(image2);
+    PngReader png2 = new PngReader(dest);
     PngHelperInternal.initCrcForTests(png2);
     TestCase.assertEquals("Cannot compare, one is interlaced, the other not:", png1.isInterlaced(),
         png2.isInterlaced());
@@ -344,10 +352,37 @@ public class TestSupport {
     png2.end();
     long crc1 = PngHelperInternal.getDigest(png1);
     long crc2 = PngHelperInternal.getDigest(png2);
-    TestCase.assertEquals("different crcs " + image1 + "=" + crc1 + " " + image2 + "=" + crc2,
+    TestCase.assertEquals("different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2,
         crc1, crc2);
   }
 
+  public static void testSameValues(File ori, File dest) {
+    PngReaderInt png1 = new PngReaderInt(ori);
+    PngReaderInt png2 = new PngReaderInt(dest);
+    TestCase.assertEquals("Image are of different size", png1.imgInfo.rows, png2.imgInfo.rows);
+    TestCase.assertEquals("Image are of different size", png1.imgInfo.cols, png2.imgInfo.cols);
+    int[] r1=new int[png1.imgInfo.cols*4];
+    int[] r2=new int[png1.imgInfo.cols*4];
+    double diff=0;
+    for(int r=0;r<png1.imgInfo.rows;r++) {
+      ImageLineInt line1 = png1.readRowInt();
+      ImageLineInt line2 = png2.readRowInt();
+        r1=ImageLineHelper.convert2rgba8(line1, png1.getMetadata().getPLTE(), 
+            png1.getMetadata().getTRNS(), r1);
+        r2=ImageLineHelper.convert2rgba8(line2, png2.getMetadata().getPLTE(), 
+            png2.getMetadata().getTRNS(), r2);
+        for(int c=0;c<r1.length;c++) {
+          diff+=Math.abs(r1[c]-r2[c]);
+        }
+    }
+    diff/=png1.imgInfo.rows*png1.imgInfo.samplesPerRow;
+    
+    png1.end();
+    png2.end();
+    System.err.println("difference: " + diff);
+    TestCase.assertEquals(0.0,diff,0.000001);
+  }
+  
   public static void testCrcEquals(File image1, long crc) {
     PngReader png1 = new PngReader(image1);
     PngHelperInternal.initCrcForTests(png1);

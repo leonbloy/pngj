@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.samples;
+package ar.com.hjg.pngj.awt;
 
 import java.awt.Graphics2D;
 import java.awt.image.BufferedImage;
@@ -171,45 +171,12 @@ public class SampleBufferedImage {
     pngw.end();
   }
 
-  static public String imageTypeName(int imtype) {
-    switch (imtype) {
-      case BufferedImage.TYPE_3BYTE_BGR:
-        return "TYPE_3BYTE_BGR";
-      case BufferedImage.TYPE_4BYTE_ABGR:
-        return "TYPE_4BYTE_ABGR";
-      case BufferedImage.TYPE_4BYTE_ABGR_PRE:
-        return "TYPE_4BYTE_ABGR_PRE";
-      case BufferedImage.TYPE_BYTE_BINARY:
-        return "TYPE_BYTE_BINARY";
-      case BufferedImage.TYPE_BYTE_GRAY:
-        return "TYPE_BYTE_GRAY";
-      case BufferedImage.TYPE_BYTE_INDEXED:
-        return "TYPE_BYTE_INDEXED";
-      case BufferedImage.TYPE_CUSTOM:
-        return "TYPE_CUSTOM";
-      case BufferedImage.TYPE_INT_ARGB:
-        return "TYPE_INT_ARGB";
-      case BufferedImage.TYPE_INT_ARGB_PRE:
-        return "TYPE_INT_ARGB_PRE";
-      case BufferedImage.TYPE_INT_BGR:
-        return "TYPE_INT_BGR";
-      case BufferedImage.TYPE_INT_RGB:
-        return "TYPE_INT_RGB";
-      case BufferedImage.TYPE_USHORT_555_RGB:
-        return "TYPE_USHORT_555_RGB";
-      case BufferedImage.TYPE_USHORT_565_RGB:
-        return "TYPE_USHORT_565_RGB";
-      case BufferedImage.TYPE_USHORT_GRAY:
-        return "TYPE_USHORT_GRAY";
-    }
-    return "unknown image type #" + imtype;
-  }
 
   public static BufferedImage readAsBiType(File file, int bufferedImageType) throws IOException {
     BufferedImage bi = ImageIO.read(file);
     BufferedImage bi2 = bi;
-    System.out.println("Type: " + imageTypeName(bi.getType()) + " -> "
-        + imageTypeName(bufferedImageType));
+    System.out.println("Type: " + ImageIoUtils.imageTypeName(bi.getType()) + " -> "
+        + ImageIoUtils.imageTypeName(bufferedImageType));
     if (bi.getType() != bufferedImageType) {
       bi2 = new BufferedImage(bi.getWidth(), bi.getHeight(), bufferedImageType);
       Graphics2D g = bi2.createGraphics();

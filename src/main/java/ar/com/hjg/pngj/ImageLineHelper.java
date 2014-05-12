@@ -1,5 +1,7 @@
 package ar.com.hjg.pngj;
 
+import java.util.Arrays;
+
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 
@@ -17,6 +19,9 @@ public class ImageLineHelper {
   static int[] DEPTH_UNPACK_4;
   static int[][] DEPTH_UNPACK;
 
+  static {
+    initDepthScale();
+  }
   private static void initDepthScale() {
     DEPTH_UNPACK_1 = new int[2];
     for (int i = 0; i < 2; i++)
@@ -37,8 +42,6 @@ public class ImageLineHelper {
   public static void scaleUp(IImageLineArray line) {
     if (line.getImageInfo().indexed || line.getImageInfo().bitDepth >= 8)
       return;
-    if (DEPTH_UNPACK_1 == null || DEPTH_UNPACK == null)
-      initDepthScale();
     final int[] scaleArray = DEPTH_UNPACK[line.getImageInfo().bitDepth];
     if (line instanceof ImageLineInt) {
       ImageLineInt iline = (ImageLineInt) line;
@@ -241,6 +244,50 @@ public class ImageLineHelper {
     return palette2rgb(line, pal, null, buf, false);
   }
 
+  /** this is not efficient, only for tests and example */
+  public static int[] convert2rgba8(IImageLineArray line, PngChunkPLTE pal, PngChunkTRNS trns,
+      int[] buf) {
+    ImageInfo imi = line.getImageInfo();
+    int nsamples = imi.cols * 4;
+    if (buf == null || buf.length < nsamples)
+      buf = new int[nsamples];
+    Arrays.fill(buf, 255);
+    if (imi.indexed) {
+      int tlen = trns != null ? trns.getPalletteAlpha().length : 0;
+      for (int s = 0; s < imi.cols; s++) {
+        int index = line.getElem(s);
+        pal.getEntryRgb(index, buf, s * 4);
+        if (index < tlen) {
+          buf[s * 4 + 3] = trns.getPalletteAlpha()[index];
+        }
+      }
+    } else if (imi.greyscale) {
+      int[] unpack = null;
+      if (imi.bitDepth < 8)
+        unpack = ImageLineHelper.DEPTH_UNPACK[imi.bitDepth];
+      for (int s = 0, i = 0, p = 0; p < imi.cols; p++) {
+        buf[s++] = unpack != null ? unpack[line.getElem(i++)] : line.getElem(i++);
+        buf[s] = buf[s - 1];
+        s++;
+        buf[s] = buf[s - 1];
+        s++;
+        if (imi.channels == 2)
+          buf[s++] = unpack != null ? unpack[line.getElem(i++)] : line.getElem(i++);
+        else
+          buf[s++] = 255;
+      }
+    } else {
+      for (int s = 0, i = 0, p = 0; p < imi.cols; p++) {
+        buf[s++] = line.getElem(i++);
+        buf[s++] = line.getElem(i++);
+        buf[s++] = line.getElem(i++);
+        buf[s++] = imi.alpha ? line.getElem(i++) : 255;
+      }
+    }
+    return buf;
+
+  }
+
   private static int[] palette2rgb(IImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf,
       boolean alphaForced) {
     boolean isalpha = trns != null;
@@ -397,7 +444,7 @@ public class ImageLineHelper {
     return x > 127 ? 127 : (x < -128 ? -128 : x);
   }
 
-  static int getMaskForPackedFormats(int bitDepth) { // Utility function for pack/unpack
+  public static int getMaskForPackedFormats(int bitDepth) { // Utility function for pack/unpack
     if (bitDepth == 4)
       return 0xf0;
     else if (bitDepth == 2)
@@ -406,7 +453,7 @@ public class ImageLineHelper {
       return 0x80; // bitDepth == 1
   }
 
-  static int getMaskForPackedFormatsLs(int bitDepth) { // Utility function for pack/unpack
+  public static int getMaskForPackedFormatsLs(int bitDepth) { // Utility function for pack/unpack
     if (bitDepth == 4)
       return 0x0f;
     else if (bitDepth == 2)

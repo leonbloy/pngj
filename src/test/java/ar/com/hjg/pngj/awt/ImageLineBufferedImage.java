@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.pixels;
+package ar.com.hjg.pngj.awt;
 
 import java.awt.image.BufferedImage;
 import java.awt.image.ComponentSampleModel;

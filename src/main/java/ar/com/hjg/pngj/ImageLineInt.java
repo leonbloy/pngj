@@ -115,10 +115,9 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
         mask = mask0;
         shi = 8 - bd;
         do {
-          scanline[i] = (raw[r] & mask) >> shi;
+          scanline[i++] = (raw[r] & mask) >> shi;
           mask >>= bd;
           shi -= bd;
-          i++;
           c++;
           if (c == imgInfo.channels) {
             c = 0;
