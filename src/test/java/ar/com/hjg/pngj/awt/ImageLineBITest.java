@@ -109,5 +109,11 @@ public class ImageLineBITest {
     testWrite2(TestSupport.absFile("testsuite1/basi3p02.png"),true);
     testWrite2(TestSupport.absFile("testsuite1/basn3p04.png"),false);
   }
+
+  @Test
+  public void testPaletteWithTrns() {
+    testWrite2(TestSupport.absFile("testsuite1/tp1n3p08.png"),false); // first palette val is transparent
+  }
+
   // to do: TRNS
 }

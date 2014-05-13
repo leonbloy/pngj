@@ -39,7 +39,6 @@ public class Png2BufferedImageAdapter {
     this.trns = trns;
     if (pal == null && iminfo.indexed)
       throw new RuntimeException("missing palette");
-    computeParams();
   }
 
 
@@ -76,6 +75,7 @@ public class Png2BufferedImageAdapter {
 
 
   protected IndexColorModel buildLut() {
+
     IndexColorModel cm;
     if(iminfo.greyscale) {
       int len = 1<<iminfo.bitDepth;
@@ -96,8 +96,7 @@ public class Png2BufferedImageAdapter {
         r[i] =(byte) rgb[0];
         g[i] =(byte) rgb[1];
         b[i] =(byte) rgb[2];
-        if(i<lent)
-          a[i] = (byte) trns.getPalletteAlpha()[i];
+       a[i] = (byte)(i<lent ?  trns.getPalletteAlpha()[i] : 255);
       }
       cm = alpha? new IndexColorModel(8,len,r,g,b,a):new IndexColorModel(8,len,r,g,b);
     }
@@ -109,6 +108,7 @@ public class Png2BufferedImageAdapter {
   }
 
   public BufferedImage createBufferedImage(int cols, int rows) {
+    computeParams();
     BufferedImage bi = null;
     if (withPalette) {
       bi = createBufferedImageWithPalette(cols, rows);

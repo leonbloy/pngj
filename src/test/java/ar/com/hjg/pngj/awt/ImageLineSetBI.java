@@ -28,13 +28,17 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
     this.step=step;
     image = adapter.createBufferedImage(imgInfo.cols, nlines);
   }
-
+  
   /** this constructor is for writing a PNG from an existing BufferedImage */ 
-  public ImageLineSetBI(BufferedImage bi, BufferedImage2PngAdapter adapter) {
+  public ImageLineSetBI(BufferedImage bi, BufferedImage2PngAdapter adapter, int nlines, int noffset, int step) {
     this.image = bi;
     this.adapter2png = adapter;
     this.adapter2bi = null;
-    iminfo = adapter2png.createImgInfo(image);
+    iminfo = adapter2png.createImgInfo(nlines, noffset, step);
+  }
+  
+  public ImageLineSetBI(BufferedImage bi, BufferedImage2PngAdapter adapter) {
+    this(bi,adapter,bi.getHeight(),0,1);
   }
 
   public ImageLineBI getImageLine(int n) {
