@@ -66,6 +66,14 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
   }
 
   /**
+   * does not check for valid range
+   */
+  public T getImageLineRawNum(int r) {
+    if(singleCursor) return imageLine;
+    else return imageLines.get(r);
+  }
+  
+  /**
    * True if the set contains this image line
    * <p>
    * Warning: the argument is the row number in the original image

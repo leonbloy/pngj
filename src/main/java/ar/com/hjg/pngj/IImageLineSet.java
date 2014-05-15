@@ -25,6 +25,16 @@ public interface IImageLineSet<T extends IImageLine> {
   public IImageLine getImageLine(int n);
 
   /**
+   * Like {@link #getImageLine(int)} but uses the raw numbering inside the LineSet 
+   * This makes little sense for a cursor
+   * 
+   * @param n Should normally go from 0 to {@link #size()}
+   * @return
+   */
+  public IImageLine getImageLineRawNum(int n);
+
+  
+  /**
    * Returns true if the set contain row <tt>n</tt> (in the original image,zero based) currently allocated.
    * <p>
    * If it's a single-cursor, this should return true only if it's positioned there. (notice that hasImageLine(n) can return false, but getImageLine(n) can be ok)

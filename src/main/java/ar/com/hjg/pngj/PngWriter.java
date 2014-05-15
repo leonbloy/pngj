@@ -371,7 +371,7 @@ public class PngWriter {
    */
   public void writeRows(IImageLineSet<? extends IImageLine> imglines) {
     for (int i = 0; i < imgInfo.rows; i++)
-      writeRow(imglines.getImageLine(i));
+      writeRow(imglines.getImageLineRawNum(i));
   }
 
   public void writeRow(IImageLine imgline, int rownumber) {
