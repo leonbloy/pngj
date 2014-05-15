@@ -503,6 +503,19 @@ public class TestSupport {
   public static List<File> getPngsFromDir(File dir) {
     return getPngsFromDir(dir, true);
   }
+  
+  /** copies a PNG to another, taking a subset of lines */
+  public static void copyPartial(File ori,File dest,int nlines,int step,int offset,boolean filterPreserve) {
+      PngReaderByte png2 = new PngReaderByte(ori);
+      int nlinesmax=(png2.imgInfo.rows-offset)/step;
+      if(nlines<1 || nlines>nlinesmax) nlines=nlinesmax;
+      PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
+      if(filterPreserve) pngw.setFilterPreserve(true);
+      else  pngw.setFilterType(FilterType.FILTER_CYCLIC); // to test
+      pngw.writeRows(png2.readRows(nlines, offset, step));
+      png2.end();
+      pngw.end();
+  }
 
   public static String getChunksSummary(String f) {
     return getChunksSummary(f, true);

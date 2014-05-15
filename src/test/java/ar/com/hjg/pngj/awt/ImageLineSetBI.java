@@ -15,12 +15,12 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
   final ImageInfo iminfo;
 
   // this is the number of lines of the "target" (BI if reading PNG, PNG elsewhere), less or equal than the rows of the source
-  private int nlines;  
+  private final int nlines;  
   // how many lines to skip from the source 
-  private int offset;
+  private final int offset;
   //steps is in the source; eg. if step=2, and isForWritePng==false, we are creating a BI with half the lines ofthe PNG; 
   // if step=2 and isForWritePng==false, we are creating a PNG with half the lines of the BI 
-  private int step; 
+  private final int step; 
 
   /** this constructor is for reading a PNG to a BufferedImage */
   public ImageLineSetBI(ImageInfo imgInfo, Png2BufferedImageAdapter adapter, boolean singleCursor,
@@ -44,6 +44,9 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
     this.image = bi;
     this.adapter2png = adapter;
     this.adapter2bi = null;
+    this.step=step;
+    this.nlines=nlines;
+    this.offset=noffset;
     iminfo = adapter2png.createImgInfo(nlines, noffset, step);
   }
 
