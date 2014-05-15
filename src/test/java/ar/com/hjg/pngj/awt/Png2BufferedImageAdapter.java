@@ -97,8 +97,8 @@ public class Png2BufferedImageAdapter {
         r[i] = (byte) rgb[0];
         g[i] = (byte) rgb[1];
         b[i] = (byte) rgb[2];
-        if (alpha && i < lent)
-          a[i] = (byte) (trns.getPalletteAlpha()[i]);
+        if (alpha)
+          a[i] = (byte) (i < lent ? trns.getPalletteAlpha()[i] : 255);
       }
       cm = alpha ? new IndexColorModel(8, len, r, g, b, a) : new IndexColorModel(8, len, r, g, b);
     }
