@@ -151,6 +151,18 @@ public class ImageInfo {
       throw new PngjException("invalid image parameters (overflow?)");
   }
 
+  /**
+   * returns a copy with different size
+   * 
+   * @param cols if non-positive, the original is used
+   * @param rows if non-positive, the original is used
+   * @return a new copy with the specified size and same properties
+   */
+  public ImageInfo withSize(int cols, int rows) {
+    return new ImageInfo(cols > 0 ? cols : this.cols, rows > 0 ? rows : this.rows, this.bitDepth,
+        this.alpha, this.greyscale, this.indexed);
+  }
+
   public long getTotalPixels() {
     if (totalPixels < 0)
       totalPixels = cols * (long) rows;
