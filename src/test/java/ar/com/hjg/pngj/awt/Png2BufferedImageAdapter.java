@@ -77,28 +77,30 @@ public class Png2BufferedImageAdapter {
   protected IndexColorModel buildLut() {
 
     IndexColorModel cm;
-    if(iminfo.greyscale) {
-      int len = 1<<iminfo.bitDepth;
+    if (iminfo.greyscale) {
+      int len = 1 << iminfo.bitDepth;
       byte[] r = new byte[len];
-      for(int i=0;i<len;i++) r[i] = (byte)(len==256 ? i:((i*255)/(len-1)));
-      cm = new IndexColorModel(8,len,r,r,r);
+      for (int i = 0; i < len; i++)
+        r[i] = (byte) (len == 256 ? i : ((i * 255) / (len - 1)));
+      cm = new IndexColorModel(8, len, r, r, r);
     } else {
-      int len=pal.getNentries();
-      int lent=trns!=null? trns.getPalletteAlpha().length:0;
-      boolean alpha=lent>0;
+      int len = pal.getNentries();
+      int lent = trns != null ? trns.getPalletteAlpha().length : 0;
+      boolean alpha = lent > 0;
       byte[] r = new byte[len];
       byte[] g = new byte[len];
       byte[] b = new byte[len];
-      byte[] a = alpha?new byte[len]:null;
+      byte[] a = alpha ? new byte[len] : null;
       int rgb[] = new int[3];
-      for(int i=0;i<len;i++) {
+      for (int i = 0; i < len; i++) {
         pal.getEntryRgb(i, rgb);
-        r[i] =(byte) rgb[0];
-        g[i] =(byte) rgb[1];
-        b[i] =(byte) rgb[2];
-       a[i] = (byte)(i<lent ?  trns.getPalletteAlpha()[i] : 255);
+        r[i] = (byte) rgb[0];
+        g[i] = (byte) rgb[1];
+        b[i] = (byte) rgb[2];
+        if (alpha && i < lent)
+          a[i] = (byte) (trns.getPalletteAlpha()[i]);
       }
-      cm = alpha? new IndexColorModel(8,len,r,g,b,a):new IndexColorModel(8,len,r,g,b);
+      cm = alpha ? new IndexColorModel(8, len, r, g, b, a) : new IndexColorModel(8, len, r, g, b);
     }
     return cm;
   }
@@ -113,8 +115,8 @@ public class Png2BufferedImageAdapter {
     if (withPalette) {
       bi = createBufferedImageWithPalette(cols, rows);
     } else if (preferCustom || biType == BufferedImage.TYPE_CUSTOM) {
-      boolean usebgr=false; // test: 
-      bi = createBufferedImageCustom(cols, rows,usebgr);
+      boolean usebgr = false; // test:
+      bi = createBufferedImageCustom(cols, rows, usebgr);
       bgrOrder = usebgr && iminfo.channels > 2;
     } else if (biType == BufferedImage.TYPE_4BYTE_ABGR || biType == BufferedImage.TYPE_3BYTE_BGR
         || biType == BufferedImage.TYPE_BYTE_GRAY || biType == BufferedImage.TYPE_USHORT_GRAY) {
@@ -135,15 +137,15 @@ public class Png2BufferedImageAdapter {
     ColorSpace colorspace = createColorSpace(iminfo.greyscale);
     int[] nBits = new int[iminfo.channels];
     Arrays.fill(nBits, useByte ? 8 : 16);
-    int[] bOffs = new int[iminfo.channels];
-    for (int i = 0; i < bOffs.length; i++) {
-      bOffs[i] = bgr ? bOffs.length - i - 1 : i; // RGB or BGR?
-    }
     ComponentColorModel colorModel =
         new ComponentColorModel(colorspace, nBits, hasAlpha, false,
             hasAlpha ? Transparency.TRANSLUCENT : Transparency.OPAQUE,
             useByte ? DataBuffer.TYPE_BYTE : DataBuffer.TYPE_USHORT);
     WritableRaster raster = null;
+    int[] bOffs = new int[iminfo.channels];
+    for (int i = 0; i < bOffs.length; i++) {
+      bOffs[i] = bgr ? bOffs.length - i - 1 : i; // RGB or BGR?
+    }
     if (iminfo.channels == 1)
       raster = colorModel.createCompatibleWritableRaster(cols, rows);
     else
@@ -155,7 +157,7 @@ public class Png2BufferedImageAdapter {
 
   }
 
-  private static ColorSpace createColorSpace(boolean isgray) { // is this right?
+  static ColorSpace createColorSpace(boolean isgray) { // is this right?
     return isgray ? ColorSpace.getInstance(ColorSpace.CS_GRAY) : ColorSpace
         .getInstance(ColorSpace.CS_sRGB); // For GA we should use other?
   }

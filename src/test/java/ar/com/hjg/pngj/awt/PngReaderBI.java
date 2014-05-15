@@ -50,5 +50,11 @@ public class PngReaderBI extends PngReader{
     end();
     return getImageLineSetBI().image;
   }
+
+  public BufferedImage readAll(int lines,int offset,int step) {
+    readRows(lines,offset,step);
+    end();
+    return getImageLineSetBI().image;
+  }
   
 }

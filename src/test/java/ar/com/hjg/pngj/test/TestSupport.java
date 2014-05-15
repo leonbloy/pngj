@@ -363,6 +363,7 @@ public class TestSupport {
     TestCase.assertEquals("Image are of different size", png1.imgInfo.cols, png2.imgInfo.cols);
     int[] r1=new int[png1.imgInfo.cols*4];
     int[] r2=new int[png1.imgInfo.cols*4];
+    String firstDif="";
     double diff=0;
     for(int r=0;r<png1.imgInfo.rows;r++) {
       ImageLineInt line1 = png1.readRowInt();
@@ -372,6 +373,8 @@ public class TestSupport {
         r2=ImageLineHelper.convert2rgba8(line2, png2.getMetadata().getPLTE(), 
             png2.getMetadata().getTRNS(), r2);
         for(int c=0;c<r1.length;c++) {
+          if(firstDif.equals("") && r1[c]!=r2[c])
+            firstDif = String.format("1st dif at: (%d,%d)",c/4,r);
           diff+=Math.abs(r1[c]-r2[c]);
         }
     }
@@ -379,8 +382,7 @@ public class TestSupport {
     
     png1.end();
     png2.end();
-    System.err.println("difference: " + diff);
-    TestCase.assertEquals(0.0,diff,0.000001);
+    TestCase.assertEquals(firstDif + " avdif=" + diff + " f=" + ori.getName() + " " + " -> " + dest.getName(),"",firstDif);
   }
   
   public static void testCrcEquals(File image1, long crc) {
