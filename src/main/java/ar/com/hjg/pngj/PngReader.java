@@ -295,7 +295,7 @@ public class PngReader {
     if (rowStep < 1 || rowOffset < 0 || nRows == 0
         || nRows * rowStep + rowOffset > getCurImgInfo().rows)
       throw new PngjInputException("bad args");
-    if (rowNum >= 0)
+    if (rowNum >= rowOffset)
       throw new PngjInputException("readRows cannot be mixed with readRow");
     imlinesSet = createLineSet(false, nRows, rowOffset, rowStep);
     if (!interlaced) {
