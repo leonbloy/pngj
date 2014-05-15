@@ -1,7 +1,6 @@
 package ar.com.hjg.pngj;
 
 import java.io.File;
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.List;
 
@@ -34,13 +33,14 @@ public class PngWriter {
   private final PngMetadata metadata;
 
   /**
-   * Current chunk grounp, (0-6) already read or reading
+   * Current chunk grounp, (0-6) already written or currently writing 
+   * (this is advanced when just starting to write the new group, not when finalizing the previous)
    * <p>
    * see {@link ChunksList}
    */
   protected int currentChunkGroup = -1;
 
-  private int passes = 1; // Some writes might require two passes
+  private int passes = 1; // Some writes might require two passes (NOT USED STILL)
   private int currentpass = 0; // numbered from 1
 
   private boolean shouldCloseStream = true;
@@ -104,6 +104,7 @@ public class PngWriter {
   }
 
   private void writeEndChunk() {
+    currentChunkGroup = ChunksList.CHUNK_GROUP_6_END;
     PngChunkIEND c = new PngChunkIEND(imgInfo);
     c.createRawChunk().writeChunk(os);
     chunksList.getChunks().add(c);
@@ -124,28 +125,25 @@ public class PngWriter {
       throw new PngjOutputException("missing palette");
     currentChunkGroup = ChunksList.CHUNK_GROUP_3_AFTERPLTE;
     nw = chunksList.writeChunks(os, currentChunkGroup);
-    currentChunkGroup = ChunksList.CHUNK_GROUP_4_IDAT;
   }
 
   private void writeLastChunks() { // not including end
-    queueChunksFromOther();
     currentChunkGroup = ChunksList.CHUNK_GROUP_5_AFTERIDAT;
+    queueChunksFromOther();
     chunksList.writeChunks(os, currentChunkGroup);
     // should not be unwriten chunks
     List<PngChunk> pending = chunksList.getQueuedChunks();
     if (!pending.isEmpty())
       throw new PngjOutputException(pending.size() + " chunks were not written! Eg: "
           + pending.get(0).toString());
-    currentChunkGroup = ChunksList.CHUNK_GROUP_6_END;
   }
 
   /**
    * Write id signature and also "IHDR" chunk
    */
   private void writeSignatureAndIHDR() {
-    currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
-
     PngHelperInternal.writeBytes(os, PngHelperInternal.getPngIdSignature()); // signature
+    currentChunkGroup = ChunksList.CHUNK_GROUP_0_IDHR;
     PngChunkIHDR ihdr = new PngChunkIHDR(imgInfo);
     // http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html
     ihdr.createRawChunk().writeChunk(os);
@@ -155,14 +153,14 @@ public class PngWriter {
   private void queueChunksFromOther() {
     if (copyFromList == null || copyFromPredicate == null)
       return;
-    boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT;
+    boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT; // we assume this method is not either before or after the IDAT writing, not in the middle!
     for (PngChunk chunk : copyFromList.getChunks()) {
       if (chunk.getRaw().data == null)
         continue; // we cannot copy skipped chunks?
-      int group = chunk.getChunkGroup();
-      if (group <= ChunksList.CHUNK_GROUP_4_IDAT && idatDone)
+      int groupOri = chunk.getChunkGroup();
+      if (groupOri <= ChunksList.CHUNK_GROUP_4_IDAT && idatDone)
         continue;
-      if (group >= ChunksList.CHUNK_GROUP_4_IDAT && !idatDone)
+      if (groupOri >= ChunksList.CHUNK_GROUP_4_IDAT && !idatDone)
         continue;
       if (chunk.crit && !chunk.id.equals(PngChunkPLTE.ID))
         continue; // critical chunks (except perhaps PLTE) are never
@@ -254,17 +252,20 @@ public class PngWriter {
   }
 
   /**
-   * Finalizes all the steps and closes the stream. This must be called after writing the lines.
+   * Finalizes all the steps and closes the stream. This must be called after writing the lines. Idempotent
    */
   public void end() {
-    if (rowNum != imgInfo.rows - 1)
+    if (rowNum != imgInfo.rows - 1 || !pixelsWriter.isDone())
       throw new PngjOutputException("all rows have not been written");
     try {
-      datStream.flush();
-      writeLastChunks();
-      writeEndChunk();
-    } catch (IOException e) {
-      throw new PngjOutputException(e);
+      if (pixelsWriter != null)
+        pixelsWriter.close();
+      if (datStream != null)
+        datStream.close();
+      if (currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
+        writeLastChunks();
+      if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
+        writeEndChunk();
     } finally {
       close();
     }
@@ -278,14 +279,10 @@ public class PngWriter {
    * Idempotent and secure - never throws exceptions
    */
   public void close() {
-    try {
-      if (datStream != null)
-        datStream.close();
-
-    } catch (Exception e2) {
-    }
     if (pixelsWriter != null)
       pixelsWriter.close();
+    if (datStream != null)
+      datStream.close();
     if (shouldCloseStream && os != null)
       try {
         os.close();
@@ -387,7 +384,7 @@ public class PngWriter {
       currentpass++;
     if (rownumber == 0 && currentpass == passes) {
       initIdat();
-      writeFirstChunks();
+      currentChunkGroup = ChunksList.CHUNK_GROUP_4_IDAT; // we just begin writing IDAT
     }
     byte[] rowb = pixelsWriter.getRowb();
     imgline.writeToPngRaw(rowb);

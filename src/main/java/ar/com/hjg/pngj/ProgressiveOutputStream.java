@@ -16,17 +16,12 @@ abstract class ProgressiveOutputStream extends ByteArrayOutputStream {
   }
 
   @Override
-  public final void close() throws IOException {
-    try {
+  public final void close() {
       flush();
-    } catch (Exception e) {
-    }
-    super.close();
   }
 
   @Override
-  public final void flush() throws IOException {
-    super.flush();
+  public final void flush()  {
     checkFlushBuffer(true);
   }
 

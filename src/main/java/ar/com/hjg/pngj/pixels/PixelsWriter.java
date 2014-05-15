@@ -215,6 +215,10 @@ public abstract class PixelsWriter {
     return imgInfo.getTotalRawBytes();
   }
 
+  public boolean isDone() {
+    return currentRow == imgInfo.rows - 1;
+  }
+
   /**
    * computed default fixed filter type to use, if specified DEFAULT; wilde guess based on image properties
    * 
