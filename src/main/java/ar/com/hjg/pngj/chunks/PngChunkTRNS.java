@@ -103,15 +103,36 @@ public class PngChunkTRNS extends PngChunkSingle {
     return gray;
   }
 
+/**
+ * Sets the length of the palette alpha. 
+ * This should be followed by #setNentriesPalAlpha
+ * @param idx index inside the table
+ * @param val alpha value (0-255)
+ */
+  public void setEntryPalAlpha(int idx,int val) {
+    paletteAlpha[idx] = val;
+  }
+  
+  public void setNentriesPalAlpha(int len) {
+    paletteAlpha = new int[len];
+  }
+
   /**
-   * WARNING: non deep copy
+   * WARNING: non deep copy. See also {@link #setNentriesPalAlpha(int)} {@link #setEntryPalAlpha(int, int)}
    */
-  public void setPalletteAlpha(int[] palAlpha) {
+  public void setPalAlpha(int[] palAlpha) {
     if (!imgInfo.indexed)
       throw new PngjException("only indexed images support this");
     paletteAlpha = palAlpha;
   }
 
+  /**
+   * WARNING: non deep copy
+   */
+  public int[] getPalletteAlpha() {
+    return paletteAlpha;
+  }
+  
   /**
    * to use when only one pallete index is set as totally transparent
    */
@@ -124,11 +145,5 @@ public class PngChunkTRNS extends PngChunkSingle {
     paletteAlpha[palAlphaIndex] = 0;
   }
 
-  /**
-   * WARNING: non deep copy
-   */
-  public int[] getPalletteAlpha() {
-    return paletteAlpha;
-  }
-
+  
 }
