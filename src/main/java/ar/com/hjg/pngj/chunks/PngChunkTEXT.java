@@ -15,6 +15,11 @@ public class PngChunkTEXT extends PngChunkTextVar {
     super(ID, info);
   }
 
+  public PngChunkTEXT(ImageInfo info,String key,String val) {
+    super(ID, info);
+    setKeyVal(key, val);
+  }
+
   @Override
   public ChunkRaw createRawChunk() {
     if (key == null || key.trim().length() == 0)
