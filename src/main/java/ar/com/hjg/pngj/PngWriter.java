@@ -33,8 +33,7 @@ public class PngWriter {
   private final PngMetadata metadata;
 
   /**
-   * Current chunk grounp, (0-6) already written or currently writing 
-   * (this is advanced when just starting to write the new group, not when finalizing the previous)
+   * Current chunk grounp, (0-6) already written or currently writing (this is advanced when just starting to write the new group, not when finalizing the previous)
    * <p>
    * see {@link ChunksList}
    */

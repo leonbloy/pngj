@@ -37,7 +37,6 @@ import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.chunks.ChunkRaw;
 import ar.com.hjg.pngj.chunks.ChunksList;
 import ar.com.hjg.pngj.chunks.PngChunk;
-import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 
 /**
  * Methods of this class are designed for debug and testing PNGJ library, they are not optimized
@@ -335,9 +334,8 @@ public class TestSupport {
 
   public static void testSameCrc(File ori, File dest) {
     String oriname = ori.getName();
-    if("testsuite1".equals(ori.getParentFile().getName())
-        && oriname.matches(".*i.....png")) {// interlaced? change it
-      ori=TestSupport.addSuffixToName(ori, "_ni");
+    if ("testsuite1".equals(ori.getParentFile().getName()) && oriname.matches(".*i.....png")) {// interlaced? change it
+      ori = TestSupport.addSuffixToName(ori, "_ni");
     }
     PngReader png1 = new PngReader(ori);
     PngHelperInternal.initCrcForTests(png1);
@@ -352,39 +350,66 @@ public class TestSupport {
     png2.end();
     long crc1 = PngHelperInternal.getDigest(png1);
     long crc2 = PngHelperInternal.getDigest(png2);
-    TestCase.assertEquals("different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2,
-        crc1, crc2);
+    TestCase.assertEquals("different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2, crc1,
+        crc2);
   }
 
   public static void testSameValues(File ori, File dest) {
+    testSameValues(ori, dest, 0);
+  }
+
+  public static void testSameValues(File ori, File dest, int tolerance) {
     PngReaderInt png1 = new PngReaderInt(ori);
     PngReaderInt png2 = new PngReaderInt(dest);
     TestCase.assertEquals("Image are of different size", png1.imgInfo.rows, png2.imgInfo.rows);
     TestCase.assertEquals("Image are of different size", png1.imgInfo.cols, png2.imgInfo.cols);
-    int[] r1=new int[png1.imgInfo.cols*4];
-    int[] r2=new int[png1.imgInfo.cols*4];
-    String firstDif="";
-    double diff=0;
-    for(int r=0;r<png1.imgInfo.rows;r++) {
+    int[] r1 = new int[png1.imgInfo.cols * 4];
+    int[] r2 = new int[png1.imgInfo.cols * 4];
+    String firstDif = "";
+    double difAv = 0;
+    for (int r = 0; r < png1.imgInfo.rows; r++) {
       ImageLineInt line1 = png1.readRowInt();
       ImageLineInt line2 = png2.readRowInt();
-        r1=ImageLineHelper.convert2rgba8(line1, png1.getMetadata().getPLTE(), 
-            png1.getMetadata().getTRNS(), r1);
-        r2=ImageLineHelper.convert2rgba8(line2, png2.getMetadata().getPLTE(), 
-            png2.getMetadata().getTRNS(), r2);
-        for(int c=0;c<r1.length;c++) {
-          if(firstDif.equals("") && r1[c]!=r2[c])
-            firstDif = String.format("1st dif at: (%d,%d)",c/4,r);
-          diff+=Math.abs(r1[c]-r2[c]);
+      r1 =
+          ImageLineHelper.convert2rgba(line1, png1.getMetadata().getPLTE(), png1.getMetadata()
+              .getTRNS(), r1);
+      r2 =
+          ImageLineHelper.convert2rgba(line2, png2.getMetadata().getPLTE(), png2.getMetadata()
+              .getTRNS(), r2);
+      fixAlpha(r1);
+      fixAlpha(r2);
+      for (int c = 0; c < r1.length; c++) {
+        int dif1 = r1[c] - r2[c];
+        if (dif1 < 0)
+          dif1 = -dif1;
+        difAv += dif1;
+        if (dif1 > tolerance) {
+          if (firstDif.equals(""))
+            firstDif = String.format("1st dif at: (%d,%d)", c / 4, r);
         }
+      }
     }
-    diff/=png1.imgInfo.rows*png1.imgInfo.samplesPerRow;
-    
+    difAv /= (png1.imgInfo.rows * (double) png1.imgInfo.samplesPerRow);
     png1.end();
     png2.end();
-    TestCase.assertEquals(firstDif + " avdif=" + diff + " f=" + ori.getName() + " " + " -> " + dest.getName(),"",firstDif);
+    TestCase.assertEquals(firstDif + " avdif=" + difAv + " f=" + ori.getName() + " " + " -> "
+        + dest.getName(), "", firstDif);
+    if (difAv > 0.001)
+      System.err.printf("%s errorav=%f\n", ori.getName(), difAv);
   }
-  
+
+  public static void fixAlpha(int[] line) {
+    for (int c = 3; c <= line.length; c += 4) {
+      if (line[c] == 0) {// transparent
+        line[c - 1] = 0;
+        line[c - 2] = 0;
+        line[c - 3] = 0;
+      }
+
+    }
+  }
+
+
   public static void testCrcEquals(File image1, long crc) {
     PngReader png1 = new PngReader(image1);
     PngHelperInternal.initCrcForTests(png1);
@@ -503,18 +528,22 @@ public class TestSupport {
   public static List<File> getPngsFromDir(File dir) {
     return getPngsFromDir(dir, true);
   }
-  
+
   /** copies a PNG to another, taking a subset of lines */
-  public static void copyPartial(File ori,File dest,int nlines,int step,int offset,boolean filterPreserve) {
-      PngReaderByte png2 = new PngReaderByte(ori);
-      int nlinesmax=(png2.imgInfo.rows-offset)/step;
-      if(nlines<1 || nlines>nlinesmax) nlines=nlinesmax;
-      PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
-      if(filterPreserve) pngw.setFilterPreserve(true);
-      else  pngw.setFilterType(FilterType.FILTER_CYCLIC); // to test
-      pngw.writeRows(png2.readRows(nlines, offset, step));
-      png2.end();
-      pngw.end();
+  public static void copyPartial(File ori, File dest, int nlines, int step, int offset,
+      boolean filterPreserve) {
+    PngReaderByte png2 = new PngReaderByte(ori);
+    int nlinesmax = (png2.imgInfo.rows - offset) / step;
+    if (nlines < 1 || nlines > nlinesmax)
+      nlines = nlinesmax;
+    PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
+    if (filterPreserve)
+      pngw.setFilterPreserve(true);
+    else
+      pngw.setFilterType(FilterType.FILTER_CYCLIC); // to test
+    pngw.writeRows(png2.readRows(nlines, offset, step));
+    png2.end();
+    pngw.end();
   }
 
   public static String getChunksSummary(String f) {
@@ -526,6 +555,12 @@ public class TestSupport {
     ChunkSeqSkipping c = new ChunkSeqSkipping(fast);
     c.feedFromInputStream(TestSupport.istream(f));
     return TestSupport.showChunksRaw(c.getChunks());
+  }
+
+  public static ImageInfo getImageInfo(File f) {
+    PngReaderByte p = new PngReaderByte(f);
+    p.close();
+    return p.imgInfo;
   }
 
 }

@@ -14,9 +14,7 @@ import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkLoadBehaviour;
-import ar.com.hjg.pngj.chunks.ChunkPredicate;
 import ar.com.hjg.pngj.chunks.ChunksList;
-import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTIME;
 
 /**
@@ -83,11 +81,7 @@ public class CopyChunksTest extends PngjTest {
       pngr.getChunkseq().setIncludeNonBufferedChunks(false); // to no store IDAT chunks in list, so
                                                              // as to compare later
       PngWriter pngw = new PngWriter(dest, pngr.imgInfo);
-      pngw.copyChunksFrom(pngr.getChunksList(), new ChunkPredicate() {
-        public boolean match(PngChunk chunk) {
-          return !chunk.id.equals(PngChunkTIME.ID); // copy unles it's time
-        }
-      });
+      pngw.copyChunksFrom(pngr.getChunksList(), ChunkCopyBehaviour.COPY_ALL);
       pngw.writeRows(pngr.readRows());
       pngr.end();
       // REMOVE TIME chunk (expected after IDAT)

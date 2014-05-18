@@ -6,6 +6,7 @@ import java.io.OutputStream;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngWriter;
+import ar.com.hjg.pngj.awt.ImageLineBI.BufferedImage2PngAdapter;
 import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngChunkTRNS;
 

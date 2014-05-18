@@ -89,7 +89,7 @@ public class CliArgs {
     return l;
   }
 
-  private static List<File> listPngFromDir(File dir, boolean recurse) {
+  public static List<File> listPngFromDir(File dir, boolean recurse) {
     ArrayList<File> pngs = new ArrayList<File>();
     for (File f : dir.listFiles()) {
       if (f.isFile() && f.getName().toLowerCase().endsWith(".png"))

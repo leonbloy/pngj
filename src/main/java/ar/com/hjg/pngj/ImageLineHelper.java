@@ -22,6 +22,7 @@ public class ImageLineHelper {
   static {
     initDepthScale();
   }
+
   private static void initDepthScale() {
     DEPTH_UNPACK_1 = new int[2];
     for (int i = 0; i < 2; i++)
@@ -244,14 +245,16 @@ public class ImageLineHelper {
     return palette2rgb(line, pal, null, buf, false);
   }
 
-  /** this is not efficient, only for tests and example */
-  public static int[] convert2rgba8(IImageLineArray line, PngChunkPLTE pal, PngChunkTRNS trns,
+  /** this is not very efficient, only for tests and troubleshooting */
+  public static int[] convert2rgba(IImageLineArray line, PngChunkPLTE pal, PngChunkTRNS trns,
       int[] buf) {
     ImageInfo imi = line.getImageInfo();
     int nsamples = imi.cols * 4;
     if (buf == null || buf.length < nsamples)
       buf = new int[nsamples];
-    Arrays.fill(buf, 255);
+    int maxval = imi.bitDepth == 16 ? (1 << 16) - 1 : 255;
+    Arrays.fill(buf, maxval);
+
     if (imi.indexed) {
       int tlen = trns != null ? trns.getPalletteAlpha().length : 0;
       for (int s = 0; s < imi.cols; s++) {
@@ -274,19 +277,20 @@ public class ImageLineHelper {
         if (imi.channels == 2)
           buf[s++] = unpack != null ? unpack[line.getElem(i++)] : line.getElem(i++);
         else
-          buf[s++] = 255;
+          buf[s++] = maxval;
       }
     } else {
       for (int s = 0, i = 0, p = 0; p < imi.cols; p++) {
         buf[s++] = line.getElem(i++);
         buf[s++] = line.getElem(i++);
         buf[s++] = line.getElem(i++);
-        buf[s++] = imi.alpha ? line.getElem(i++) : 255;
+        buf[s++] = imi.alpha ? line.getElem(i++) : maxval;
       }
     }
     return buf;
-
   }
+
+
 
   private static int[] palette2rgb(IImageLine line, PngChunkPLTE pal, PngChunkTRNS trns, int[] buf,
       boolean alphaForced) {

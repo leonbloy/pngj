@@ -19,10 +19,10 @@ import javax.imageio.stream.ImageOutputStream;
 
 public class ImageIoUtils {
   // only for testing, development
-  
+
   static public String imageTypeNameShort(int imtype) {
     String t = imageTypeName(imtype);
-    t = t.substring(t.indexOf('_')+1);
+    t = t.substring(t.indexOf('_') + 1);
     t = t.replaceAll("BYTE_", "b_");
     t = t.replaceAll("CUSTOM_", "cu_");
     t = t.replaceAll("INT_", "i_");
@@ -30,6 +30,7 @@ public class ImageIoUtils {
     t = t.replaceAll("_PRE", "pre");
     return t;
   }
+
   static public String imageTypeName(int imtype) {
     switch (imtype) {
       case BufferedImage.TYPE_3BYTE_BGR:
@@ -64,7 +65,7 @@ public class ImageIoUtils {
     return "TYPE_UNKNOWN_" + String.valueOf(imtype);
   }
 
-  
+
   public static ImageWriter getJavaImageWriter(boolean preferBetter) {
 
     ImageWriter imwriter = null;
@@ -119,9 +120,9 @@ public class ImageIoUtils {
   }
 
   public static void writePng(File f, BufferedImage bi) {
-    writePng(f,bi,false);
+    writePng(f, bi, false);
   }
-  
+
   public static void writePng(File f, BufferedImage bi, boolean preferBetter) {
     FileOutputStream fos = null;
     try {
@@ -152,8 +153,9 @@ public class ImageIoUtils {
   }
 
   public static BufferedImage readPng(File f) {
-    return readPng(f,false);
+    return readPng(f, false);
   }
+
   public static BufferedImage readPng(File f, boolean preferBetter) {
     FileInputStream fis = null;
     try {
@@ -170,7 +172,23 @@ public class ImageIoUtils {
         } catch (Exception e2) {
         }
     }
+  }
 
+  // returns [R G B A R G B A ...] one int per sample (it really could fit in byte[] but we assume that does not matter here)
+  public static int[] getRowRgba8(BufferedImage im, int rown, int[] buf) {
+    int pixels = im.getWidth();
+    int samples = pixels * 4;
+    if (buf == null || buf.length < samples)
+      buf = new int[samples];
+    im.getRGB(0, rown, pixels, 1, buf, 0, pixels);
+    for (int p = pixels - 1, s = samples - 1; p >= 0; p--) {
+      int v = buf[p];
+      buf[s--] = ((v >> 24) & 0xff); // A
+      buf[s--] = (v & 0xff); // B
+      buf[s--] = ((v >> 8) & 0xff); // G
+      buf[s--] = ((v >> 16) & 0xff); // R
+    }
+    return buf;
   }
 
   public static BufferedImage readPng(InputStream is, boolean preferBetter) throws IOException {

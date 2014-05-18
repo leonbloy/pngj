@@ -17,11 +17,11 @@ abstract class ProgressiveOutputStream extends ByteArrayOutputStream {
 
   @Override
   public final void close() {
-      flush();
+    flush();
   }
 
   @Override
-  public final void flush()  {
+  public final void flush() {
     checkFlushBuffer(true);
   }
 

@@ -17,7 +17,7 @@ BufferedImage
           |           MultiPixelPackedSampleModel
           |           SinglePixelPackedSampleModel
           |
-          |Y
+          |
            ----- Raster
                    |
                    |
@@ -54,17 +54,18 @@ RGBA16 CUSTOM;cm=Component,ps=64,ha=Y,ap=N,cs=[16, 16, 16, 16];srgb=true;sm=Pixe
 
 [*] looses TRNS if not paletted
 
-      
-
-
-
-
-
-
-
+  
 looses TRNS if not paletted (RGB or G): tbwn0g16.png tbrn2c08.png tbbn0g04.png tbbn2c16.png 
 1p -> 1g  (if palette is gray)
 8p -> 8g         "
+
+----------------
+
+Our current approach:
+
+When reading:
+
+- we assume sRGB always, even for gray
 
 
 

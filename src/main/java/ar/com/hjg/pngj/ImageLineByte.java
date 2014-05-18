@@ -177,4 +177,12 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
   public FilterType getFilterType() {
     return filterType;
   }
+
+  /**
+   * This should rarely be used by client code. Only relevant if FilterPreserve==true
+   */
+  public void setFilterType(FilterType ft) {
+    filterType = ft;
+  }
+
 }

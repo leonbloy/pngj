@@ -6,8 +6,7 @@ import java.util.List;
 /**
  * Default implementation of {@link IImageLineSet}.
  * <P>
- * Supports all modes: single cursor, full rows, or partial.
- * This should not be used for 
+ * Supports all modes: single cursor, full rows, or partial. This should not be used for
  */
 public abstract class ImageLineSetDefault<T extends IImageLine> implements IImageLineSet<T> {
 
@@ -69,10 +68,12 @@ public abstract class ImageLineSetDefault<T extends IImageLine> implements IImag
    * does not check for valid range
    */
   public T getImageLineRawNum(int r) {
-    if(singleCursor) return imageLine;
-    else return imageLines.get(r);
+    if (singleCursor)
+      return imageLine;
+    else
+      return imageLines.get(r);
   }
-  
+
   /**
    * True if the set contains this image line
    * <p>

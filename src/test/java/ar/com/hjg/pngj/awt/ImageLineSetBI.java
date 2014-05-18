@@ -5,6 +5,8 @@ import java.awt.image.BufferedImage;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineSet;
 import ar.com.hjg.pngj.ImageInfo;
+import ar.com.hjg.pngj.awt.ImageLineBI.BufferedImage2PngAdapter;
+import ar.com.hjg.pngj.awt.ImageLineBI.Png2BufferedImageAdapter;
 
 // backed by a BufferedImage
 public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
@@ -15,12 +17,12 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
   final ImageInfo iminfo;
 
   // this is the number of lines of the "target" (BI if reading PNG, PNG elsewhere), less or equal than the rows of the source
-  private final int nlines;  
-  // how many lines to skip from the source 
+  private final int nlines;
+  // how many lines to skip from the source
   private final int offset;
-  //steps is in the source; eg. if step=2, and isForWritePng==false, we are creating a BI with half the lines ofthe PNG; 
-  // if step=2 and isForWritePng==false, we are creating a PNG with half the lines of the BI 
-  private final int step; 
+  // steps is in the source; eg. if step=2, and isForWritePng==false, we are creating a BI with half the lines ofthe PNG;
+  // if step=2 and isForWritePng==false, we are creating a PNG with half the lines of the BI
+  private final int step;
 
   /** this constructor is for reading a PNG to a BufferedImage */
   public ImageLineSetBI(ImageInfo imgInfo, Png2BufferedImageAdapter adapter, boolean singleCursor,
@@ -44,9 +46,9 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
     this.image = bi;
     this.adapter2png = adapter;
     this.adapter2bi = null;
-    this.step=step;
-    this.nlines=nlines;
-    this.offset=noffset;
+    this.step = step;
+    this.nlines = nlines;
+    this.offset = noffset;
     iminfo = adapter2png.createImgInfo(nlines, noffset, step);
   }
 
@@ -60,8 +62,7 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
   }
 
   /**
-   * The row number here referers to the PNG, not the BI
-   * See {@link #getImageLineRawNum(int)}
+   * The row number here referers to the PNG, not the BI See {@link #getImageLineRawNum(int)}
    */
   public ImageLineBI getImageLine(int row) {
     int rowInBI = imageRowToMatrixRowStrict(row);
@@ -69,8 +70,8 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
       return new ImageLineBI(this, rowInBI);
     return null;
   }
-  
-  
+
+
   /**
    * The row number here is that of the BufferedImage
    */
@@ -117,7 +118,6 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
     int r = (imrow - offset) / step;
     return r < 0 ? 0 : (r < nlines ? r : nlines - 1);
   }
-
 
 
 

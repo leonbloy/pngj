@@ -335,7 +335,7 @@ public class PngReader {
 
   /**
    * By default this uses the factory (which, by default creates ImageLineInt). You should rarely override this.
-   * <p> 
+   * <p>
    * See doc in {@link IImageLineSetFactory#create(ImageInfo, boolean, int, int, int)}
    */
   protected IImageLineSet<? extends IImageLine> createLineSet(boolean singleCursor, int nlines,

@@ -15,7 +15,7 @@ public class PngChunkTEXT extends PngChunkTextVar {
     super(ID, info);
   }
 
-  public PngChunkTEXT(ImageInfo info,String key,String val) {
+  public PngChunkTEXT(ImageInfo info, String key, String val) {
     super(ID, info);
     setKeyVal(key, val);
   }
