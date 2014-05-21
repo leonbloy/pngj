@@ -29,7 +29,7 @@ public class ChunkSeqSkipping extends ChunkSeqReader {
   }
 
   protected ChunkReader createChunkReaderForNewChunk(String id, int len, long offset, boolean skip) {
-    return new ChunkReader(len, id, offset, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.PROCESS) {
+    return new ChunkReader(len, id, offset, skip ? ChunkReaderMode.SKIP : ChunkReaderMode.BUFFER) {
       @Override
       protected void chunkDone() {
         postProcessChunk(this);

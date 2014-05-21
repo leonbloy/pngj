@@ -62,7 +62,6 @@ public class PngReaderDumb {
           @Override
           protected boolean shouldSkipContent(int len, String id) {
             return !id.equals(ChunkHelper.IHDR); // we skip everything
-            // except IHDR
           }
         };
     return cs;

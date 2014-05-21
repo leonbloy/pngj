@@ -19,6 +19,7 @@ import javax.imageio.stream.ImageOutputStream;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineArray;
+import ar.com.hjg.pngj.IImageLineSet;
 import ar.com.hjg.pngj.IPngWriterFactory;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineInt;
@@ -29,6 +30,7 @@ import ar.com.hjg.pngj.PngWriter;
 import ar.com.hjg.pngj.PngWriterHc;
 import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.awt.ImageIoUtils;
+import ar.com.hjg.pngj.awt.PngReaderBI;
 import ar.com.hjg.pngj.pixels.DeflaterEstimatorLz4;
 import ar.com.hjg.pngj.pixels.FiltersPerformance;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
@@ -440,6 +442,48 @@ public class WriterFiltersPerformanceUtil {
     System.out.println("iw:" + iw + " " + msg.toString());
   }
 
+  public static void showReadSpeedWithJava(List<File> files) {
+    StringBuilder msg=new StringBuilder();
+   
+    long tpngj=System.currentTimeMillis();
+    for (File f : files) {
+      try {
+        PngReaderByte pngj=new PngReaderByte(f);
+        IImageLineSet<? extends IImageLine> l = pngj.readRows();
+        pngj.end();
+      } catch (Exception e) {
+        msg.append("Problems with file :" + f + " :" + e.getMessage() + "\n");
+      }
+    }
+    tpngj = System.currentTimeMillis()-tpngj;
+
+    long tjava=System.currentTimeMillis();
+    for (File f : files) {
+      try {
+        BufferedImage img = ImageIO.read(f);
+      } catch (Exception e) {
+        msg.append("Problems with file :" + f + " :" + e.getMessage() + "\n");
+      }
+    }
+    tjava = System.currentTimeMillis()-tjava;
+    
+    long tpngjbi=System.currentTimeMillis();
+    for (File f : files) {
+      try {
+        PngReaderBI pngjbi = new PngReaderBI(f);
+        BufferedImage bi = pngjbi.readAll();
+        pngjbi.end();
+      } catch (Exception e) {
+        msg.append("Problems with file :" + f + " :" + e.getMessage() + "\n");
+      }
+    }
+    tpngjbi = System.currentTimeMillis()-tpngjbi; 
+    
+    System.out.printf("%d\t%d\t%d\n", tjava,tpngj,tpngjbi);
+    System.out.println(msg);
+  }
+
+  
 
   public static void printCompressionForFile(File file, boolean includeFilterstats) {
     if (file == null)
@@ -699,6 +743,7 @@ public class WriterFiltersPerformanceUtil {
     }
   }
 
+  
 
 
   public static void main(String[] args) {
@@ -712,15 +757,16 @@ public class WriterFiltersPerformanceUtil {
     // File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0090.png"));
     // File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0130.png"));
     // File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\m\\m2230.png"));
-    File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\2\\l\\l1575.png"));
+    File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\4"));
     SHOW_FILENAME_FORCE = !files.isDirectory();
-    // computeSizeOriginal(files); // 1
-    // computeSpeedWithPngWriterPreserving(files,clevel); //2
-    // showCompressionWithJava(files, false,useBetterJavaEncoder); // 3
-    // computeSpeedWithPngWriterDefault(files,clevel); //4
-    // computeSpeedWithPngWriterNone(files, clevel);
-    // computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FAST, clevel);
-    computeSpeedWithPngWriterSuperAdaptative(files, clevel, 100, true);
+    //computeSizeOriginal(files); // 1
+   // showReadSpeedWithJava(TestSupport.getPngsFromDir(files));
+    //computeSpeedWithPngWriterPreserving(files,clevel); //2
+    //showCompressionWithJava(files, false,useBetterJavaEncoder); // 3
+    //computeSpeedWithPngWriterDefault(files,clevel); //4
+    //computeSpeedWithPngWriterNone(files, clevel);
+    //computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FULL, clevel);
+    computeSpeedWithPngWriterSuperAdaptative(files, clevel, 100, false);
     // computeSpeedWithPngWriterDeflatePerLine(files, clevel, false);
     // showCompressionWith2Filters(files, FilterType.FILTER_SUB, FilterType.FILTER_AVERAGE);
     // computeSpeedWithPngWriterNone(files,clevel); //2

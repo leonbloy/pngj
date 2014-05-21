@@ -171,7 +171,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
       int k = (imgInfo.rows + (r - 1)) / r;
       r = (imgInfo.rows + k / 2) / k;
     }
-    PngHelperInternal.debug("rows :" + r + "/" + imgInfo.rows);
+    // PngHelperInternal.debug("rows :" + r + "/" + imgInfo.rows);
     return r;
   }
 
@@ -192,6 +192,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 
   @Override
   protected void initParams() {
+    super.initParams();
     // if adaptative but too few rows or columns, use default
     if (imgInfo.cols < 3 && !FilterType.isValidStandard(filterType))
       filterType = FilterType.FILTER_DEFAULT;

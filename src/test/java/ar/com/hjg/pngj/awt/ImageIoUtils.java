@@ -67,7 +67,6 @@ public class ImageIoUtils {
 
 
   public static ImageWriter getJavaImageWriter(boolean preferBetter) {
-
     ImageWriter imwriter = null;
     // com.sun.media.imageioimpl.plugins.png.CLibPNGImageWriter (better)
     // com.sun.imageio.plugins.png.PNGImageWriter
