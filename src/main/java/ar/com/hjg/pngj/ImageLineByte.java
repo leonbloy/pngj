@@ -130,9 +130,6 @@ public class ImageLineByte implements IImageLine, IImageLineArray {
     raw[0] = (byte) filterType.val;
     if (imgInfo.bitDepth == 8) {
       System.arraycopy(scanline, 0, raw, 1, size);
-      for (int i = 0; i < size; i++) {
-        raw[i + 1] = (byte) scanline[i];
-      }
     } else if (imgInfo.bitDepth == 16) {
       for (int i = 0, s = 1; i < size; i++) {
         raw[s++] = scanline[i];
