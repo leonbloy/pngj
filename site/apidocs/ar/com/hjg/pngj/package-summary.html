@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ar.com.hjg.pngj (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>ar.com.hjg.pngj (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ar.com.hjg.pngj (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="ar.com.hjg.pngj (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -100,8 +100,8 @@ PNGJ main package</div>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/IImageLineArray.html" title="interface in ar.com.hjg.pngj">IImageLineArray</a></td>
 <td class="colLast">
-<div class="block">This interface is just for the sake of unifying some methods of <a href="../../../../ar/com/hjg/pngj/ImageLineHelper.html" title="class in ar.com.hjg.pngj"><code>ImageLineHelper</code></a> that can
- use both <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> or <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a>.</div>
+<div class="block">This interface is just for the sake of unifying some methods of <a href="../../../../ar/com/hjg/pngj/ImageLineHelper.html" title="class in ar.com.hjg.pngj"><code>ImageLineHelper</code></a> that can use both
+ <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> or <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a>.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -146,7 +146,8 @@ PNGJ main package</div>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a></td>
 <td class="colLast">
-<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.</div>
+<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -192,51 +193,52 @@ PNGJ main package</div>
 <td class="colLast">&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><a href="../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj">IDatChunkWriter</a></td>
+<td class="colLast">
+<div class="block">Outputs a sequence of IDAT-like chunk, that is filled progressively until the max chunk length is reached (or until
+ flush())</div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/IdatSet.html" title="class in ar.com.hjg.pngj">IdatSet</a></td>
 <td class="colLast">
 <div class="block">This object process the concatenation of IDAT chunks.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></td>
 <td class="colLast">
 <div class="block">Simple immutable wrapper for basic image info.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj">ImageLineByte</a></td>
 <td class="colLast">
 <div class="block">Lightweight wrapper for an image scanline, used for read and write.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/ImageLineHelper.html" title="class in ar.com.hjg.pngj">ImageLineHelper</a></td>
 <td class="colLast">
 <div class="block">Bunch of utility static methods to proces an image line at the pixel level.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj">ImageLineInt</a></td>
 <td class="colLast">
 <div class="block">Represents an image line, integer format (one integer by sample).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html" title="class in ar.com.hjg.pngj">ImageLineSetDefault</a>&lt;T extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</td>
 <td class="colLast">
 <div class="block">Default implementation of <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj"><code>IImageLineSet</code></a>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngHelperInternal.html" title="class in ar.com.hjg.pngj">PngHelperInternal</a></td>
 <td class="colLast">
 <div class="block">Some utility static methods for internal use.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngIDatChunkOutputStream.html" title="class in ar.com.hjg.pngj">PngIDatChunkOutputStream</a></td>
-<td class="colLast">
-<div class="block">Outputs the stream for IDAT chunk , fragmented at fixed size (32K default).</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -246,31 +248,34 @@ PNGJ main package</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngReaderApng.html" title="class in ar.com.hjg.pngj">PngReaderApng</a></td>
+<td class="colLast">&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngReaderByte.html" title="class in ar.com.hjg.pngj">PngReaderByte</a></td>
 <td class="colLast">
 <div class="block">Trivial extension of <a href="../../../../ar/com/hjg/pngj/PngReader.html" title="class in ar.com.hjg.pngj"><code>PngReader</code></a> that uses <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a></div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngReaderFilter.html" title="class in ar.com.hjg.pngj">PngReaderFilter</a></td>
 <td class="colLast">
-<div class="block">This class allows to use a simple PNG reader as an input filter, wrapping a ChunkSeqReaderPng in
- callback mode.</div>
+<div class="block">This class allows to use a simple PNG reader as an input filter, wrapping a ChunkSeqReaderPng in callback mode.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngReaderInt.html" title="class in ar.com.hjg.pngj">PngReaderInt</a></td>
 <td class="colLast">
 <div class="block">Trivial extension of <a href="../../../../ar/com/hjg/pngj/PngReader.html" title="class in ar.com.hjg.pngj"><code>PngReader</code></a> that uses <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a>.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngWriter.html" title="class in ar.com.hjg.pngj">PngWriter</a></td>
 <td class="colLast">
 <div class="block">Writes a PNG image, line by line.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngWriterHc.html" title="class in ar.com.hjg.pngj">PngWriterHc</a></td>
 <td class="colLast">
 <div class="block">Pngwriter with High compression EXPERIMENTAL</div>
@@ -298,7 +303,8 @@ PNGJ main package</div>
 <td class="colLast">
 <div class="block">Internal PNG predictor filter type
  
- Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters for different rows</div>
+ Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters
+ for different rows</div>
 </td>
 </tr>
 </tbody>
@@ -327,8 +333,7 @@ PNGJ main package</div>
 <tr class="altColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngjExceptionInternal.html" title="class in ar.com.hjg.pngj">PngjExceptionInternal</a></td>
 <td class="colLast">
-<div class="block">Exception for anomalous internal problems (sort of asserts) that point to some issue with the
- library</div>
+<div class="block">Exception for anomalous internal problems (sort of asserts) that point to some issue with the library</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -346,8 +351,7 @@ PNGJ main package</div>
 <tr class="rowColor">
 <td class="colFirst"><a href="../../../../ar/com/hjg/pngj/PngjUnsupportedException.html" title="class in ar.com.hjg.pngj">PngjUnsupportedException</a></td>
 <td class="colLast">
-<div class="block">Exception thrown because of some valid feature of PNG standard that this library does not
- support.</div>
+<div class="block">Exception thrown because of some valid feature of PNG standard that this library does not support.</div>
 </td>
 </tr>
 </tbody>

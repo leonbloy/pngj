@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>CompressorStream (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>CompressorStream (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="CompressorStream (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="CompressorStream (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -89,12 +89,7 @@
 <li><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">java.io.OutputStream</a></li>
 <li>
 <ul class="inheritance">
-<li><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">java.io.FilterOutputStream</a></li>
-<li>
-<ul class="inheritance">
 <li>ar.com.hjg.pngj.pixels.CompressorStream</li>
-</ul>
-</li>
 </ul>
 </li>
 </ul>
@@ -114,16 +109,16 @@
 <hr>
 <br>
 <pre>public abstract class <span class="strong">CompressorStream</span>
-extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></pre>
-<div class="block">This is an OutputStream that compresses (via Deflater or a deflater-like object), and optionally
- passes the compressed stream to another output stream.
+extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></pre>
+<div class="block">This is an OutputStream that compresses (via Deflater or a deflater-like object), and optionally passes the
+ compressed stream to another output stream.
  
  It allows to compute in/out/ratio stats.
  
- It works as a stream (similar to DeflaterOutputStream), but it's peculiar in that it expects that
- each writes has a fixed length (other lenghts are accepted, but it's less efficient) and that the
- total amount of bytes is known (so it can close itself, but it can also be closed on demand) In
- PNGJ use, the block is typically a row (including filter byte).
+ It works as a stream (similar to DeflaterOutputStream), but it's peculiar in that it expects that each writes has a
+ fixed length (other lenghts are accepted, but it's less efficient) and that the total amount of bytes is known (so it
+ can close itself, but it can also be closed on demand) In PNGJ use, the block is typically a row (including filter
+ byte).
  
  We use this to do the real compression (with Deflate) but also to compute tentative estimators
  
@@ -167,8 +162,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#done">done</a></strong></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>protected <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#os">os</a></strong></code>&nbsp;</td>
+<td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj">IDatChunkWriter</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#idatChunkWriter">idatChunkWriter</a></strong></code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
@@ -179,13 +174,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#totalbytes">totalbytes</a></strong></code>&nbsp;</td>
 </tr>
 </table>
-<ul class="blockList">
-<li class="blockList"><a name="fields_inherited_from_class_java.io.FilterOutputStream">
-<!--   -->
-</a>
-<h3>Fields inherited from class&nbsp;java.io.<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></h3>
-<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true#out" title="class or interface in java.io">out</a></code></li>
-</ul>
 </li>
 </ul>
 <!-- ======== CONSTRUCTOR SUMMARY ======== -->
@@ -200,7 +188,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <th class="colOne" scope="col">Constructor and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colOne"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#CompressorStream(java.io.OutputStream, int, long)">CompressorStream</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os,
+<td class="colOne"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#CompressorStream(ar.com.hjg.pngj.IDatChunkWriter, int, long)">CompressorStream</a></strong>(<a href="../../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj">IDatChunkWriter</a>&nbsp;idatCw,
                 int&nbsp;blockLen,
                 long&nbsp;totalbytes)</code>&nbsp;</td>
 </tr>
@@ -228,39 +216,31 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <tr class="rowColor">
 <td class="colFirst"><code>abstract void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#done()">done</a></strong>()</code>
-<div class="block">Will be called automatically when the number of bytes reaches the total expected Can be also be
- called from outside.</div>
+<div class="block">Will be called automatically when the number of bytes reaches the total expected Can be also be called from
+ outside.</div>
 </td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#flush()">flush</a></strong>()</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#getBytesCompressed()">getBytesCompressed</a></strong>()</code>
 <div class="block">compressed (out) bytes.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#getBytesRaw()">getBytesRaw</a></strong>()</code>
 <div class="block">raw (input) bytes.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>double</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#getCompressionRatio()">getCompressionRatio</a></strong>()</code>
 <div class="block">compressed/raw.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>byte[]</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#getFirstBytes()">getFirstBytes</a></strong>()</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#getOs()">getOs</a></strong>()</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
@@ -271,12 +251,12 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#isDone()">isDone</a></strong>()</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>protected abstract void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#mywrite(byte[], int, int)">mywrite</a></strong>(byte[]&nbsp;b,
+<td class="colFirst"><code>abstract void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#mywrite(byte[], int, int)">mywrite</a></strong>(byte[]&nbsp;data,
        int&nbsp;off,
        int&nbsp;len)</code>
-<div class="block">same as write, but guarantedd to not exceed blockLen The implementation should update bytesOut
- and bytesInt but not check for totalBytes</div>
+<div class="block">same as write, but guarantedd to not exceed blockLen The implementation should update bytesOut and bytesInt but not
+ check for totalBytes</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -285,30 +265,31 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#reset(java.io.OutputStream)">reset</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</code>
-<div class="block">resets and sets a new outputstream</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#setStoreFirstByte(boolean, int)">setStoreFirstByte</a></strong>(boolean&nbsp;storeFirstByte,
                  int&nbsp;nblocks)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
-<td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#write(byte[])">write</a></strong>(byte[]&nbsp;b)</code>&nbsp;</td>
-</tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#write(byte[], int, int)">write</a></strong>(byte[]&nbsp;b,
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#write(byte[])">write</a></strong>(byte[]&nbsp;data)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#write(byte[], int, int)">write</a></strong>(byte[]&nbsp;data,
      int&nbsp;off,
      int&nbsp;len)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#write(int)">write</a></strong>(int&nbsp;b)</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html#write(int)">write</a></strong>(int&nbsp;i)</code>&nbsp;</td>
 </tr>
 </table>
+<ul class="blockList">
+<li class="blockList"><a name="methods_inherited_from_class_java.io.OutputStream">
+<!--   -->
+</a>
+<h3>Methods inherited from class&nbsp;java.io.<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></h3>
+<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true#flush()" title="class or interface in java.io">flush</a></code></li>
+</ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
 <!--   -->
@@ -330,13 +311,13 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <!--   -->
 </a>
 <h3>Field Detail</h3>
-<a name="os">
+<a name="idatChunkWriter">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>os</h4>
-<pre>protected&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a> os</pre>
+<h4>idatChunkWriter</h4>
+<pre>protected&nbsp;<a href="../../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj">IDatChunkWriter</a> idatChunkWriter</pre>
 </li>
 </ul>
 <a name="blockLen">
@@ -410,16 +391,16 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <!--   -->
 </a>
 <h3>Constructor Detail</h3>
-<a name="CompressorStream(java.io.OutputStream, int, long)">
+<a name="CompressorStream(ar.com.hjg.pngj.IDatChunkWriter, int, long)">
 <!--   -->
 </a>
 <ul class="blockListLast">
 <li class="blockList">
 <h4>CompressorStream</h4>
-<pre>public&nbsp;CompressorStream(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os,
+<pre>public&nbsp;CompressorStream(<a href="../../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj">IDatChunkWriter</a>&nbsp;idatCw,
                 int&nbsp;blockLen,
                 long&nbsp;totalbytes)</pre>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>os</code> - Can be null (if we are only interested in compute compression ratio)</dd><dd><code>blockLen</code> - Estimated maximum block length. If unknown, use -1.</dd><dd><code>totalbytes</code> - Expected total bytes to be fed. If unknown, use -1.</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>idatCw</code> - Can be null (if we are only interested in compute compression ratio)</dd><dd><code>blockLen</code> - Estimated maximum block length. If unknown, use -1.</dd><dd><code>totalbytes</code> - Expected total bytes to be fed. If unknown, use -1.</dd></dl>
 </li>
 </ul>
 </li>
@@ -437,14 +418,14 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <li class="blockList">
 <h4>close</h4>
 <pre>public&nbsp;void&nbsp;close()</pre>
-<div class="block">Releases resources. Does NOT close the OuputStream. Idempotent.</div>
+<div class="block">Releases resources. Idempotent.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/Closeable.html?is-external=true#close()" title="class or interface in java.io">close</a></code>&nbsp;in interface&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/Closeable.html?is-external=true" title="class or interface in java.io">Closeable</a></code></dd>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/AutoCloseable.html?is-external=true#close()" title="class or interface in java.lang">close</a></code>&nbsp;in interface&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/AutoCloseable.html?is-external=true" title="class or interface in java.lang">AutoCloseable</a></code></dd>
 <dt><strong>Overrides:</strong></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true#close()" title="class or interface in java.io">close</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></code></dd>
+<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true#close()" title="class or interface in java.io">close</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -455,8 +436,21 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <li class="blockList">
 <h4>done</h4>
 <pre>public abstract&nbsp;void&nbsp;done()</pre>
-<div class="block">Will be called automatically when the number of bytes reaches the total expected Can be also be
- called from outside. This should set the flag done=true</div>
+<div class="block">Will be called automatically when the number of bytes reaches the total expected Can be also be called from
+ outside. This should set the flag done=true</div>
+</li>
+</ul>
+<a name="write(byte[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>write</h4>
+<pre>public final&nbsp;void&nbsp;write(byte[]&nbsp;data)</pre>
+<dl>
+<dt><strong>Overrides:</strong></dt>
+<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true#write(byte[])" title="class or interface in java.io">write</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></code></dd>
+</dl>
 </li>
 </ul>
 <a name="write(byte[], int, int)">
@@ -465,12 +459,12 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <ul class="blockList">
 <li class="blockList">
 <h4>write</h4>
-<pre>public final&nbsp;void&nbsp;write(byte[]&nbsp;b,
+<pre>public final&nbsp;void&nbsp;write(byte[]&nbsp;data,
          int&nbsp;off,
          int&nbsp;len)</pre>
 <dl>
 <dt><strong>Overrides:</strong></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true#write(byte[], int, int)" title="class or interface in java.io">write</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></code></dd>
+<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true#write(byte[], int, int)" title="class or interface in java.io">write</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></code></dd>
 </dl>
 </li>
 </ul>
@@ -480,59 +474,11 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <ul class="blockList">
 <li class="blockList">
 <h4>mywrite</h4>
-<pre>protected abstract&nbsp;void&nbsp;mywrite(byte[]&nbsp;b,
+<pre>public abstract&nbsp;void&nbsp;mywrite(byte[]&nbsp;data,
            int&nbsp;off,
            int&nbsp;len)</pre>
-<div class="block">same as write, but guarantedd to not exceed blockLen The implementation should update bytesOut
- and bytesInt but not check for totalBytes</div>
-</li>
-</ul>
-<a name="write(byte[])">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>write</h4>
-<pre>public final&nbsp;void&nbsp;write(byte[]&nbsp;b)</pre>
-<dl>
-<dt><strong>Overrides:</strong></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true#write(byte[])" title="class or interface in java.io">write</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></code></dd>
-</dl>
-</li>
-</ul>
-<a name="write(int)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>write</h4>
-<pre>public&nbsp;void&nbsp;write(int&nbsp;b)
-           throws <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></pre>
-<dl>
-<dt><strong>Overrides:</strong></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true#write(int)" title="class or interface in java.io">write</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></code></dd>
-<dt><span class="strong">Throws:</span></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/IOException.html?is-external=true" title="class or interface in java.io">IOException</a></code></dd></dl>
-</li>
-</ul>
-<a name="reset()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>reset</h4>
-<pre>public&nbsp;void&nbsp;reset()</pre>
-</li>
-</ul>
-<a name="reset(java.io.OutputStream)">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>reset</h4>
-<pre>public&nbsp;void&nbsp;reset(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;os)</pre>
-<div class="block">resets and sets a new outputstream</div>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>os</code> - </dd></dl>
+<div class="block">same as write, but guarantedd to not exceed blockLen The implementation should update bytesOut and bytesInt but not
+ check for totalBytes</div>
 </li>
 </ul>
 <a name="getCompressionRatio()">
@@ -565,31 +511,6 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <div class="block">compressed (out) bytes. This should be called only when done</div>
 </li>
 </ul>
-<a name="getOs()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>getOs</h4>
-<pre>public&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a>&nbsp;getOs()</pre>
-<dl><dt><span class="strong">Returns:</span></dt><dd>the output stream : warning, it can be null</dd></dl>
-</li>
-</ul>
-<a name="flush()">
-<!--   -->
-</a>
-<ul class="blockList">
-<li class="blockList">
-<h4>flush</h4>
-<pre>public&nbsp;void&nbsp;flush()</pre>
-<dl>
-<dt><strong>Specified by:</strong></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/Flushable.html?is-external=true#flush()" title="class or interface in java.io">flush</a></code>&nbsp;in interface&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/Flushable.html?is-external=true" title="class or interface in java.io">Flushable</a></code></dd>
-<dt><strong>Overrides:</strong></dt>
-<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true#flush()" title="class or interface in java.io">flush</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutputStream.html?is-external=true" title="class or interface in java.io">FilterOutputStream</a></code></dd>
-</dl>
-</li>
-</ul>
 <a name="isClosed()">
 <!--   -->
 </a>
@@ -620,11 +541,33 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/FilterOutp
 <a name="setStoreFirstByte(boolean, int)">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>setStoreFirstByte</h4>
 <pre>public&nbsp;void&nbsp;setStoreFirstByte(boolean&nbsp;storeFirstByte,
                      int&nbsp;nblocks)</pre>
+</li>
+</ul>
+<a name="reset()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>reset</h4>
+<pre>public&nbsp;void&nbsp;reset()</pre>
+</li>
+</ul>
+<a name="write(int)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>write</h4>
+<pre>public&nbsp;void&nbsp;write(int&nbsp;i)</pre>
+<dl>
+<dt><strong>Specified by:</strong></dt>
+<dd><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true#write(int)" title="class or interface in java.io">write</a></code>&nbsp;in class&nbsp;<code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/OutputStream.html?is-external=true" title="class or interface in java.io">OutputStream</a></code></dd>
+</dl>
 </li>
 </ul>
 </li>

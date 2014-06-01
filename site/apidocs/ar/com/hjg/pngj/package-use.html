@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Package ar.com.hjg.pngj (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>Uses of Package ar.com.hjg.pngj (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Package ar.com.hjg.pngj (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="Uses of Package ar.com.hjg.pngj (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -114,7 +114,8 @@ Mostly related with logic specific to reading/writing pixels.</div>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/ChunkReader.html#ar.com.hjg.pngj">ChunkReader</a>
-<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.</div>
+<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -149,7 +150,8 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/FilterType.html#ar.com.hjg.pngj">FilterType</a>
 <div class="block">Internal PNG predictor filter type
  
- Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters for different rows</div>
+ Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters
+ for different rows</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -174,8 +176,8 @@ Mostly related with logic specific to reading/writing pixels.</div>
 </tr>
 <tr class="rowColor">
 <td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/IImageLineArray.html#ar.com.hjg.pngj">IImageLineArray</a>
-<div class="block">This interface is just for the sake of unifying some methods of <a href="../../../../ar/com/hjg/pngj/ImageLineHelper.html" title="class in ar.com.hjg.pngj"><code>ImageLineHelper</code></a> that can
- use both <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> or <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a>.</div>
+<div class="block">This interface is just for the sake of unifying some methods of <a href="../../../../ar/com/hjg/pngj/ImageLineHelper.html" title="class in ar.com.hjg.pngj"><code>ImageLineHelper</code></a> that can use both
+ <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> or <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a>.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -224,6 +226,11 @@ Mostly related with logic specific to reading/writing pixels.</div>
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/PngReaderByte.html#ar.com.hjg.pngj">PngReaderByte</a>
+<div class="block">Trivial extension of <a href="../../../../ar/com/hjg/pngj/PngReader.html" title="class in ar.com.hjg.pngj"><code>PngReader</code></a> that uses <a href="../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj"><code>ImageLineByte</code></a></div>
+</td>
+</tr>
+<tr class="altColor">
 <td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/PngWriter.html#ar.com.hjg.pngj">PngWriter</a>
 <div class="block">Writes a PNG image, line by line.</div>
 </td>
@@ -271,32 +278,19 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/FilterType.html#ar.com.hjg.pngj.pixels">FilterType</a>
 <div class="block">Internal PNG predictor filter type
  
- Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters for different rows</div>
+ Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters
+ for different rows</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/IImageLine.html#ar.com.hjg.pngj.pixels">IImageLine</a>
-<div class="block">General format-translated image line.</div>
-</td>
-</tr>
-<tr class="altColor">
-<td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/IImageLineFactory.html#ar.com.hjg.pngj.pixels">IImageLineFactory</a>
-<div class="block">Image Line factory.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/IImageLineSet.html#ar.com.hjg.pngj.pixels">IImageLineSet</a>
-<div class="block">Set of <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><code>IImageLine</code></a> elements.</div>
+<td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/IDatChunkWriter.html#ar.com.hjg.pngj.pixels">IDatChunkWriter</a>
+<div class="block">Outputs a sequence of IDAT-like chunk, that is filled progressively until the max chunk length is reached (or until
+ flush())</div>
 </td>
 </tr>
 <tr class="altColor">
 <td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/ImageInfo.html#ar.com.hjg.pngj.pixels">ImageInfo</a>
 <div class="block">Simple immutable wrapper for basic image info.</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colOne"><a href="../../../../ar/com/hjg/pngj/class-use/ImageLineByte.html#ar.com.hjg.pngj.pixels">ImageLineByte</a>
-<div class="block">Lightweight wrapper for an image scanline, used for read and write.</div>
 </td>
 </tr>
 </tbody>

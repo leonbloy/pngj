@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkReader (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>ChunkReader (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkReader (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="ChunkReader (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -101,13 +101,14 @@
 <br>
 <pre>public abstract class <span class="strong">ChunkReader</span>
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
-<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.
+<div class="block">Parses a PNG chunk, consuming bytes in one mode: <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#BUFFER"><code>ChunkReader.ChunkReaderMode.BUFFER</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#PROCESS"><code>ChunkReader.ChunkReaderMode.PROCESS</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/ChunkReader.ChunkReaderMode.html#SKIP"><code>ChunkReader.ChunkReaderMode.SKIP</code></a>.
  <p>
- It calls <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>chunkDone()</code></a> when done. Also calls <code>#processData(byte[], int, int)</code> if <code>PROCESS</code> mode. Apart from thas, it's totally agnostic (it doesn't know
- about IDAT chunks, or PNG general structure)
+ It calls <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>chunkDone()</code></a> when done. Also calls <code>#processData(byte[], int, int)</code> if <code>PROCESS</code>
+ mode. Apart from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG general structure)
  <p>
- The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it should be short lived (one instance created for each chunk, and discarded after reading), but the
- wrapped chunkRaw can be (usually is) long lived.</div>
+ The object wraps a ChunkRaw instance (content filled only if BUFFER mode); it should be short lived (one instance
+ created for each chunk, and discarded after reading), but the wrapped chunkRaw can be (usually is) long lived.</div>
 </li>
 </ul>
 </div>
@@ -233,21 +234,26 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#isFromDeflatedSet()">isFromDeflatedSet</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected abstract void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#processData(int, byte[], int, int)">processData</a></strong>(int&nbsp;offsetInchunk,
            byte[]&nbsp;buf,
            int&nbsp;off,
            int&nbsp;len)</code>
-<div class="block">This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data inside the chunk.</div>
+<div class="block">This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data
+ inside the chunk.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#setCrcCheck(boolean)">setCrcCheck</a></strong>(boolean&nbsp;crcCheck)</code>
 <div class="block">Determines if CRC should be checked.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkReader.html#toString()">toString</a></strong>()</code>&nbsp;</td>
 </tr>
@@ -384,8 +390,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
                byte[]&nbsp;buf,
                int&nbsp;off,
                int&nbsp;len)</pre>
-<div class="block">This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data inside the chunk. For chunks with zero-length data, this will
- still be called once.
+<div class="block">This method will only be called in PROCESS mode, probably several times, each time with a new fragment of data
+ inside the chunk. For chunks with zero-length data, this will still be called once.
  
  It's guaranteed that the data corresponds exclusively to this chunk data (no crc, no data from no other chunks, )</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>offsetInchunk</code> - data bytes that had already been read/processed for this chunk</dd><dd><code>buf</code> - </dd><dd><code>off</code> - </dd><dd><code>len</code> - </dd></dl>
@@ -399,6 +405,15 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <h4>chunkDone</h4>
 <pre>protected abstract&nbsp;void&nbsp;chunkDone()</pre>
 <div class="block">This method will be called (in all modes) when the full chunk -including crc- has been read</div>
+</li>
+</ul>
+<a name="isFromDeflatedSet()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isFromDeflatedSet</h4>
+<pre>public&nbsp;boolean&nbsp;isFromDeflatedSet()</pre>
 </li>
 </ul>
 <a name="hashCode()">

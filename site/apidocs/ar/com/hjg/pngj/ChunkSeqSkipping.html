@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkSeqSkipping (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>ChunkSeqSkipping (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkSeqSkipping (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="ChunkSeqSkipping (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -106,8 +106,7 @@
 <br>
 <pre>public class <span class="strong">ChunkSeqSkipping</span>
 extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></pre>
-<div class="block">This simple reader skips all chunks contents and stores the chunkRaw in a list. 
- Useful to read chunks structure.
+<div class="block">This simple reader skips all chunks contents and stores the chunkRaw in a list. Useful to read chunks structure.
  
  Optionally the contents might be processed. This doesn't distinguish IDAT chunks</div>
 </li>
@@ -171,7 +170,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
                             boolean&nbsp;skip)</code>
 <div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
  
- The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>ChunkSeqReader.postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>ChunkSeqReader.postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -181,7 +181,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqSkipping.html#isIdatKind(java.lang.String)">isIdatKind</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+ will be created to deflate it and process+ the deflated data)
  
  This implementation always returns always false</div>
 </td>
@@ -280,7 +281,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createChunkReaderForNewChunk(java.lang.String, int, long, boolean)">ChunkSeqReader</a></code></strong></div>
 <div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
  
- The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>ChunkSeqReader.postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>ChunkSeqReader.postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createChunkReaderForNewChunk(java.lang.String, int, long, boolean)">createChunkReaderForNewChunk</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></code></dd>
@@ -329,7 +331,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <pre>protected&nbsp;boolean&nbsp;shouldSkipContent(int&nbsp;len,
                         <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)">ChunkSeqReader</a></code></strong></div>
-<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be null, and CRC will never checked</div>
+<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be
+ null, and CRC will never checked</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)">shouldSkipContent</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></code></dd>
@@ -344,7 +347,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <h4>isIdatKind</h4>
 <pre>protected&nbsp;boolean&nbsp;isIdatKind(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)">ChunkSeqReader</a></code></strong></div>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+ will be created to deflate it and process+ the deflated data)
  
  This implementation always returns always false</div>
 <dl>

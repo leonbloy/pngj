@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ImageInfo (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>ImageInfo (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ImageInfo (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="ImageInfo (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -153,8 +153,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#channels">channels</a></strong></code>
-<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1
- for grayscale or indexed.</div>
+<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for grayscale or
+ indexed.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -202,8 +202,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#samplesPerRowPacked">samplesPerRowPacked</a></strong></code>
-<div class="block">Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4)
- they are counted as one "packed sample".</div>
+<div class="block">Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4) they are counted as
+ one "packed sample".</div>
 </td>
 </tr>
 </table>
@@ -285,6 +285,13 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#toStringDetail()">toStringDetail</a></strong>()</code>&nbsp;</td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ImageInfo.html#withSize(int, int)">withSize</a></strong>(int&nbsp;cols,
+        int&nbsp;rows)</code>
+<div class="block">returns a copy with different size</div>
+</td>
+</tr>
 </table>
 <ul class="blockList">
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
@@ -314,8 +321,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>MAX_COLS_ROW</h4>
 <pre>public static final&nbsp;int MAX_COLS_ROW</pre>
-<div class="block">Absolute allowed maximum value for rows and cols (2^24 ~16 million). (bytesPerRow must fit in a
- 32bit integer, though total amount of pixels not necessarily).</div>
+<div class="block">Absolute allowed maximum value for rows and cols (2^24 ~16 million). (bytesPerRow must fit in a 32bit integer,
+ though total amount of pixels not necessarily).</div>
 <dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#ar.com.hjg.pngj.ImageInfo.MAX_COLS_ROW">Constant Field Values</a></dd></dl>
 </li>
 </ul>
@@ -346,8 +353,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>bitDepth</h4>
 <pre>public final&nbsp;int bitDepth</pre>
-<div class="block">Bits per sample (per channel) in the buffer (1-2-4-8-16). This is 8-16 for RGB/ARGB images,
- 1-2-4-8 for grayscale. For indexed images, number of bits per palette index (1-2-4-8)</div>
+<div class="block">Bits per sample (per channel) in the buffer (1-2-4-8-16). This is 8-16 for RGB/ARGB images, 1-2-4-8 for grayscale.
+ For indexed images, number of bits per palette index (1-2-4-8)</div>
 </li>
 </ul>
 <a name="channels">
@@ -357,8 +364,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>channels</h4>
 <pre>public final&nbsp;int channels</pre>
-<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1
- for grayscale or indexed.</div>
+<div class="block">Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for grayscale or
+ indexed.</div>
 </li>
 </ul>
 <a name="alpha">
@@ -448,9 +455,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>samplesPerRowPacked</h4>
 <pre>public final&nbsp;int samplesPerRowPacked</pre>
-<div class="block">Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4)
- they are counted as one "packed sample". This is less that samplesPerRow only when bitdepth is
- 1-2-4 (flag packed = true)
+<div class="block">Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4) they are counted as
+ one "packed sample". This is less that samplesPerRow only when bitdepth is 1-2-4 (flag packed = true)
  <p>
  This equals the number of elements in the scanline array if working with packedMode=true
  <p>
@@ -502,6 +508,19 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <!--   -->
 </a>
 <h3>Method Detail</h3>
+<a name="withSize(int, int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>withSize</h4>
+<pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;withSize(int&nbsp;cols,
+                 int&nbsp;rows)</pre>
+<div class="block">returns a copy with different size</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>cols</code> - if non-positive, the original is used</dd><dd><code>rows</code> - if non-positive, the original is used</dd>
+<dt><span class="strong">Returns:</span></dt><dd>a new copy with the specified size and same properties</dd></dl>
+</li>
+</ul>
 <a name="getTotalPixels()">
 <!--   -->
 </a>

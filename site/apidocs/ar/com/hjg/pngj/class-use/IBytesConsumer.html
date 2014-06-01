@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="Uses of Interface ar.com.hjg.pngj.IBytesConsumer (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -145,10 +145,16 @@ PNGJ main package</div>
 <td class="colLast"><span class="strong">BufferedStreamFeeder.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/BufferedStreamFeeder.html#feed(ar.com.hjg.pngj.IBytesConsumer, int)">feed</a></strong>(<a href="../../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="interface in ar.com.hjg.pngj">IBytesConsumer</a>&nbsp;consumer,
     int&nbsp;maxbytes)</code>
 <div class="block">Feeds the consumer (with at most maxbytes) <br>
- This should return 0 only if the stream is EOF or the consumer is done</div>
+ Returns 0 only if the stream is EOF (or maxbytes=0).</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>long</code></td>
+<td class="colLast"><span class="strong">BufferedStreamFeeder.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/BufferedStreamFeeder.html#feedAll(ar.com.hjg.pngj.IBytesConsumer)">feedAll</a></strong>(<a href="../../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="interface in ar.com.hjg.pngj">IBytesConsumer</a>&nbsp;consumer)</code>
+<div class="block">Feeds as much bytes as it can to the consumer, in a loop.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><span class="strong">BufferedStreamFeeder.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/BufferedStreamFeeder.html#feedFixed(ar.com.hjg.pngj.IBytesConsumer, int)">feedFixed</a></strong>(<a href="../../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="interface in ar.com.hjg.pngj">IBytesConsumer</a>&nbsp;consumer,
          int&nbsp;nbytes)</code>

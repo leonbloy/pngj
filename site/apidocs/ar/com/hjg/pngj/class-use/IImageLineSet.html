@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Interface ar.com.hjg.pngj.IImageLineSet (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>Uses of Interface ar.com.hjg.pngj.IImageLineSet (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Interface ar.com.hjg.pngj.IImageLineSet (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="Uses of Interface ar.com.hjg.pngj.IImageLineSet (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -81,13 +81,6 @@
 PNGJ main package</div>
 </td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><a href="#ar.com.hjg.pngj.pixels">ar.com.hjg.pngj.pixels</a></td>
-<td class="colLast">
-<div class="block">
-Mostly related with logic specific to reading/writing pixels.</div>
-</td>
-</tr>
 </tbody>
 </table>
 </li>
@@ -141,7 +134,10 @@ Mostly related with logic specific to reading/writing pixels.</div>
       int&nbsp;nlines,
       int&nbsp;noffset,
       int&nbsp;step)</code>
-<div class="block">Creates a new <a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj"><code>IImageLineSet</code></a></div>
+<div class="block">Creates a new <a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj"><code>IImageLineSet</code></a>
+ 
+ If singleCursor=true, the caller will read and write one row fully at a time, in order (it'll never try to read out
+ of order lines), so the implementation can opt for allocate only one line.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -155,9 +151,19 @@ Mostly related with logic specific to reading/writing pixels.</div>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
+<td class="colLast"><span class="strong">PngReaderApng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngReaderApng.html#readRows()">readRows</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
 <td class="colLast"><span class="strong">PngReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngReader.html#readRows()">readRows</a></strong>()</code>
 <div class="block">Reads all rows in a ImageLineSet This is handy, but less memory-efficient (except for interlaced)</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
+<td class="colLast"><span class="strong">PngReaderApng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngReaderApng.html#readRows(int, int, int)">readRows</a></strong>(int&nbsp;nRows,
+        int&nbsp;rowOffset,
+        int&nbsp;rowStep)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
@@ -181,24 +187,6 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <td class="colLast"><span class="strong">PngWriter.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngWriter.html#writeRows(ar.com.hjg.pngj.IImageLineSet)">writeRows</a></strong>(<a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;&nbsp;imglines)</code>
 <div class="block">Writes the full set of row.</div>
 </td>
-</tr>
-</tbody>
-</table>
-</li>
-<li class="blockList"><a name="ar.com.hjg.pngj.pixels">
-<!--   -->
-</a>
-<h3>Uses of <a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a> in <a href="../../../../../ar/com/hjg/pngj/pixels/package-summary.html">ar.com.hjg.pngj.pixels</a></h3>
-<table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing classes, and an explanation">
-<caption><span>Classes in <a href="../../../../../ar/com/hjg/pngj/pixels/package-summary.html">ar.com.hjg.pngj.pixels</a> that implement <a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a></span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colLast" scope="col">Class and Description</th>
-</tr>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>class&nbsp;</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineSetARGBbi.html" title="class in ar.com.hjg.pngj.pixels">ImageLineSetARGBbi</a></strong></code>&nbsp;</td>
 </tr>
 </tbody>
 </table>

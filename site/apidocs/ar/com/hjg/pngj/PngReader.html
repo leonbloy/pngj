@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PngReader (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>PngReader (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PngReader (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="PngReader (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -36,7 +36,7 @@
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/PngjUnsupportedException.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/PngReaderByte.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/PngReaderApng.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/PngReader.html" target="_top">Frames</a></li>
@@ -103,23 +103,28 @@
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Reads a PNG image (pixels and/or metadata) from a file or stream.
  <p>
- Each row is read as an <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> object (one int per sample), but this can be changed by setting a different ImageLineFactory
+ Each row is read as an <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a> object (one int per sample), but this can be changed by setting a
+ different ImageLineFactory
  <p>
  Internally, this wraps a <a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj"><code>ChunkSeqReaderPng</code></a> with a <a href="../../../../ar/com/hjg/pngj/BufferedStreamFeeder.html" title="class in ar.com.hjg.pngj"><code>BufferedStreamFeeder</code></a>
  <p>
  The reading sequence is as follows: <br>
  1. At construction time, the header and IHDR chunk are read (basic image info) <br>
  2. Afterwards you can set some additional global options. Eg. <a href="../../../../ar/com/hjg/pngj/PngReader.html#setCrcCheckDisabled()"><code>setCrcCheckDisabled()</code></a>.<br>
- 3. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, all the chunks before IDAT are then loaded and available <br>
- 4a. The rows are read in order by calling <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow()"><code>readRow()</code></a>. You can also call <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow(int)"><code>readRow(int)</code></a> to skip rows -but you can't go backwards, at least not with this
- implementation. This method returns a <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><code>IImageLine</code></a> object which can be casted to the concrete class. This class returns by default a <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a>, but this can be
+ 3. Optional: If you call getMetadata() or getChunksLisk() before start reading the rows, all the chunks before IDAT
+ are then loaded and available <br>
+ 4a. The rows are read in order by calling <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow()"><code>readRow()</code></a>. You can also call <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow(int)"><code>readRow(int)</code></a> to skip rows
+ -but you can't go backwards, at least not with this implementation. This method returns a <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><code>IImageLine</code></a> object
+ which can be casted to the concrete class. This class returns by default a <a href="../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj"><code>ImageLineInt</code></a>, but this can be
  changed.<br>
- 4b. Alternatively, you can read all rows, or a subset, in a single call: <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()"><code>readRows()</code></a>, <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows(int, int, int)"><code>readRows(int, int, int)</code></a> ,etc. In general this consumes more memory, but
- for interlaced images this is equally efficient, and more so if reading a small subset of rows.<br>
+ 4b. Alternatively, you can read all rows, or a subset, in a single call: <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()"><code>readRows()</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows(int, int, int)"><code>readRows(int, int, int)</code></a> ,etc. In general this consumes more memory, but for interlaced images this is
+ equally efficient, and more so if reading a small subset of rows.<br>
  5. Reading of the last row automatically loads the trailing chunks, and ends the reader.<br>
  6. end() also loads the trailing chunks, if not done, and finishes cleanly the reading and closes the stream.
  <p>
- See also <a href="../../../../ar/com/hjg/pngj/PngReaderInt.html" title="class in ar.com.hjg.pngj"><code>PngReaderInt</code></a> (esentially the same as this, and slightly preferred) and <a href="../../../../ar/com/hjg/pngj/PngReaderByte.html" title="class in ar.com.hjg.pngj"><code>PngReaderByte</code></a> (uses byte instead of int to store the samples).</div>
+ See also <a href="../../../../ar/com/hjg/pngj/PngReaderInt.html" title="class in ar.com.hjg.pngj"><code>PngReaderInt</code></a> (esentially the same as this, and slightly preferred) and <a href="../../../../ar/com/hjg/pngj/PngReaderByte.html" title="class in ar.com.hjg.pngj"><code>PngReaderByte</code></a> (uses
+ byte instead of int to store the samples).</div>
 </li>
 </ul>
 </div>
@@ -165,7 +170,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="altColor">
 <td class="colFirst"><code>static long</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#MAX_BYTES_METADATA_DEFAULT">MAX_BYTES_METADATA_DEFAULT</a></strong></code>
-<div class="block">Defensive limit: refuse to load more than 5MB of ancillary metadata, see <a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)"><code>setMaxBytesMetadata(long)</code></a> and also <a href="../../../../ar/com/hjg/pngj/PngReader.html#addChunkToSkip(java.lang.String)"><code>addChunkToSkip(String)</code></a></div>
+<div class="block">Defensive limit: refuse to load more than 5MB of ancillary metadata, see <a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)"><code>setMaxBytesMetadata(long)</code></a> and
+ also <a href="../../../../ar/com/hjg/pngj/PngReader.html#addChunkToSkip(java.lang.String)"><code>addChunkToSkip(String)</code></a></div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -252,6 +258,12 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#createChunkSeqReader()">createChunkSeqReader</a></strong>()</code>
+<div class="block">called on construction time.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#createLineSet(boolean, int, int, int)">createLineSet</a></strong>(boolean&nbsp;singleCursor,
              int&nbsp;nlines,
@@ -259,6 +271,10 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
              int&nbsp;step)</code>
 <div class="block">By default this uses the factory (which, by default creates ImageLineInt).</div>
 </td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#dontSkipChunk(java.lang.String)">dontSkipChunk</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;chunkToSkip)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -281,67 +297,80 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks">ChunksList</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#getChunksList(boolean)">getChunksList</a></strong>(boolean&nbsp;forceLoadingOfFirstChunks)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#getCurImgInfo()">getCurImgInfo</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#getImgInfo()">getImgInfo</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/chunks/PngMetadata.html" title="class in ar.com.hjg.pngj.chunks">PngMetadata</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#getMetadata()">getMetadata</a></strong>()</code>
 <div class="block">High level wrapper over chunksList</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#getSimpleDigestHex()">getSimpleDigestHex</a></strong>()</code>
-<div class="block">Pseudo 64-bits digest computed over the basic image properties and the raw pixels data: it should coincide for equivalent images encoded with different filters and
- compressors; but will not coincide for interlaced/non-interlaced; also, this does not take into account the palette info.</div>
+<div class="block">Pseudo 64-bits digest computed over the basic image properties and the raw pixels data: it should coincide for
+ equivalent images encoded with different filters and compressors; but will not coincide for
+ interlaced/non-interlaced; also, this does not take into account the palette info.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#hasMoreRows()">hasMoreRows</a></strong>()</code>
 <div class="block">True if last row has not yet been read</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#isInterlaced()">isInterlaced</a></strong>()</code>
 <div class="block">Interlaced PNG is accepted -though not welcomed- now...</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#loadAllInterlaced(int, int, int)">loadAllInterlaced</a></strong>(int&nbsp;nRows,
                  int&nbsp;rowOffset,
                  int&nbsp;rowStep)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#prepareSimpleDigestComputation()">prepareSimpleDigestComputation</a></strong>()</code>
 <div class="block">Enables and prepare the simple digest computation.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#readFirstChunks()">readFirstChunks</a></strong>()</code>
 <div class="block">Reads chunks before first IDAT.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow()">readRow</a></strong>()</code>
 <div class="block">Reads next row.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow(int)">readRow</a></strong>(int&nbsp;nrow)</code>
 <div class="block">The row number is mostly meant as a check, the rows must be called in ascending order (not necessarily consecutive)</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()">readRows</a></strong>()</code>
 <div class="block">Reads all rows in a ImageLineSet This is handy, but less memory-efficient (except for interlaced)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows(int, int, int)">readRows</a></strong>(int&nbsp;nRows,
         int&nbsp;rowOffset,
@@ -349,71 +378,73 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <div class="block">Reads a subset of rows.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#readSkippingAllRows()">readSkippingAllRows</a></strong>()</code>
 <div class="block">Reads all the (remaining) file, skipping the pixels data.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setChunkLoadBehaviour(ar.com.hjg.pngj.chunks.ChunkLoadBehaviour)">setChunkLoadBehaviour</a></strong>(<a href="../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks">ChunkLoadBehaviour</a>&nbsp;chunkLoadBehaviour)</code>
 <div class="block">Determines which ancillary chunks (metadata) are to be loaded and which skipped.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setChunksToSkip(java.lang.String...)">setChunksToSkip</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;chunksToSkip)</code>
 <div class="block">Chunks ids to be skipped.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setCrcCheckDisabled()">setCrcCheckDisabled</a></strong>()</code>
-<div class="block">Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading speed for big files</div>
+<div class="block">Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading speed
+ for big files</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setLineSetFactory(ar.com.hjg.pngj.IImageLineSetFactory)">setLineSetFactory</a></strong>(<a href="../../../../ar/com/hjg/pngj/IImageLineSetFactory.html" title="interface in ar.com.hjg.pngj">IImageLineSetFactory</a>&lt;? extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;&nbsp;factory)</code>
 <div class="block">Sets the factory that creates the ImageLine.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)">setMaxBytesMetadata</a></strong>(long&nbsp;maxBytesMetadata)</code>
 <div class="block">Set total maximum bytes to load from ancillary chunks (0: unlimited; default: 5Mb).<br>
  If exceeded, some chunks will be skipped</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxTotalBytesRead(long)">setMaxTotalBytesRead</a></strong>(long&nbsp;maxTotalBytesToRead)</code>
 <div class="block">Set total maximum bytes to read (0: unlimited; default: 200MB).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setShouldCloseStream(boolean)">setShouldCloseStream</a></strong>(boolean&nbsp;shouldCloseStream)</code>
 <div class="block">if true, input stream will be closed after ending read</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#setSkipChunkMaxSize(long)">setSkipChunkMaxSize</a></strong>(long&nbsp;skipChunkMaxSize)</code>
 <div class="block">Set maximum size in bytes for individual ancillary chunks (0: unlimited; default: 2MB).</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#toString()">toString</a></strong>()</code>
 <div class="block">Basic info, for debugging.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/PngReader.html#toStringCompact()">toStringCompact</a></strong>()</code>
-<div class="block">Basic info, in a compact format, apt for scripting COLSxROWS[dBITDEPTH][a][p][g][i] ( the default dBITDEPTH='d8' is ommited)</div>
+<div class="block">Basic info, in a compact format, apt for scripting COLSxROWS[dBITDEPTH][a][p][g][i] ( the default dBITDEPTH='d8' is
+ ommited)</div>
 </td>
 </tr>
 </table>
@@ -456,7 +487,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>MAX_BYTES_METADATA_DEFAULT</h4>
 <pre>public static final&nbsp;long MAX_BYTES_METADATA_DEFAULT</pre>
-<div class="block">Defensive limit: refuse to load more than 5MB of ancillary metadata, see <a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)"><code>setMaxBytesMetadata(long)</code></a> and also <a href="../../../../ar/com/hjg/pngj/PngReader.html#addChunkToSkip(java.lang.String)"><code>addChunkToSkip(String)</code></a></div>
+<div class="block">Defensive limit: refuse to load more than 5MB of ancillary metadata, see <a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)"><code>setMaxBytesMetadata(long)</code></a> and
+ also <a href="../../../../ar/com/hjg/pngj/PngReader.html#addChunkToSkip(java.lang.String)"><code>addChunkToSkip(String)</code></a></div>
 <dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../constant-values.html#ar.com.hjg.pngj.PngReader.MAX_BYTES_METADATA_DEFAULT">Constant Field Values</a></dd></dl>
 </li>
 </ul>
@@ -497,7 +529,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <ul class="blockList">
 <li class="blockList">
 <h4>chunkseq</h4>
-<pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a> chunkseq</pre>
+<pre>protected final&nbsp;<a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a> chunkseq</pre>
 <div class="block">This object has most of the intelligence to parse the chunks and decompress the IDAT stream</div>
 </li>
 </ul>
@@ -507,7 +539,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <ul class="blockList">
 <li class="blockList">
 <h4>streamFeeder</h4>
-<pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/BufferedStreamFeeder.html" title="class in ar.com.hjg.pngj">BufferedStreamFeeder</a> streamFeeder</pre>
+<pre>protected final&nbsp;<a href="../../../../ar/com/hjg/pngj/BufferedStreamFeeder.html" title="class in ar.com.hjg.pngj">BufferedStreamFeeder</a> streamFeeder</pre>
 <div class="block">Takes bytes from the InputStream and passes it to the ChunkSeqReaderPng. Never null.</div>
 </li>
 </ul>
@@ -538,8 +570,9 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>imlinesSet</h4>
 <pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj">IImageLineSet</a>&lt;? extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt; imlinesSet</pre>
-<div class="block">Represents the set of lines (rows) being read. Normally this works as a cursor, storing only one (the current) row. This stores several (perhaps all) rows only if calling
- <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()"><code>readRows()</code></a> or for interlaced images (this later is transparent to the user)</div>
+<div class="block">Represents the set of lines (rows) being read. Normally this works as a cursor, storing only one (the current) row.
+ This stores several (perhaps all) rows only if calling <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()"><code>readRows()</code></a> or for interlaced images (this later is
+ transparent to the user)</div>
 </li>
 </ul>
 </li>
@@ -557,11 +590,13 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>PngReader</h4>
 <pre>public&nbsp;PngReader(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io">InputStream</a>&nbsp;inputStream)</pre>
-<div class="block">Constructs a PngReader object from a stream, with default options. This reads the signature and the first IHDR chunk only.
+<div class="block">Constructs a PngReader object from a stream, with default options. This reads the signature and the first IHDR
+ chunk only.
  <p>
  Warning: In case of exception the stream is NOT closed.
  <p>
- Warning: By default the stream will be closed when this object is <a href="../../../../ar/com/hjg/pngj/PngReader.html#close()"><code>close()</code></a>d. See <a href="../../../../ar/com/hjg/pngj/PngReader.html#PngReader(java.io.InputStream, boolean)"><code>PngReader(InputStream,boolean)</code></a> or <a href="../../../../ar/com/hjg/pngj/PngReader.html#setShouldCloseStream(boolean)"><code>setShouldCloseStream(boolean)</code></a>
+ Warning: By default the stream will be closed when this object is <a href="../../../../ar/com/hjg/pngj/PngReader.html#close()"><code>close()</code></a>d. See
+ <a href="../../../../ar/com/hjg/pngj/PngReader.html#PngReader(java.io.InputStream, boolean)"><code>PngReader(InputStream,boolean)</code></a> or <a href="../../../../ar/com/hjg/pngj/PngReader.html#setShouldCloseStream(boolean)"><code>setShouldCloseStream(boolean)</code></a>
  <p></div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputStream</code> - PNG stream</dd></dl>
 </li>
@@ -575,7 +610,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <pre>public&nbsp;PngReader(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/InputStream.html?is-external=true" title="class or interface in java.io">InputStream</a>&nbsp;inputStream,
          boolean&nbsp;shouldCloseStream)</pre>
 <div class="block">Same as <a href="../../../../ar/com/hjg/pngj/PngReader.html#PngReader(java.io.InputStream)"><code>PngReader(InputStream)</code></a> but allows to specify early if the stream must be closed</div>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputStream</code> - </dd><dd><code>shouldCloseStream</code> - The stream will be closed in case of exception (constructor included) or normal termination.</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>inputStream</code> - </dd><dd><code>shouldCloseStream</code> - The stream will be closed in case of exception (constructor included) or normal
+        termination.</dd></dl>
 </li>
 </ul>
 <a name="PngReader(java.io.File)">
@@ -585,7 +621,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>PngReader</h4>
 <pre>public&nbsp;PngReader(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</a>&nbsp;file)</pre>
-<div class="block">Constructs a PngReader opening a file. Sets <tt>shouldCloseStream=true</tt>, so that the stream will be closed with this object.</div>
+<div class="block">Constructs a PngReader opening a file. Sets <tt>shouldCloseStream=true</tt>, so that the stream will be closed with
+ this object.</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>file</code> - PNG image file</dd></dl>
 </li>
 </ul>
@@ -610,9 +647,10 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
  <P>
  This can be called several times (tentatively), it does nothing if already run
  <p>
- (Note: when should this be called? in the constructor? hardly, because we loose the opportunity to call setChunkLoadBehaviour() and perhaps other settings before reading the
- first row? but sometimes we want to access some metadata (plte, phys) before. Because of this, this method can be called explicitly but is also called implicititly in some
- methods (getMetatada(), getChunksList())</div>
+ (Note: when should this be called? in the constructor? hardly, because we loose the opportunity to call
+ setChunkLoadBehaviour() and perhaps other settings before reading the first row? but sometimes we want to access
+ some metadata (plte, phys) before. Because of this, this method can be called explicitly but is also called
+ implicititly in some methods (getMetatada(), getChunksList())</div>
 </li>
 </ul>
 <a name="setChunkLoadBehaviour(ar.com.hjg.pngj.chunks.ChunkLoadBehaviour)">
@@ -624,8 +662,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <pre>public&nbsp;void&nbsp;setChunkLoadBehaviour(<a href="../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks">ChunkLoadBehaviour</a>&nbsp;chunkLoadBehaviour)</pre>
 <div class="block">Determines which ancillary chunks (metadata) are to be loaded and which skipped.
  <p>
- Additional restrictions may apply. See also <a href="../../../../ar/com/hjg/pngj/PngReader.html#setChunksToSkip(java.lang.String...)"><code>setChunksToSkip(String...)</code></a>, <a href="../../../../ar/com/hjg/pngj/PngReader.html#addChunkToSkip(java.lang.String)"><code>addChunkToSkip(String)</code></a>, <a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)"><code>setMaxBytesMetadata(long)</code></a>,
- <a href="../../../../ar/com/hjg/pngj/PngReader.html#setSkipChunkMaxSize(long)"><code>setSkipChunkMaxSize(long)</code></a></div>
+ Additional restrictions may apply. See also <a href="../../../../ar/com/hjg/pngj/PngReader.html#setChunksToSkip(java.lang.String...)"><code>setChunksToSkip(String...)</code></a>, <a href="../../../../ar/com/hjg/pngj/PngReader.html#addChunkToSkip(java.lang.String)"><code>addChunkToSkip(String)</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/PngReader.html#setMaxBytesMetadata(long)"><code>setMaxBytesMetadata(long)</code></a>, <a href="../../../../ar/com/hjg/pngj/PngReader.html#setSkipChunkMaxSize(long)"><code>setSkipChunkMaxSize(long)</code></a></div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>chunkLoadBehaviour</code> - <a href="../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks"><code>ChunkLoadBehaviour</code></a></dd></dl>
 </li>
 </ul>
@@ -636,11 +674,22 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getChunksList</h4>
 <pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks">ChunksList</a>&nbsp;getChunksList()</pre>
-<div class="block">All loaded chunks (metada). If we have not yet end reading the image, this will include only the chunks before the pixels data (IDAT)
+<div class="block">All loaded chunks (metada). If we have not yet end reading the image, this will include only the chunks before the
+ pixels data (IDAT)
  <p>
- Critical chunks are included, except that all IDAT chunks appearance are replaced by a single dummy-marker IDAT chunk. These might be copied to the PngWriter
+ Critical chunks are included, except that all IDAT chunks appearance are replaced by a single dummy-marker IDAT
+ chunk. These might be copied to the PngWriter
  <p></div>
 <dl><dt><span class="strong">See Also:</span></dt><dd><a href="../../../../ar/com/hjg/pngj/PngReader.html#getMetadata()"><code>getMetadata()</code></a></dd></dl>
+</li>
+</ul>
+<a name="getChunksList(boolean)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getChunksList</h4>
+<pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/chunks/ChunksList.html" title="class in ar.com.hjg.pngj.chunks">ChunksList</a>&nbsp;getChunksList(boolean&nbsp;forceLoadingOfFirstChunks)</pre>
 </li>
 </ul>
 <a name="getMetadata()">
@@ -709,7 +758,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <div class="block">Reads a subset of rows.
  <p>
  This method should called once, and not be mixed with <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow()"><code>readRow()</code></a></div>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>nRows</code> - how many rows to read (default: imageInfo.rows)</dd><dd><code>rowOffset</code> - rows to skip (default:0)</dd><dd><code>rowStep</code> - step between rows to load( default:1)</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>nRows</code> - how many rows to read (default: imageInfo.rows; negative: autocompute)</dd><dd><code>rowOffset</code> - rows to skip (default:0)</dd><dd><code>rowStep</code> - step between rows to load( default:1)</dd></dl>
 </li>
 </ul>
 <a name="setLineSetFactory(ar.com.hjg.pngj.IImageLineSetFactory)">
@@ -719,7 +768,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>setLineSetFactory</h4>
 <pre>public&nbsp;void&nbsp;setLineSetFactory(<a href="../../../../ar/com/hjg/pngj/IImageLineSetFactory.html" title="interface in ar.com.hjg.pngj">IImageLineSetFactory</a>&lt;? extends <a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&gt;&nbsp;factory)</pre>
-<div class="block">Sets the factory that creates the ImageLine. By default, this implementation uses ImageLineInt but this can be changed (at construction time or later) by calling this method.
+<div class="block">Sets the factory that creates the ImageLine. By default, this implementation uses ImageLineInt but this can be
+ changed (at construction time or later) by calling this method.
  <p>
  See also <a href="../../../../ar/com/hjg/pngj/PngReader.html#createLineSet(boolean, int, int, int)"><code>createLineSet(boolean, int, int, int)</code></a></div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>factory</code> - </dd></dl>
@@ -735,7 +785,9 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
                                                 int&nbsp;nlines,
                                                 int&nbsp;noffset,
                                                 int&nbsp;step)</pre>
-<div class="block">By default this uses the factory (which, by default creates ImageLineInt). You should rarely override this.</div>
+<div class="block">By default this uses the factory (which, by default creates ImageLineInt). You should rarely override this.
+ <p>
+ See doc in <a href="../../../../ar/com/hjg/pngj/IImageLineSetFactory.html#create(ar.com.hjg.pngj.ImageInfo, boolean, int, int, int)"><code>IImageLineSetFactory.create(ImageInfo, boolean, int, int, int)</code></a></div>
 </li>
 </ul>
 <a name="loadAllInterlaced(int, int, int)">
@@ -756,8 +808,9 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>readSkippingAllRows</h4>
 <pre>public&nbsp;void&nbsp;readSkippingAllRows()</pre>
-<div class="block">Reads all the (remaining) file, skipping the pixels data. This is much more efficient that calling <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow()"><code>readRow()</code></a>, specially for big files (about 10 times faster!),
- because it doesn't even decompress the IDAT stream and disables CRC check Use this if you are not interested in reading pixels,only metadata.</div>
+<div class="block">Reads all the (remaining) file, skipping the pixels data. This is much more efficient that calling
+ <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRow()"><code>readRow()</code></a>, specially for big files (about 10 times faster!), because it doesn't even decompress the IDAT
+ stream and disables CRC check Use this if you are not interested in reading pixels,only metadata.</div>
 </li>
 </ul>
 <a name="setMaxTotalBytesRead(long)">
@@ -790,7 +843,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <h4>setSkipChunkMaxSize</h4>
 <pre>public&nbsp;void&nbsp;setSkipChunkMaxSize(long&nbsp;skipChunkMaxSize)</pre>
 <div class="block">Set maximum size in bytes for individual ancillary chunks (0: unlimited; default: 2MB). <br>
- Chunks exceeding this length will be skipped (the CRC will not be checked) and the chunk will be saved as a PngChunkSkipped object. See also setSkipChunkIds</div>
+ Chunks exceeding this length will be skipped (the CRC will not be checked) and the chunk will be saved as a
+ PngChunkSkipped object. See also setSkipChunkIds</div>
 </li>
 </ul>
 <a name="setChunksToSkip(java.lang.String...)">
@@ -801,7 +855,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <h4>setChunksToSkip</h4>
 <pre>public&nbsp;void&nbsp;setChunksToSkip(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;chunksToSkip)</pre>
 <div class="block">Chunks ids to be skipped. <br>
- These chunks will be skipped (the CRC will not be checked) and the chunk will be saved as a PngChunkSkipped object. See also setSkipChunkMaxSize</div>
+ These chunks will be skipped (the CRC will not be checked) and the chunk will be saved as a PngChunkSkipped object.
+ See also setSkipChunkMaxSize</div>
 </li>
 </ul>
 <a name="addChunkToSkip(java.lang.String)">
@@ -811,6 +866,15 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>addChunkToSkip</h4>
 <pre>public&nbsp;void&nbsp;addChunkToSkip(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;chunkToSkip)</pre>
+</li>
+</ul>
+<a name="dontSkipChunk(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>dontSkipChunk</h4>
+<pre>public&nbsp;void&nbsp;dontSkipChunk(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;chunkToSkip)</pre>
 </li>
 </ul>
 <a name="setShouldCloseStream(boolean)">
@@ -834,8 +898,9 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <pre>public&nbsp;void&nbsp;end()</pre>
 <div class="block">Reads till end of PNG stream and call <tt>close()</tt>
  
- This should normally be called after reading the pixel data, to read the trailing chunks and close the stream. But it can be called at anytime. This will also read the first
- chunks if not still read, and skip pixels (IDAT) if still pending.
+ This should normally be called after reading the pixel data, to read the trailing chunks and close the stream. But
+ it can be called at anytime. This will also read the first chunks if not still read, and skip pixels (IDAT) if
+ still pending.
  
  If you want to read all metadata skipping pixels, readSkippingAllRows() is a little more efficient.
  
@@ -871,7 +936,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>setCrcCheckDisabled</h4>
 <pre>public&nbsp;void&nbsp;setCrcCheckDisabled()</pre>
-<div class="block">Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading speed for big files</div>
+<div class="block">Disables the CRC integrity check in IDAT chunks and ancillary chunks, this gives a slight increase in reading speed
+ for big files</div>
 </li>
 </ul>
 <a name="getChunkseq()">
@@ -884,6 +950,16 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <div class="block">Gets wrapped <a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj"><code>ChunkSeqReaderPng</code></a> object</div>
 </li>
 </ul>
+<a name="createChunkSeqReader()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>createChunkSeqReader</h4>
+<pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html" title="class in ar.com.hjg.pngj">ChunkSeqReaderPng</a>&nbsp;createChunkSeqReader()</pre>
+<div class="block">called on construction time. Override if you want an alternative class</div>
+</li>
+</ul>
 <a name="prepareSimpleDigestComputation()">
 <!--   -->
 </a>
@@ -891,7 +967,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>prepareSimpleDigestComputation</h4>
 <pre>public&nbsp;void&nbsp;prepareSimpleDigestComputation()</pre>
-<div class="block">Enables and prepare the simple digest computation. Must be called before reading the pixels. See <a href="../../../../ar/com/hjg/pngj/PngReader.html#getSimpleDigestHex()"><code>getSimpleDigestHex()</code></a></div>
+<div class="block">Enables and prepare the simple digest computation. Must be called before reading the pixels. See
+ <a href="../../../../ar/com/hjg/pngj/PngReader.html#getSimpleDigestHex()"><code>getSimpleDigestHex()</code></a></div>
 </li>
 </ul>
 <a name="getSimpleDigestHex()">
@@ -901,10 +978,11 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getSimpleDigestHex</h4>
 <pre>public&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;getSimpleDigestHex()</pre>
-<div class="block">Pseudo 64-bits digest computed over the basic image properties and the raw pixels data: it should coincide for equivalent images encoded with different filters and
- compressors; but will not coincide for interlaced/non-interlaced; also, this does not take into account the palette info. This will be valid only if
- <a href="../../../../ar/com/hjg/pngj/PngReader.html#prepareSimpleDigestComputation()"><code>prepareSimpleDigestComputation()</code></a> has been called, and all rows have been read. Not fool-proof, not cryptografically secure, only for informal testing and duplicates
- detection.</div>
+<div class="block">Pseudo 64-bits digest computed over the basic image properties and the raw pixels data: it should coincide for
+ equivalent images encoded with different filters and compressors; but will not coincide for
+ interlaced/non-interlaced; also, this does not take into account the palette info. This will be valid only if
+ <a href="../../../../ar/com/hjg/pngj/PngReader.html#prepareSimpleDigestComputation()"><code>prepareSimpleDigestComputation()</code></a> has been called, and all rows have been read. Not fool-proof, not
+ cryptografically secure, only for informal testing and duplicates detection.</div>
 <dl><dt><span class="strong">Returns:</span></dt><dd>A 64-digest in hexadecimal</dd></dl>
 </li>
 </ul>
@@ -925,11 +1003,30 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <a name="toStringCompact()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>toStringCompact</h4>
 <pre>public&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;toStringCompact()</pre>
-<div class="block">Basic info, in a compact format, apt for scripting COLSxROWS[dBITDEPTH][a][p][g][i] ( the default dBITDEPTH='d8' is ommited)</div>
+<div class="block">Basic info, in a compact format, apt for scripting COLSxROWS[dBITDEPTH][a][p][g][i] ( the default dBITDEPTH='d8' is
+ ommited)</div>
+</li>
+</ul>
+<a name="getImgInfo()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getImgInfo</h4>
+<pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;getImgInfo()</pre>
+</li>
+</ul>
+<a name="getCurImgInfo()">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>getCurImgInfo</h4>
+<pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;getCurImgInfo()</pre>
 </li>
 </ul>
 </li>
@@ -959,7 +1056,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <div class="subNav">
 <ul class="navList">
 <li><a href="../../../../ar/com/hjg/pngj/PngjUnsupportedException.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
-<li><a href="../../../../ar/com/hjg/pngj/PngReaderByte.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/PngReaderApng.html" title="class in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
 <li><a href="../../../../index.html?ar/com/hjg/pngj/PngReader.html" target="_top">Frames</a></li>

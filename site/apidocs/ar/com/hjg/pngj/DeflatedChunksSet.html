@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>DeflatedChunksSet (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>DeflatedChunksSet (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="DeflatedChunksSet (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="DeflatedChunksSet (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -103,14 +103,14 @@
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">A set of IDAT-like chunks which, concatenated, form a zlib stream.
  <p>
- The inflated stream is intented to be read as a sequence of "rows", of which the caller knows the
- lengths (not necessary equal) and number.
+ The inflated stream is intented to be read as a sequence of "rows", of which the caller knows the lengths (not
+ necessary equal) and number.
  <p>
  Eg: For IDAT non-interlaced images, a row has bytesPerRow + 1 filter byte<br>
  For interlaced images, the lengths are variable.
  <p>
- This class can work in sync (polled) mode or async (callback) mode. But for callback mode the
- method processRowCallback() must be overriden
+ This class can work in sync (polled) mode or async (callback) mode. But for callback mode the method
+ processRowCallback() must be overriden
  <p>
  See <a href="../../../../ar/com/hjg/pngj/IdatSet.html" title="class in ar.com.hjg.pngj"><code>IdatSet</code></a>, which is mostly used and has a slightly simpler use.<br>
  See <code>DeflatedChunkSetTest</code> for example of use.</div>
@@ -256,7 +256,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#isDone()">isDone</a></strong>()</code>
-<div class="block">In this state, all relevant data has been uncompressed and retrieved.</div>
+<div class="block">In this state, all relevant data has been uncompressed and retrieved (exceptionally, the reading has ended
+ prematurely).</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -301,7 +302,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processDoneCallback()">processDoneCallback</a></strong>()</code>
-<div class="block">Callback, must be implemented in callbackMode</div>
+<div class="block">Callback, to be implemented in callbackMode</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -382,8 +383,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
                  int&nbsp;maxRowLen,
                  <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/util/zip/Inflater.html?is-external=true" title="class or interface in java.util.zip">Inflater</a>&nbsp;inflater,
                  byte[]&nbsp;buffer)</pre>
-<dl><dt><span class="strong">Parameters:</span></dt><dd><code>initialRowLen</code> - Length in bytes of first "row" (see description)</dd><dd><code>maxRowLen</code> - Max length in bytes of "rows"</dd><dd><code>inflater</code> - Can be null. If not null, must be already reset (and it must be closed/released
-        by caller!)</dd></dl>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>initialRowLen</code> - Length in bytes of first "row" (see description)</dd><dd><code>maxRowLen</code> - Max length in bytes of "rows"</dd><dd><code>inflater</code> - Can be null. If not null, must be already reset (and it must be closed/released by caller!)</dd></dl>
 </li>
 </ul>
 <a name="DeflatedChunksSet(java.lang.String, int, int)">
@@ -461,7 +461,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>processDoneCallback</h4>
 <pre>protected&nbsp;void&nbsp;processDoneCallback()</pre>
-<div class="block">Callback, must be implemented in callbackMode
+<div class="block">Callback, to be implemented in callbackMode
  <p>
  This will be called once to notify state done</div>
 </li>
@@ -525,7 +525,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>isDone</h4>
 <pre>public&nbsp;boolean&nbsp;isDone()</pre>
-<div class="block">In this state, all relevant data has been uncompressed and retrieved.
+<div class="block">In this state, all relevant data has been uncompressed and retrieved (exceptionally, the reading has ended
+ prematurely).
  <p>
  We can still feed this object, but the bytes will be swallowed/ignored.</div>
 </li>
@@ -546,9 +547,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>ackNextChunkId</h4>
 <pre>public&nbsp;boolean&nbsp;ackNextChunkId(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">This will be called by the owner to report us the next chunk to come. We can make our own
- internal changes and checks. This returns true if we acknowledge the next chunk as part of this
- set</div>
+<div class="block">This will be called by the owner to report us the next chunk to come. We can make our own internal changes and
+ checks. This returns true if we acknowledge the next chunk as part of this set</div>
 </li>
 </ul>
 <a name="terminate()">
@@ -567,8 +567,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>close</h4>
 <pre>public&nbsp;void&nbsp;close()</pre>
-<div class="block">This should be called when discarding this object, or for aborting. Secure, idempotent Don't
- use this just to notify this object that it has no more work to do, see <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#done()"><code>done()</code></a></div>
+<div class="block">This should be called when discarding this object, or for aborting. Secure, idempotent Don't use this just to
+ notify this object that it has no more work to do, see <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#done()"><code>done()</code></a></div>
 </li>
 </ul>
 <a name="done()">
@@ -578,8 +578,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>done</h4>
 <pre>public&nbsp;void&nbsp;done()</pre>
-<div class="block">Forces the DONE state, this object won't uncompress more data. It's still not terminated, it
- will accept more IDAT chunks, but will ignore them.</div>
+<div class="block">Forces the DONE state, this object won't uncompress more data. It's still not terminated, it will accept more IDAT
+ chunks, but will ignore them.</div>
 </li>
 </ul>
 <a name="getRowLen()">
@@ -612,8 +612,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <pre>public&nbsp;int&nbsp;getRown()</pre>
 <div class="block">Get current (last) row number.
  <p>
- This corresponds to the raw numeration of rows as seen by the deflater. Not the same as the
- real image row, if interlaced.</div>
+ This corresponds to the raw numeration of rows as seen by the deflater. Not the same as the real image row, if
+ interlaced.</div>
 </li>
 </ul>
 <a name="allowOtherChunksInBetween(java.lang.String)">

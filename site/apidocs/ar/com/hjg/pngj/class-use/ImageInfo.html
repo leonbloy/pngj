@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>Uses of Class ar.com.hjg.pngj.ImageInfo (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>Uses of Class ar.com.hjg.pngj.ImageInfo (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="Uses of Class ar.com.hjg.pngj.ImageInfo (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="Uses of Class ar.com.hjg.pngj.ImageInfo (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -113,31 +113,35 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <tbody>
 <tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
-<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#imageInfo">imageInfo</a></strong></code>&nbsp;</td>
+<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#curImageInfo">curImageInfo</a></strong></code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#imageInfo">imageInfo</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">PngWriter.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngWriter.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">PngReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngReader.html#imgInfo">imgInfo</a></strong></code>
 <div class="block">Basic image info - final and inmutable.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">ImageLineSetDefault.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">ImageLineInt.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineInt.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">ImageLineByte.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineByte.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">IdatSet.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/IdatSet.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
@@ -150,6 +154,14 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tbody>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><span class="strong">PngReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngReader.html#getCurImgInfo()">getCurImgInfo</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getCurImgInfo()">getCurImgInfo</a></strong>()</code>&nbsp;</td>
+</tr>
 <tr class="altColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">ImageLineInt.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineInt.html#getImageInfo()">getImageInfo</a></strong>()</code>&nbsp;</td>
@@ -165,6 +177,17 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getImageInfo()">getImageInfo</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><span class="strong">PngReader.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/PngReader.html#getImgInfo()">getImgInfo</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><span class="strong">ImageInfo.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html#withSize(int, int)">withSize</a></strong>(int&nbsp;cols,
+        int&nbsp;rows)</code>
+<div class="block">returns a copy with different size</div>
+</td>
 </tr>
 </tbody>
 </table>
@@ -182,7 +205,10 @@ Mostly related with logic specific to reading/writing pixels.</div>
       int&nbsp;nlines,
       int&nbsp;noffset,
       int&nbsp;step)</code>
-<div class="block">Creates a new <a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj"><code>IImageLineSet</code></a></div>
+<div class="block">Creates a new <a href="../../../../../ar/com/hjg/pngj/IImageLineSet.html" title="interface in ar.com.hjg.pngj"><code>IImageLineSet</code></a>
+ 
+ If singleCursor=true, the caller will read and write one row fully at a time, in order (it'll never try to read out
+ of order lines), so the implementation can opt for allocate only one line.</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -210,14 +236,8 @@ Mostly related with logic specific to reading/writing pixels.</div>
                <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code>static <a href="../../../../../ar/com/hjg/pngj/IImageLineFactory.html" title="interface in ar.com.hjg.pngj">IImageLineFactory</a>&lt;<a href="../../../../../ar/com/hjg/pngj/ImageLineInt.html" title="class in ar.com.hjg.pngj">ImageLineInt</a>&gt;</code></td>
-<td class="colLast"><span class="strong">ImageLineInt.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineInt.html#getFactory(ar.com.hjg.pngj.ImageInfo)">getFactory</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</code>
-<div class="block">Helper method, returns a default factory for this object</div>
-</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../../ar/com/hjg/pngj/IImageLineFactory.html" title="interface in ar.com.hjg.pngj">IImageLineFactory</a>&lt;<a href="../../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj">ImageLineByte</a>&gt;</code></td>
-<td class="colLast"><span class="strong">ImageLineByte.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineByte.html#getFactory(ar.com.hjg.pngj.ImageInfo)">getFactory</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</code>&nbsp;</td>
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><span class="strong">ChunkSeqReaderPng.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#updateCurImgInfo(ar.com.hjg.pngj.ImageInfo)">updateCurImgInfo</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</code>&nbsp;</td>
 </tr>
 </tbody>
 </table>
@@ -261,9 +281,9 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/ImageLineSetDefault.html#ImageLineSetDefault(ar.com.hjg.pngj.ImageInfo, boolean, int, int, int)">ImageLineSetDefault</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo,
                    boolean&nbsp;singleCursor,
-                   int&nbsp;nlines,
-                   int&nbsp;noffset,
-                   int&nbsp;step)</code>&nbsp;</td>
+                   int&nbsp;nlinesx,
+                   int&nbsp;noffsetx,
+                   int&nbsp;stepx)</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/PngWriter.html#PngWriter(java.io.File, ar.com.hjg.pngj.ImageInfo)">PngWriter</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/io/File.html?is-external=true" title="class or interface in java.io">File</a>&nbsp;file,
@@ -328,6 +348,10 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <div class="block">throws PngInputException if unexpected values</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><span class="strong">PngChunkFCTL.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkFCTL.html#getEquivImageInfo()">getEquivImageInfo</a></strong>()</code>&nbsp;</td>
+</tr>
 </tbody>
 </table>
 <table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing methods, and an explanation">
@@ -368,6 +392,10 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <div class="block">Creates a predicate equivalent to the copy mask</div>
 </td>
 </tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><span class="strong">PngChunkIHDR.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkIHDR.html#fillFromInfo(ar.com.hjg.pngj.ImageInfo)">fillFromInfo</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
+</tr>
 </tbody>
 </table>
 <table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing constructors, and an explanation">
@@ -387,63 +415,77 @@ Mostly related with logic specific to reading/writing pixels.</div>
         <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkACTL.html#PngChunkACTL(ar.com.hjg.pngj.ImageInfo)">PngChunkACTL</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkBKGD.html#PngChunkBKGD(ar.com.hjg.pngj.ImageInfo)">PngChunkBKGD</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkCHRM.html#PngChunkCHRM(ar.com.hjg.pngj.ImageInfo)">PngChunkCHRM</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
+<tr class="altColor">
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkFCTL.html#PngChunkFCTL(ar.com.hjg.pngj.ImageInfo)">PngChunkFCTL</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
+</tr>
 <tr class="rowColor">
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkFDAT.html#PngChunkFDAT(ar.com.hjg.pngj.ImageInfo)">PngChunkFDAT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkGAMA.html#PngChunkGAMA(ar.com.hjg.pngj.ImageInfo)">PngChunkGAMA</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkHIST.html#PngChunkHIST(ar.com.hjg.pngj.ImageInfo)">PngChunkHIST</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkICCP.html#PngChunkICCP(ar.com.hjg.pngj.ImageInfo)">PngChunkICCP</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkIDAT.html#PngChunkIDAT(ar.com.hjg.pngj.ImageInfo)">PngChunkIDAT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;i)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkIEND.html#PngChunkIEND(ar.com.hjg.pngj.ImageInfo)">PngChunkIEND</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkIHDR.html#PngChunkIHDR(ar.com.hjg.pngj.ImageInfo)">PngChunkIHDR</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkITXT.html#PngChunkITXT(ar.com.hjg.pngj.ImageInfo)">PngChunkITXT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkMultiple.html#PngChunkMultiple(java.lang.String, ar.com.hjg.pngj.ImageInfo)">PngChunkMultiple</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                 <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkOFFS.html#PngChunkOFFS(ar.com.hjg.pngj.ImageInfo)">PngChunkOFFS</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkPHYS.html#PngChunkPHYS(ar.com.hjg.pngj.ImageInfo)">PngChunkPHYS</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkPLTE.html#PngChunkPLTE(ar.com.hjg.pngj.ImageInfo)">PngChunkPLTE</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSBIT.html#PngChunkSBIT(ar.com.hjg.pngj.ImageInfo)">PngChunkSBIT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html#PngChunkSingle(java.lang.String, ar.com.hjg.pngj.ImageInfo)">PngChunkSingle</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
               <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSPLT.html#PngChunkSPLT(ar.com.hjg.pngj.ImageInfo)">PngChunkSPLT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSRGB.html#PngChunkSRGB(ar.com.hjg.pngj.ImageInfo)">PngChunkSRGB</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSTER.html#PngChunkSTER(ar.com.hjg.pngj.ImageInfo)">PngChunkSTER</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTEXT.html#PngChunkTEXT(ar.com.hjg.pngj.ImageInfo)">PngChunkTEXT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTEXT.html#PngChunkTEXT(ar.com.hjg.pngj.ImageInfo, java.lang.String, java.lang.String)">PngChunkTEXT</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;info,
+            <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;key,
+            <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;val)</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTextVar.html#PngChunkTextVar(java.lang.String, ar.com.hjg.pngj.ImageInfo)">PngChunkTextVar</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
@@ -480,31 +522,6 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <td class="colFirst"><code>protected <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><span class="strong">PixelsWriter.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
-<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
-<td class="colLast"><span class="strong">ImageLineBufferedImage.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineBufferedImage.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colFirst"><code><a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
-<td class="colLast"><span class="strong">ImageLineARGBbi.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineARGBbi.html#imgInfo">imgInfo</a></strong></code>&nbsp;</td>
-</tr>
-</tbody>
-</table>
-<table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing methods, and an explanation">
-<caption><span>Methods in <a href="../../../../../ar/com/hjg/pngj/pixels/package-summary.html">ar.com.hjg.pngj.pixels</a> with parameters of type <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></span><span class="tabEnd">&nbsp;</span></caption>
-<tr>
-<th class="colFirst" scope="col">Modifier and Type</th>
-<th class="colLast" scope="col">Method and Description</th>
-</tr>
-<tbody>
-<tr class="altColor">
-<td class="colFirst"><code>static <a href="../../../../../ar/com/hjg/pngj/IImageLineFactory.html" title="interface in ar.com.hjg.pngj">IImageLineFactory</a>&lt;<a href="../../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj">ImageLineByte</a>&gt;</code></td>
-<td class="colLast"><span class="strong">ImageLineBufferedImage.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineBufferedImage.html#getFactory(ar.com.hjg.pngj.ImageInfo)">getFactory</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colFirst"><code>static <a href="../../../../../ar/com/hjg/pngj/IImageLineFactory.html" title="interface in ar.com.hjg.pngj">IImageLineFactory</a>&lt;<a href="../../../../../ar/com/hjg/pngj/ImageLineByte.html" title="class in ar.com.hjg.pngj">ImageLineByte</a>&gt;</code></td>
-<td class="colLast"><span class="strong">ImageLineARGBbi.</span><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineARGBbi.html#getFactory(ar.com.hjg.pngj.ImageInfo)">getFactory</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</code>&nbsp;</td>
-</tr>
 </tbody>
 </table>
 <table border="0" cellpadding="3" cellspacing="0" summary="Use table, listing constructors, and an explanation">
@@ -517,26 +534,12 @@ Mostly related with logic specific to reading/writing pixels.</div>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/FiltersPerformance.html#FiltersPerformance(ar.com.hjg.pngj.ImageInfo)">FiltersPerformance</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineARGBbi.html#ImageLineARGBbi(ar.com.hjg.pngj.ImageInfo, java.awt.image.BufferedImage, byte[])">ImageLineARGBbi</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo,
-               <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/awt/image/BufferedImage.html?is-external=true" title="class or interface in java.awt.image">BufferedImage</a>&nbsp;bi,
-               byte[]&nbsp;bytesdata)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineBufferedImage.html#ImageLineBufferedImage(ar.com.hjg.pngj.ImageInfo, java.awt.image.BufferedImage, byte[])">ImageLineBufferedImage</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo,
-                      <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/awt/image/BufferedImage.html?is-external=true" title="class or interface in java.awt.image">BufferedImage</a>&nbsp;bi,
-                      byte[]&nbsp;bytesdata)</code>&nbsp;</td>
-</tr>
-<tr class="rowColor">
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineSetARGBbi.html#ImageLineSetARGBbi(java.awt.image.BufferedImage, ar.com.hjg.pngj.ImageInfo)">ImageLineSetARGBbi</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/awt/image/BufferedImage.html?is-external=true" title="class or interface in java.awt.image">BufferedImage</a>&nbsp;bi,
-                  <a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imginfo)</code>&nbsp;</td>
-</tr>
-<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#PixelsWriter(ar.com.hjg.pngj.ImageInfo)">PixelsWriter</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriterDefault.html#PixelsWriterDefault(ar.com.hjg.pngj.ImageInfo)">PixelsWriterDefault</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriterMultiple.html#PixelsWriterMultiple(ar.com.hjg.pngj.ImageInfo)">PixelsWriterMultiple</a></strong>(<a href="../../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;imgInfo)</code>&nbsp;</td>
 </tr>
 </tbody>

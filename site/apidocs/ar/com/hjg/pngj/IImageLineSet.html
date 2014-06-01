@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>IImageLineSet (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>IImageLineSet (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="IImageLineSet (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="IImageLineSet (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -87,7 +87,7 @@
 <li class="blockList">
 <dl>
 <dt>All Known Implementing Classes:</dt>
-<dd><a href="../../../../ar/com/hjg/pngj/pixels/ImageLineSetARGBbi.html" title="class in ar.com.hjg.pngj.pixels">ImageLineSetARGBbi</a>, <a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html" title="class in ar.com.hjg.pngj">ImageLineSetDefault</a></dd>
+<dd><a href="../../../../ar/com/hjg/pngj/ImageLineSetDefault.html" title="class in ar.com.hjg.pngj">ImageLineSetDefault</a></dd>
 </dl>
 <hr>
 <br>
@@ -99,11 +99,11 @@
  <li>Cursor-like: stores only one line, which is implicitly moved when requested</li>
  <li>All lines: all lines stored as an array of <tt>IImageLine</tt></li>
  <li>
- Subset of lines: eg, only first 3 lines, or odd numbered lines. Or a band of neighbours lines
- that is moved like a cursor.</li>
- The ImageLine that PngReader returns is hosted by a IImageLineSet (this abstraction allows the
- implementation to deal with interlaced images cleanly) but the library user does not normally
- needs to know that (or rely on that), except for the <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()"><code>PngReader.readRows()</code></a> method.
+ Subset of lines: eg, only first 3 lines, or odd numbered lines. Or a band of neighbours lines that is moved like a
+ cursor.</li>
+ The ImageLine that PngReader returns is hosted by a IImageLineSet (this abstraction allows the implementation to deal
+ with interlaced images cleanly) but the library user does not normally needs to know that (or rely on that), except
+ for the <a href="../../../../ar/com/hjg/pngj/PngReader.html#readRows()"><code>PngReader.readRows()</code></a> method.
  </ul></div>
 </li>
 </ul>
@@ -124,23 +124,27 @@
 <th class="colLast" scope="col">Method and Description</th>
 </tr>
 <tr class="altColor">
-<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="type parameter in IImageLineSet">T</a></code></td>
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#getImageLine(int)">getImageLine</a></strong>(int&nbsp;n)</code>
 <div class="block">Asks for imageline corresponding to row <tt>n</tt> in the original image (zero based).</div>
 </td>
 </tr>
 <tr class="rowColor">
-<td class="colFirst"><code>boolean</code></td>
-<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#hasImageLine(int)">hasImageLine</a></strong>(int&nbsp;n)</code>
-<div class="block">Returns true if the set contain row <tt>n</tt> (in the original image,zero based) currently
- allocated.</div>
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#getImageLineRawNum(int)">getImageLineRawNum</a></strong>(int&nbsp;n)</code>
+<div class="block">Like <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#getImageLine(int)"><code>getImageLine(int)</code></a> but uses the raw numbering inside the LineSet This makes little sense for a cursor</div>
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#hasImageLine(int)">hasImageLine</a></strong>(int&nbsp;n)</code>
+<div class="block">Returns true if the set contain row <tt>n</tt> (in the original image,zero based) currently allocated.</div>
+</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#size()">size</a></strong>()</code>
-<div class="block">Internal size of allocated rows This is informational, it should rarely be important for the
- caller.</div>
+<div class="block">Internal size of allocated rows This is informational, it should rarely be important for the caller.</div>
 </td>
 </tr>
 </table>
@@ -164,13 +168,24 @@
 <ul class="blockList">
 <li class="blockList">
 <h4>getImageLine</h4>
-<pre><a href="../../../../ar/com/hjg/pngj/IImageLineSet.html" title="type parameter in IImageLineSet">T</a>&nbsp;getImageLine(int&nbsp;n)</pre>
-<div class="block">Asks for imageline corresponding to row <tt>n</tt> in the original image (zero based). This can
- trigger side effects in this object (eg, advance a cursor, set current row number...) In some
- scenarios, this should be consider as alias to (pseudocode)
- <tt>positionAtLine(n); getCurrentLine();</tt>
+<pre><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&nbsp;getImageLine(int&nbsp;n)</pre>
+<div class="block">Asks for imageline corresponding to row <tt>n</tt> in the original image (zero based). This can trigger side
+ effects in this object (eg, advance a cursor, set current row number...) In some scenarios, this should be consider
+ as alias to (pseudocode) <tt>positionAtLine(n); getCurrentLine();</tt>
  <p>
  Throws exception if not available. The caller is supposed to know what he/she is doing</div>
+</li>
+</ul>
+<a name="getImageLineRawNum(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getImageLineRawNum</h4>
+<pre><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj">IImageLine</a>&nbsp;getImageLineRawNum(int&nbsp;n)</pre>
+<div class="block">Like <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#getImageLine(int)"><code>getImageLine(int)</code></a> but uses the raw numbering inside the LineSet This makes little sense for a cursor</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>n</code> - Should normally go from 0 to <a href="../../../../ar/com/hjg/pngj/IImageLineSet.html#size()"><code>size()</code></a></dd>
+<dt><span class="strong">Returns:</span></dt><dd></dd></dl>
 </li>
 </ul>
 <a name="hasImageLine(int)">
@@ -180,11 +195,10 @@
 <li class="blockList">
 <h4>hasImageLine</h4>
 <pre>boolean&nbsp;hasImageLine(int&nbsp;n)</pre>
-<div class="block">Returns true if the set contain row <tt>n</tt> (in the original image,zero based) currently
- allocated.
+<div class="block">Returns true if the set contain row <tt>n</tt> (in the original image,zero based) currently allocated.
  <p>
- If it's a single-cursor, this should return true only if it's positioned there. (notice that
- hasImageLine(n) can return false, but getImageLine(n) can be ok)</div>
+ If it's a single-cursor, this should return true only if it's positioned there. (notice that hasImageLine(n) can
+ return false, but getImageLine(n) can be ok)</div>
 </li>
 </ul>
 <a name="size()">
@@ -194,8 +208,7 @@
 <li class="blockList">
 <h4>size</h4>
 <pre>int&nbsp;size()</pre>
-<div class="block">Internal size of allocated rows This is informational, it should rarely be important for the
- caller.</div>
+<div class="block">Internal size of allocated rows This is informational, it should rarely be important for the caller.</div>
 </li>
 </ul>
 </li>

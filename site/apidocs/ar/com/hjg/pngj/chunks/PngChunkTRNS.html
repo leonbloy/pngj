@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PngChunkTRNS (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>PngChunkTRNS (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PngChunkTRNS (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="PngChunkTRNS (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -226,18 +226,29 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setGray(int)">setGray</a></strong>(int&nbsp;g)</code>&nbsp;</td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setEntryPalAlpha(int, int)">setEntryPalAlpha</a></strong>(int&nbsp;idx,
+                int&nbsp;val)</code>
+<div class="block">Sets the length of the palette alpha.</div>
+</td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setGray(int)">setGray</a></strong>(int&nbsp;g)</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setIndexEntryAsTransparent(int)">setIndexEntryAsTransparent</a></strong>(int&nbsp;palAlphaIndex)</code>
 <div class="block">to use when only one pallete index is set as totally transparent</div>
 </td>
 </tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setNentriesPalAlpha(int)">setNentriesPalAlpha</a></strong>(int&nbsp;len)</code>&nbsp;</td>
+</tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
-<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setPalletteAlpha(int[])">setPalletteAlpha</a></strong>(int[]&nbsp;palAlpha)</code>
-<div class="block">WARNING: non deep copy</div>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setPalAlpha(int[])">setPalAlpha</a></strong>(int[]&nbsp;palAlpha)</code>
+<div class="block">WARNING: non deep copy.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -342,8 +353,8 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <h4>createRawChunk</h4>
 <pre>public&nbsp;<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;createRawChunk()</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">PngChunk</a></code></strong></div>
-<div class="block">Creates the physical chunk. This is used when writing (serialization). Each particular chunk
- class implements its own logic.</div>
+<div class="block">Creates the physical chunk. This is used when writing (serialization). Each particular chunk class implements its
+ own logic.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#createRawChunk()">createRawChunk</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></dd>
@@ -358,8 +369,8 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <h4>parseFromRaw</h4>
 <pre>public&nbsp;void&nbsp;parseFromRaw(<a href="../../../../../ar/com/hjg/pngj/chunks/ChunkRaw.html" title="class in ar.com.hjg.pngj.chunks">ChunkRaw</a>&nbsp;c)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">PngChunk</a></code></strong></div>
-<div class="block">Parses raw chunk and fill inside data. This is used when reading (deserialization). Each
- particular chunk class implements its own logic.</div>
+<div class="block">Parses raw chunk and fill inside data. This is used when reading (deserialization). Each particular chunk class
+ implements its own logic.</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
 <dd><code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html#parseFromRaw(ar.com.hjg.pngj.chunks.ChunkRaw)">parseFromRaw</a></code>&nbsp;in class&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/chunks/PngChunk.html" title="class in ar.com.hjg.pngj.chunks">PngChunk</a></code></dd>
@@ -414,34 +425,55 @@ extends <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkSingle.html" titl
 <pre>public&nbsp;int&nbsp;getGray()</pre>
 </li>
 </ul>
-<a name="setPalletteAlpha(int[])">
+<a name="setEntryPalAlpha(int, int)">
 <!--   -->
 </a>
 <ul class="blockList">
 <li class="blockList">
-<h4>setPalletteAlpha</h4>
-<pre>public&nbsp;void&nbsp;setPalletteAlpha(int[]&nbsp;palAlpha)</pre>
+<h4>setEntryPalAlpha</h4>
+<pre>public&nbsp;void&nbsp;setEntryPalAlpha(int&nbsp;idx,
+                    int&nbsp;val)</pre>
+<div class="block">Sets the length of the palette alpha. This should be followed by #setNentriesPalAlpha</div>
+<dl><dt><span class="strong">Parameters:</span></dt><dd><code>idx</code> - index inside the table</dd><dd><code>val</code> - alpha value (0-255)</dd></dl>
+</li>
+</ul>
+<a name="setNentriesPalAlpha(int)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setNentriesPalAlpha</h4>
+<pre>public&nbsp;void&nbsp;setNentriesPalAlpha(int&nbsp;len)</pre>
+</li>
+</ul>
+<a name="setPalAlpha(int[])">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>setPalAlpha</h4>
+<pre>public&nbsp;void&nbsp;setPalAlpha(int[]&nbsp;palAlpha)</pre>
+<div class="block">WARNING: non deep copy. See also <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setNentriesPalAlpha(int)"><code>setNentriesPalAlpha(int)</code></a> <a href="../../../../../ar/com/hjg/pngj/chunks/PngChunkTRNS.html#setEntryPalAlpha(int, int)"><code>setEntryPalAlpha(int, int)</code></a></div>
+</li>
+</ul>
+<a name="getPalletteAlpha()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getPalletteAlpha</h4>
+<pre>public&nbsp;int[]&nbsp;getPalletteAlpha()</pre>
 <div class="block">WARNING: non deep copy</div>
 </li>
 </ul>
 <a name="setIndexEntryAsTransparent(int)">
 <!--   -->
 </a>
-<ul class="blockList">
+<ul class="blockListLast">
 <li class="blockList">
 <h4>setIndexEntryAsTransparent</h4>
 <pre>public&nbsp;void&nbsp;setIndexEntryAsTransparent(int&nbsp;palAlphaIndex)</pre>
 <div class="block">to use when only one pallete index is set as totally transparent</div>
-</li>
-</ul>
-<a name="getPalletteAlpha()">
-<!--   -->
-</a>
-<ul class="blockListLast">
-<li class="blockList">
-<h4>getPalletteAlpha</h4>
-<pre>public&nbsp;int[]&nbsp;getPalletteAlpha()</pre>
-<div class="block">WARNING: non deep copy</div>
 </li>
 </ul>
 </li>

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkSeqReader (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>ChunkSeqReader (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkSeqReader (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="ChunkSeqReader (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -108,7 +108,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="interface in ar.com.hjg.pngj">IBytesConsumer</a></pre>
 <div class="block">Consumes a stream of bytes that consist of a series of PNG-like chunks.
  <p>
- This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example). It supports signature recognition and idat deflate</div>
+ This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example).
+ It supports signature recognition and idat deflate</div>
 </li>
 </ul>
 </div>
@@ -200,7 +201,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
                             boolean&nbsp;skip)</code>
 <div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
  
- The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -277,7 +279,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isAtChunkBoundary()">isAtChunkBoundary</a></strong>()</code>
-<div class="block">Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or end of signature, or we are done</div>
+<div class="block">Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or
+ end of signature, or we are done</div>
 </td>
 </tr>
 <tr class="rowColor">
@@ -289,7 +292,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)">isIdatKind</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+ will be created to deflate it and process+ the deflated data)
  
  This implementation always returns always false</div>
 </td>
@@ -458,11 +462,13 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <pre>protected&nbsp;void&nbsp;startNewChunk(int&nbsp;len,
                  <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                  long&nbsp;offset)</pre>
-<div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It creates a new ChunkReader (field accesible via
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()"><code>getCurChunkReader()</code></a>) in the corresponding mode, and eventually a curReaderDeflatedSet.(field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()"><code>getCurReaderDeflatedSet()</code></a>)
+<div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It
+ creates a new ChunkReader (field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()"><code>getCurChunkReader()</code></a>) in the corresponding mode, and
+ eventually a curReaderDeflatedSet.(field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()"><code>getCurReaderDeflatedSet()</code></a>)
  
- To decide the mode and options, it calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)"><code>shouldCheckCrc(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)"><code>shouldSkipContent(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)"><code>isIdatKind(String)</code></a>. Those methods should be
- overriden in preference to this; if overriden, this should be called first.
+ To decide the mode and options, it calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)"><code>shouldCheckCrc(int, String)</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)"><code>shouldSkipContent(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)"><code>isIdatKind(String)</code></a>. Those methods should be overriden in
+ preference to this; if overriden, this should be called first.
  
  The respective <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>ChunkReader.chunkDone()</code></a> method is directed to this <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a>.
  
@@ -481,7 +487,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
                                        boolean&nbsp;skip)</pre>
 <div class="block">This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
  
- The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
+ The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>postProcessChunk(ChunkReader)</code></a> (always) when done.</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - Chunk id</dd><dd><code>len</code> - Chunk length</dd><dd><code>offset</code> - offset inside PNG stream , merely informative</dd><dd><code>skip</code> - flag: is true, the content will not be buffered (nor processed)</dd>
 <dt><span class="strong">Returns:</span></dt><dd>a newly created ChunkReader that will create the ChunkRaw and then discarded</dd></dl>
 </li>
@@ -517,7 +524,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>isIdatKind</h4>
 <pre>protected&nbsp;boolean&nbsp;isIdatKind(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+ will be created to deflate it and process+ the deflated data)
  
  This implementation always returns always false</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>id</code> - </dd></dl>
@@ -531,7 +539,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <h4>shouldSkipContent</h4>
 <pre>protected&nbsp;boolean&nbsp;shouldSkipContent(int&nbsp;len,
                         <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be null, and CRC will never checked</div>
+<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be
+ null, and CRC will never checked</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>len</code> - </dd><dd><code>id</code> - </dd></dl>
 </li>
 </ul>
@@ -635,7 +644,8 @@ implements <a href="../../../../ar/com/hjg/pngj/IBytesConsumer.html" title="inte
 <li class="blockList">
 <h4>isAtChunkBoundary</h4>
 <pre>public&nbsp;boolean&nbsp;isAtChunkBoundary()</pre>
-<div class="block">Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or end of signature, or we are done</div>
+<div class="block">Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or
+ end of signature, or we are done</div>
 </li>
 </ul>
 <a name="firstChunkId()">

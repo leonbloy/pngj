@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PixelsWriter (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>PixelsWriter (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PixelsWriter (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="PixelsWriter (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -35,7 +35,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineSetARGBbi.html" title="class in ar.com.hjg.pngj.pixels"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../../ar/com/hjg/pngj/pixels/FiltersPerformance.html" title="class in ar.com.hjg.pngj.pixels"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriterDefault.html" title="class in ar.com.hjg.pngj.pixels"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -103,7 +103,8 @@
 extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.html?is-external=true" title="class or interface in java.lang">Object</a></pre>
 <div class="block">Encodes a set of rows (pixels) as a continuous deflated stream (does not know about IDAT chunk segmentation).
  <p>
- This includes the filter selection strategy, plus the filtering itself and the deflating. Only supports fixed length rows (no interlaced writing).
+ This includes the filter selection strategy, plus the filtering itself and the deflating. Only supports fixed length
+ rows (no interlaced writing).
  <p>
  Typically an instance of this is hold by a PngWriter - but more instances could be used (for APGN)</div>
 </li>
@@ -270,34 +271,42 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#isDone()">isDone</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#processRow(byte[])">processRow</a></strong>(byte[]&nbsp;rowb)</code>
 <div class="block">main internal point for external call.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#sendToCompressedStream(byte[])">sendToCompressedStream</a></strong>(byte[]&nbsp;rowf)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setCompressorStream(ar.com.hjg.pngj.pixels.CompressorStream)">setCompressorStream</a></strong>(<a href="../../../../../ar/com/hjg/pngj/pixels/CompressorStream.html" title="class in ar.com.hjg.pngj.pixels">CompressorStream</a>&nbsp;compressorStream)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setDeflaterCompLevel(java.lang.Integer)">setDeflaterCompLevel</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang">Integer</a>&nbsp;deflaterCompLevel)</code>
 <div class="block">Deflater (ZLIB) compression level, between 0 (no compression) and 9</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setDeflaterStrategy(java.lang.Integer)">setDeflaterStrategy</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang">Integer</a>&nbsp;deflaterStrategy)</code>
 <div class="block">Deflater (ZLIB) strategy.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setFilterType(ar.com.hjg.pngj.FilterType)">setFilterType</a></strong>(<a href="../../../../../ar/com/hjg/pngj/FilterType.html" title="enum in ar.com.hjg.pngj">FilterType</a>&nbsp;filterType)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setIdatMaxSize(int)">setIdatMaxSize</a></strong>(int&nbsp;idatMaxSize)</code>&nbsp;</td>
 </tr>
 <tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
@@ -441,8 +450,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>processRow</h4>
 <pre>public final&nbsp;void&nbsp;processRow(byte[]&nbsp;rowb)</pre>
-<div class="block">main internal point for external call. 
- It does the lazy initializion if necessary, sets current row, and call <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterAndWrite(byte[])"><code>filterAndWrite(byte[])</code></a></div>
+<div class="block">main internal point for external call. It does the lazy initializion if necessary, sets current row, and call
+ <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterAndWrite(byte[])"><code>filterAndWrite(byte[])</code></a></div>
 </li>
 </ul>
 <a name="sendToCompressedStream(byte[])">
@@ -461,7 +470,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>filterAndWrite</h4>
 <pre>protected abstract&nbsp;void&nbsp;filterAndWrite(byte[]&nbsp;rowb)</pre>
-<div class="block">This does the filtering and send to stream. Typically should decide the filtering, call <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterRowWithFilterType(ar.com.hjg.pngj.FilterType, byte[], byte[], byte[])"><code>filterRowWithFilterType(FilterType, byte[], byte[], byte[])</code></a> and and
+<div class="block">This does the filtering and send to stream. Typically should decide the filtering, call
+ <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterRowWithFilterType(ar.com.hjg.pngj.FilterType, byte[], byte[], byte[])"><code>filterRowWithFilterType(FilterType, byte[], byte[], byte[])</code></a> and and
  <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#sendToCompressedStream(byte[])"><code>sendToCompressedStream(byte[])</code></a></div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>rowb</code> - </dd></dl>
 </li>
@@ -490,7 +500,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>getRowb</h4>
 <pre>public abstract&nbsp;byte[]&nbsp;getRowb()</pre>
-<div class="block">This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call. 
+<div class="block">This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call.
  Warning: this can be called before the object is init, implementations should call init() to be sure</div>
 </li>
 </ul>
@@ -531,7 +541,8 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <li class="blockList">
 <h4>setDeflaterStrategy</h4>
 <pre>public&nbsp;void&nbsp;setDeflaterStrategy(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Integer.html?is-external=true" title="class or interface in java.lang">Integer</a>&nbsp;deflaterStrategy)</pre>
-<div class="block">Deflater (ZLIB) strategy. You should rarely change this from the default (Deflater.DEFAULT_STRATEGY) to Deflater.FILTERED (Deflater.HUFFMAN_ONLY is fast but compress poorly)</div>
+<div class="block">Deflater (ZLIB) strategy. You should rarely change this from the default (Deflater.DEFAULT_STRATEGY) to
+ Deflater.FILTERED (Deflater.HUFFMAN_ONLY is fast but compress poorly)</div>
 </li>
 </ul>
 <a name="setDeflaterCompLevel(java.lang.Integer)">
@@ -618,6 +629,15 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <pre>public&nbsp;long&nbsp;getTotalBytesToWrite()</pre>
 </li>
 </ul>
+<a name="isDone()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>isDone</h4>
+<pre>public&nbsp;boolean&nbsp;isDone()</pre>
+</li>
+</ul>
 <a name="getDefaultFilter()">
 <!--   -->
 </a>
@@ -632,11 +652,20 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 <a name="getFiltersUsed()">
 <!--   -->
 </a>
-<ul class="blockListLast">
+<ul class="blockList">
 <li class="blockList">
 <h4>getFiltersUsed</h4>
 <pre>public final&nbsp;<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;getFiltersUsed()</pre>
 <div class="block">informational stats : filter used, in percentages</div>
+</li>
+</ul>
+<a name="setIdatMaxSize(int)">
+<!--   -->
+</a>
+<ul class="blockListLast">
+<li class="blockList">
+<h4>setIdatMaxSize</h4>
+<pre>public&nbsp;void&nbsp;setIdatMaxSize(int&nbsp;idatMaxSize)</pre>
 </li>
 </ul>
 </li>
@@ -665,7 +694,7 @@ extends <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/Object.h
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../../ar/com/hjg/pngj/pixels/ImageLineSetARGBbi.html" title="class in ar.com.hjg.pngj.pixels"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../../ar/com/hjg/pngj/pixels/FiltersPerformance.html" title="class in ar.com.hjg.pngj.pixels"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriterDefault.html" title="class in ar.com.hjg.pngj.pixels"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">

@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>IdatSet (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>IdatSet (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="IdatSet (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="IdatSet (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -35,7 +35,7 @@
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">
@@ -104,8 +104,8 @@
 extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></pre>
 <div class="block">This object process the concatenation of IDAT chunks.
  <p>
- It extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj"><code>DeflatedChunksSet</code></a>, adding the intelligence to unfilter rows, and to understand
- row lenghts in terms of ImageInfo and (eventually) Deinterlacer</div>
+ It extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj"><code>DeflatedChunksSet</code></a>, adding the intelligence to unfilter rows, and to understand row lenghts in
+ terms of ImageInfo and (eventually) Deinterlacer</div>
 </li>
 </ul>
 </div>
@@ -237,7 +237,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/IdatSet.html#processDoneCallback()">processDoneCallback</a></strong>()</code>
-<div class="block">Callback, must be implemented in callbackMode</div>
+<div class="block">Callback, to be implemented in callbackMode</div>
 </td>
 </tr>
 <tr class="altColor">
@@ -364,8 +364,8 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <div class="block">Special constructor with preallocated buffer.
  <p>
  <p>
- Same as <a href="../../../../ar/com/hjg/pngj/IdatSet.html#IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer)"><code>IdatSet(String, ImageInfo, Deinterlacer)</code></a>, but you can pass a Inflater (will be
- reset internally), and a buffer (will be used only if size is enough)</div>
+ Same as <a href="../../../../ar/com/hjg/pngj/IdatSet.html#IdatSet(java.lang.String, ar.com.hjg.pngj.ImageInfo, ar.com.hjg.pngj.Deinterlacer)"><code>IdatSet(String, ImageInfo, Deinterlacer)</code></a>, but you can pass a Inflater (will be reset internally),
+ and a buffer (will be used only if size is enough)</div>
 </li>
 </ul>
 </li>
@@ -383,8 +383,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <li class="blockList">
 <h4>unfilterRow</h4>
 <pre>public&nbsp;void&nbsp;unfilterRow()</pre>
-<div class="block">Applies PNG un-filter to inflated raw line. Result in <a href="../../../../ar/com/hjg/pngj/IdatSet.html#getUnfilteredRow()"><code>getUnfilteredRow()</code></a>
- <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowLen()"><code>DeflatedChunksSet.getRowLen()</code></a></div>
+<div class="block">Applies PNG un-filter to inflated raw line. Result in <a href="../../../../ar/com/hjg/pngj/IdatSet.html#getUnfilteredRow()"><code>getUnfilteredRow()</code></a> <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#getRowLen()"><code>DeflatedChunksSet.getRowLen()</code></a></div>
 </li>
 </ul>
 <a name="unfilterRow(int)">
@@ -419,10 +418,11 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <pre>protected&nbsp;int&nbsp;processRowCallback()</pre>
 <div class="block">Method for async/callback mode .
  <p>
- In callback mode will be called as soon as each row is retrieved (inflated and unfiltered),
- after <a href="../../../../ar/com/hjg/pngj/IdatSet.html#preProcessRow()"><code>preProcessRow()</code></a>
+ In callback mode will be called as soon as each row is retrieved (inflated and unfiltered), after
+ <a href="../../../../ar/com/hjg/pngj/IdatSet.html#preProcessRow()"><code>preProcessRow()</code></a>
  <p>
- This is a dummy implementation that does nothing.
+ This is a dummy implementation (this normally should be overriden) that does nothing more than compute the length
+ of next row.
  <p>
  The return value is essential
  <p></div>
@@ -440,7 +440,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <h4>processDoneCallback</h4>
 <pre>protected&nbsp;void&nbsp;processDoneCallback()</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#processDoneCallback()">DeflatedChunksSet</a></code></strong></div>
-<div class="block">Callback, must be implemented in callbackMode
+<div class="block">Callback, to be implemented in callbackMode
  <p>
  This will be called once to notify state done</div>
 <dl>
@@ -514,8 +514,8 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 <h4>close</h4>
 <pre>public&nbsp;void&nbsp;close()</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#close()">DeflatedChunksSet</a></code></strong></div>
-<div class="block">This should be called when discarding this object, or for aborting. Secure, idempotent Don't
- use this just to notify this object that it has no more work to do, see <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#done()"><code>DeflatedChunksSet.done()</code></a></div>
+<div class="block">This should be called when discarding this object, or for aborting. Secure, idempotent Don't use this just to
+ notify this object that it has no more work to do, see <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#done()"><code>DeflatedChunksSet.done()</code></a></div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html#close()">close</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></dd>
@@ -559,7 +559,7 @@ extends <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="clas
 </div>
 <div class="subNav">
 <ul class="navList">
-<li><a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
+<li><a href="../../../../ar/com/hjg/pngj/IDatChunkWriter.html" title="class in ar.com.hjg.pngj"><span class="strong">Prev Class</span></a></li>
 <li><a href="../../../../ar/com/hjg/pngj/IImageLine.html" title="interface in ar.com.hjg.pngj"><span class="strong">Next Class</span></a></li>
 </ul>
 <ul class="navList">

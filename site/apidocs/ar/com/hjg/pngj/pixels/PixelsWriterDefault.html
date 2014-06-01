@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>PixelsWriterDefault (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>PixelsWriterDefault (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="PixelsWriterDefault (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="PixelsWriterDefault (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -260,7 +260,7 @@ extends <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html" title=
 <!--   -->
 </a>
 <h3>Methods inherited from class&nbsp;ar.com.hjg.pngj.pixels.<a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html" title="class in ar.com.hjg.pngj.pixels">PixelsWriter</a></h3>
-<code><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterRowWithFilterType(ar.com.hjg.pngj.FilterType, byte[], byte[], byte[])">filterRowWithFilterType</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getCompression()">getCompression</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getDefaultFilter()">getDefaultFilter</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getDeflaterCompLevel()">getDeflaterCompLevel</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getFiltersUsed()">getFiltersUsed</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getFilterType()">getFilterType</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getOs()">getOs</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getTotalBytesToWrite()">getTotalBytesToWrite</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#init()">init</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#processRow(byte[])">processRow</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#sendToCompressedStream(byte[])">sendToCompressedStream</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setCompressorStream(ar.com.hjg.pngj.pixels.CompressorStream)">setCompressorStream</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setDeflaterCompLevel(java.lang.Integer)">setDeflaterCompLevel</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setDeflaterStrategy(java.lang.Integer)">setDeflaterStrategy</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setFilterType(ar.com.hjg.pngj.FilterType)">setFilterType</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setOs(java.io.OutputStream)">setOs</a></code></li>
+<code><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterRowWithFilterType(ar.com.hjg.pngj.FilterType, byte[], byte[], byte[])">filterRowWithFilterType</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getCompression()">getCompression</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getDefaultFilter()">getDefaultFilter</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getDeflaterCompLevel()">getDeflaterCompLevel</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getFiltersUsed()">getFiltersUsed</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getFilterType()">getFilterType</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getOs()">getOs</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getTotalBytesToWrite()">getTotalBytesToWrite</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#init()">init</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#isDone()">isDone</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#processRow(byte[])">processRow</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#sendToCompressedStream(byte[])">sendToCompressedStream</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setCompressorStream(ar.com.hjg.pngj.pixels.CompressorStream)">setCompressorStream</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setDeflaterCompLevel(java.lang.Integer)">setDeflaterCompLevel</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setDeflaterStrategy(java.lang.Integer)">setDeflaterStrategy</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setFilterType(ar.com.hjg.pngj.FilterType)">setFilterType</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setIdatMaxSize(int)">setIdatMaxSize</a>, <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#setOs(java.io.OutputStream)">setOs</a></code></li>
 </ul>
 <ul class="blockList">
 <li class="blockList"><a name="methods_inherited_from_class_java.lang.Object">
@@ -418,7 +418,8 @@ extends <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html" title=
 <h4>filterAndWrite</h4>
 <pre>protected&nbsp;void&nbsp;filterAndWrite(byte[]&nbsp;rowb)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterAndWrite(byte[])">PixelsWriter</a></code></strong></div>
-<div class="block">This does the filtering and send to stream. Typically should decide the filtering, call <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterRowWithFilterType(ar.com.hjg.pngj.FilterType, byte[], byte[], byte[])"><code>PixelsWriter.filterRowWithFilterType(FilterType, byte[], byte[], byte[])</code></a> and and
+<div class="block">This does the filtering and send to stream. Typically should decide the filtering, call
+ <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#filterRowWithFilterType(ar.com.hjg.pngj.FilterType, byte[], byte[], byte[])"><code>PixelsWriter.filterRowWithFilterType(FilterType, byte[], byte[], byte[])</code></a> and and
  <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#sendToCompressedStream(byte[])"><code>PixelsWriter.sendToCompressedStream(byte[])</code></a></div>
 <dl>
 <dt><strong>Specified by:</strong></dt>
@@ -443,7 +444,7 @@ extends <a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html" title=
 <h4>getRowb</h4>
 <pre>public&nbsp;byte[]&nbsp;getRowb()</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../../ar/com/hjg/pngj/pixels/PixelsWriter.html#getRowb()">PixelsWriter</a></code></strong></div>
-<div class="block">This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call. 
+<div class="block">This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call.
  Warning: this can be called before the object is init, implementations should call init() to be sure</div>
 <dl>
 <dt><strong>Specified by:</strong></dt>

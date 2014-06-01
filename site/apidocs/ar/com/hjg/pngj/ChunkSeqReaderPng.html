@@ -3,13 +3,13 @@
 <html lang="en">
 <head>
 <meta http-equiv="Content-Type" content="text/html" charset="UTF-8">
-<title>ChunkSeqReaderPng (PNGJ 2.1.0-SNAPSHOT API)</title>
+<title>ChunkSeqReaderPng (PNGJ 2.1.1-SNAPSHOT API)</title>
 <link rel="stylesheet" type="text/css" href="../../../../stylesheet.css" title="Style">
 </head>
 <body>
 <script type="text/javascript"><!--
     if (location.href.indexOf('is-external=true') == -1) {
-        parent.document.title="ChunkSeqReaderPng (PNGJ 2.1.0-SNAPSHOT API)";
+        parent.document.title="ChunkSeqReaderPng (PNGJ 2.1.1-SNAPSHOT API)";
     }
 //-->
 </script>
@@ -108,8 +108,7 @@
 extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></pre>
 <div class="block">Adds to ChunkSeqReader the storing of PngChunk, with a PngFactory, and imageInfo + deinterlacer.
  <p>
- Most usual PNG reading should use this class, or a <a href="../../../../ar/com/hjg/pngj/PngReader.html" title="class in ar.com.hjg.pngj"><code>PngReader</code></a>, which is a thin wrapper
- over this.</div>
+ Most usual PNG reading should use this class, or a <a href="../../../../ar/com/hjg/pngj/PngReader.html" title="class in ar.com.hjg.pngj"><code>PngReader</code></a>, which is a thin wrapper over this.</div>
 </li>
 </ul>
 </div>
@@ -139,14 +138,18 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 </td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#curImageInfo">curImageInfo</a></strong></code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>protected int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#currentChunkGroup">currentChunkGroup</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#deinterlacer">deinterlacer</a></strong></code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#imageInfo">imageInfo</a></strong></code>&nbsp;</td>
 </tr>
@@ -208,10 +211,18 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 </td>
 </tr>
 <tr class="rowColor">
+<td class="colFirst"><code>protected boolean</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#countChunkTypeAsAncillary(java.lang.String)">countChunkTypeAsAncillary</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>&nbsp;</td>
+</tr>
+<tr class="altColor">
 <td class="colFirst"><code>protected <a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#createIdatSet(java.lang.String)">createIdatSet</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
-<div class="block">check that the last inserted chunk had the correct ordering</div>
+<div class="block">DeflatedChunksSet factory.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#dontSkipChunk(java.lang.String)">dontSkipChunk</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;chunkToSkip)</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
@@ -230,54 +241,59 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getChunksToSkip()">getChunksToSkip</a></strong>()</code>&nbsp;</td>
 </tr>
 <tr class="altColor">
+<td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getCurImgInfo()">getCurImgInfo</a></strong>()</code>&nbsp;</td>
+</tr>
+<tr class="rowColor">
 <td class="colFirst"><code>int</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getCurrentChunkGroup()">getCurrentChunkGroup</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/Deinterlacer.html" title="class in ar.com.hjg.pngj">Deinterlacer</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getDeinterlacer()">getDeinterlacer</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/IdatSet.html" title="class in ar.com.hjg.pngj">IdatSet</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getIdatSet()">getIdatSet</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code><a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a></code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getImageInfo()">getImageInfo</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getMaxBytesMetadata()">getMaxBytesMetadata</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getMaxTotalBytesRead()">getMaxTotalBytesRead</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>long</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#getSkipChunkMaxSize()">getSkipChunkMaxSize</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#isCallbackMode()">isCallbackMode</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#isCheckCrc()">isCheckCrc</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#isIdatKind(java.lang.String)">isIdatKind</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+ will be created to deflate it and process+ the deflated data)
  
  This implementation always returns always false</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#isInterlaced()">isInterlaced</a></strong>()</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)">postProcessChunk</a></strong>(<a href="../../../../ar/com/hjg/pngj/ChunkReader.html" title="class in ar.com.hjg.pngj">ChunkReader</a>&nbsp;chunkR)</code>
 <div class="block">This is called after a chunk is read, in all modes
@@ -287,68 +303,72 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
  Further processing should be overriden (call this first!)</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#processEndPng()">processEndPng</a></strong>()</code>
 <div class="block">Things to be done after IEND processing.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setCheckCrc(boolean)">setCheckCrc</a></strong>(boolean&nbsp;checkCrc)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setChunkFactory(ar.com.hjg.pngj.IChunkFactory)">setChunkFactory</a></strong>(<a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj">IChunkFactory</a>&nbsp;chunkFactory)</code>
 <div class="block">sets a custom chunk factory.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setChunkLoadBehaviour(ar.com.hjg.pngj.chunks.ChunkLoadBehaviour)">setChunkLoadBehaviour</a></strong>(<a href="../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks">ChunkLoadBehaviour</a>&nbsp;chunkLoadBehaviour)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setChunksToSkip(java.lang.String...)">setChunksToSkip</a></strong>(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>...&nbsp;chunksToSkip)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setIncludeNonBufferedChunks(boolean)">setIncludeNonBufferedChunks</a></strong>(boolean&nbsp;includeNonBufferedChunks)</code>
-<div class="block">If true, the chunks with no data (because skipped or because processed like IDAT-type) are
- still stored in the PngChunks list, which might be more informative.</div>
+<div class="block">If true, the chunks with no data (because skipped or because processed like IDAT-type) are still stored in the
+ PngChunks list, which might be more informative.</div>
 </td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setMaxBytesMetadata(long)">setMaxBytesMetadata</a></strong>(long&nbsp;maxBytesMetadata)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setMaxTotalBytesRead(long)">setMaxTotalBytesRead</a></strong>(long&nbsp;maxTotalBytesRead)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#setSkipChunkMaxSize(long)">setSkipChunkMaxSize</a></strong>(long&nbsp;skipChunkMaxSize)</code>&nbsp;</td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#shouldCheckCrc(int, java.lang.String)">shouldCheckCrc</a></strong>(int&nbsp;len,
               <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>&nbsp;</td>
 </tr>
-<tr class="altColor">
+<tr class="rowColor">
 <td class="colFirst"><code>boolean</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#shouldSkipContent(int, java.lang.String)">shouldSkipContent</a></strong>(int&nbsp;len,
                  <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</code>
 <div class="block">Chunks can be skipped depending on id and/or length.</div>
 </td>
 </tr>
-<tr class="rowColor">
+<tr class="altColor">
 <td class="colFirst"><code>protected void</code></td>
 <td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#startNewChunk(int, java.lang.String, long)">startNewChunk</a></strong>(int&nbsp;len,
              <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
              long&nbsp;offset)</code>
 <div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read.</div>
 </td>
+</tr>
+<tr class="rowColor">
+<td class="colFirst"><code>void</code></td>
+<td class="colLast"><code><strong><a href="../../../../ar/com/hjg/pngj/ChunkSeqReaderPng.html#updateCurImgInfo(ar.com.hjg.pngj.ImageInfo)">updateCurImgInfo</a></strong>(<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</code>&nbsp;</td>
 </tr>
 </table>
 <ul class="blockList">
@@ -386,6 +406,15 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <li class="blockList">
 <h4>imageInfo</h4>
 <pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a> imageInfo</pre>
+</li>
+</ul>
+<a name="curImageInfo">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>curImageInfo</h4>
+<pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a> curImageInfo</pre>
 </li>
 </ul>
 <a name="deinterlacer">
@@ -459,7 +488,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <pre>public&nbsp;boolean&nbsp;shouldSkipContent(int&nbsp;len,
                         <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)">ChunkSeqReader</a></code></strong></div>
-<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be null, and CRC will never checked</div>
+<div class="block">Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be
+ null, and CRC will never checked</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)">shouldSkipContent</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></code></dd>
@@ -502,6 +532,15 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <pre>public&nbsp;void&nbsp;addChunkToSkip(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;chunkToSkip)</pre>
 </li>
 </ul>
+<a name="dontSkipChunk(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>dontSkipChunk</h4>
+<pre>public&nbsp;void&nbsp;dontSkipChunk(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;chunkToSkip)</pre>
+</li>
+</ul>
 <a name="firstChunksNotYetRead()">
 <!--   -->
 </a>
@@ -530,6 +569,15 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 </dl>
 </li>
 </ul>
+<a name="countChunkTypeAsAncillary(java.lang.String)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>countChunkTypeAsAncillary</h4>
+<pre>protected&nbsp;boolean&nbsp;countChunkTypeAsAncillary(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
+</li>
+</ul>
 <a name="createIdatSet(java.lang.String)">
 <!--   -->
 </a>
@@ -537,7 +585,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <li class="blockList">
 <h4>createIdatSet</h4>
 <pre>protected&nbsp;<a href="../../../../ar/com/hjg/pngj/DeflatedChunksSet.html" title="class in ar.com.hjg.pngj">DeflatedChunksSet</a>&nbsp;createIdatSet(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
-<div class="block">check that the last inserted chunk had the correct ordering</div>
+<div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createIdatSet(java.lang.String)">ChunkSeqReader</a></code></strong></div>
+<div class="block">DeflatedChunksSet factory. This implementation is quite dummy, it usually should be overriden.</div>
 <dl>
 <dt><strong>Overrides:</strong></dt>
 <dd><code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#createIdatSet(java.lang.String)">createIdatSet</a></code>&nbsp;in class&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class in ar.com.hjg.pngj">ChunkSeqReader</a></code></dd>
@@ -561,7 +610,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <h4>isIdatKind</h4>
 <pre>protected&nbsp;boolean&nbsp;isIdatKind(<a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)">ChunkSeqReader</a></code></strong></div>
-<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+<div class="block">Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+ will be created to deflate it and process+ the deflated data)
  
  This implementation always returns always false</div>
 <dl>
@@ -607,8 +657,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <li class="blockList">
 <h4>setChunkFactory</h4>
 <pre>public&nbsp;void&nbsp;setChunkFactory(<a href="../../../../ar/com/hjg/pngj/IChunkFactory.html" title="interface in ar.com.hjg.pngj">IChunkFactory</a>&nbsp;chunkFactory)</pre>
-<div class="block">sets a custom chunk factory. This is typically called with a custom class extends ChunkFactory,
- to adds custom chunks to the default well-know ones</div>
+<div class="block">sets a custom chunk factory. This is typically called with a custom class extends ChunkFactory, to adds custom
+ chunks to the default well-know ones</div>
 <dl><dt><span class="strong">Parameters:</span></dt><dd><code>chunkFactory</code> - </dd></dl>
 </li>
 </ul>
@@ -659,11 +709,13 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
                  <a href="http://docs.oracle.com/javase/1.5.0/docs/api/java/lang/String.html?is-external=true" title="class or interface in java.lang">String</a>&nbsp;id,
                  long&nbsp;offset)</pre>
 <div class="block"><strong>Description copied from class:&nbsp;<code><a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#startNewChunk(int, java.lang.String, long)">ChunkSeqReader</a></code></strong></div>
-<div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It creates a new ChunkReader (field accesible via
- <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()"><code>ChunkSeqReader.getCurChunkReader()</code></a>) in the corresponding mode, and eventually a curReaderDeflatedSet.(field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()"><code>ChunkSeqReader.getCurReaderDeflatedSet()</code></a>)
+<div class="block">Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It
+ creates a new ChunkReader (field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurChunkReader()"><code>ChunkSeqReader.getCurChunkReader()</code></a>) in the corresponding mode, and
+ eventually a curReaderDeflatedSet.(field accesible via <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#getCurReaderDeflatedSet()"><code>ChunkSeqReader.getCurReaderDeflatedSet()</code></a>)
  
- To decide the mode and options, it calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)"><code>ChunkSeqReader.shouldCheckCrc(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)"><code>ChunkSeqReader.shouldSkipContent(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)"><code>ChunkSeqReader.isIdatKind(String)</code></a>. Those methods should be
- overriden in preference to this; if overriden, this should be called first.
+ To decide the mode and options, it calls <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldCheckCrc(int, java.lang.String)"><code>ChunkSeqReader.shouldCheckCrc(int, String)</code></a>,
+ <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#shouldSkipContent(int, java.lang.String)"><code>ChunkSeqReader.shouldSkipContent(int, String)</code></a>, <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#isIdatKind(java.lang.String)"><code>ChunkSeqReader.isIdatKind(String)</code></a>. Those methods should be overriden in
+ preference to this; if overriden, this should be called first.
  
  The respective <a href="../../../../ar/com/hjg/pngj/ChunkReader.html#chunkDone()"><code>ChunkReader.chunkDone()</code></a> method is directed to this <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html#postProcessChunk(ar.com.hjg.pngj.ChunkReader)"><code>ChunkSeqReader.postProcessChunk(ChunkReader)</code></a>.
  
@@ -811,6 +863,24 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <pre>public&nbsp;void&nbsp;setChunkLoadBehaviour(<a href="../../../../ar/com/hjg/pngj/chunks/ChunkLoadBehaviour.html" title="enum in ar.com.hjg.pngj.chunks">ChunkLoadBehaviour</a>&nbsp;chunkLoadBehaviour)</pre>
 </li>
 </ul>
+<a name="getCurImgInfo()">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>getCurImgInfo</h4>
+<pre>public&nbsp;<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;getCurImgInfo()</pre>
+</li>
+</ul>
+<a name="updateCurImgInfo(ar.com.hjg.pngj.ImageInfo)">
+<!--   -->
+</a>
+<ul class="blockList">
+<li class="blockList">
+<h4>updateCurImgInfo</h4>
+<pre>public&nbsp;void&nbsp;updateCurImgInfo(<a href="../../../../ar/com/hjg/pngj/ImageInfo.html" title="class in ar.com.hjg.pngj">ImageInfo</a>&nbsp;iminfo)</pre>
+</li>
+</ul>
 <a name="setIncludeNonBufferedChunks(boolean)">
 <!--   -->
 </a>
@@ -818,8 +888,8 @@ extends <a href="../../../../ar/com/hjg/pngj/ChunkSeqReader.html" title="class i
 <li class="blockList">
 <h4>setIncludeNonBufferedChunks</h4>
 <pre>public&nbsp;void&nbsp;setIncludeNonBufferedChunks(boolean&nbsp;includeNonBufferedChunks)</pre>
-<div class="block">If true, the chunks with no data (because skipped or because processed like IDAT-type) are
- still stored in the PngChunks list, which might be more informative.
+<div class="block">If true, the chunks with no data (because skipped or because processed like IDAT-type) are still stored in the
+ PngChunks list, which might be more informative.
  
  Setting this to false saves a few bytes
  
