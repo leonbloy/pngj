@@ -45,7 +45,7 @@ public class PngWriter {
   private boolean shouldCloseStream = true;
 
   private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 64k)
-  private PngIDatChunkOutputStream datStream;
+ // private PngIDatChunkOutputStream datStream;
 
   protected PixelsWriter pixelsWriter;
 
@@ -96,8 +96,8 @@ public class PngWriter {
   }
 
   private void initIdat() { // this triggers the writing of first chunks
-    datStream = new PngIDatChunkOutputStream(this.os, idatMaxSize);
-    pixelsWriter.setOs(datStream);
+    pixelsWriter.setOs(this.os);
+    pixelsWriter.setIdatMaxSize(idatMaxSize);
     writeSignatureAndIHDR();
     writeFirstChunks();
   }
@@ -243,11 +243,9 @@ public class PngWriter {
    * This must be called after pngw.end()
    */
   public double computeCompressionRatio() {
-    if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
+    if (currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
       throw new PngjOutputException("must be called after end()");
-    double compressed = (double) datStream.getCountFlushed();
-    double raw = (imgInfo.bytesPerRow + 1) * imgInfo.rows;
-    return compressed / raw;
+    return pixelsWriter.getCompression();
   }
 
   /**
@@ -259,8 +257,6 @@ public class PngWriter {
     try {
       if (pixelsWriter != null)
         pixelsWriter.close();
-      if (datStream != null)
-        datStream.close();
       if (currentChunkGroup < ChunksList.CHUNK_GROUP_5_AFTERIDAT)
         writeLastChunks();
       if (currentChunkGroup < ChunksList.CHUNK_GROUP_6_END)
@@ -280,8 +276,6 @@ public class PngWriter {
   public void close() {
     if (pixelsWriter != null)
       pixelsWriter.close();
-    if (datStream != null)
-      datStream.close();
     if (shouldCloseStream && os != null)
       try {
         os.close();

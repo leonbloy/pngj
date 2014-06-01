@@ -4,6 +4,7 @@ import java.io.OutputStream;
 import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
+import ar.com.hjg.pngj.IDatChunkWriter;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjOutputException;
@@ -16,6 +17,8 @@ import ar.com.hjg.pngj.PngjOutputException;
  * Typically an instance of this is hold by a PngWriter - but more instances could be used (for APGN)
  */
 public abstract class PixelsWriter {
+
+  private static final int IDAT_MAX_SIZE_DEFAULT = 32000;
 
   protected final ImageInfo imgInfo;
   /**
@@ -43,10 +46,14 @@ public abstract class PixelsWriter {
 
   private OutputStream os;
 
+  private IDatChunkWriter idatWriter;
+  private int idatMaxSize = IDAT_MAX_SIZE_DEFAULT;
+
   /**
    * row being processed, couting from zero
    */
   protected int currentRow;
+
 
   public PixelsWriter(ImageInfo imgInfo) {
     this.imgInfo = imgInfo;
@@ -151,10 +158,12 @@ public abstract class PixelsWriter {
 
   /** called by init(); override (calling this first) to do additional initialization */
   protected void initParams() {
+    if (idatWriter == null)
+      idatWriter = new IDatChunkWriter(os, idatMaxSize);
     if (compressorStream == null) { // if not set, use the deflater
       compressorStream =
-          new CompressorStreamDeflater(os, buflen, imgInfo.getTotalRawBytes(), deflaterCompLevel,
-              deflaterStrategy);
+          new CompressorStreamDeflater(idatWriter, buflen, imgInfo.getTotalRawBytes(),
+              deflaterCompLevel, deflaterStrategy);
     }
   }
 
@@ -162,7 +171,9 @@ public abstract class PixelsWriter {
   public void close() {
     if (compressorStream != null) {
       compressorStream.close();
-    }
+    } 
+    if(idatWriter!=null)
+      idatWriter.close();
   }
 
   /**
@@ -243,5 +254,9 @@ public abstract class PixelsWriter {
         (int) (filtersUsed[1] * 100.0 / imgInfo.rows + 0.5), (int) (filtersUsed[2] * 100.0
             / imgInfo.rows + 0.5), (int) (filtersUsed[3] * 100.0 / imgInfo.rows + 0.5),
         (int) (filtersUsed[4] * 100.0 / imgInfo.rows + 0.5));
+  }
+
+  public void setIdatMaxSize(int idatMaxSize) {
+    this.idatMaxSize = idatMaxSize;
   }
 }

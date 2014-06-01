@@ -3,6 +3,7 @@ package ar.com.hjg.pngj.pixels;
 import java.io.OutputStream;
 import java.util.zip.Deflater;
 
+import ar.com.hjg.pngj.IDatChunkWriter;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
@@ -21,17 +22,17 @@ public class CompressorStreamLz4 extends CompressorStream {
 
   private static final int MAX_BUFFER_SIZE = 16000;
 
-  public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen) {
+  public CompressorStreamLz4(IDatChunkWriter os, int maxBlockLen, long totalLen) {
     super(os, maxBlockLen, totalLen);
     lz4 = new DeflaterEstimatorLz4();
     buffer_size = (int) (totalLen > MAX_BUFFER_SIZE ? MAX_BUFFER_SIZE : totalLen);
   }
 
-  public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen, Deflater def) {
+  public CompressorStreamLz4(IDatChunkWriter os, int maxBlockLen, long totalLen, Deflater def) {
     this(os, maxBlockLen, totalLen);// edlfater ignored
   }
 
-  public CompressorStreamLz4(OutputStream os, int maxBlockLen, long totalLen,
+  public CompressorStreamLz4(IDatChunkWriter os, int maxBlockLen, long totalLen,
       int deflaterCompLevel, int deflaterStrategy) {
     this(os, maxBlockLen, totalLen); // paramters ignored
   }
@@ -75,7 +76,6 @@ public class CompressorStreamLz4 extends CompressorStream {
     if (!done) {
       compressFromBuffer();
       done = true;
-      flush();
     }
   }
 
@@ -88,9 +88,7 @@ public class CompressorStreamLz4 extends CompressorStream {
     }
   }
 
-  @Override
   public void reset() {
-    done();
     super.reset();
   }
 

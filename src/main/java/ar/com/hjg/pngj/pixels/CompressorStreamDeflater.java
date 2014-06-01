@@ -1,9 +1,8 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.io.IOException;
-import java.io.OutputStream;
 import java.util.zip.Deflater;
 
+import ar.com.hjg.pngj.IDatChunkWriter;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
@@ -15,47 +14,56 @@ import ar.com.hjg.pngj.PngjOutputException;
 public class CompressorStreamDeflater extends CompressorStream {
 
   protected Deflater deflater;
-  protected byte[] buf = new byte[4092]; // temporary storage of compressed bytes
+  protected byte[] buf1; // temporary storage of compressed bytes: only used if idatWriter is null
   protected boolean deflaterIsOwn = true;
 
-  public CompressorStreamDeflater(OutputStream os, int maxBlockLen, long totalLen) {
-    this(os, maxBlockLen, totalLen, null);
-  }
-
   /** if a deflater is passed, it must be already reset. It will not be released on close */
-  public CompressorStreamDeflater(OutputStream os, int maxBlockLen, long totalLen, Deflater def) {
-    super(os, maxBlockLen, totalLen);
+  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen, Deflater def) {
+    super(idatCw, maxBlockLen, totalLen);
     this.deflater = def == null ? new Deflater() : def;
     this.deflaterIsOwn = def == null;
   }
+  
+  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen) {
+    this(idatCw, maxBlockLen, totalLen, null);
+  }
 
-  public CompressorStreamDeflater(OutputStream os, int maxBlockLen, long totalLen,
+  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen,
       int deflaterCompLevel, int deflaterStrategy) {
-    this(os, maxBlockLen, totalLen, new Deflater(deflaterCompLevel));
+    this(idatCw, maxBlockLen, totalLen, new Deflater(deflaterCompLevel));
     this.deflaterIsOwn = true;
     deflater.setStrategy(deflaterStrategy);
   }
 
   @Override
-  public void mywrite(byte[] b, int off, final int len) {
+  public void mywrite(byte[] data, int off, final int len) {
     if (deflater.finished() || done || closed)
       throw new PngjOutputException("write beyond end of stream");
-    deflater.setInput(b, off, len);
+    deflater.setInput(data, off, len);
     bytesIn += len;
     while (!deflater.needsInput())
       deflate();
   }
 
   protected void deflate() {
-    int len = deflater.deflate(buf, 0, buf.length);
+    byte[] buf;
+    int off, n;
+    if (idatChunkWriter != null) {
+      buf = idatChunkWriter.getBuf();
+      off = idatChunkWriter.getOffset();
+      n = idatChunkWriter.getAvailLen();
+    } else {
+      if (buf1 == null)
+        buf1 = new byte[4096];
+      buf = buf1;
+      off = 0;
+      n = buf1.length;
+    }
+    int len = deflater.deflate(buf, off, n);
     if (len > 0) {
+      if (idatChunkWriter != null)
+        idatChunkWriter.incrementOffset(len);
       bytesOut += len;
-      try {
-        if (os != null)
-          os.write(buf, 0, len);
-      } catch (IOException e) {
-        throw new PngjOutputException(e);
-      }
     }
   }
 
@@ -70,7 +78,7 @@ public class CompressorStreamDeflater extends CompressorStream {
         deflate();
     }
     done = true;
-    flush();
+    if(idatChunkWriter!=null) idatChunkWriter.close();
   }
 
   public void close() {
@@ -86,8 +94,8 @@ public class CompressorStreamDeflater extends CompressorStream {
 
   @Override
   public void reset() {
-    super.reset();
     deflater.reset();
+    super.reset();
   }
 
 }

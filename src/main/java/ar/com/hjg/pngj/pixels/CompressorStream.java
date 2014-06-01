@@ -1,10 +1,9 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 
-import ar.com.hjg.pngj.PngjOutputException;
+import ar.com.hjg.pngj.IDatChunkWriter;
 
 /**
  * This is an OutputStream that compresses (via Deflater or a deflater-like object), and optionally passes the compressed stream to another output stream.
@@ -21,9 +20,9 @@ import ar.com.hjg.pngj.PngjOutputException;
  * 
  * 
  */
-public abstract class CompressorStream extends FilterOutputStream {
+public abstract class CompressorStream  extends OutputStream {
 
-  protected OutputStream os; // can be null!
+  protected IDatChunkWriter idatChunkWriter;
   public final int blockLen;
   public final long totalbytes;
 
@@ -39,24 +38,23 @@ public abstract class CompressorStream extends FilterOutputStream {
 
   /**
    * 
-   * @param os Can be null (if we are only interested in compute compression ratio)
+   * @param idatCw Can be null (if we are only interested in compute compression ratio)
    * @param blockLen Estimated maximum block length. If unknown, use -1.
    * @param totalbytes Expected total bytes to be fed. If unknown, use -1.
    */
-  public CompressorStream(OutputStream os, int blockLen, long totalbytes) {
-    super(os);
+  public CompressorStream(IDatChunkWriter idatCw, int blockLen, long totalbytes) {
+    this.idatChunkWriter = idatCw;
     if (blockLen < 0)
       blockLen = 4096;
     if (totalbytes < 0)
       totalbytes = Long.MAX_VALUE;
     if (blockLen < 1 || totalbytes < 1)
       throw new RuntimeException(" maxBlockLen or totalLen invalid");
-    this.os = os;
     this.blockLen = blockLen;
     this.totalbytes = totalbytes;
   }
 
-  /** Releases resources. Does NOT close the OuputStream. Idempotent. */
+  /** Releases resources.  Idempotent. */
   @Override
   public void close() {
     done();
@@ -68,16 +66,22 @@ public abstract class CompressorStream extends FilterOutputStream {
    */
   public abstract void done();
 
-  public final void write(byte[] b, int off, int len) {
+  @Override
+  public final void write(byte[] data) {
+    write(data,0,data.length);
+  }
+  
+  @Override
+  public final void write(byte[] data, int off, int len) {
     block++;
     if (len <= blockLen) { // normal case
-      mywrite(b, off, len);
+      mywrite(data, off, len);
       if (storeFirstByte && block < firstBytes.length) {
-        firstBytes[block] = b[off]; // only makes sense in this case
+        firstBytes[block] = data[off]; // only makes sense in this case
       }
     } else {
       while (len > 0) {
-        mywrite(b, off, blockLen);
+        mywrite(data, off, blockLen);
         off += blockLen;
         len -= blockLen;
       }
@@ -90,37 +94,8 @@ public abstract class CompressorStream extends FilterOutputStream {
   /**
    * same as write, but guarantedd to not exceed blockLen The implementation should update bytesOut and bytesInt but not check for totalBytes
    */
-  protected abstract void mywrite(byte[] b, int off, int len);
+  public abstract void mywrite(byte[] data, int off, int len);
 
-  @Override
-  public final void write(byte[] b) {
-    write(b, 0, b.length);
-  }
-
-  @Override
-  public void write(int b) throws IOException {
-    throw new PngjOutputException("should not be used");
-  }
-
-  public void reset() {
-    reset(os);
-  }
-
-  /**
-   * resets and sets a new outputstream
-   * 
-   * @param os
-   */
-  public void reset(OutputStream os) {
-    if (closed)
-      throw new PngjOutputException("cannot reset, discarded object");
-    done();
-    bytesIn = 0;
-    bytesOut = 0;
-    block = -1;
-    done = false;
-    this.os = os;
-  }
 
   /**
    * compressed/raw. This should be called only when done
@@ -143,23 +118,6 @@ public abstract class CompressorStream extends FilterOutputStream {
     return bytesOut;
   }
 
-  /**
-   * @return the output stream : warning, it can be null
-   */
-  public OutputStream getOs() {
-    return os;
-  }
-
-  @Override
-  public void flush() {
-    if (os != null)
-      try {
-        os.flush();
-      } catch (IOException e) {
-        throw new PngjOutputException(e);
-      }
-  }
-
   public boolean isClosed() {
     return closed;
   }
@@ -180,5 +138,19 @@ public abstract class CompressorStream extends FilterOutputStream {
     } else
       firstBytes = null;
   }
+
+  public void reset() {
+    done();
+    bytesIn = 0;
+    bytesOut = 0;
+    block = -1;
+    done = false;
+  }
+  
+  @Override 
+  public void write(int i) { // should not be used
+    write(new byte[]{(byte)i});
+  }
+
 
 }

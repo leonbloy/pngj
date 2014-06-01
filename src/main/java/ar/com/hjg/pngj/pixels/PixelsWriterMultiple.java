@@ -82,6 +82,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
     }
     if (currentRow == lastRowInThisBand) {
       int best = getBestCompressor();
+      //PngHelperInternal.debug("won: " + best + " (rows: " + firstRowInThisBand + ":"       + lastRowInThisBand + ")");
       // if(currentRow>90&&currentRow<100)
       // PngHelperInternal.debug(String.format("row=%d ft=%s",currentRow,FilterType.getByVal(best)));
       byte[] filtersAdapt = filterBank[best].getFirstBytes();
@@ -152,8 +153,9 @@ public class PixelsWriterMultiple extends PixelsWriter {
               new CompressorStreamDeflater(null, buflen, bytesPerBandCurrent, DEFLATER_COMP_LEVEL,
                   Deflater.DEFAULT_STRATEGY);
         filterBank[i] = cp;
-      } else
+      } else {
         cp.reset();
+      }
       cp.setStoreFirstByte(true, rowsPerBandCurrent); // TODO: only for adaptive?
     }
   }
@@ -231,6 +233,10 @@ public class PixelsWriterMultiple extends PixelsWriter {
   /** for tuning memory or other parameters */
   public FiltersPerformance getFiltersPerf() {
     return filtersPerf;
+  }
+
+  public void setTryAdaptive(boolean tryAdaptive) {
+    this.tryAdaptive = tryAdaptive;
   }
 
 }
