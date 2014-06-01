@@ -73,7 +73,8 @@ public class BufferedStreamFeeder {
   /**
    * Feeds as much bytes as it can to the consumer, in a loop. <br>
    * Returns bytes actually consumed <br>
-   * This will stop when either the input stream is eof, or when the consumer refuses to eat more bytes. The caller can distinguish both cases by calling {@link #hasMoreToFeed()}
+   * This will stop when either the input stream is eof, or when the consumer refuses to eat more bytes. The caller can
+   * distinguish both cases by calling {@link #hasMoreToFeed()}
    */
   public long feedAll(IBytesConsumer consumer) {
     long n = 0;
@@ -126,7 +127,8 @@ public class BufferedStreamFeeder {
   }
 
   /**
-   * Returuns true if we have more data to fed the consumer. This internally tries to grabs more bytes from the stream if necessary
+   * Returuns true if we have more data to fed the consumer. This internally tries to grabs more bytes from the stream
+   * if necessary
    */
   public boolean hasMoreToFeed() {
     if (eof)
@@ -168,8 +170,8 @@ public class BufferedStreamFeeder {
   }
 
   /**
-   * Sets a new underlying inputstream. This allows to reuse this object. The old underlying is not closed and the state is not reset (you should call close() previously if you
-   * want that)
+   * Sets a new underlying inputstream. This allows to reuse this object. The old underlying is not closed and the state
+   * is not reset (you should call close() previously if you want that)
    * 
    * @param is
    */
@@ -186,8 +188,8 @@ public class BufferedStreamFeeder {
   }
 
   /**
-   * If this flag is set (default: false), any call to feed() that returns zero (no byte feed) will throw an exception. This is useful to be sure of avoid infinite loops in some
-   * scenarios.
+   * If this flag is set (default: false), any call to feed() that returns zero (no byte feed) will throw an exception.
+   * This is useful to be sure of avoid infinite loops in some scenarios.
    * 
    * @param failIfNoFeed
    */

@@ -82,8 +82,8 @@ public class WriterFiltersPerformance {
   }
 
   /*
-   * private boolean condOnlyRGB8=false; private boolean condOnlyAlpha=false; private boolean condOnly16bits=false; private boolean condOnlylessthan8bppOrPalette=false; private
-   * boolean condOnlyGray=false;
+   * private boolean condOnlyRGB8=false; private boolean condOnlyAlpha=false; private boolean condOnly16bits=false;
+   * private boolean condOnlylessthan8bppOrPalette=false; private boolean condOnlyGray=false;
    */
   private boolean shouldRun(ImageInfo imgInfo2) {
     if (condOnlyRGB8)

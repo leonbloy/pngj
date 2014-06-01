@@ -83,8 +83,9 @@ public class IDatChunkWriter {
     }
   }
 
-  /** this should rarely be used, the normal way (to avoid double copying)
-   * is to get the buffer and write directly to it */
+  /**
+   * this should rarely be used, the normal way (to avoid double copying) is to get the buffer and write directly to it
+   */
   public void write(byte[] b, int o, int len) {
     while (len > 0) {
       int n = len <= availLen ? len : availLen;

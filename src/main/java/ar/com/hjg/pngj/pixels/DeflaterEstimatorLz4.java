@@ -3,10 +3,12 @@ package ar.com.hjg.pngj.pixels;
 import java.nio.ByteOrder;
 
 /**
- * This estimator actually uses the LZ4 compression algorithm, and hopes that it's well correlated with Deflater. It's about 3 to 4 times faster than Deflater.
+ * This estimator actually uses the LZ4 compression algorithm, and hopes that it's well correlated with Deflater. It's
+ * about 3 to 4 times faster than Deflater.
  * 
- * This is a modified heavily trimmed version of the net.jpountz.lz4.LZ4JavaSafeCompressor class plus some methods from other classes from LZ4 Java library:
- * https://github.com/jpountz/lz4-java , originally licensed under the Apache License 2.0
+ * This is a modified heavily trimmed version of the net.jpountz.lz4.LZ4JavaSafeCompressor class plus some methods from
+ * other classes from LZ4 Java library: https://github.com/jpountz/lz4-java , originally licensed under the Apache
+ * License 2.0
  */
 final public class DeflaterEstimatorLz4 {
 
@@ -16,9 +18,11 @@ final public class DeflaterEstimatorLz4 {
   public DeflaterEstimatorLz4() {}
 
   /**
-   * Estimates the length of the compressed bytes, as compressed by Lz4 WARNING: if larger than LZ4_64K_LIMIT it cuts it in fragments
+   * Estimates the length of the compressed bytes, as compressed by Lz4 WARNING: if larger than LZ4_64K_LIMIT it cuts it
+   * in fragments
    * 
-   * WARNING: if some part of the input is discarded, this should return the proportional (so that returnValue/srcLen=compressionRatio)
+   * WARNING: if some part of the input is discarded, this should return the proportional (so that
+   * returnValue/srcLen=compressionRatio)
    * 
    * @param src
    * @param srcOff

@@ -14,7 +14,8 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReaderByte;
 
 /**
- * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines (bytes 0 and 1), comparing with precomputed
+ * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and computes a CRC of all lines (bytes 0
+ * and 1), comparing with precomputed
  */
 public class SuiteCrcsByteTest extends PngjTest {
 

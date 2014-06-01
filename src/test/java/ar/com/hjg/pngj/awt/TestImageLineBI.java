@@ -46,8 +46,8 @@ public class TestImageLineBI {
   private void testRead(File ori, boolean preferCustom) {
     PngReaderBI png = new PngReaderBI(ori);
     if (verbose)
-    PngHelperInternal.debug(String.format("====testing with values %s cust=%s==", ori.getName()
-        + " " + png.imgInfo.toStringBrief(), preferCustom));
+      PngHelperInternal.debug(String.format("====testing with values %s cust=%s==", ori.getName()
+          + " " + png.imgInfo.toStringBrief(), preferCustom));
     png.setPreferCustomInsteadOfBGR(preferCustom);
     File dest = TestSupport.absFile("test/__test.tmp.png");
     delOnExit(dest);
@@ -122,7 +122,7 @@ public class TestImageLineBI {
       int nlines = png.imgInfo.rows / 2 - 1, offset = 1, step = 2;
       // dest.deleteOnExit();
       BufferedImage img = png.readAll(nlines, offset, step); // 10 lines, starting for 1, skipping 1
-      //System.err.println(ImageIoUtils.imageTypeName(img.getType()));
+      // System.err.println(ImageIoUtils.imageTypeName(img.getType()));
       ImageIoUtils.writePng(dest, img);
       TestSupport.copyPartial(ori, dest2, nlines, step, offset, false);
     }

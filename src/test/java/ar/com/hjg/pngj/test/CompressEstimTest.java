@@ -63,7 +63,8 @@ public class CompressEstimTest {
       // System.out.printf("len=%6d def=%.3f lz4=%.3f\n", buffers[i].length, cbufd[i], cbuflz4[i]);
     }
     /*
-     * len= 512 def=0.850 lz4=0.840 len= 4096 def=0.880 lz4=0.948 len= 71680 def=0.153 lz4=0.216 len=524288 def=0.026 lz4=0.037
+     * len= 512 def=0.850 lz4=0.840 len= 4096 def=0.880 lz4=0.948 len= 71680 def=0.153 lz4=0.216 len=524288 def=0.026
+     * lz4=0.037
      */
   }
 

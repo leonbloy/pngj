@@ -89,7 +89,8 @@ public class ChunkFactory implements IChunkFactory {
   }
 
   /**
-   * Factory for chunks that are not in the original PNG standard. This can be overriden (but dont forget to call this also)
+   * Factory for chunks that are not in the original PNG standard. This can be overriden (but dont forget to call this
+   * also)
    * 
    * @param id Chunk id , 4 letters
    * @param imgInfo Usually not needed

@@ -50,7 +50,7 @@ public class ChunkSeqSkippingTest extends PngjTest {
         @Override
         protected void processChunkContent(ChunkRaw chunkRaw, int offsetinChhunk, byte[] buf,
             int off, int len) {
-          //PngHelperInternal.debug("processing chunk " + chunkRaw);
+          // PngHelperInternal.debug("processing chunk " + chunkRaw);
           if (offsetinChhunk == 0) {
             chunkRaw.writeChunkHeader(os); // send only the header
           }

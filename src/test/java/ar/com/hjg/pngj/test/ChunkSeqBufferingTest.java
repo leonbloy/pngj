@@ -17,7 +17,8 @@ import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
 /**
- * This shows how to read at low level a PNG, without PngReader, to add a chunk much more efficiently than by using PngReader/PngWriter
+ * This shows how to read at low level a PNG, without PngReader, to add a chunk much more efficiently than by using
+ * PngReader/PngWriter
  */
 public class ChunkSeqBufferingTest extends PngjTest {
 

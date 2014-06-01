@@ -30,7 +30,8 @@ public class PngReaderApng extends PngReaderByte {
   private PngChunkFCTL fctlChunk; // current (null for the pseudo still frame)
 
   /**
-   * Current frame number (reading or read). First animated frame is 0. Frame -1 represents the IDAT (default image) when it's not part of the animation
+   * Current frame number (reading or read). First animated frame is 0. Frame -1 represents the IDAT (default image)
+   * when it's not part of the animation
    */
   protected int frameNum = -1; // incremented after each fctl finding
 
@@ -73,7 +74,8 @@ public class PngReaderApng extends PngReaderByte {
   }
 
   /**
-   * True if it has a default image (IDAT) that is not part of the animation. In that case, we consider it as a pseudo-frame (number -1)
+   * True if it has a default image (IDAT) that is not part of the animation. In that case, we consider it as a
+   * pseudo-frame (number -1)
    */
   public boolean hasExtraStillImage() {
     return isApng() && !firsIdatApngFrame;

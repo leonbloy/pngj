@@ -12,7 +12,8 @@ import ar.com.hjg.pngj.PngjOutputException;
 /**
  * Encodes a set of rows (pixels) as a continuous deflated stream (does not know about IDAT chunk segmentation).
  * <p>
- * This includes the filter selection strategy, plus the filtering itself and the deflating. Only supports fixed length rows (no interlaced writing).
+ * This includes the filter selection strategy, plus the filtering itself and the deflating. Only supports fixed length
+ * rows (no interlaced writing).
  * <p>
  * Typically an instance of this is hold by a PngWriter - but more instances could be used (for APGN)
  */
@@ -65,7 +66,8 @@ public abstract class PixelsWriter {
   }
 
   /**
-   * main internal point for external call. It does the lazy initializion if necessary, sets current row, and call {@link #filterAndWrite(byte[])}
+   * main internal point for external call. It does the lazy initializion if necessary, sets current row, and call
+   * {@link #filterAndWrite(byte[])}
    */
   public final void processRow(final byte[] rowb) {
     if (!initdone)
@@ -80,7 +82,8 @@ public abstract class PixelsWriter {
   }
 
   /**
-   * This does the filtering and send to stream. Typically should decide the filtering, call {@link #filterRowWithFilterType(FilterType, byte[], byte[], byte[])} and and
+   * This does the filtering and send to stream. Typically should decide the filtering, call
+   * {@link #filterRowWithFilterType(FilterType, byte[], byte[], byte[])} and and
    * {@link #sendToCompressedStream(byte[])}
    * 
    * @param rowb
@@ -141,8 +144,8 @@ public abstract class PixelsWriter {
   }
 
   /**
-   * This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call. Warning: this can be called before the object is init,
-   * implementations should call init() to be sure
+   * This will be called by the PngWrite to fill the raw pixels for each row. This can change from call to call.
+   * Warning: this can be called before the object is init, implementations should call init() to be sure
    */
   public abstract byte[] getRowb();
 
@@ -171,13 +174,14 @@ public abstract class PixelsWriter {
   public void close() {
     if (compressorStream != null) {
       compressorStream.close();
-    } 
-    if(idatWriter!=null)
+    }
+    if (idatWriter != null)
       idatWriter.close();
   }
 
   /**
-   * Deflater (ZLIB) strategy. You should rarely change this from the default (Deflater.DEFAULT_STRATEGY) to Deflater.FILTERED (Deflater.HUFFMAN_ONLY is fast but compress poorly)
+   * Deflater (ZLIB) strategy. You should rarely change this from the default (Deflater.DEFAULT_STRATEGY) to
+   * Deflater.FILTERED (Deflater.HUFFMAN_ONLY is fast but compress poorly)
    */
   public void setDeflaterStrategy(Integer deflaterStrategy) {
     this.deflaterStrategy = deflaterStrategy;

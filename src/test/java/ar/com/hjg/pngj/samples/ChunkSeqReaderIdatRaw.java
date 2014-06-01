@@ -14,7 +14,8 @@ public class ChunkSeqReaderIdatRaw extends ChunkSeqReaderOpaque {
   public boolean omitFilterByte = false;
 
   /**
-   * This reader writes the chunks directly to the rawOs output, except that the IDAT stream is decompressed and writen to idatOs
+   * This reader writes the chunks directly to the rawOs output, except that the IDAT stream is decompressed and writen
+   * to idatOs
    * 
    * @param is
    * @param rawOs

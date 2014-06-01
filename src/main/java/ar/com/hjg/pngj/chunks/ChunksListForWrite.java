@@ -81,7 +81,8 @@ public class ChunksListForWrite extends ChunksList {
   /**
    * Remove Chunk: only from queued
    * 
-   * WARNING: this depends on c.equals() implementation, which is straightforward for SingleChunks. For MultipleChunks, it will normally check for reference equality!
+   * WARNING: this depends on c.equals() implementation, which is straightforward for SingleChunks. For MultipleChunks,
+   * it will normally check for reference equality!
    */
   public boolean removeChunk(PngChunk c) {
     if (c == null)

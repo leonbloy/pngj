@@ -176,7 +176,8 @@ public class ApngExtractFrames {
    * reads a APNG file and tries to split it into its frames - low level! Returns number of animation frames extracted
    */
   public static int process(final File orig, String prefix) throws Exception {
-    // we extend PngReader, to have a custom behavior: load all chunks opaquely, buffering all, and react to some special chnks
+    // we extend PngReader, to have a custom behavior: load all chunks opaquely, buffering all, and react to some
+    // special chnks
     PngReaderBuffered pngr = new PngReaderBuffered(orig);
     pngr.prefix = prefix;
     pngr.end(); // read till end - this consumes all the input stream and does all!

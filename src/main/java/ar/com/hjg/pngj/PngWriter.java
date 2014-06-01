@@ -33,7 +33,8 @@ public class PngWriter {
   private final PngMetadata metadata;
 
   /**
-   * Current chunk grounp, (0-6) already written or currently writing (this is advanced when just starting to write the new group, not when finalizing the previous)
+   * Current chunk grounp, (0-6) already written or currently writing (this is advanced when just starting to write the
+   * new group, not when finalizing the previous)
    * <p>
    * see {@link ChunksList}
    */
@@ -45,7 +46,7 @@ public class PngWriter {
   private boolean shouldCloseStream = true;
 
   private int idatMaxSize = 0; // 0=use default (PngIDatChunkOutputStream 64k)
- // private PngIDatChunkOutputStream datStream;
+  // private PngIDatChunkOutputStream datStream;
 
   protected PixelsWriter pixelsWriter;
 
@@ -78,8 +79,8 @@ public class PngWriter {
   }
 
   /**
-   * Constructs a new PngWriter from a output stream. After construction nothing is writen yet. You still can set some parameters (compression, filters) and queue chunks before
-   * start writing the pixels.
+   * Constructs a new PngWriter from a output stream. After construction nothing is writen yet. You still can set some
+   * parameters (compression, filters) and queue chunks before start writing the pixels.
    * <p>
    * 
    * @param outputStream Open stream for binary writing
@@ -152,7 +153,9 @@ public class PngWriter {
   private void queueChunksFromOther() {
     if (copyFromList == null || copyFromPredicate == null)
       return;
-    boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT; // we assume this method is not either before or after the IDAT writing, not in the middle!
+    boolean idatDone = currentChunkGroup >= ChunksList.CHUNK_GROUP_4_IDAT; // we assume this method is not either before
+                                                                           // or after the IDAT writing, not in the
+                                                                           // middle!
     for (PngChunk chunk : copyFromList.getChunks()) {
       if (chunk.getRaw().data == null)
         continue; // we cannot copy skipped chunks?
@@ -192,15 +195,17 @@ public class PngWriter {
   }
 
   /**
-   * Sets an origin (typically from a {@link PngReader}) of Chunks to be copied. This should be called only once, before starting writing the rows. It doesn't matter the current
-   * state of the PngReader reading, this is a live object and what matters is that when the writer writes the pixels (IDAT) the reader has already read them, and that when the
+   * Sets an origin (typically from a {@link PngReader}) of Chunks to be copied. This should be called only once, before
+   * starting writing the rows. It doesn't matter the current state of the PngReader reading, this is a live object and
+   * what matters is that when the writer writes the pixels (IDAT) the reader has already read them, and that when the
    * writer ends, the reader is already ended (all this is very natural).
    * <p>
    * Apart from the copyMask, there is some addional heuristics:
    * <p>
    * - The chunks will be queued, but will be written as late as possible (unless you explicitly set priority=true)
    * <p>
-   * - The chunk will not be queued if an "equivalent" chunk was already queued explicitly. And it will be overwriten another is queued explicitly.
+   * - The chunk will not be queued if an "equivalent" chunk was already queued explicitly. And it will be overwriten
+   * another is queued explicitly.
    * 
    * @param chunks
    * @param copyMask Some bitmask from {@link ChunkCopyBehaviour}
@@ -238,7 +243,8 @@ public class PngWriter {
   /**
    * Computes compressed size/raw size, approximate.
    * <p>
-   * Actually: compressed size = total size of IDAT data , raw size = uncompressed pixel bytes = rows * (bytesPerRow + 1).
+   * Actually: compressed size = total size of IDAT data , raw size = uncompressed pixel bytes = rows * (bytesPerRow +
+   * 1).
    * 
    * This must be called after pngw.end()
    */
@@ -269,7 +275,8 @@ public class PngWriter {
   /**
    * Closes and releases resources
    * <p>
-   * This is normally called internally from {@link #end()}, you should only call this for aborting the writing and release resources (close the stream).
+   * This is normally called internally from {@link #end()}, you should only call this for aborting the writing and
+   * release resources (close the stream).
    * <p>
    * Idempotent and secure - never throws exceptions
    */
@@ -309,7 +316,8 @@ public class PngWriter {
   }
 
   /**
-   * This is kept for backwards compatibility, now the PixelsWriter object should be used for setting compression/filtering options
+   * This is kept for backwards compatibility, now the PixelsWriter object should be used for setting
+   * compression/filtering options
    * 
    * @see PixelsWriter#setCompressionFactor(double)
    * @param compLevel between 0 (no compression, max speed) and 9 (max compression)
@@ -329,7 +337,8 @@ public class PngWriter {
   }
 
   /**
-   * Sets maximum size of IDAT fragments. Incrementing this from the default has very little effect on compression and increments memory usage. You should rarely change this.
+   * Sets maximum size of IDAT fragments. Incrementing this from the default has very little effect on compression and
+   * increments memory usage. You should rarely change this.
    * <p>
    * 
    * @param idatMaxSize default=0 : use defaultSize (32K)
@@ -393,7 +402,8 @@ public class PngWriter {
   }
 
   /**
-   * Factory method for pixels writer. This will be called once at the moment at start writing a set of IDAT chunks (typically once in a normal PNG)
+   * Factory method for pixels writer. This will be called once at the moment at start writing a set of IDAT chunks
+   * (typically once in a normal PNG)
    * 
    * This should be overriden if custom filtering strategies are desired. Remember to release this with close()
    * 

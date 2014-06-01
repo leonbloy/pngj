@@ -54,7 +54,8 @@ public class ChunkCopyBehaviour {
   /**
    * Creates a predicate equivalent to the copy mask
    * <p>
-   * Given a copy mask (see static fields) and the ImageInfo of the target PNG, returns a predicate that tells if a chunk should be copied.
+   * Given a copy mask (see static fields) and the ImageInfo of the target PNG, returns a predicate that tells if a
+   * chunk should be copied.
    * <p>
    * This is a handy helper method, you can also create and set your own predicate
    */

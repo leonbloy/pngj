@@ -8,7 +8,8 @@ import ar.com.hjg.pngj.PngjOutputException;
 /**
  * CompressorStream backed by a Deflater.
  * 
- * Note that the Deflater is not disposed after done, you should either recycle this with reset() or dispose it with close()
+ * Note that the Deflater is not disposed after done, you should either recycle this with reset() or dispose it with
+ * close()
  * 
  */
 public class CompressorStreamDeflater extends CompressorStream {
@@ -18,12 +19,13 @@ public class CompressorStreamDeflater extends CompressorStream {
   protected boolean deflaterIsOwn = true;
 
   /** if a deflater is passed, it must be already reset. It will not be released on close */
-  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen, Deflater def) {
+  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen,
+      Deflater def) {
     super(idatCw, maxBlockLen, totalLen);
     this.deflater = def == null ? new Deflater() : def;
     this.deflaterIsOwn = def == null;
   }
-  
+
   public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen) {
     this(idatCw, maxBlockLen, totalLen, null);
   }
@@ -78,7 +80,8 @@ public class CompressorStreamDeflater extends CompressorStream {
         deflate();
     }
     done = true;
-    if(idatChunkWriter!=null) idatChunkWriter.close();
+    if (idatChunkWriter != null)
+      idatChunkWriter.close();
   }
 
   public void close() {

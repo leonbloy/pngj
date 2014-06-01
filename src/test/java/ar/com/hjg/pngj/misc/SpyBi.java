@@ -123,7 +123,8 @@ public class SpyBi {
   public static void main(String[] args) {
     run(args);
     /*
-     * run(new String[]{"d:\\devel\\repositories\\pngj\\priv\\imgsets\\2\\**","d:\\devel\\repositories\\pngj\\src\\test\\resources\\testsuite1\\"
+     * run(new String[]{"d:\\devel\\repositories\\pngj\\priv\\imgsets\\2\\**",
+     * "d:\\devel\\repositories\\pngj\\src\\test\\resources\\testsuite1\\"
      * ,"d:\\devel\\repositories\\pngj\\src\\test\\resources\\test\\"});
      */
   }

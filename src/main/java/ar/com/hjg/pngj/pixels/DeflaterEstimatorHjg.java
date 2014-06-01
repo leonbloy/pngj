@@ -1,6 +1,5 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.nio.ByteOrder;
 
 final public class DeflaterEstimatorHjg {
 
@@ -10,9 +9,11 @@ final public class DeflaterEstimatorHjg {
   public DeflaterEstimatorHjg() {}
 
   /**
-   * Estimates the length of the compressed bytes, as compressed by Lz4 WARNING: if larger than LZ4_64K_LIMIT it cuts it in fragments
+   * Estimates the length of the compressed bytes, as compressed by Lz4 WARNING: if larger than LZ4_64K_LIMIT it cuts it
+   * in fragments
    * 
-   * WARNING: if some part of the input is discarded, this should return the proportional (so that returnValue/srcLen=compressionRatio)
+   * WARNING: if some part of the input is discarded, this should return the proportional (so that
+   * returnValue/srcLen=compressionRatio)
    * 
    * @param src
    * @param srcOff
@@ -54,7 +55,8 @@ final public class DeflaterEstimatorHjg {
   static final int HASH_LOG = MEMORY_USAGE - 2;
   static final int HASH_TABLE_SIZE = 1 << HASH_LOG;
 
-  static final int SKIP_STRENGTH = Math.max(NOT_COMPRESSIBLE_DETECTION_LEVEL, 2); // 6 findMatchAttempts = 2^SKIP_STRENGTH+3
+  static final int SKIP_STRENGTH = Math.max(NOT_COMPRESSIBLE_DETECTION_LEVEL, 2); // 6 findMatchAttempts =
+                                                                                  // 2^SKIP_STRENGTH+3
   static final int COPY_LENGTH = 8;
   static final int LAST_LITERALS = 5;
   static final int MF_LIMIT = COPY_LENGTH + MIN_MATCH;
@@ -96,7 +98,7 @@ final public class DeflaterEstimatorHjg {
         int forwardOff = sOff;
 
         int ref;
-        int findMatchAttempts1 = (1 << SKIP_STRENGTH) + 3; //64+3=67
+        int findMatchAttempts1 = (1 << SKIP_STRENGTH) + 3; // 64+3=67
         do {
           sOff = forwardOff;
           forwardOff += findMatchAttempts1++ >>> SKIP_STRENGTH;

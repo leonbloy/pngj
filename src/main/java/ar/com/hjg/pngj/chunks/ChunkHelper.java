@@ -143,7 +143,8 @@ public class ChunkHelper {
   }
 
   /**
-   * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize its id
+   * "Unknown" just means that our chunk factory (even when it has been augmented by client code) did not recognize its
+   * id
    */
   public static boolean isUnknown(PngChunk c) {
     return c instanceof PngChunkUNKNOWN;
@@ -248,8 +249,9 @@ public class ChunkHelper {
   }
 
   /**
-   * Adhoc criteria: two ancillary chunks are "equivalent" ("practically same type") if they have same id and (perhaps, if multiple are allowed) if the match also in some
-   * "internal key" (eg: key for string values, palette for sPLT, etc)
+   * Adhoc criteria: two ancillary chunks are "equivalent" ("practically same type") if they have same id and (perhaps,
+   * if multiple are allowed) if the match also in some "internal key" (eg: key for string values, palette for sPLT,
+   * etc)
    * 
    * When we use this method, we implicitly assume that we don't allow/expect two "equivalent" chunks in a single PNG
    * 

@@ -12,7 +12,8 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
 /**
  * Consumes a stream of bytes that consist of a series of PNG-like chunks.
  * <p>
- * This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example). It supports signature recognition and idat deflate
+ * This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example).
+ * It supports signature recognition and idat deflate
  */
 public class ChunkSeqReader implements IBytesConsumer {
 
@@ -136,11 +137,13 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It creates a new ChunkReader (field accesible via
-   * {@link #getCurChunkReader()}) in the corresponding mode, and eventually a curReaderDeflatedSet.(field accesible via {@link #getCurReaderDeflatedSet()})
+   * Called for all chunks when a chunk start has been read (id and length), before the chunk data itself is read. It
+   * creates a new ChunkReader (field accesible via {@link #getCurChunkReader()}) in the corresponding mode, and
+   * eventually a curReaderDeflatedSet.(field accesible via {@link #getCurReaderDeflatedSet()})
    * 
-   * To decide the mode and options, it calls {@link #shouldCheckCrc(int, String)}, {@link #shouldSkipContent(int, String)}, {@link #isIdatKind(String)}. Those methods should be
-   * overriden in preference to this; if overriden, this should be called first.
+   * To decide the mode and options, it calls {@link #shouldCheckCrc(int, String)},
+   * {@link #shouldSkipContent(int, String)}, {@link #isIdatKind(String)}. Those methods should be overriden in
+   * preference to this; if overriden, this should be called first.
    * 
    * The respective {@link ChunkReader#chunkDone()} method is directed to this {@link #postProcessChunk(ChunkReader)}.
    * 
@@ -152,7 +155,8 @@ public class ChunkSeqReader implements IBytesConsumer {
     boolean checkCrc = shouldCheckCrc(len, id);
     boolean skip = shouldSkipContent(len, id);
     boolean isIdatType = isIdatKind(id);
-    // PngHelperInternal.debug("start new chunk  id=" + id + " off=" + offset + " skip=" + skip + " idat=" + isIdatType);
+    // PngHelperInternal.debug("start new chunk  id=" + id + " off=" + offset + " skip=" + skip + " idat=" +
+    // isIdatType);
     // first see if we should terminate an active curReaderDeflatedSet
     boolean forCurrentIdatSet = false;
     if (curReaderDeflatedSet != null)
@@ -181,7 +185,8 @@ public class ChunkSeqReader implements IBytesConsumer {
   /**
    * This will be called for all chunks (even skipped), except for IDAT-like non-skiped chunks
    * 
-   * The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls {@link #postProcessChunk(ChunkReader)} (always) when done.
+   * The default behaviour is to create a ChunkReader in BUFFER mode (or SKIP if skip==true) that calls
+   * {@link #postProcessChunk(ChunkReader)} (always) when done.
    * 
    * @param id Chunk id
    * @param len Chunk length
@@ -230,7 +235,8 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet will be created to deflate it and process+ the deflated data)
+   * Decides if this Chunk is of "IDAT" kind (in concrete: if it is, and if it's not to be skiped, a DeflatedChunksSet
+   * will be created to deflate it and process+ the deflated data)
    * 
    * This implementation always returns always false
    * 
@@ -241,7 +247,8 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be null, and CRC will never checked
+   * Chunks can be skipped depending on id and/or length. Skipped chunks are still processed, but their data will be
+   * null, and CRC will never checked
    * 
    * @param len
    * @param id
@@ -320,7 +327,8 @@ public class ChunkSeqReader implements IBytesConsumer {
   }
 
   /**
-   * Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or end of signature, or we are done
+   * Returns true if we are not in middle of a chunk: we have just ended reading past chunk , or we are at the start, or
+   * end of signature, or we are done
    */
   public boolean isAtChunkBoundary() {
     return bytesCount == 0 || bytesCount == 8 || done || curChunkReader == null

@@ -16,7 +16,7 @@ public class RemoveChunksNgTest {
     File ori = TestSupport.absFile(TestSupport.PNG_TEST_STRIPES2);
     File dest = newFile();
 
-    RemoveChunks.run(new String[] {"-kPHYS","-q", ori.toString(), dest.toString()});
+    RemoveChunks.run(new String[] {"-kPHYS", "-q", ori.toString(), dest.toString()});
     String oric = TestSupport.getChunksSummary(ori.toString(), true);
     String destc = TestSupport.getChunksSummary(dest.toString(), false);
     TestCase

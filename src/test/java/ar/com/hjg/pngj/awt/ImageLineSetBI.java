@@ -16,11 +16,13 @@ public class ImageLineSetBI implements IImageLineSet<ImageLineBI> {
   final BufferedImage2PngAdapter adapter2png;
   final ImageInfo iminfo;
 
-  // this is the number of lines of the "target" (BI if reading PNG, PNG elsewhere), less or equal than the rows of the source
+  // this is the number of lines of the "target" (BI if reading PNG, PNG elsewhere), less or equal than the rows of the
+  // source
   private final int nlines;
   // how many lines to skip from the source
   private final int offset;
-  // steps is in the source; eg. if step=2, and isForWritePng==false, we are creating a BI with half the lines ofthe PNG;
+  // steps is in the source; eg. if step=2, and isForWritePng==false, we are creating a BI with half the lines ofthe
+  // PNG;
   // if step=2 and isForWritePng==false, we are creating a PNG with half the lines of the BI
   private final int step;
 

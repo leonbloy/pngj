@@ -180,7 +180,8 @@ public class FiltersPerformance {
   }
 
   /**
-   * Values greater than 1.0 (towards infinite) increase the memory towards 1. Values smaller than 1.0 (towards zero) decreases the memory .
+   * Values greater than 1.0 (towards infinite) increase the memory towards 1. Values smaller than 1.0 (towards zero)
+   * decreases the memory .
    * 
    */
   public void tuneMemory(double m) {
@@ -191,7 +192,8 @@ public class FiltersPerformance {
   }
 
   /**
-   * To set manually the filter weights. This is not recommended, unless you know what you are doing. Setting this ignores preferenceForNone and omits some heuristics
+   * To set manually the filter weights. This is not recommended, unless you know what you are doing. Setting this
+   * ignores preferenceForNone and omits some heuristics
    * 
    * @param weights Five doubles around 1.0, one for each filter type. Lower is preferered
    */

@@ -188,7 +188,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
   }
 
   /**
-   * sets a custom chunk factory. This is typically called with a custom class extends ChunkFactory, to adds custom chunks to the default well-know ones
+   * sets a custom chunk factory. This is typically called with a custom class extends ChunkFactory, to adds custom
+   * chunks to the default well-know ones
    * 
    * @param chunkFactory
    */
@@ -294,7 +295,8 @@ public class ChunkSeqReaderPng extends ChunkSeqReader {
   }
 
   /**
-   * If true, the chunks with no data (because skipped or because processed like IDAT-type) are still stored in the PngChunks list, which might be more informative.
+   * If true, the chunks with no data (because skipped or because processed like IDAT-type) are still stored in the
+   * PngChunks list, which might be more informative.
    * 
    * Setting this to false saves a few bytes
    * 

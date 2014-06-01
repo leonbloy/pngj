@@ -39,7 +39,8 @@ public class ChunksList {
   }
 
   /**
-   * WARNING: this does NOT return a copy, but the list itself. The called should not modify this directly! Don't use this to manipulate the chunks.
+   * WARNING: this does NOT return a copy, but the list itself. The called should not modify this directly! Don't use
+   * this to manipulate the chunks.
    */
   public List<PngChunk> getChunks() {
     return chunks;
@@ -111,7 +112,8 @@ public class ChunksList {
   /**
    * Returns only one chunk or null if nothing found - does not include queued
    * <p>
-   * If more than one chunk is found, then an exception is thrown (failifMultiple=true or chunk is single) or the last one is returned (failifMultiple=false)
+   * If more than one chunk is found, then an exception is thrown (failifMultiple=true or chunk is single) or the last
+   * one is returned (failifMultiple=false)
    **/
   public PngChunk getById1(final String id, final boolean failIfMultiple) {
     return getById1(id, null, failIfMultiple);
@@ -120,8 +122,8 @@ public class ChunksList {
   /**
    * Returns only one chunk or null if nothing found - does not include queued
    * <p>
-   * If more than one chunk (after filtering by inner id) is found, then an exception is thrown (failifMultiple=true or chunk is single) or the last one is returned
-   * (failifMultiple=false)
+   * If more than one chunk (after filtering by inner id) is found, then an exception is thrown (failifMultiple=true or
+   * chunk is single) or the last one is returned (failifMultiple=false)
    **/
   public PngChunk getById1(final String id, final String innerid, final boolean failIfMultiple) {
     List<? extends PngChunk> list = getById(id, innerid);

@@ -5,7 +5,8 @@ import java.util.HashMap;
 /**
  * Internal PNG predictor filter type
  * 
- * Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters for different rows
+ * Negative values are pseudo types, actually global strategies for writing, that (can) result on different real filters
+ * for different rows
  */
 public enum FilterType {
   /**

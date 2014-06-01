@@ -10,8 +10,8 @@ public interface IImageLineSetFactory<T extends IImageLine> {
   /**
    * Creates a new {@link IImageLineSet}
    * 
-   * If singleCursor=true, the caller will read and write one row fully at a time, in order (it'll never try to read out of order lines), so the implementation can opt for allocate
-   * only one line.
+   * If singleCursor=true, the caller will read and write one row fully at a time, in order (it'll never try to read out
+   * of order lines), so the implementation can opt for allocate only one line.
    * 
    * @param imgInfo Image info
    * @param singleCursor : will read/write one row at a time

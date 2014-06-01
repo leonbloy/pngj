@@ -1,6 +1,5 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.io.OutputStream;
 import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.IDatChunkWriter;

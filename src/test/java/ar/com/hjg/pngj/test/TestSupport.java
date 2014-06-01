@@ -124,7 +124,8 @@ public class TestSupport {
   }
 
   /**
-   * show detailed filter information (grouped by consecutive rows) eg: PAETH:337(103) means 103 rows of type PAETH starting from row 337
+   * show detailed filter information (grouped by consecutive rows) eg: PAETH:337(103) means 103 rows of type PAETH
+   * starting from row 337
    */
   public static String showFilters(File pngr, int maxgroups, boolean usenewlines, boolean showSumm,
       boolean showSummPercent) {

@@ -5,7 +5,6 @@ import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelperInternal;
 
 /** Special pixels writer for experimental super adaptive strategy */
 public class PixelsWriterMultiple extends PixelsWriter {
@@ -82,7 +81,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
     }
     if (currentRow == lastRowInThisBand) {
       int best = getBestCompressor();
-      //PngHelperInternal.debug("won: " + best + " (rows: " + firstRowInThisBand + ":"       + lastRowInThisBand + ")");
+      // PngHelperInternal.debug("won: " + best + " (rows: " + firstRowInThisBand + ":" + lastRowInThisBand + ")");
       // if(currentRow>90&&currentRow<100)
       // PngHelperInternal.debug(String.format("row=%d ft=%s",currentRow,FilterType.getByVal(best)));
       byte[] filtersAdapt = filterBank[best].getFirstBytes();

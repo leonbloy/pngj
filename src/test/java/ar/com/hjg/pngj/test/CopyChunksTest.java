@@ -62,9 +62,9 @@ public class CopyChunksTest extends PngjTest {
     long bytes2 = pngr2.getChunkseq().getBytesCount();
     pngr2.end();
     dest2.renameTo(dest);// to check that it's closed
-    //System.out.println(chunks1);
+    // System.out.println(chunks1);
     String chunks2 = TestSupport.showChunks(pngr2.getChunksList().getChunks());
-    //System.out.println(chunks2);
+    // System.out.println(chunks2);
     TestCase.assertEquals(crc2, crc1);
     TestCase.assertEquals(chunks1, chunks2);
     TestCase.assertTrue("This could coincide... but it should be very improbable!",

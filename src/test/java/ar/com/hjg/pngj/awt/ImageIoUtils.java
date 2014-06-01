@@ -173,7 +173,8 @@ public class ImageIoUtils {
     }
   }
 
-  // returns [R G B A R G B A ...] one int per sample (it really could fit in byte[] but we assume that does not matter here)
+  // returns [R G B A R G B A ...] one int per sample (it really could fit in byte[] but we assume that does not matter
+  // here)
   public static int[] getRowRgba8(BufferedImage im, int rown, int[] buf) {
     int pixels = im.getWidth();
     int samples = pixels * 4;

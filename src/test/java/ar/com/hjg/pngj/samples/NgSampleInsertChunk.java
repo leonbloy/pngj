@@ -13,10 +13,11 @@ import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.chunks.PngChunkTEXT;
 
 /**
- * This example shows how to insert a textual chunk efficiently, without decoding and reencoding the pixels, using just a ChunkSeqBuffering (This does not check for duplicated
- * textual chunks)
+ * This example shows how to insert a textual chunk efficiently, without decoding and reencoding the pixels, using just
+ * a ChunkSeqBuffering (This does not check for duplicated textual chunks)
  * 
- * This could be made even more efficiently (not buffering the chunks to memory), by using a ChunkSeqSkipping, see for example class RemoveChunks.
+ * This could be made even more efficiently (not buffering the chunks to memory), by using a ChunkSeqSkipping, see for
+ * example class RemoveChunks.
  */
 public class NgSampleInsertChunk {
 

@@ -4,7 +4,8 @@ import ar.com.hjg.pngj.chunks.PngChunkFDAT;
 
 /**
  * 
- * Specialization of ChunkReader, for IDAT-like chunks. These chunks are part of a set of similar chunks (contiguos normally, not necessariyl) which conforms a zlib stream
+ * Specialization of ChunkReader, for IDAT-like chunks. These chunks are part of a set of similar chunks (contiguos
+ * normally, not necessariyl) which conforms a zlib stream
  */
 public class DeflatedChunkReader extends ChunkReader {
 

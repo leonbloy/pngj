@@ -324,7 +324,8 @@ public class ImageLineBI implements IImageLine {
             break;
           case BufferedImage.TYPE_CUSTOM:
             resortToGetRGB = true; // tentatively, but...
-            // see if it's not one of our own nice formats.. All this is quite related to Png2BufferedImageAdapter.createBufferedImageCustom()
+            // see if it's not one of our own nice formats.. All this is quite related to
+            // Png2BufferedImageAdapter.createBufferedImageCustom()
             if (!(colormodel instanceof ComponentColorModel))
               break;// no luck
             if (colormodel.getColorSpace() == createColorSpace(true)) {
@@ -360,7 +361,8 @@ public class ImageLineBI implements IImageLine {
                 reverseOrder = true;
               else
                 break;
-            } else if (sampleModel instanceof SinglePixelPackedSampleModel) { // we accept this only for one channel (gray 8 or 16 bits)
+            } else if (sampleModel instanceof SinglePixelPackedSampleModel) { // we accept this only for one channel
+                                                                              // (gray 8 or 16 bits)
               int[] sizes = ((SinglePixelPackedSampleModel) sampleModel).getSampleSize();
               if (sizes.length != 1)
                 break;
@@ -443,7 +445,8 @@ public class ImageLineBI implements IImageLine {
     final int samples = ((len - 1) * 8) / imgInfo.bitDepth;
     final int pixels = samples / imgInfo.channels;
     final int step1 = (step - 1) * imgInfo.channels;
-    int irp, idp; // irp=index in raw, idp:index in data, advances by pixel bordes; idp in data in samples, moves up and down
+    int irp, idp; // irp=index in raw, idp:index in data, advances by pixel bordes; idp in data in samples, moves up and
+                  // down
     irp = 1;
     idp = imgInfo.channels * (imgInfo.cols * rowNumber + offset);
     int idpmax = idp + datalen; // notincluded
@@ -495,7 +498,7 @@ public class ImageLineBI implements IImageLine {
     final int offsetd = imgInfo.channels * (imgInfo.cols * rowNumber);
     final int offsetdm = offsetd + datalen;
     if (imgInfo.channels > 2 && adapter2bi.isBgrOrder()) {
-      //if (rowNumber == 0)        System.err.println("fixing order");
+      // if (rowNumber == 0) System.err.println("fixing order");
 
       if (adapter2bi.getDatatype() == DataBuffer.TYPE_BYTE) {
         byte b;

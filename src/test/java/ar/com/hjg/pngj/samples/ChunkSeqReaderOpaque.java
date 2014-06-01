@@ -9,8 +9,8 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
 /**
  * This is a general purpose, low level ChunkseqReader for callback mode.
  * 
- * It's "opaque" in the sense that it does not parse the IHDR, and doesn't know the PNG properties. It uncompress the IDAT, but returns it in arbitrary block sizes (not row per
- * row) . All this can be overriden
+ * It's "opaque" in the sense that it does not parse the IHDR, and doesn't know the PNG properties. It uncompress the
+ * IDAT, but returns it in arbitrary block sizes (not row per row) . All this can be overriden
  */
 public class ChunkSeqReaderOpaque extends ChunkSeqReader {
   protected static int IDAT_BLOCK_SIZE_DEFAULT = 40000;

@@ -6,11 +6,13 @@ import java.util.List;
 import ar.com.hjg.pngj.PngjException;
 
 /**
- * We consider "image metadata" every info inside the image except for the most basic image info (IHDR chunk - ImageInfo class) and the pixels values.
+ * We consider "image metadata" every info inside the image except for the most basic image info (IHDR chunk - ImageInfo
+ * class) and the pixels values.
  * <p>
  * This includes the palette (if present) and all the ancillary chunks
  * <p>
- * This class provides a wrapper over the collection of chunks of a image (read or to write) and provides some high level methods to access them
+ * This class provides a wrapper over the collection of chunks of a image (read or to write) and provides some high
+ * level methods to access them
  */
 public class PngMetadata {
   private final ChunksList chunkList;
@@ -28,7 +30,8 @@ public class PngMetadata {
   /**
    * Queues the chunk at the writer
    * <p>
-   * lazyOverwrite: if true, checks if there is a queued "equivalent" chunk and if so, overwrites it. However if that not check for already written chunks.
+   * lazyOverwrite: if true, checks if there is a queued "equivalent" chunk and if so, overwrites it. However if that
+   * not check for already written chunks.
    */
   public void queueChunk(final PngChunk c, boolean lazyOverwrite) {
     ChunksListForWrite cl = getChunkListW();

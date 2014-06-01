@@ -12,7 +12,8 @@ import java.util.zip.Checksum;
 public class ImageInfo {
 
   /**
-   * Absolute allowed maximum value for rows and cols (2^24 ~16 million). (bytesPerRow must fit in a 32bit integer, though total amount of pixels not necessarily).
+   * Absolute allowed maximum value for rows and cols (2^24 ~16 million). (bytesPerRow must fit in a 32bit integer,
+   * though total amount of pixels not necessarily).
    */
   public static final int MAX_COLS_ROW = 16777216;
 
@@ -27,13 +28,14 @@ public class ImageInfo {
   public final int rows;
 
   /**
-   * Bits per sample (per channel) in the buffer (1-2-4-8-16). This is 8-16 for RGB/ARGB images, 1-2-4-8 for grayscale. For indexed images, number of bits per palette index
-   * (1-2-4-8)
+   * Bits per sample (per channel) in the buffer (1-2-4-8-16). This is 8-16 for RGB/ARGB images, 1-2-4-8 for grayscale.
+   * For indexed images, number of bits per palette index (1-2-4-8)
    */
   public final int bitDepth;
 
   /**
-   * Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for grayscale or indexed.
+   * Number of channels, as used internally: 3 for RGB, 4 for RGBA, 2 for GA (gray with alpha), 1 for grayscale or
+   * indexed.
    */
   public final int channels;
 
@@ -78,8 +80,8 @@ public class ImageInfo {
   public final int samplesPerRow;
 
   /**
-   * Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4) they are counted as one "packed sample". This is less that samplesPerRow only
-   * when bitdepth is 1-2-4 (flag packed = true)
+   * Amount of "packed samples" : when several samples are stored in a single byte (bitdepth 1,2 4) they are counted as
+   * one "packed sample". This is less that samplesPerRow only when bitdepth is 1-2-4 (flag packed = true)
    * <p>
    * This equals the number of elements in the scanline array if working with packedMode=true
    * <p>

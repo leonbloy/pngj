@@ -17,8 +17,8 @@ import ar.com.hjg.pngj.PngjOutputException;
  */
 public class ChunkRaw {
   /**
-   * The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length. Although encoders and decoders should treat the length as unsigned,
-   * its value must not exceed 231-1 bytes.
+   * The length counts only the data field, not itself, the chunk type code, or the CRC. Zero is a valid length.
+   * Although encoders and decoders should treat the length as unsigned, its value must not exceed 231-1 bytes.
    */
   public final int len;
 
@@ -29,7 +29,8 @@ public class ChunkRaw {
   public final String id;
 
   /**
-   * The data bytes appropriate to the chunk type, if any. This field can be of zero length. Does not include crc. If it's null, it means that the data is ot available
+   * The data bytes appropriate to the chunk type, if any. This field can be of zero length. Does not include crc. If
+   * it's null, it means that the data is ot available
    */
   public byte[] data = null;
   /**
@@ -38,7 +39,8 @@ public class ChunkRaw {
   private long offset = 0;
 
   /**
-   * A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type code and chunk data fields, but not including the length field.
+   * A 4-byte CRC (Cyclic Redundancy Check) calculated on the preceding bytes in the chunk, including the chunk type
+   * code and chunk data fields, but not including the length field.
    */
   public byte[] crcval = new byte[4];
 
