@@ -52,7 +52,7 @@ public class IDatChunkWriter {
    * This is normally called internally, but can be called explicitly to force flush.
    */
   public final void flush() {
-    if (offset >= minLenToWrite()) {
+    if (offset > 0 && offset >= minLenToWrite()) {
       ChunkRaw c = new ChunkRaw(offset, getChunkId(), false);
       c.data = buf;
       c.writeChunk(outputStream);

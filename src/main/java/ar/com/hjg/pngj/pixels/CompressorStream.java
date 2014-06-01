@@ -59,6 +59,7 @@ public abstract class CompressorStream extends OutputStream {
   @Override
   public void close() {
     done();
+    if(idatChunkWriter!=null) idatChunkWriter.close();
     closed = true;
   }
 

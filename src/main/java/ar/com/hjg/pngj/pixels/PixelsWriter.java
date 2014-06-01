@@ -45,9 +45,9 @@ public abstract class PixelsWriter {
   // counts the filters used - just for stats
   private int[] filtersUsed = new int[5];
 
+  // this is the raw underlying os (shared with the PngWriter)
   private OutputStream os;
 
-  private IDatChunkWriter idatWriter;
   private int idatMaxSize = IDAT_MAX_SIZE_DEFAULT;
 
   /**
@@ -161,8 +161,7 @@ public abstract class PixelsWriter {
 
   /** called by init(); override (calling this first) to do additional initialization */
   protected void initParams() {
-    if (idatWriter == null)
-      idatWriter = new IDatChunkWriter(os, idatMaxSize);
+    IDatChunkWriter idatWriter = new IDatChunkWriter(os, idatMaxSize);
     if (compressorStream == null) { // if not set, use the deflater
       compressorStream =
           new CompressorStreamDeflater(idatWriter, buflen, imgInfo.getTotalRawBytes(),
@@ -175,8 +174,6 @@ public abstract class PixelsWriter {
     if (compressorStream != null) {
       compressorStream.close();
     }
-    if (idatWriter != null)
-      idatWriter.close();
   }
 
   /**
