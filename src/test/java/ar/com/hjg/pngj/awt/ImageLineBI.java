@@ -495,8 +495,7 @@ public class ImageLineBI implements IImageLine {
     final int offsetd = imgInfo.channels * (imgInfo.cols * rowNumber);
     final int offsetdm = offsetd + datalen;
     if (imgInfo.channels > 2 && adapter2bi.isBgrOrder()) {
-      if (rowNumber == 0)
-        System.err.println("fixing order");
+      //if (rowNumber == 0)        System.err.println("fixing order");
 
       if (adapter2bi.getDatatype() == DataBuffer.TYPE_BYTE) {
         byte b;

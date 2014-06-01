@@ -110,7 +110,10 @@ public class WriterFiltersPerformanceUtil {
 
   static int getSizeType(File f) {
     int sizetype = 0;
-    switch (f.getParentFile().getName().charAt(0)) {
+    char s= f.getName().charAt(0);
+    if(f.getParentFile().getName().matches("[mls]")) 
+      s=f.getParentFile().getName().charAt(0);
+    switch (s) {
       case 'l':
         sizetype = 0;
         break;
@@ -121,7 +124,7 @@ public class WriterFiltersPerformanceUtil {
         sizetype = 2;
         break;
       default:
-        throw new RuntimeException("bad name, not starting with s l m" + f.getName());
+        throw new RuntimeException("bad name, not starting with s l m:" + f.getName());
     }
     return sizetype;
   }
@@ -596,6 +599,8 @@ public class WriterFiltersPerformanceUtil {
       pngw.getPixelsWriter().setDeflaterCompLevel(clevel);
       pngw.getPixelWriterMultiple().setUseLz4(lz4);
       pngw.getPixelWriterMultiple().setHintMemoryKb(memoryKb);
+      pngw.getPixelWriterMultiple().setTryAdaptive(false);
+      
       // pngw.getPixelsWriter().setDeflaterStrategy(Deflater.DEFAULT_STRATEGY);
       return pngw;
     }
@@ -761,12 +766,12 @@ public class WriterFiltersPerformanceUtil {
     SHOW_FILENAME_FORCE = !files.isDirectory();
     //computeSizeOriginal(files); // 1
    // showReadSpeedWithJava(TestSupport.getPngsFromDir(files));
-    //computeSpeedWithPngWriterPreserving(files,clevel); //2
-    //showCompressionWithJava(files, false,useBetterJavaEncoder); // 3
+   // computeSpeedWithPngWriterPreserving(files,clevel); //2
+    //showCompressionWithJava(files, false, useBetterJavaEncoder); // 3
     //computeSpeedWithPngWriterDefault(files,clevel); //4
     //computeSpeedWithPngWriterNone(files, clevel);
-    //computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FULL, clevel);
-    computeSpeedWithPngWriterSuperAdaptative(files, clevel, 100, false);
+    //computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FAST, clevel);
+    computeSpeedWithPngWriterSuperAdaptative(files, clevel, 100, true);
     // computeSpeedWithPngWriterDeflatePerLine(files, clevel, false);
     // showCompressionWith2Filters(files, FilterType.FILTER_SUB, FilterType.FILTER_AVERAGE);
     // computeSpeedWithPngWriterNone(files,clevel); //2

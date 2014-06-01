@@ -395,7 +395,7 @@ public class TestSupport {
     TestCase.assertEquals(firstDif + " avdif=" + difAv + " f=" + ori.getName() + " " + " -> "
         + dest.getName(), "", firstDif);
     if (difAv > 0.001)
-      System.err.printf("%s errorav=%f\n", ori.getName(), difAv);
+      PngHelperInternal.debug(String.format("%s errorav=%f\n", ori.getName(), difAv));
   }
 
   public static void fixAlpha(int[] line) {

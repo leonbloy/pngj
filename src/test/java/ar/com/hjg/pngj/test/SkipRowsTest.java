@@ -47,7 +47,7 @@ public class SkipRowsTest extends PngjTest {
     }
     String chunks1, chunks2, chunks3;
     // read last row : inefficient
-    System.out.print("testing " + this.getClass().getSimpleName() + " : ");
+    //System.out.print("testing " + this.getClass().getSimpleName() + " : ");
     {
       long t0 = System.currentTimeMillis();
       PngReader pngr = new PngReader(file);
@@ -55,7 +55,7 @@ public class SkipRowsTest extends PngjTest {
       pngr.end();
       t0 = System.currentTimeMillis() - t0;
       chunks1 = pngr.getChunksList().toStringFull();
-      System.out.print(t0 + " msecs (normal)  ");
+      //System.out.print(t0 + " msecs (normal)  ");
     }
 
     // skipping rows: most efficient
@@ -66,7 +66,7 @@ public class SkipRowsTest extends PngjTest {
       pngr.end();
       t0 = System.currentTimeMillis() - t0;
       chunks2 = pngr.getChunksList().toStringFull();
-      System.out.print(t0 + " msecs (skipping) ");
+      //System.out.print(t0 + " msecs (skipping) ");
     }
     // end prematurely. works , not so efficient
     {
@@ -75,7 +75,7 @@ public class SkipRowsTest extends PngjTest {
       pngr.end();
       t0 = System.currentTimeMillis() - t0;
       chunks3 = pngr.getChunksList().toStringFull();
-      System.out.print(t0 + " msecs (end)  ");
+      //System.out.print(t0 + " msecs (end)  ");
     }
     TestCase.assertEquals(chunks2, chunks1);
     TestCase.assertEquals(chunks3, chunks1);

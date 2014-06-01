@@ -9,7 +9,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.zip.Deflater;
 
-import ar.com.hjg.pngj.PngIDatChunkOutputStream;
+import ar.com.hjg.pngj.IDatChunkWriter;
 import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.misc.NullOs;
 import ar.com.hjg.pngj.pixels.CompressorStream;
@@ -106,10 +106,11 @@ public class RecompressIdat {
   public static long[] recompressPng(InputStream is, OutputStream os, int clevel,
       int deflaterStrategy, boolean checkCrc) {
     try {
-      PngIDatChunkOutputStream idatSt = new PngIDatChunkOutputStream(os);
+      IDatChunkWriter idatSt = new IDatChunkWriter(os);
       Deflater def = new Deflater(clevel);
       def.setStrategy(deflaterStrategy);
       CompressorStream cs = new CompressorStreamDeflater(idatSt, 8000, Long.MAX_VALUE, def);
+
       ChunkSeqReaderIdatRaw reader = new ChunkSeqReaderIdatRaw(os, cs);
       reader.checkCrc = checkCrc;
       reader.feedFromInputStream(is);

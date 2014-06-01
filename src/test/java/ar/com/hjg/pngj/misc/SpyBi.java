@@ -1,4 +1,4 @@
-package ar.com.hjg.pngj.awt;
+package ar.com.hjg.pngj.misc;
 
 import java.awt.color.ColorSpace;
 import java.awt.image.BufferedImage;
@@ -15,6 +15,7 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.PngjException;
+import ar.com.hjg.pngj.awt.ImageIoUtils;
 import ar.com.hjg.pngj.cli.CliArgs;
 
 public class SpyBi {

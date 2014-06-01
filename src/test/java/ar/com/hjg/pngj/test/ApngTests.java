@@ -223,13 +223,13 @@ public class ApngTests {
     TestCase.assertEquals(0, nump);
     for (int frame = 0; frame < numf; frame++) {
       ap.advanceToFrame(frame);
-      System.out.printf("f=%d im=%s\n", frame, ap.getCurImgInfo().toStringBrief());
+      //System.out.printf("f=%d im=%s\n", frame, ap.getCurImgInfo().toStringBrief());
       for (int r = 0; r < ap.getCurImgInfo().rows; r++) {
         ImageLineByte line = ap.readRowByte();
       }
     }
     ap.end();
-    System.out.printf("numframes: %d\n", numf);
+    //System.out.printf("numframes: %d\n", numf);
   }
 
   @Test
@@ -242,6 +242,6 @@ public class ApngTests {
     int nump = ap.getApngNumPlays();
     TestCase.assertEquals(0, nump);
     ap.end();
-    System.out.printf("numframes: %d\n", numf);
+    // System.out.printf("numframes: %d\n", numf);
   }
 }

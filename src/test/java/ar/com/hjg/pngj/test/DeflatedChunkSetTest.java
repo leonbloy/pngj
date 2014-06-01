@@ -189,9 +189,4 @@ public class DeflatedChunkSetTest extends PngjTest {
 
   }
 
-  /*
-   * public static void main(String[] args) throws Exception{ byte[] data= new byte[]{0,42,43,0,44,41}; byte[] compressed = new byte[20]; Deflater def1 = new
-   * Deflater(Deflater.DEFAULT_COMPRESSION); def1.setInput(data); def1.finish(); int n = def1.deflate(compressed); System.out.println(n);
-   * System.out.println(Arrays.toString(compressed)); }
-   */
 }

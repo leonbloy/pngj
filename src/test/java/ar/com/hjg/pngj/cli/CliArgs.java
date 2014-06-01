@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import ar.com.hjg.pngj.PngjException;
+
 // very simple cli parser - because we all know the wheel has not yet been invented -
 // http://jewelcli.lexicalscope.com/related.html */
 // it supports special pseudo args : 'path/*' (all png files in directory) and 'path/**' idem recursive
@@ -91,6 +93,8 @@ public class CliArgs {
 
   public static List<File> listPngFromDir(File dir, boolean recurse) {
     ArrayList<File> pngs = new ArrayList<File>();
+    if (!dir.isDirectory())
+      throw new PngjException(dir + " is not a directory");
     for (File f : dir.listFiles()) {
       if (f.isFile() && f.getName().toLowerCase().endsWith(".png"))
         pngs.add(f);
