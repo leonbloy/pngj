@@ -1,0 +1,22 @@
+apply plugin: 'java'
+apply plugin: 'maven'
+
+group = 'ar.com.hjg'
+version = '2.1.2-SNAPSHOT'
+
+description = """PNGJ"""
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
+configurations.all {
+}
+
+repositories {
+        
+     maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
+     maven { url "http://repo.maven.apache.org/maven2" }
+}
+dependencies {
+    testCompile group: 'junit', name: 'junit', version:'4.11'
+}

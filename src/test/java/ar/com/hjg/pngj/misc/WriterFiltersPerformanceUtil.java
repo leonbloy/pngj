@@ -124,7 +124,8 @@ public class WriterFiltersPerformanceUtil {
         sizetype = 2;
         break;
       default:
-        throw new RuntimeException("bad name, not starting with s l m:" + f.getName());
+        System.err.println("bad name, not starting with s l m:" + f.getName());
+        sizetype = 0;
     }
     return sizetype;
   }
@@ -746,9 +747,8 @@ public class WriterFiltersPerformanceUtil {
       pngw.getPixelsWriter().setDeflaterCompLevel(clevel);
       return pngw;
     }
+
   }
-
-
 
   public static void main(String[] args) {
     Locale.setDefault(Locale.US);
@@ -761,16 +761,16 @@ public class WriterFiltersPerformanceUtil {
     // File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0090.png"));
     // File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\l\\l0130.png"));
     // File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\1\\m\\m2230.png"));
-    File files = TestSupport.absFile(new File("..\\..\\priv\\imgsets\\4"));
+    File files = TestSupport.absFile(new File("..\\..\\priv\\tricky\\nonesubnone.png"));
     SHOW_FILENAME_FORCE = !files.isDirectory();
     // computeSizeOriginal(files); // 1
     // showReadSpeedWithJava(TestSupport.getPngsFromDir(files));
-    // computeSpeedWithPngWriterPreserving(files,clevel); //2
+    //computeSpeedWithPngWriterPreserving(files,clevel); //2
     // showCompressionWithJava(files, false, useBetterJavaEncoder); // 3
-    // computeSpeedWithPngWriterDefault(files,clevel); //4
+    //computeSpeedWithPngWriterDefault(files,clevel); //4
     // computeSpeedWithPngWriterNone(files, clevel);
-    // computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_FAST, clevel);
-    computeSpeedWithPngWriterSuperAdaptative(files, clevel, 100, true);
+    //computeSpeedWithPngWriterAdaptative(files, FilterType.FILTER_ADAPTIVE_MEDIUM, clevel);
+    computeSpeedWithPngWriterSuperAdaptative(files, clevel, 100, false);
     // computeSpeedWithPngWriterDeflatePerLine(files, clevel, false);
     // showCompressionWith2Filters(files, FilterType.FILTER_SUB, FilterType.FILTER_AVERAGE);
     // computeSpeedWithPngWriterNone(files,clevel); //2
@@ -778,7 +778,6 @@ public class WriterFiltersPerformanceUtil {
     // computeSpeedWithX(files,PngWriterBands.class); //2
     System.out.println(System.currentTimeMillis() - t0);
   }
-
 
 
 }

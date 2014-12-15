@@ -3,3 +3,5 @@ dist
 target
 notingit
 priv
+.gradle/
+build
