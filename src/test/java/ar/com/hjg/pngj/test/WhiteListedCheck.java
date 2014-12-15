@@ -62,7 +62,8 @@ public class WhiteListedCheck {
 
   private Set<String> loadWhiteListed() {
     try {
-      InputStream is = this.getClass().getResourceAsStream(WHITELIST_FILENAME);
+      InputStream is = this.getClass().getClassLoader().getResourceAsStream(WHITELIST_FILENAME);
+      if(is==null) throw new RuntimeException("could not load whitelist " + WHITELIST_FILENAME);
       BufferedReader bf = new BufferedReader(new InputStreamReader(is));
       String line;
       HashSet<String> set = new HashSet<String>();
