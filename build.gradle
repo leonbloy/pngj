@@ -6,14 +6,14 @@ version = '2.1.2-SNAPSHOT'
 
 description = """PNGJ"""
 
-sourceCompatibility = 1.5
-targetCompatibility = 1.5
+sourceCompatibility = 1.6
+targetCompatibility = 1.6
 
 configurations.all {
 }
 
 repositories {
-      
+        
      maven { url "https://oss.sonatype.org/content/repositories/snapshots" }
      maven { url "http://repo.maven.apache.org/maven2" }
 }
