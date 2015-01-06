@@ -180,6 +180,8 @@ public class ChunkHelper {
         return isSafeToCopy(id);
       case LOAD_CHUNK_NEVER:
         return false;
+      case LOAD_CHUNK_MOST_IMPORTANT:
+        return id.equals(PngChunkTRNS.ID);
     }
     return false; // should not reach here
   }
