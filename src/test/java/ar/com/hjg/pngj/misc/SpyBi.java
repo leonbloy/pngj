@@ -94,8 +94,7 @@ public class SpyBi {
     return res;
   }
 
-  @SuppressWarnings("unused")
-  private void doitForFile(File f) {
+  protected void doitForFile(File f) {
     File temp = new File(f.getParent(), "_tmp.png");
     temp.deleteOnExit();
     try {

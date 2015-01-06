@@ -32,11 +32,12 @@ public class PngReaderTest extends PngjTest {
     TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ", chunks);
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testRead2() { // reads only one line
     PngReader pngr = new PngReader(TestSupport.istream(TestSupport.PNG_TEST_TESTG2));
     pngr.getChunkseq().setIncludeNonBufferedChunks(true);
-    IImageLineSet<ImageLineInt> lines = (IImageLineSet<ImageLineInt>) pngr.readRows(1, 1, 1);
+    IImageLineSet<ImageLineInt> lines = ((IImageLineSet<ImageLineInt>) pngr.readRows(1, 1, 1));
     sb.append(TestSupport.showLine(lines.getImageLine(1)));
     TestCase.assertEquals("[112 192 105]", sb.toString());
     pngr.end();
@@ -63,6 +64,7 @@ public class PngReaderTest extends PngjTest {
 
   }
 
+  @SuppressWarnings("unchecked")
   @Test
   public void testReadInt2() { // reads only one line
     PngReader pngr = new PngReader(TestSupport.istream(TestSupport.PNG_TEST_TESTG2I));

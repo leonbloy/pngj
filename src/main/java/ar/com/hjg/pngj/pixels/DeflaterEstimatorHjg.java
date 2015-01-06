@@ -248,11 +248,7 @@ final public class DeflaterEstimatorHjg {
   }
 
   static int readInt(byte[] buf, int i) {
-    if (true) {
-      return readIntBE(buf, i);
-    } else {
-      return readIntLE(buf, i);
-    }
+    return readIntBE(buf, i);
   }
 
   static void writeShort(short[] buf, int off, int v) {
