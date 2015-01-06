@@ -40,6 +40,8 @@ public class WhiteListedCheck {
     for (String c : cs) {
       if (isWhiteListed(c) || ignoreClassName(c)) {
         classes.remove(c);
+      } else {
+        System.out.println(c);
       }
     }
     FindDependecies.printMap(classes);
@@ -92,7 +94,7 @@ public class WhiteListedCheck {
     // this should include every directory except "nosandnbox" and "test"
     int[] res = checkDir(new File("target/classes/ar/com/hjg/pngj"), false);
     System.out.println("=== The above should only report class PngHelperInternal2 (that's ok)");
-    TestCase.assertEquals("Only opne class with errors", 1, res[0]);
+    TestCase.assertEquals("Only one class with errors", 1, res[0]);
     TestCase.assertTrue("More than 10 classes", res[1] > 10);
     res = checkDir(new File("target/classes/ar/com/hjg/pngj/chunks"), false);
     TestCase.assertEquals("No class with errors", 0, res[0]);

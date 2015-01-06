@@ -104,8 +104,14 @@ class FindDependecies {
         continue;
       }
       String c = strings.get(index).replaceAll("/", ".");
-      while (c.startsWith("["))
-        c = c.substring(1);
+      if (c.startsWith("[")) {
+        while (c.startsWith("["))
+          c = c.substring(1);
+        if (c.startsWith("L")) {
+          c = c.substring(1,c.length()-1);
+        }
+        
+      }
       if (c.length() < 2)
         continue;
       allclasses.add(c);
