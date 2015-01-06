@@ -131,7 +131,7 @@ public class DetectDuplicates {
     }
     Collections.sort(listfiles, new Comparator<File>() {
       public int compare(File o1, File o2) {
-        return Long.compare(sizeperfile.get(o1), sizeperfile.get(o2));
+        return sizeperfile.get(o1).compareTo(sizeperfile.get(o2));
       }
     });
     System.out.print("### " + listfiles.size() + " duplicated files. ");

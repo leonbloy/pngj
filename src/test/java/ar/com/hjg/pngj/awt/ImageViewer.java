@@ -24,6 +24,7 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.KeyStroke;
+import javax.swing.border.EtchedBorder;
 
 import ar.com.hjg.pngj.cli.CliArgs;
 
@@ -67,7 +68,7 @@ public class ImageViewer extends JPanel implements ActionListener {
     // picture2.setHorizontalAlignment(JLabel.CENTER);
     // picture2.setAlignmentX(Component.CENTER_ALIGNMENT);
     picture2.setBorder(BorderFactory.createCompoundBorder(
-        BorderFactory.createDashedBorder(null, 3.0f, 4.0f),
+        BorderFactory.createEtchedBorder(EtchedBorder.RAISED),
         BorderFactory.createEmptyBorder(10, 10, 10, 10)));
     panelImages.add(picture2);
 
