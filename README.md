@@ -1,4 +1,4 @@
-# PNGJ: Java library for reading and writing PNG images
+# PNGJ: Java library for PNG encoding
 
 PNGJ is a pure Java library for high performance encoding and decoding PNG images 
 
