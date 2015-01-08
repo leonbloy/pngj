@@ -34,5 +34,5 @@ In particular, the default format of the scanlines (as wrapped in `ImageLineInt`
 
 ## More documentation
 
-Pending
-
+ * [Javadocs](http://hjg.com.ar/pngj/apidocs/)
+ * [Wiki](https://github.com/leonbloy/pngj/wiki)
