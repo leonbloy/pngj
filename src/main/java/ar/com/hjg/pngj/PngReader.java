@@ -310,7 +310,7 @@ public class PngReader {
     if (nRows < 0)
       nRows = (getCurImgInfo().rows - rowOffset) / rowStep;
     if (rowStep < 1 || rowOffset < 0 || nRows == 0
-        || nRows * rowStep + rowOffset > getCurImgInfo().rows)
+        || nRows * rowStep + rowOffset > getCurImgInfo().rows + rowStep - 1)
       throw new PngjInputException("bad args");
     if (rowNum >= rowOffset)
       throw new PngjInputException("readRows cannot be mixed with readRow");
@@ -323,8 +323,9 @@ public class PngReader {
             throw new PngjInputException("Premature ending");
         rowNum++;
         chunkseq.getIdatSet().updateCrcs(idatCrca, idatCrcb);
-        m = (rowNum - rowOffset) / rowStep;
-        if (rowNum >= rowOffset && rowStep * m + rowOffset == rowNum) {
+        int n = (rowNum - rowOffset) / rowStep; // next row to be read
+        if (rowNum >= rowOffset && rowStep * n + rowOffset == rowNum) {
+          m = n;
           IImageLine line = imlinesSet.getImageLine(rowNum);
           line.readFromPngRaw(chunkseq.getIdatSet().getUnfilteredRow(),
               getCurImgInfo().bytesPerRow + 1, 0, 1);

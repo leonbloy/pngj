@@ -12,7 +12,7 @@ package ar.com.hjg.pngj;
 public interface IImageLine {
 
   /**
-   * Extract pixels from a raw unlfilterd PNG row. Len is the total amount of bytes in the array, including the first
+   * Extract pixels from a raw unfiltered PNG row. Len is the total amount of bytes in the array, including the first
    * byte (filter type)
    * 
    * Arguments offset and step (0 and 1 for non interlaced) are in PIXELS. It's guaranteed that when step==1 then
