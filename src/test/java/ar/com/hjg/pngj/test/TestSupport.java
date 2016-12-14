@@ -534,7 +534,8 @@ public class TestSupport {
   public static void copyPartial(File ori, File dest, int nlines, int step, int offset,
       boolean filterPreserve) {
     PngReaderByte png2 = new PngReaderByte(ori);
-    int nlinesmax = (png2.imgInfo.rows - offset) / step;
+    int nlinesremaining = png2.imgInfo.rows - offset;
+    int nlinesmax = nlinesremaining / step + (nlinesremaining % step > 0 ? 1 : 0);
     if (nlines < 1 || nlines > nlinesmax)
       nlines = nlinesmax;
     PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
