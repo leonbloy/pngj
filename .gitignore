@@ -1,7 +1,5 @@
-bin
-dist
-target
-notingit
-priv
-.gradle/
-build
+# sbt
+target/
+
+# IDEA
+/.idea
