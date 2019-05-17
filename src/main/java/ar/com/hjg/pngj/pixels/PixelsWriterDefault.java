@@ -47,7 +47,7 @@ public class PixelsWriterDefault extends PixelsWriter {
     else
       Arrays.fill(rowbprev, (byte) 0);
 
-    // if adaptative but too few rows or columns, use default
+    // if adaptive but too few rows or columns, use default
     if (imgInfo.cols < 3 && !FilterType.isValidStandard(filterType))
       filterType = FilterType.FILTER_DEFAULT;
     if (imgInfo.rows < 3 && !FilterType.isValidStandard(filterType))
