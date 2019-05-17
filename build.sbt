@@ -4,17 +4,17 @@ name := "PNGJ"
 
 version := "2.1.2-SNAPSHOT"
 
-scalaVersion := "2.12.8"
-
 javacOptions ++= Seq("-Xlint:deprecation", "-encoding", "UTF8")
-
-scalacOptions ++= Seq("-deprecation", "-encoding", "UTF8", "-feature", "-language:implicitConversions,postfixOps")
 
 crossPaths := false
 
 autoScalaLibrary := false
 
-//libraryDependencies += "org.scala-lang" % "scala-library" % scalaVersion.value % "test"
+/*
+scalaVersion := "2.12.8"
+scalacOptions ++= Seq("-deprecation", "-encoding", "UTF8")
+libraryDependencies += "org.scala-lang" % "scala-library" % scalaVersion.value % "test"
+*/
 
 parallelExecution in Test := false
 
