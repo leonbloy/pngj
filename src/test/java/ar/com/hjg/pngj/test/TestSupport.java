@@ -16,6 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
+import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import junit.framework.TestCase;
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkSeqReader;
@@ -534,7 +535,7 @@ public class TestSupport {
   public static void copyPartial(File ori, File dest, int nlines, int step, int offset,
       boolean filterPreserve) {
     PngReaderByte png2 = new PngReaderByte(ori);
-    int nlinesmax = (png2.imgInfo.rows - offset) / step;
+    int nlinesmax = (png2.imgInfo.rows - offset - 1) / step + 1;
     if (nlines < 1 || nlines > nlinesmax)
       nlines = nlinesmax;
     PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
@@ -542,6 +543,8 @@ public class TestSupport {
       pngw.setFilterPreserve(true);
     else
       pngw.setFilterType(FilterType.FILTER_CYCLIC); // to test
+    pngw.copyChunksFrom(png2.getChunksList(), ChunkCopyBehaviour.COPY_PALETTE
+            | ChunkCopyBehaviour.COPY_TRANSPARENCY);
     pngw.writeRows(png2.readRows(nlines, offset, step));
     png2.end();
     pngw.end();

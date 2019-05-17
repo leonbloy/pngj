@@ -119,9 +119,9 @@ public class TestImageLineBI {
     delOnExit(dest2);
     {
       PngReaderBI png = new PngReaderBI(ori);
-      int nlines = png.imgInfo.rows / 2 - 1, offset = 1, step = 2;
+      int offset = 1, step = 2, nlines = (png.imgInfo.rows - offset - 1) / step + 1;
       // dest.deleteOnExit();
-      BufferedImage img = png.readAll(nlines, offset, step); // 10 lines, starting for 1, skipping 1
+      BufferedImage img = png.readAll(nlines, offset, step); // 10 lines, starting from 1, skipping 1
       // System.err.println(ImageIoUtils.imageTypeName(img.getType()));
       ImageIoUtils.writePng(dest, img);
       TestSupport.copyPartial(ori, dest2, nlines, step, offset, false);
