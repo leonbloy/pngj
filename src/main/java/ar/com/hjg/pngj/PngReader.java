@@ -310,7 +310,7 @@ public class PngReader {
     if (nRows < 0)
       nRows = (getCurImgInfo().rows - rowOffset) / rowStep;
     if (rowStep < 1 || rowOffset < 0 || nRows == 0
-        || nRows * rowStep + rowOffset > getCurImgInfo().rows)
+        || (nRows - 1) * rowStep + 1 + rowOffset > getCurImgInfo().rows)
       throw new PngjInputException("bad args");
     if (rowNum >= rowOffset)
       throw new PngjInputException("readRows cannot be mixed with readRow");
