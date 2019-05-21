@@ -104,4 +104,34 @@ public class PngChunkPHYS extends PngChunkSingle {
     pixelsxUnitY = (long) (dpiy / 0.0254 + 0.5);
   }
 
+  /**
+   * returns -1 if the physicial unit is unknown, or X-Y are not equal
+   */
+  public long getAsDpm() {
+    if (units != 1 || pixelsxUnitX != pixelsxUnitY)
+      return -1;
+    return pixelsxUnitX;
+  }
+
+  /**
+   * returns -1 if the physicial unit is unknown
+   */
+  public long[] getAsDpm2() {
+    if (units != 1)
+      return new long[] {-1, -1};
+    return new long[] { pixelsxUnitX, pixelsxUnitY };
+  }
+
+  public void setAsDpm(long dpm) {
+    units = 1;
+    pixelsxUnitX = dpm;
+    pixelsxUnitY = pixelsxUnitX;
+  }
+
+  public void setAsDpm2(long dpix, long dpiy) {
+    units = 1;
+    pixelsxUnitX = dpix;
+    pixelsxUnitY = dpiy;
+  }
+
 }

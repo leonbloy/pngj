@@ -80,6 +80,29 @@ public class PngMetadata {
     queueChunk(c);
   }
 
+  // //////////// DPM
+
+  /**
+   * returns -1 if not found or dimension unknown
+   */
+  public long[] getDpm() {
+    PngChunk c = chunkList.getById1(ChunkHelper.pHYs, true);
+    if (c == null)
+      return new long[] {-1, -1};
+    else
+      return ((PngChunkPHYS) c).getAsDpm2();
+  }
+
+  public void setDpm(long x) {
+    setDpm(x, x);
+  }
+
+  public void setDpm(long x, long y) {
+    PngChunkPHYS c = new PngChunkPHYS(chunkList.imageInfo);
+    c.setAsDpm2(x, y);
+    queueChunk(c);
+  }
+
   // //////////// TIME
 
   /**
