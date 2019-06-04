@@ -93,7 +93,6 @@ public class PngWriter {
     chunksList = new ChunksListForWrite(imgInfo);
     metadata = new PngMetadata(chunksList);
     pixelsWriter = createPixelsWriter(imgInfo);
-    setCompLevel(9);
   }
 
   private void initIdat() { // this triggers the writing of first chunks
