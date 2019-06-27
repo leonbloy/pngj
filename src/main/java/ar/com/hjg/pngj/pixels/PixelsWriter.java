@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj.pixels;
 
 import java.io.OutputStream;
+import java.util.concurrent.ExecutorService;
 import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
@@ -34,6 +35,7 @@ public abstract class PixelsWriter {
 
   protected int deflaterCompLevel = 6;
   protected int deflaterStrategy = Deflater.DEFAULT_STRATEGY;
+  protected ExecutorService deflaterParallelExecutor;
 
   protected boolean initdone = false;
 
@@ -163,9 +165,12 @@ public abstract class PixelsWriter {
   protected void initParams() {
     IDatChunkWriter idatWriter = new IDatChunkWriter(os, idatMaxSize);
     if (compressorStream == null) { // if not set, use the deflater
-      compressorStream =
+      compressorStream = (deflaterParallelExecutor != null) ?
+          new CompressorStreamParallelDeflater(idatWriter, buflen, imgInfo.getTotalRawBytes(),
+              deflaterParallelExecutor, deflaterCompLevel, deflaterStrategy) :
           new CompressorStreamDeflater(idatWriter, buflen, imgInfo.getTotalRawBytes(),
               deflaterCompLevel, deflaterStrategy);
+
     }
   }
 
@@ -195,6 +200,16 @@ public abstract class PixelsWriter {
     return deflaterCompLevel;
   }
 
+  /**
+   * Deflater parallel executor
+   */
+  public void setDeflaterParallelExecutor(ExecutorService executor) {
+    this.deflaterParallelExecutor = executor;
+  }
+
+  public ExecutorService getDeflaterParallelExecutor() {
+    return deflaterParallelExecutor;
+  }
 
   public final void setOs(OutputStream datStream) {
     this.os = datStream;
