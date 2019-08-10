@@ -1,7 +1,6 @@
-bin
-dist
-target
-notingit
-priv
-.gradle/
+.settings
+.classpath
+.project
 build
+priv
+/target/
