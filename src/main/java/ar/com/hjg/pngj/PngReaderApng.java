@@ -184,7 +184,7 @@ public class PngReaderApng extends PngReaderByte {
       @Override
       protected boolean countChunkTypeAsAncillary(String id) {
         // we don't count fdat as ancillary data
-        return super.countChunkTypeAsAncillary(id) && !id.equals(id.equals(PngChunkFDAT.ID));
+        return super.countChunkTypeAsAncillary(id) && !id.equals(PngChunkFDAT.ID);
       }
 
     };

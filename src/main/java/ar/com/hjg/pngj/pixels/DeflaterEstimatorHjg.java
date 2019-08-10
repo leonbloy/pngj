@@ -1,7 +1,7 @@
 package ar.com.hjg.pngj.pixels;
 
 
-final public class DeflaterEstimatorHjg {
+final class DeflaterEstimatorHjg {
 
   /**
    * This object is stateless, it's thread safe and can be reused

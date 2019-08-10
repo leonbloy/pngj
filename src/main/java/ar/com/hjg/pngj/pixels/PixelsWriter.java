@@ -4,7 +4,7 @@ import java.io.OutputStream;
 import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
-import ar.com.hjg.pngj.IDatChunkWriter;
+import ar.com.hjg.pngj.IdatChunkWriter;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjOutputException;
@@ -161,7 +161,7 @@ public abstract class PixelsWriter {
 
   /** called by init(); override (calling this first) to do additional initialization */
   protected void initParams() {
-    IDatChunkWriter idatWriter = new IDatChunkWriter(os, idatMaxSize);
+    IdatChunkWriter idatWriter = new IdatChunkWriter(os, idatMaxSize);
     if (compressorStream == null) { // if not set, use the deflater
       compressorStream =
           new CompressorStreamDeflater(idatWriter, buflen, imgInfo.getTotalRawBytes(),

@@ -2,7 +2,7 @@ package ar.com.hjg.pngj.pixels;
 
 import java.util.zip.Deflater;
 
-import ar.com.hjg.pngj.IDatChunkWriter;
+import ar.com.hjg.pngj.IdatChunkWriter;
 import ar.com.hjg.pngj.PngjOutputException;
 
 /**
@@ -19,18 +19,18 @@ public class CompressorStreamDeflater extends CompressorStream {
   protected boolean deflaterIsOwn = true;
 
   /** if a deflater is passed, it must be already reset. It will not be released on close */
-  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen,
+  public CompressorStreamDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen,
       Deflater def) {
     super(idatCw, maxBlockLen, totalLen);
     this.deflater = def == null ? new Deflater() : def;
     this.deflaterIsOwn = def == null;
   }
 
-  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen) {
+  public CompressorStreamDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen) {
     this(idatCw, maxBlockLen, totalLen, null);
   }
 
-  public CompressorStreamDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen,
+  public CompressorStreamDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen,
       int deflaterCompLevel, int deflaterStrategy) {
     this(idatCw, maxBlockLen, totalLen, new Deflater(deflaterCompLevel));
     this.deflaterIsOwn = true;

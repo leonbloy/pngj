@@ -1,7 +1,9 @@
 package ar.com.hjg.pngj;
 
 /**
- * Bytes consumer. Objects implementing this interface can act as bytes consumers, that are "fed" with bytes.
+ * Bytes consumer. 
+ * 
+ * Objects implementing this interface can act as bytes-consumers - they are fed with bytes.
  */
 public interface IBytesConsumer {
   /**

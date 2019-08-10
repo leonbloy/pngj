@@ -9,7 +9,7 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
  * Outputs a sequence of IDAT-like chunk, that is filled progressively until the max chunk length is reached (or until
  * flush())
  */
-public class IDatChunkWriter {
+public class IdatChunkWriter {
 
   private static final int MAX_LEN_DEFAULT = 32768; // 32K rather arbitrary - data only
 
@@ -22,11 +22,11 @@ public class IDatChunkWriter {
   private long totalBytesWriten = 0; // including header+crc
   private int chunksWriten = 0;
 
-  public IDatChunkWriter(OutputStream outputStream) {
+  public IdatChunkWriter(OutputStream outputStream) {
     this(outputStream, 0);
   }
 
-  public IDatChunkWriter(OutputStream outputStream, int maxChunkLength) {
+  public IdatChunkWriter(OutputStream outputStream, int maxChunkLength) {
     this.outputStream = outputStream;
     this.maxChunkLen = maxChunkLength > 0 ? maxChunkLength : MAX_LEN_DEFAULT;
     buf = new byte[maxChunkLen];
@@ -34,7 +34,7 @@ public class IDatChunkWriter {
     postReset();
   }
 
-  public IDatChunkWriter(OutputStream outputStream, byte[] b) {
+  public IdatChunkWriter(OutputStream outputStream, byte[] b) {
     this.outputStream = outputStream;
     this.buf = b != null ? b : new byte[MAX_LEN_DEFAULT];
     this.maxChunkLen = b.length;

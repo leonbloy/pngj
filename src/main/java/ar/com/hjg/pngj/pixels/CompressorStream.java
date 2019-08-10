@@ -2,7 +2,7 @@ package ar.com.hjg.pngj.pixels;
 
 import java.io.OutputStream;
 
-import ar.com.hjg.pngj.IDatChunkWriter;
+import ar.com.hjg.pngj.IdatChunkWriter;
 
 /**
  * This is an OutputStream that compresses (via Deflater or a deflater-like object), and optionally passes the
@@ -23,7 +23,7 @@ import ar.com.hjg.pngj.IDatChunkWriter;
  */
 public abstract class CompressorStream extends OutputStream {
 
-  protected IDatChunkWriter idatChunkWriter;
+  protected IdatChunkWriter idatChunkWriter;
   public final int blockLen;
   public final long totalbytes;
 
@@ -43,7 +43,7 @@ public abstract class CompressorStream extends OutputStream {
    * @param blockLen Estimated maximum block length. If unknown, use -1.
    * @param totalbytes Expected total bytes to be fed. If unknown, use -1.
    */
-  public CompressorStream(IDatChunkWriter idatCw, int blockLen, long totalbytes) {
+  public CompressorStream(IdatChunkWriter idatCw, int blockLen, long totalbytes) {
     this.idatChunkWriter = idatCw;
     if (blockLen < 0)
       blockLen = 4096;

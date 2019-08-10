@@ -20,7 +20,6 @@ import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineArray;
 import ar.com.hjg.pngj.IImageLineSet;
-import ar.com.hjg.pngj.IPngWriterFactory;
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.ImageLineInt;
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -572,7 +571,7 @@ public class WriterFiltersPerformanceUtil {
   }
 
 
-  private static void computeSpeedWithPngWriterDeflatePerLine(File dir, int clevel, boolean lz4) {
+  protected static void computeSpeedWithPngWriterDeflatePerLine(File dir, int clevel, boolean lz4) {
     WriterFiltersPerformanceUtil test =
         new WriterFiltersPerformanceUtil(TestSupport.getPngsFromDir(dir),
             new PngWriterDeflatePerLine(clevel, lz4));
