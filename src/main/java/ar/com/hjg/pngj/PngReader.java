@@ -452,13 +452,13 @@ public class PngReader {
   }
 
   /**
-   * Reads till end of PNG stream and call <tt>close()</tt>
+   * Reads till end of PNG stream and calls <tt>close()</tt>
    * 
    * This should normally be called after reading the pixel data, to read the trailing chunks and close the stream. But
    * it can be called at anytime. This will also read the first chunks if not still read, and skip pixels (IDAT) if
    * still pending.
    * 
-   * If you want to read all metadata skipping pixels, readSkippingAllRows() is a little more efficient.
+   * If you want to read all metadata skipping pixels, <tt>readSkippingAllRows()</tt> is a little more efficient.
    * 
    * If you want to abort immediately, call instead <tt>close()</tt>
    */

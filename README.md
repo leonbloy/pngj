@@ -17,7 +17,7 @@ You can download the latest release from here http://hjg.com.ar/pngj/ or use the
 * Allows to read and write progressively, row by row. This means that you can process huge images without needing to load them fully in memory.
 * Reads and writes all PNG color models. Interlaced PNG is supported (though not welcomed) for reading.
 * Full support for __metadata__ handling ("chunks").
-* The format of the pixel data (for read and write) is extensible and very efficient (no double copies).
+* The format of the pixel data (for read and write) is extensible and efficient (no double copies).
 * Supports asyncronous reading and low level tweaking and extension in the reader.
 * Basic support for APNG reading
 * Open source (Apache licence). Available in Maven Central repository.

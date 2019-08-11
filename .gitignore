@@ -1,6 +1,9 @@
 .settings
 .classpath
 .project
-build
-priv
+build/
 /target/
+.idea
+.classes/
+priv/
+notingit/
