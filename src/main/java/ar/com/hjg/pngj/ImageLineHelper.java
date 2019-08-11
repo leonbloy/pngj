@@ -332,37 +332,49 @@ public class ImageLineHelper {
   }
 
   /**
-   * integer packed R G B only for bitdepth=8! (does not check!)
+   * Returns pixel as integer packed [A R G B] 
    * 
+   * This only makes sense for ARGB images, with bitdepth=8
+   * (this is not checked!)
+   **/
+  public static int getPixelARGB8(IImageLine line, int column) {
+	    if (line instanceof ImageLineInt) {
+	      if(((ImageLineInt) line).imgInfo.channels !=4) return getPixelRGB8(line, column);
+	      int offset = column * ((ImageLineInt) line).imgInfo.channels;
+	      int[] scanline = ((ImageLineInt) line).getScanline();
+	      return (scanline[offset + 3] <<24) |  (scanline[offset] << 16) | (scanline[offset + 1] << 8)
+	          | (scanline[offset + 2]);
+	    } else if (line instanceof ImageLineByte) {
+		      if(((ImageLineByte) line).imgInfo.channels !=4) return getPixelRGB8(line, column);
+	      int offset = column * ((ImageLineByte) line).imgInfo.channels;
+	      byte[] scanline = ((ImageLineByte) line).getScanline();
+	      return (((scanline[offset + 3] & 0xff) << 24) | ((scanline[offset] & 0xff) << 16)
+	          | ((scanline[offset + 1] & 0xff) << 8) | ((scanline[offset + 2] & 0xff)));
+	    } else
+	        throw new PngjUnsupportedException("Not supported " + line.getClass());
+	  }
+
+  
+  /**
+   * Returns pixel as integer packed [(A) R G B] with A=0xff 
+   * 
+   * This only makes sense for RGB images, with bitdepth=8
+   * (this is not checked!)
    **/
   public static int getPixelRGB8(IImageLine line, int column) {
     if (line instanceof ImageLineInt) {
       int offset = column * ((ImageLineInt) line).imgInfo.channels;
       int[] scanline = ((ImageLineInt) line).getScanline();
-      return (scanline[offset] << 16) | (scanline[offset + 1] << 8) | (scanline[offset + 2]);
+      return (0xff<<24) | (scanline[offset] << 16) | (scanline[offset + 1] << 8) | (scanline[offset + 2]);
     } else if (line instanceof ImageLineByte) {
       int offset = column * ((ImageLineByte) line).imgInfo.channels;
       byte[] scanline = ((ImageLineByte) line).getScanline();
-      return ((scanline[offset] & 0xff) << 16) | ((scanline[offset + 1] & 0xff) << 8)
+      return (0xff<<24) |((scanline[offset] & 0xff) << 16) | ((scanline[offset + 1] & 0xff) << 8)
           | ((scanline[offset + 2] & 0xff));
     } else
-      throw new PngjException("Not supported " + line.getClass());
+      throw new PngjUnsupportedException("Not supported " + line.getClass());
   }
 
-  public static int getPixelARGB8(IImageLine line, int column) {
-    if (line instanceof ImageLineInt) {
-      int offset = column * ((ImageLineInt) line).imgInfo.channels;
-      int[] scanline = ((ImageLineInt) line).getScanline();
-      return (scanline[offset + 3] << 24) | (scanline[offset] << 16) | (scanline[offset + 1] << 8)
-          | (scanline[offset + 2]);
-    } else if (line instanceof ImageLineByte) {
-      int offset = column * ((ImageLineByte) line).imgInfo.channels;
-      byte[] scanline = ((ImageLineByte) line).getScanline();
-      return (((scanline[offset + 3] & 0xff) << 24) | ((scanline[offset] & 0xff) << 16)
-          | ((scanline[offset + 1] & 0xff) << 8) | ((scanline[offset + 2] & 0xff)));
-    } else
-      throw new PngjException("Not supported " + line.getClass());
-  }
 
   public static void setPixelsRGB8(ImageLineInt line, int[] rgb) {
     for (int i = 0, j = 0; i < line.imgInfo.cols; i++) {
