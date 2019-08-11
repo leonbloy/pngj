@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
@@ -19,7 +20,7 @@ import ar.com.hjg.pngj.pixels.PixelsWriterDefault;
 /**
  * Writes a PNG image, line by line.
  */
-public class PngWriter {
+public class PngWriter implements Closeable {
 
   public final ImageInfo imgInfo;
 

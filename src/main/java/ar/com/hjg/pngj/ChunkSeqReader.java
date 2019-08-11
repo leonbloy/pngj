@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,7 +16,7 @@ import ar.com.hjg.pngj.chunks.ChunkHelper;
  * This has little intelligence, it's quite low-level and general (it could even be used for a MNG stream, for example).
  * It supports signature recognition and idat deflate
  */
-public class ChunkSeqReader implements IBytesConsumer {
+public class ChunkSeqReader implements IBytesConsumer, Closeable {
 
   protected static final int SIGNATURE_LEN = 8;
   protected final boolean withSignature;

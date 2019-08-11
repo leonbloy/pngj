@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
 import java.util.zip.Adler32;
@@ -38,7 +39,7 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * See also {@link PngReaderInt} (esentially the same as this, and slightly preferred) and {@link PngReaderByte} (uses
  * byte instead of int to store the samples).
  */
-public class PngReader {
+public class PngReader implements Closeable {
 
   // some performance/defensive limits
   /**
