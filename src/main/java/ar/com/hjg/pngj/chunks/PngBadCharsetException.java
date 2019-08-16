@@ -3,18 +3,18 @@ package ar.com.hjg.pngj.chunks;
 import ar.com.hjg.pngj.PngjException;
 
 public class PngBadCharsetException extends PngjException {
-  private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 1L;
 
-  public PngBadCharsetException(String message, Throwable cause) {
-    super(message, cause);
-  }
+	public PngBadCharsetException(String message, Throwable cause) {
+		super(message, cause);
+	}
 
-  public PngBadCharsetException(String message) {
-    super(message);
-  }
+	public PngBadCharsetException(String message) {
+		super(message);
+	}
 
-  public PngBadCharsetException(Throwable cause) {
-    super(cause);
-  }
+	public PngBadCharsetException(Throwable cause) {
+		super(cause);
+	}
 
 }

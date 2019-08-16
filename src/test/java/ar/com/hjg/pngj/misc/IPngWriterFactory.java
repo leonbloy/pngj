@@ -6,5 +6,5 @@ import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngWriter;
 
 public interface IPngWriterFactory {
-  public PngWriter createPngWriter(OutputStream outputStream, ImageInfo imgInfo);
+    public PngWriter createPngWriter(OutputStream outputStream, ImageInfo imgInfo);
 }
