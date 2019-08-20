@@ -26,7 +26,7 @@ public final class PngHelperInternal {
 	/**
 	 * UTF-8 is only used for some chunks
 	 */
-	public static Charset charsetUTF8 = StandardCharsets.ISO_8859_1;
+	public static Charset charsetUTF8 = StandardCharsets.UTF_8;
 
 	private static ThreadLocal<Boolean> DEBUG = new ThreadLocal<Boolean>() {
 		protected Boolean initialValue() {

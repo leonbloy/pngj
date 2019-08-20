@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj;
 
 import java.util.Arrays;
+import java.util.logging.Logger;
 import java.util.zip.Checksum;
 import java.util.zip.Inflater;
 
@@ -12,6 +13,7 @@ import java.util.zip.Inflater;
  * Deinterlacer
  */
 public class IdatSet extends DeflatedChunksSet {
+	private static final Logger LOGGER = Logger.getLogger(IdatSet.class.getName());
 
 	protected byte rowUnfiltered[];
 	protected byte rowUnfilteredPrev[];
@@ -50,6 +52,7 @@ public class IdatSet extends DeflatedChunksSet {
 		this.imgInfo = iminfo;
 		this.deinterlacer = deinterlacer;
 		this.rowinfo = new RowInfo(iminfo, deinterlacer);
+		LOGGER.fine("Creating IDAT set ");
 	}
 
 	/**

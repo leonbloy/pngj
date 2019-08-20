@@ -44,521 +44,521 @@ import ar.com.hjg.pngj.chunks.PngChunk;
  */
 public class TestSupport {
 
-    // WARNING: showXXXX methods are also for machine consumption
+	// WARNING: showXXXX methods are also for machine consumption
 
-    public static Random rand = new Random();
+	public static Random rand = new Random();
 
-    static {
-	Locale.setDefault(Locale.US);
-    }
-
-    private static File resourcesDir = null;
-
-    // this files should be accessible from the classpath
-    public static final String PNG_TEST_STRIPES = "test/stripes.png";
-    public static final String PNG_TEST_STRIPES2 = "test/stripes2.png";
-    public static final String PNG_TEST_TESTG2 = "test/testg2.png";
-    public static final String PNG_TEST_TESTG2I = "test/testg2i.png";// interlaced
-    // Correct but tricky: several 0 length idats
-    public static final String PNG_TEST_IDATTRICKY = "test/stripes0idat.png";
-
-    public static final String PNG_TEST_BADCRC = "test/bad_testg1crc.png";
-    public static final String PNG_TEST_BAD_MISSINGIDAT = "test/bad_missingidat.png";
-    public static final String PNG_TEST_BADTRUNCATED = "test/bad_truncated.png";
-    public static final String PNG_TEST_BADNOEND = "test/bad_testrgb3_noend.png";
-    public static final String PNG_TEST_BAD_TRUNCATEDIDAT = "test/bad_stripes_rgb8_truncatedidat.png";
-    public static final String PNG_TEST_TRAILINGBYES = "bad_stripes_extratrailing.png";
-
-    public static String showChunks(List<PngChunk> chunks) {
-	StringBuilder sb = new StringBuilder();
-	for (PngChunk chunk : chunks) {
-	    sb.append(showChunk(chunk)).append(" ");
+	static {
+		Locale.setDefault(Locale.US);
 	}
-	return sb.toString();
-    }
 
-    public static void feedFromStreamTest(ChunkSeqReader as, String fs) {
-	feedFromStreamTest(as, fs, -1);
-    }
+	private static File resourcesDir = null;
 
-    public static int randBufSize() {
-	return rand.nextBoolean() ? rand.nextInt(8) + 1 : rand.nextInt(30) + 80000; // very small or
-										    // very big
-    }
+	// this files should be accessible from the classpath
+	public static final String PNG_TEST_STRIPES = "test/stripes.png";
+	public static final String PNG_TEST_STRIPES2 = "test/stripes2.png";
+	public static final String PNG_TEST_TESTG2 = "test/testg2.png";
+	public static final String PNG_TEST_TESTG2I = "test/testg2i.png";// interlaced
+	// Correct but tricky: several 0 length idats
+	public static final String PNG_TEST_IDATTRICKY = "test/stripes0idat.png";
 
-    public static void feedFromStreamTest(ChunkSeqReader as, String fs, int bufferSize) {
-	if (bufferSize < 1)
-	    bufferSize = randBufSize();
-	BufferedStreamFeeder bf = new BufferedStreamFeeder(TestSupport.istream(fs), bufferSize);
-	while (!as.isDone()) {
-	    if (!bf.hasPendingBytes())
-		throw new PngjInputException("premature ending");
-	    if (bf.feed(as) <= 0)
-		break;
-	}
-	bf.close();
-    }
+	public static final String PNG_TEST_BADCRC = "test/bad_testg1crc.png";
+	public static final String PNG_TEST_BAD_MISSINGIDAT = "test/bad_missingidat.png";
+	public static final String PNG_TEST_BADTRUNCATED = "test/bad_truncated.png";
+	public static final String PNG_TEST_BADNOEND = "test/bad_testrgb3_noend.png";
+	public static final String PNG_TEST_BAD_TRUNCATEDIDAT = "test/bad_stripes_rgb8_truncatedidat.png";
+	public static final String PNG_TEST_TRAILINGBYES = "bad_stripes_extratrailing.png";
 
-    public static String showChunk(PngChunk chunk) {
-	return chunk == null ? "null" : chunk.id + "[" + chunk.getLen() + "]";
-    }
-
-    public static String showChunksRaw(List<ChunkRaw> chunks) {
-	StringBuilder sb = new StringBuilder();
-	for (ChunkRaw chunk : chunks) {
-	    sb.append(showChunkRaw(chunk)).append(" ");
-	}
-	return sb.toString();
-    }
-
-    public static String showChunkRaw(ChunkRaw chunk) {
-	return chunk == null ? "null" : chunk.id + "[" + chunk.len + "]";
-    }
-
-    public static List<ChunkRaw> chunkListToChunksRaw(List<PngChunk> chunks) {
-	List<ChunkRaw> cr = new ArrayList<ChunkRaw>();
-	for (PngChunk c : chunks)
-	    cr.add(c.getRaw());
-	return cr;
-    }
-
-    public static String showFilters(File pngr, int maxgroups, boolean usenewlines) {
-	return showFilters(pngr, maxgroups, usenewlines, false, false);
-    }
-
-    /**
-     * show detailed filter information (grouped by consecutive rows) eg:
-     * PAETH:337(103) means 103 rows of type PAETH starting from row 337
-     */
-    public static String showFilters(File pngr, int maxgroups, boolean usenewlines, boolean showSumm,
-	    boolean showSummPercent) {
-	if (maxgroups == 0)
-	    usenewlines = false;
-	if (maxgroups < 0)
-	    maxgroups = Integer.MAX_VALUE;
-	int[] types = new int[5];
-	PngReaderByte png = new PngReaderByte(pngr);
-	StringBuilder sb = new StringBuilder();
-	int[] ft = new int[png.imgInfo.rows + 1];
-	for (int r = 0; r < png.imgInfo.rows; r++) {
-	    ft[r] = ((IImageLineArray) png.readRow()).getFilterType().val;
-	    types[ft[r]]++;
-	}
-	png.end();
-	ft[png.imgInfo.rows] = -1; // dummy end value to ease computation
-	if (showSummPercent) {
-	    for (int i = 0; i <= 4; i++) {
-		types[i] = (int) ((types[i] * 100 + png.imgInfo.rows / 2) / png.imgInfo.rows);
-	    }
-	}
-	if (showSumm || showSummPercent)
-	    sb.append(Arrays.toString(types) + (usenewlines ? "\n" : "\t"));
-	// groups
-	if (maxgroups != 0) {
-	    int contgroups = 0;
-	    int r0 = 0;
-	    for (int r = 1; r < ft.length; r++) {
-		if (ft[r] != ft[r - 1]) { // found group
-		    sb.append(String.format("%s:%d(%d)", FilterType.getByVal(ft[r - 1]), r0, r - r0))
-			    .append(usenewlines ? "\n" : " ");
-		    contgroups++;
-		    r0 = r;
-		    if (contgroups >= maxgroups && r < ft.length - 1) {
-			sb.append("...").append(usenewlines ? "\n" : " ");
-			break;
-		    }
+	public static String showChunks(List<PngChunk> chunks) {
+		StringBuilder sb = new StringBuilder();
+		for (PngChunk chunk : chunks) {
+			sb.append(showChunk(chunk)).append(" ");
 		}
-	    }
+		return sb.toString();
 	}
-	return sb.toString().trim().replaceAll("FILTER_", "");
-    }
 
-    /**
-     * First byte is the filter type, nbytes is the valid content (including filter
-     * byte) This shows at most 9 bytes
-     */
-    public static String showRow(byte[] row, int nbytes, int rown, int dx, int ox) {
-	StringBuilder sb = new StringBuilder();
-	sb.append(String.format("r=%d", rown));
-	if (dx != 1 || ox != 0)
-	    sb.append(String.format("(dx:%d,ox:%d)", dx, ox));
-	int n = nbytes - 1;
-	if (n > 9)
-	    n = 9;
-	sb.append(n == nbytes - 1 ? String.format("[") : String.format(" b(%d/%d)=[", n, nbytes - 1));
-	for (int i = 0; i <= n; i++) {
-	    sb.append(String.format("%3d", row[i] & 0xff));
-	    sb.append(i == 0 ? "|" : (i < n ? " " : ""));
+	public static void feedFromStreamTest(ChunkSeqReader as, String fs) {
+		feedFromStreamTest(as, fs, -1);
 	}
-	return sb.append("]").toString();
-    }
 
-    public static String showLine(IImageLine linex) {
-	return showLine(linex, 9);
-    }
-
-    public static String showLine(IImageLine linex, int maxtoshow) {
-	IImageLineArray line = (IImageLineArray) linex;
-	StringBuilder sb = new StringBuilder();
-
-	int n = line.getSize();
-	if (n > maxtoshow)
-	    n = maxtoshow;
-	sb.append(n == line.getSize() ? String.format("[") : String.format(" b(%d/%d)=[", n, line.getSize()));
-	for (int i = 0; i < n; i++) {
-	    sb.append(String.format("%3d", line.getElem(i)));
-	    sb.append(i < n - 1 ? " " : "");
+	public static int randBufSize() {
+		return rand.nextBoolean() ? rand.nextInt(8) + 1 : rand.nextInt(30) + 80000; // very small or
+		// very big
 	}
-	return sb.append("]").toString();
-    }
 
-    public static String showRow(byte[] row, int nbytes, int rown) {
-	return showRow(row, nbytes, rown, 1, 0);
-    }
-
-    /**
-     * the location (if relative) is realtive to the resources dir
-     * 
-     * @param f
-     * @return
-     */
-    public static InputStream istream(String f) {
-	return istream(new File(f));
-    }
-
-    /**
-     * the location (if relative) is realtive to the resources dir
-     * 
-     * @param f
-     * @return
-     */
-    public static OutputStream ostream(String f) {
-	return ostream(new File(f));
-    }
-
-    /**
-     * the location (if relative) is realtive to the resources dir
-     * 
-     * @param f
-     * @return
-     */
-    public static InputStream istream(File f) {
-	try {
-	    if (!f.isAbsolute())
-		f = new File(getResourcesDir(), f.getPath());
-	    return new FileInputStream(f);
-	} catch (FileNotFoundException e) {
-	    throw new RuntimeException(e);
-	}
-    }
-
-    // if relative, it's assumed to be realtive to resources dir
-    public static File absFile(File f) {
-	if (!f.isAbsolute())
-	    f = new File(getResourcesDir(), f.getPath());
-	return f;
-    }
-
-    public static File absFile(String x) {
-	File f = new File(x);
-	if (!f.isAbsolute())
-	    f = new File(getResourcesDir(), f.getPath());
-	return f;
-    }
-
-    /**
-     * the location (if relative) is realtive to the resources dir
-     * 
-     * @param f
-     * @return
-     */
-    public static OutputStream ostream(File f) {
-	try {
-	    if (!f.isAbsolute())
-		f = new File(getResourcesDir(), f.getPath());
-	    return new FileOutputStream(f);
-	} catch (FileNotFoundException e) {
-	    throw new RuntimeException(e);
-	}
-    }
-
-    /**
-     * The resources dir for the tests should include PNG_TEST_STRIPES (and
-     * testsuite1) Typically target/tests-classes
-     */
-    public static File getResourcesDir() {
-	if (resourcesDir == null) {
-	    String tokenfile = PNG_TEST_STRIPES;
-	    URL u = TestSupport.class.getClassLoader().getResource(tokenfile);
-	    if (u == null)
-		throw new PngjException(PNG_TEST_STRIPES
-			+ " not found in classpath, this is required in order to locate the resources dir for the PNGJ tests to run");
-	    File f;
-	    try {
-		f = (new File(u.toURI())).getParentFile().getParentFile();
-	    } catch (URISyntaxException e) {
-		throw new PngjException(e);
-	    }
-	    resourcesDir = f;
-	}
-	return resourcesDir;
-    }
-
-    public static List<File> listPngFromDir(File dir) {
-	dir = absFile(dir);
-	ArrayList<File> pngs = new ArrayList<File>();
-	for (String f : dir.list()) {
-	    if (f.toLowerCase().endsWith(".png"))
-		pngs.add(new File(dir, f));
-	}
-	return pngs;
-    }
-
-    public static File getPngTestSuiteDir() {
-	return new File(getResourcesDir(), "testsuite1");
-    }
-
-    public static File getTempDir() {
-	File t = new File(getResourcesDir(), "test/temp");
-	if (!t.isDirectory())
-	    throw new RuntimeException("missing test resource dir: " + t);
-	return t;
-    }
-
-    public static void cleanAll() {
-	File t = getTempDir();
-	for (File x : t.listFiles()) {
-	    if (x.getName().endsWith("png")) {
-		boolean ok = x.delete();
-		if (!ok)
-		    System.err.println("could not remove " + x);
-	    }
-	}
-    }
-
-    public static void testSameCrc(File ori, File dest) {
-	String oriname = ori.getName();
-	if ("testsuite1".equals(ori.getParentFile().getName()) && oriname.matches(".*i.....png")) {// interlaced? change
-												   // it
-	    ori = TestSupport.addSuffixToName(ori, "_ni");
-	}
-	PngReader png1 = new PngReader(ori);
-	PngHelperInternal.initCrcForTests(png1);
-	PngReader png2 = new PngReader(dest);
-	PngHelperInternal.initCrcForTests(png2);
-	TestCase.assertEquals("Cannot compare, one is interlaced, the other not:", png1.isInterlaced(),
-		png2.isInterlaced());
-	TestCase.assertEquals("Image are of different type", png1.imgInfo, png2.imgInfo);
-	png1.readRow(png1.imgInfo.rows - 1);
-	png2.readRow(png2.imgInfo.rows - 1);
-	png1.end();
-	png2.end();
-	long crc1 = PngHelperInternal.getDigest(png1);
-	long crc2 = PngHelperInternal.getDigest(png2);
-	TestCase.assertEquals("different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2, crc1, crc2);
-    }
-
-    public static void testSameValues(File ori, File dest) {
-	testSameValues(ori, dest, 0);
-    }
-
-    public static void testSameValues(File ori, File dest, int tolerance) {
-	PngReaderInt png1 = new PngReaderInt(ori);
-	PngReaderInt png2 = new PngReaderInt(dest);
-	TestCase.assertEquals("Image are of different size", png1.imgInfo.rows, png2.imgInfo.rows);
-	TestCase.assertEquals("Image are of different size", png1.imgInfo.cols, png2.imgInfo.cols);
-	int[] r1 = new int[png1.imgInfo.cols * 4];
-	int[] r2 = new int[png1.imgInfo.cols * 4];
-	String firstDif = "";
-	double difAv = 0;
-	for (int r = 0; r < png1.imgInfo.rows; r++) {
-	    ImageLineInt line1 = png1.readRowInt();
-	    ImageLineInt line2 = png2.readRowInt();
-	    r1 = ImageLineHelper.convert2rgba(line1, png1.getMetadata().getPLTE(), png1.getMetadata().getTRNS(), r1);
-	    r2 = ImageLineHelper.convert2rgba(line2, png2.getMetadata().getPLTE(), png2.getMetadata().getTRNS(), r2);
-	    fixAlpha(r1);
-	    fixAlpha(r2);
-	    for (int c = 0; c < r1.length; c++) {
-		int dif1 = r1[c] - r2[c];
-		if (dif1 < 0)
-		    dif1 = -dif1;
-		difAv += dif1;
-		if (dif1 > tolerance) {
-		    if (firstDif.equals(""))
-			firstDif = String.format("1st dif at: (%d,%d)", c / 4, r);
+	public static void feedFromStreamTest(ChunkSeqReader as, String fs, int bufferSize) {
+		if (bufferSize < 1)
+			bufferSize = randBufSize();
+		BufferedStreamFeeder bf = new BufferedStreamFeeder(TestSupport.istream(fs), bufferSize);
+		while (!as.isDone()) {
+			if (!bf.hasPendingBytes())
+				throw new PngjInputException("premature ending");
+			if (bf.feed(as) <= 0)
+				break;
 		}
-	    }
-	}
-	difAv /= (png1.imgInfo.rows * (double) png1.imgInfo.samplesPerRow);
-	png1.end();
-	png2.end();
-	TestCase.assertEquals(firstDif + " avdif=" + difAv + " f=" + ori.getName() + " " + " -> " + dest.getName(), "",
-		firstDif);
-	if (difAv > 0.001)
-	    PngHelperInternal.debug(String.format("%s errorav=%f\n", ori.getName(), difAv));
-    }
-
-    public static void fixAlpha(int[] line) {
-	for (int c = 3; c <= line.length; c += 4) {
-	    if (line[c] == 0) {// transparent
-		line[c - 1] = 0;
-		line[c - 2] = 0;
-		line[c - 3] = 0;
-	    }
-
-	}
-    }
-
-    public static void testCrcEquals(File image1, long crc) {
-	PngReader png1 = new PngReader(image1);
-	PngHelperInternal.initCrcForTests(png1);
-	png1.readRow(png1.imgInfo.rows - 1);
-	png1.end();
-	long crc1 = PngHelperInternal.getDigest(png1);
-	TestCase.assertEquals(crc1, crc);
-    }
-
-    public static File addSuffixToName(File orig, String suffix) {
-	String x = orig.getPath();
-	x = x.replaceAll("\\.png$", "");
-	return new File(x + suffix + ".png");
-    }
-
-    public static String addSuffixToName(String orig, String suffix) {
-	return orig.replaceAll("\\.png$", "") + ".png";
-    }
-
-    public static class NullOutputStream extends OutputStream {
-	private int cont = 0;
-
-	@Override
-	public void write(int arg0) throws IOException {
-	    // nothing!
-	    cont++;
+		bf.close();
 	}
 
-	@Override
-	public void write(byte[] b, int off, int len) throws IOException {
-	    cont += len;
+	public static String showChunk(PngChunk chunk) {
+		return chunk == null ? "null" : chunk.id + "[" + chunk.getLen() + "]";
 	}
 
-	@Override
-	public void write(byte[] b) throws IOException {
-	    cont += b.length;
+	public static String showChunksRaw(List<ChunkRaw> chunks) {
+		StringBuilder sb = new StringBuilder();
+		for (ChunkRaw chunk : chunks) {
+			sb.append(showChunkRaw(chunk)).append(" ");
+		}
+		return sb.toString();
 	}
 
-	public int getCont() {
-	    return cont;
+	public static String showChunkRaw(ChunkRaw chunk) {
+		return chunk == null ? "null" : chunk.id + "[" + chunk.len + "]";
 	}
 
-    }
+	public static List<ChunkRaw> chunkListToChunksRaw(List<PngChunk> chunks) {
+		List<ChunkRaw> cr = new ArrayList<ChunkRaw>();
+		for (PngChunk c : chunks)
+			cr.add(c.getRaw());
+		return cr;
+	}
 
-    public static NullOutputStream createNullOutputStream() {
-	return new NullOutputStream();
-    }
+	public static String showFilters(File pngr, int maxgroups, boolean usenewlines) {
+		return showFilters(pngr, maxgroups, usenewlines, false, false);
+	}
 
-    public static List<PngChunk> getChunkById(String id, Collection<PngChunk> chunks) {
-	ArrayList<PngChunk> list = new ArrayList<PngChunk>();
-	for (PngChunk c : chunks)
-	    if (c.id.equals(id))
-		list.add(c);
-	return list;
-    }
+	/**
+	 * show detailed filter information (grouped by consecutive rows) eg:
+	 * PAETH:337(103) means 103 rows of type PAETH starting from row 337
+	 */
+	public static String showFilters(File pngr, int maxgroups, boolean usenewlines, boolean showSumm,
+			boolean showSummPercent) {
+		if (maxgroups == 0)
+			usenewlines = false;
+		if (maxgroups < 0)
+			maxgroups = Integer.MAX_VALUE;
+		int[] types = new int[5];
+		PngReaderByte png = new PngReaderByte(pngr);
+		StringBuilder sb = new StringBuilder();
+		int[] ft = new int[png.imgInfo.rows + 1];
+		for (int r = 0; r < png.imgInfo.rows; r++) {
+			ft[r] = ((IImageLineArray) png.readRow()).getFilterType().val;
+			types[ft[r]]++;
+		}
+		png.end();
+		ft[png.imgInfo.rows] = -1; // dummy end value to ease computation
+		if (showSummPercent) {
+			for (int i = 0; i <= 4; i++) {
+				types[i] = (int) ((types[i] * 100 + png.imgInfo.rows / 2) / png.imgInfo.rows);
+			}
+		}
+		if (showSumm || showSummPercent)
+			sb.append(Arrays.toString(types) + (usenewlines ? "\n" : "\t"));
+		// groups
+		if (maxgroups != 0) {
+			int contgroups = 0;
+			int r0 = 0;
+			for (int r = 1; r < ft.length; r++) {
+				if (ft[r] != ft[r - 1]) { // found group
+					sb.append(String.format("%s:%d(%d)", FilterType.getByVal(ft[r - 1]), r0, r - r0))
+							.append(usenewlines ? "\n" : " ");
+					contgroups++;
+					r0 = r;
+					if (contgroups >= maxgroups && r < ft.length - 1) {
+						sb.append("...").append(usenewlines ? "\n" : " ");
+						break;
+					}
+				}
+			}
+		}
+		return sb.toString().trim().replaceAll("FILTER_", "");
+	}
 
-    /** does not include IDAT */
-    public static ChunksList readAllChunks(File file, boolean includeIdat) {
-	PngReader pngr = new PngReader(file);
-	pngr.setChunksToSkip();
-	pngr.getChunkseq().setIncludeNonBufferedChunks(includeIdat);
-	pngr.readSkippingAllRows();
-	pngr.end();
-	return pngr.getChunksList();
-    }
+	/**
+	 * First byte is the filter type, nbytes is the valid content (including filter
+	 * byte) This shows at most 9 bytes
+	 */
+	public static String showRow(byte[] row, int nbytes, int rown, int dx, int ox) {
+		StringBuilder sb = new StringBuilder();
+		sb.append(String.format("r=%d", rown));
+		if (dx != 1 || ox != 0)
+			sb.append(String.format("(dx:%d,ox:%d)", dx, ox));
+		int n = nbytes - 1;
+		if (n > 9)
+			n = 9;
+		sb.append(n == nbytes - 1 ? String.format("[") : String.format(" b(%d/%d)=[", n, nbytes - 1));
+		for (int i = 0; i <= n; i++) {
+			sb.append(String.format("%3d", row[i] & 0xff));
+			sb.append(i == 0 ? "|" : (i < n ? " " : ""));
+		}
+		return sb.append("]").toString();
+	}
 
-    public static File getTmpFile(String suffix) {
-	return new File(getTempDir(), "temp" + suffix + ".png");
-    }
+	public static String showLine(IImageLine linex) {
+		return showLine(linex, 9);
+	}
 
-    public static PngWriter prepareFileTmp(File f, ImageInfo imi) {
-	PngWriter png = new PngWriter(f, imi, true);
-	return png;
-    }
+	public static String showLine(IImageLine linex, int maxtoshow) {
+		IImageLineArray line = (IImageLineArray) linex;
+		StringBuilder sb = new StringBuilder();
 
-    /** creates a simple PNG image 32x32 RGB8 for test */
-    public static PngWriter prepareFileTmp(File f, boolean palette) {
-	return prepareFileTmp(f, new ImageInfo(32, 32, 8, false, false, palette));
-    }
+		int n = line.getSize();
+		if (n > maxtoshow)
+			n = maxtoshow;
+		sb.append(n == line.getSize() ? String.format("[") : String.format(" b(%d/%d)=[", n, line.getSize()));
+		for (int i = 0; i < n; i++) {
+			sb.append(String.format("%3d", line.getElem(i)));
+			sb.append(i < n - 1 ? " " : "");
+		}
+		return sb.append("]").toString();
+	}
 
-    public static IImageLine generateNoiseLine(ImageInfo imi) { // byte format!
-	ImageLineByte line = new ImageLineByte(imi);
-	Random r = new Random();
-	byte[] scanline = line.getScanline();
-	r.nextBytes(scanline);
-	return line;
-    }
+	public static String showRow(byte[] row, int nbytes, int rown) {
+		return showRow(row, nbytes, rown, 1, 0);
+	}
 
-    public static PngWriter prepareFileTmp(File f) {
-	return prepareFileTmp(f, false);
-    }
+	/**
+	 * the location (if relative) is realtive to the resources dir
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static InputStream istream(String f) {
+		return istream(new File(f));
+	}
 
-    public static void endFileTmp(PngWriter png) { // writes dummy data
-	ImageLineInt imline = new ImageLineInt(png.imgInfo);
-	for (int i = 0; i < png.imgInfo.rows; i++)
-	    png.writeRow(imline);
-	png.end();
-    }
+	/**
+	 * the location (if relative) is realtive to the resources dir
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static OutputStream ostream(String f) {
+		return ostream(new File(f));
+	}
 
-    public static List<File> getPngsFromDir(File dirOrFile, boolean recurse) {
-	List<File> li = new ArrayList<File>();
-	if (dirOrFile.isDirectory()) {
-	    File[] files = dirOrFile.listFiles();
-	    Arrays.sort(files); // to guarantee predecible order
-	    for (File f : files) {
-		if (recurse && f.isDirectory())
-		    li.addAll(getPngsFromDir(f, true));
-		if (f.getName().toLowerCase().endsWith(".png"))
-		    li.add(f);
-	    }
-	} else
-	    li.add(dirOrFile);// not a dir, but a file
-	return li;
-    }
+	/**
+	 * the location (if relative) is realtive to the resources dir
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static InputStream istream(File f) {
+		try {
+			if (!f.isAbsolute())
+				f = new File(getResourcesDir(), f.getPath());
+			return new FileInputStream(f);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    public static List<File> getPngsFromDir(File dir) {
-	return getPngsFromDir(dir, true);
-    }
+	// if relative, it's assumed to be realtive to resources dir
+	public static File absFile(File f) {
+		if (!f.isAbsolute())
+			f = new File(getResourcesDir(), f.getPath());
+		return f;
+	}
 
-    /** copies a PNG to another, taking a subset of lines */
-    public static void copyPartial(File ori, File dest, int nlines, int step, int offset, boolean filterPreserve) {
-	PngReaderByte png2 = new PngReaderByte(ori);
-	int nlinesmax = (png2.imgInfo.rows - offset) / step;
-	if (nlines < 1 || nlines > nlinesmax)
-	    nlines = nlinesmax;
-	PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
-	if (filterPreserve)
-	    pngw.setFilterPreserve(true);
-	else
-	    pngw.setFilterType(FilterType.FILTER_CYCLIC); // to test
-	pngw.writeRows(png2.readRows(nlines, offset, step));
-	png2.end();
-	pngw.end();
-    }
+	public static File absFile(String x) {
+		File f = new File(x);
+		if (!f.isAbsolute())
+			f = new File(getResourcesDir(), f.getPath());
+		return f;
+	}
 
-    public static String getChunksSummary(String f) {
-	return getChunksSummary(f, true);
-    }
+	/**
+	 * the location (if relative) is realtive to the resources dir
+	 * 
+	 * @param f
+	 * @return
+	 */
+	public static OutputStream ostream(File f) {
+		try {
+			if (!f.isAbsolute())
+				f = new File(getResourcesDir(), f.getPath());
+			return new FileOutputStream(f);
+		} catch (FileNotFoundException e) {
+			throw new RuntimeException(e);
+		}
+	}
 
-    // if fast=true does not check CRCs
-    public static String getChunksSummary(String file, boolean fast) {
-	ChunkSeqSkipping c = new ChunkSeqSkipping(fast);
-	c.feedFromInputStream(TestSupport.istream(file));
-	return TestSupport.showChunksRaw(c.getChunks());
-    }
+	/**
+	 * The resources dir for the tests should include PNG_TEST_STRIPES (and
+	 * testsuite1) Typically target/tests-classes
+	 */
+	public static File getResourcesDir() {
+		if (resourcesDir == null) {
+			String tokenfile = PNG_TEST_STRIPES;
+			URL u = TestSupport.class.getClassLoader().getResource(tokenfile);
+			if (u == null)
+				throw new PngjException(PNG_TEST_STRIPES
+						+ " not found in classpath, this is required in order to locate the resources dir for the PNGJ tests to run");
+			File f;
+			try {
+				f = (new File(u.toURI())).getParentFile().getParentFile();
+			} catch (URISyntaxException e) {
+				throw new PngjException(e);
+			}
+			resourcesDir = f;
+		}
+		return resourcesDir;
+	}
 
-    public static ImageInfo getImageInfo(File f) {
-	PngReaderByte p = new PngReaderByte(f);
-	p.close();
-	return p.imgInfo;
-    }
+	public static List<File> listPngFromDir(File dir) {
+		dir = absFile(dir);
+		ArrayList<File> pngs = new ArrayList<File>();
+		for (String f : dir.list()) {
+			if (f.toLowerCase().endsWith(".png"))
+				pngs.add(new File(dir, f));
+		}
+		return pngs;
+	}
+
+	public static File getPngTestSuiteDir() {
+		return new File(getResourcesDir(), "testsuite1");
+	}
+
+	public static File getTempDir() {
+		File t = new File(getResourcesDir(), "test/temp");
+		if (!t.isDirectory())
+			throw new RuntimeException("missing test resource dir: " + t);
+		return t;
+	}
+
+	public static void cleanAll() {
+		File t = getTempDir();
+		for (File x : t.listFiles()) {
+			if (x.getName().endsWith("png")) {
+				boolean ok = x.delete();
+				if (!ok)
+					System.err.println("could not remove " + x);
+			}
+		}
+	}
+
+	public static void testSameCrc(File ori, File dest) {
+		String oriname = ori.getName();
+		if ("testsuite1".equals(ori.getParentFile().getName()) && oriname.matches(".*i.....png")) {// interlaced? change
+			// it
+			ori = TestSupport.addSuffixToName(ori, "_ni");
+		}
+		PngReader png1 = new PngReader(ori);
+		PngHelperInternal.initCrcForTests(png1);
+		PngReader png2 = new PngReader(dest);
+		PngHelperInternal.initCrcForTests(png2);
+		TestCase.assertEquals("Cannot compare, one is interlaced, the other not:", png1.isInterlaced(),
+				png2.isInterlaced());
+		TestCase.assertEquals("Image are of different type", png1.imgInfo, png2.imgInfo);
+		png1.readRow(png1.imgInfo.rows - 1);
+		png2.readRow(png2.imgInfo.rows - 1);
+		png1.end();
+		png2.end();
+		long crc1 = PngHelperInternal.getDigest(png1);
+		long crc2 = PngHelperInternal.getDigest(png2);
+		TestCase.assertEquals("different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2, crc1, crc2);
+	}
+
+	public static void testSameValues(File ori, File dest) {
+		testSameValues(ori, dest, 0);
+	}
+
+	public static void testSameValues(File ori, File dest, int tolerance) {
+		PngReaderInt png1 = new PngReaderInt(ori);
+		PngReaderInt png2 = new PngReaderInt(dest);
+		TestCase.assertEquals("Image are of different size", png1.imgInfo.rows, png2.imgInfo.rows);
+		TestCase.assertEquals("Image are of different size", png1.imgInfo.cols, png2.imgInfo.cols);
+		int[] r1 = new int[png1.imgInfo.cols * 4];
+		int[] r2 = new int[png1.imgInfo.cols * 4];
+		String firstDif = "";
+		double difAv = 0;
+		for (int r = 0; r < png1.imgInfo.rows; r++) {
+			ImageLineInt line1 = png1.readRowInt();
+			ImageLineInt line2 = png2.readRowInt();
+			r1 = ImageLineHelper.convert2rgba(line1, png1.getMetadata().getPLTE(), png1.getMetadata().getTRNS(), r1);
+			r2 = ImageLineHelper.convert2rgba(line2, png2.getMetadata().getPLTE(), png2.getMetadata().getTRNS(), r2);
+			fixAlpha(r1);
+			fixAlpha(r2);
+			for (int c = 0; c < r1.length; c++) {
+				int dif1 = r1[c] - r2[c];
+				if (dif1 < 0)
+					dif1 = -dif1;
+				difAv += dif1;
+				if (dif1 > tolerance) {
+					if (firstDif.equals(""))
+						firstDif = String.format("1st dif at: (%d,%d)", c / 4, r);
+				}
+			}
+		}
+		difAv /= (png1.imgInfo.rows * (double) png1.imgInfo.samplesPerRow);
+		png1.end();
+		png2.end();
+		TestCase.assertEquals(firstDif + " avdif=" + difAv + " f=" + ori.getName() + " " + " -> " + dest.getName(), "",
+				firstDif);
+		if (difAv > 0.001)
+			PngHelperInternal.debug(String.format("%s errorav=%f\n", ori.getName(), difAv));
+	}
+
+	public static void fixAlpha(int[] line) {
+		for (int c = 3; c <= line.length; c += 4) {
+			if (line[c] == 0) {// transparent
+				line[c - 1] = 0;
+				line[c - 2] = 0;
+				line[c - 3] = 0;
+			}
+
+		}
+	}
+
+	public static void testCrcEquals(File image1, long crc) {
+		PngReader png1 = new PngReader(image1);
+		PngHelperInternal.initCrcForTests(png1);
+		png1.readRow(png1.imgInfo.rows - 1);
+		png1.end();
+		long crc1 = PngHelperInternal.getDigest(png1);
+		TestCase.assertEquals(crc1, crc);
+	}
+
+	public static File addSuffixToName(File orig, String suffix) {
+		String x = orig.getPath();
+		x = x.replaceAll("\\.png$", "");
+		return new File(x + suffix + ".png");
+	}
+
+	public static String addSuffixToName(String orig, String suffix) {
+		return orig.replaceAll("\\.png$", "") + ".png";
+	}
+
+	public static class NullOutputStream extends OutputStream {
+		private int cont = 0;
+
+		@Override
+		public void write(int arg0) throws IOException {
+			// nothing!
+			cont++;
+		}
+
+		@Override
+		public void write(byte[] b, int off, int len) throws IOException {
+			cont += len;
+		}
+
+		@Override
+		public void write(byte[] b) throws IOException {
+			cont += b.length;
+		}
+
+		public int getCont() {
+			return cont;
+		}
+
+	}
+
+	public static NullOutputStream createNullOutputStream() {
+		return new NullOutputStream();
+	}
+
+	public static List<PngChunk> getChunkById(String id, Collection<PngChunk> chunks) {
+		ArrayList<PngChunk> list = new ArrayList<PngChunk>();
+		for (PngChunk c : chunks)
+			if (c.id.equals(id))
+				list.add(c);
+		return list;
+	}
+
+	/** does not include IDAT */
+	public static ChunksList readAllChunks(File file, boolean includeIdat) {
+		PngReader pngr = new PngReader(file);
+		pngr.setChunksToSkip();
+		pngr.getChunkseq().setIncludeNonBufferedChunks(includeIdat);
+		pngr.readSkippingAllRows();
+		pngr.end();
+		return pngr.getChunksList();
+	}
+
+	public static File getTmpFile(String suffix) {
+		return new File(getTempDir(), "temp" + suffix + ".png");
+	}
+
+	public static PngWriter prepareFileTmp(File f, ImageInfo imi) {
+		PngWriter png = new PngWriter(f, imi, true);
+		return png;
+	}
+
+	/** creates a simple PNG image 32x32 RGB8 for test */
+	public static PngWriter prepareFileTmp(File f, boolean palette) {
+		return prepareFileTmp(f, new ImageInfo(32, 32, 8, false, false, palette));
+	}
+
+	public static IImageLine generateNoiseLine(ImageInfo imi) { // byte format!
+		ImageLineByte line = new ImageLineByte(imi);
+		Random r = new Random();
+		byte[] scanline = line.getScanline();
+		r.nextBytes(scanline);
+		return line;
+	}
+
+	public static PngWriter prepareFileTmp(File f) {
+		return prepareFileTmp(f, false);
+	}
+
+	public static void endFileTmp(PngWriter png) { // writes dummy data
+		ImageLineInt imline = new ImageLineInt(png.imgInfo);
+		for (int i = 0; i < png.imgInfo.rows; i++)
+			png.writeRow(imline);
+		png.end();
+	}
+
+	public static List<File> getPngsFromDir(File dirOrFile, boolean recurse) {
+		List<File> li = new ArrayList<File>();
+		if (dirOrFile.isDirectory()) {
+			File[] files = dirOrFile.listFiles();
+			Arrays.sort(files); // to guarantee predecible order
+			for (File f : files) {
+				if (recurse && f.isDirectory())
+					li.addAll(getPngsFromDir(f, true));
+				if (f.getName().toLowerCase().endsWith(".png"))
+					li.add(f);
+			}
+		} else
+			li.add(dirOrFile);// not a dir, but a file
+		return li;
+	}
+
+	public static List<File> getPngsFromDir(File dir) {
+		return getPngsFromDir(dir, true);
+	}
+
+	/** copies a PNG to another, taking a subset of lines */
+	public static void copyPartial(File ori, File dest, int nlines, int step, int offset, boolean filterPreserve) {
+		PngReaderByte png2 = new PngReaderByte(ori);
+		int nlinesmax = (png2.imgInfo.rows - offset) / step;
+		if (nlines < 1 || nlines > nlinesmax)
+			nlines = nlinesmax;
+		PngWriter pngw = new PngWriter(dest, png2.imgInfo.withSize(-1, nlines));
+		if (filterPreserve)
+			pngw.setFilterPreserve(true);
+		else
+			pngw.setFilterType(FilterType.FILTER_CYCLIC); // to test
+		pngw.writeRows(png2.readRows(nlines, offset, step));
+		png2.end();
+		pngw.end();
+	}
+
+	public static String getChunksSummary(String f) {
+		return getChunksSummary(f, true);
+	}
+
+	// if fast=true does not check CRCs
+	public static String getChunksSummary(String file, boolean fast) {
+		ChunkSeqSkipping c = new ChunkSeqSkipping(fast);
+		c.feedFromInputStream(TestSupport.istream(file));
+		return TestSupport.showChunksRaw(c.getChunks());
+	}
+
+	public static ImageInfo getImageInfo(File f) {
+		PngReaderByte p = new PngReaderByte(f);
+		p.close();
+		return p.imgInfo;
+	}
 
 }

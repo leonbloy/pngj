@@ -21,5 +21,11 @@ public interface IBytesConsumer {
 	 */
 	int consume(byte[] buf, int offset, int len);
 
+	/** 
+	 * The consumer is DONE when it does not need more bytes, 
+	 * either because it ended normally, or abnormally
+	 * Typically this implies it will return -1 if consume() is called afterwards,
+	 * but it might happen that it will consume more (unneeded) bytes anwyway 
+	 *  */
 	boolean isDone();
 }

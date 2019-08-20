@@ -20,7 +20,6 @@ import ar.com.hjg.pngj.chunks.PngChunk;
  * PngReaderFilter reader = new PngReaderFilter(new FileInputStream(&quot;image.png&quot;));
  * BufferedImage image1 = ImageIO.read(reader);
  * reader.readUntilEndAndClose(); // in case ImageIO.read() does not read the traling chunks (it happens)
- * System.out.println(reader.getChunksList());
  * </pre>
  * 
  */
@@ -48,7 +47,6 @@ public class PngReaderFilter extends FilterInputStream {
 			@Override
 			protected void postProcessChunk(ChunkReader chunkR) {
 				super.postProcessChunk(chunkR);
-				// System.out.println("processed chunk " + chunkR.getChunkRaw().id);
 			}
 		};
 	}
@@ -85,8 +83,11 @@ public class PngReaderFilter extends FilterInputStream {
 
 	public void readUntilEndAndClose() throws IOException {
 		BufferedStreamFeeder br = new BufferedStreamFeeder(this.in);
-		while ((!chunkseq.isDone()) && br.hasPendingBytes())
-			br.feed(chunkseq);
+		while ((!chunkseq.isDone()) && br.hasPendingBytes()) {
+			if (br.feed(chunkseq) < 1)
+				break;
+		}
+		br.close();
 		close();
 	}
 

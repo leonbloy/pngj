@@ -28,9 +28,9 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 	private byte[] buf0 = new byte[8]; // for signature or chunk starts
 	private int buf0len = 0;
 
-	private boolean signatureDone = false;
-	private boolean closed = false; // ended, normally or not
-	private boolean endChunkDone = false;
+	protected boolean signatureDone = false;
+	protected boolean endChunkDone = false;
+	protected boolean closed = false; // ended, normally or not
 
 	private int chunkCount = 0;
 
@@ -192,7 +192,7 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 		// isIdatType);
 		// first see if we should terminate an active curReaderDeflatedSet
 		boolean forCurrentIdatSet = false;
-		if (curDeflatedSet != null && !curDeflatedSet.isDone())
+		if (curDeflatedSet != null && !curDeflatedSet.isClosed())
 			forCurrentIdatSet = curDeflatedSet.ackNextChunkId(id);
 		if (isIdatType && !skip) { // IDAT non skipped: create a DeflatedChunkReader owned by a idatSet
 			if (!forCurrentIdatSet) {
@@ -331,11 +331,17 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 	}
 
 	/**
-	 * If true, we either have processe the IEND chunk, or close() has been
-	 * called, or a fatal error has happened
+	 * If true, we have processe the IEND chunk
 	 */
 	@Override
 	public boolean isDone() {
+		return endChunkDone;
+	}
+
+	/**
+	 * Terminated, normally or not - If true, this will not accept more bytes 
+	 */
+	public boolean isClosed() {
 		return closed;
 	}
 
@@ -416,10 +422,6 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 		return "IEND";
 	}
 
-	public boolean isEndChunkDone() {
-		return endChunkDone;
-	}
-
 	/**
 	 * Reads all content from a file. Helper method, only for callback mode
 	 */
@@ -437,6 +439,8 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 	 * 
 	 * Caller should call isDone() to assert all expected chunks have been read
 	 * 
+	 * Warning: this does not close this object, unless ended 
+	 * 
 	 * @param is
 	 * @param closeStream
 	 *            Closes the input stream when done (or if error)
@@ -447,10 +451,8 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 		try {
 			sf.feedAll(this);
 		} finally {
-			close();
 			sf.close();
 		}
-		// System.out.println("ended: " + this.isDone());
 	}
 
 	public void feedFromInputStream(InputStream is) {

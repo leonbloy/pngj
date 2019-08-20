@@ -56,7 +56,7 @@ public class PngReaderApng extends PngReaderByte {
 			addChunkToSkip(PngChunkIDAT.ID);
 			addChunkToSkip(PngChunkFDAT.ID);
 			if (chunkseq.getIdatSet() != null && !chunkseq.getIdatSet().isDone())
-				chunkseq.getIdatSet().done(); // seems to be necessary sometimes (we should check this)
+				chunkseq.getIdatSet().markAsDone(); // seems to be necessary sometimes (we should check this)
 			while (frameNum < frame & !chunkseq.isDone())
 				if (streamFeeder.feed(chunkseq) <= 0)
 					break;

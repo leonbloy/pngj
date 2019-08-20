@@ -62,16 +62,16 @@ public class DeflatedChunksSet {
 		WAITING_FOR_INPUT, // waiting for more bytes to be fed
 		ROW_READY, // ready for consumption (might be less than fully filled), ephemeral state for
 		// CALLBACK mode
-		WORK_DONE, // all data of interest has been read, but we might accept still more trailing
+		DONE, // all data of interest has been read, but we might accept still more trailing
 		// chunks (we'll ignore them)
-		TERMINATED; // we are done, and also won't accept more IDAT chunks
+		CLOSED; // we are done, and also won't accept more IDAT chunks
 
 		public boolean isDone() {
-			return this == WORK_DONE || this == TERMINATED;
+			return this == DONE || this == CLOSED;
 		} // the caller has already uncompressed all the data of interest or EOF
 
-		public boolean isTerminated() {
-			return this == TERMINATED;
+		public boolean isClosed() {
+			return this == CLOSED;
 		} // we dont accept more chunks
 	}
 
@@ -212,7 +212,7 @@ public class DeflatedChunksSet {
 			else if (rowfilled > 0)
 				nextstate = State.ROW_READY; // complete row, process it
 			else {
-				nextstate = State.WORK_DONE; // eof, no more data
+				nextstate = State.DONE; // eof, no more data
 			}
 			state = nextstate;
 			if (state == State.ROW_READY) {
@@ -277,10 +277,10 @@ public class DeflatedChunksSet {
 		rown++;
 		if (len < 1) {
 			rowlen = 0;
-			done();
+			markAsDone();
 		} else if (inf.finished()) {
 			rowlen = 0;
-			done();
+			markAsDone();
 		} else {
 			state = State.WAITING_FOR_INPUT;
 			rowlen = len;
@@ -317,8 +317,8 @@ public class DeflatedChunksSet {
 		return state.isDone();
 	}
 
-	public boolean isTerminated() {
-		return state.isTerminated();
+	public boolean isClosed() {
+		return state.isClosed();
 	}
 
 	/**
@@ -327,15 +327,15 @@ public class DeflatedChunksSet {
 	 * acknowledge the next chunk as part of this set
 	 */
 	public boolean ackNextChunkId(String id) {
-		if (state.isTerminated())
+		if (state.isClosed())
 			return false;
 		else if (id.equals(chunkid)) {
 			return true;
 		} else {
 			if (!allowOtherChunksInBetween(id)) {
 				if (state.isDone()) {
-					if (!isTerminated())
-						terminate();
+					if (!state.isClosed())
+						close();
 					return false;
 				} else {
 					throw new PngjInputException("Unexpected chunk " + id + " while " + chunkid + " set is not done");
@@ -345,19 +345,15 @@ public class DeflatedChunksSet {
 		}
 	}
 
-	protected void terminate() {
-		close();
-	}
-
 	/**
 	 * This should be called when discarding this object, or for aborting.
 	 * Secure, idempotent Don't use this just to notify this object that it has
-	 * no more work to do, see {@link #done()}
+	 * no more work to do, see {@link #markAsDone()}
 	 */
 	public void close() {
 		try {
-			if (!state.isTerminated()) {
-				state = State.TERMINATED;
+			if (!state.isClosed()) {
+				state = State.CLOSED;
 			}
 			if (infOwn && inf != null) {
 				inf.end();// we end the Inflater only if we created it
@@ -368,12 +364,12 @@ public class DeflatedChunksSet {
 	}
 
 	/**
-	 * Forces the DONE state, this object won't uncompress more data. It's still
+	 * Forces the DONE state (except if it was CLOSED), this object won't uncompress more data. It's still
 	 * not terminated, it will accept more IDAT chunks, but will ignore them.
 	 */
-	public void done() {
+	public void markAsDone() {
 		if (!isDone())
-			state = State.WORK_DONE;
+			state = State.DONE;
 	}
 
 	/**

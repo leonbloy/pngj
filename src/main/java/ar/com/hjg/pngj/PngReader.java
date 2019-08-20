@@ -380,7 +380,7 @@ public class PngReader implements Closeable {
 		} else { // and now, for something completely different (interlaced)
 			loadAllInterlaced(nRows, rowOffset, rowStep);
 		}
-		chunkseq.getIdatSet().done();
+		chunkseq.getIdatSet().markAsDone();
 		return imlinesSet;
 	}
 
@@ -428,7 +428,7 @@ public class PngReader implements Closeable {
 			}
 			idat.advanceToNextRow();
 		} while (nread < nRows || !idat.isDone());
-		idat.done();
+		idat.markAsDone();
 		for (int i = 0, j = rowOffset; i < nRows; i++, j += rowStep) {
 			imlinesSet.getImageLine(j).endReadFromPngRaw();
 		}
@@ -523,7 +523,7 @@ public class PngReader implements Closeable {
 			if (chunkseq.firstChunksNotYetRead())
 				readFirstChunks();
 			if (chunkseq.getIdatSet() != null && !chunkseq.getIdatSet().isDone())
-				chunkseq.getIdatSet().done();
+				chunkseq.getIdatSet().markAsDone(); // it will ignore data
 			while (!chunkseq.isDone())
 				if (streamFeeder.feed(chunkseq) <= 0)
 					break;
@@ -646,5 +646,9 @@ public class PngReader implements Closeable {
 	public void setErrorBehaviour(ErrorBehaviour er) {
 		this.errorBehaviour = er;
 		chunkseq.setErrorBehaviour(er);
+	}
+
+	public boolean isDone() {
+		return chunkseq.isDone();
 	}
 }

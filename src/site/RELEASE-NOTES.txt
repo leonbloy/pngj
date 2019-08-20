@@ -1,6 +1,13 @@
 PNGJ:  Release Notes  & History
 ==============================================================================
 
+Version 2.2.0 (August 2019)
+  - Java 8
+  - Fixed issue with iTXt 
+  - Clarified closed vs done states for PngReader
+  - JUL logger
+  - Removed obsolete whitelisted classes check for GAE
+-------------------------------------------------------------------------------------------------------  
 Version 2.1.1 
   - Support for java.awt.BufferedImage efficient read/write (see ar.com.hjg.pngj.awt.* package)
   Experimental, but already quite functional and tested.

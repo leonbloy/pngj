@@ -9,17 +9,17 @@ import ar.com.hjg.pngj.test.TestSupport;
  */
 public class SampleShowChunks {
 
-    public static void showChunks(File file, boolean includeidat) {
+	public static void showChunks(File file, boolean includeidat) {
 
-	PngReaderDumb png = new PngReaderDumb(file);
-	png.setIncludeIdat(includeidat);
-	png.readAll();
-	for (int i = 0; i < png.getChunks().size(); i++) {
-	    System.out.println("Chunk " + (i + 1) + ": " + png.getChunks().get(i));
+		PngReaderDumb png = new PngReaderDumb(file);
+		png.setIncludeIdat(includeidat);
+		png.readAll();
+		for (int i = 0; i < png.getChunks().size(); i++) {
+			System.out.println("Chunk " + (i + 1) + ": " + png.getChunks().get(i));
+		}
 	}
-    }
 
-    public static void main(String[] args) throws Exception {
-	showChunks(new File(TestSupport.getResourcesDir(), TestSupport.PNG_TEST_STRIPES), true);
-    }
+	public static void main(String[] args) throws Exception {
+		showChunks(new File(TestSupport.getResourcesDir(), TestSupport.PNG_TEST_STRIPES), true);
+	}
 }
