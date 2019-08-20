@@ -154,7 +154,7 @@ public class PngMetadata {
 			}
 		} else {
 			c = new PngChunkITXT(chunkList.imageInfo);
-			((PngChunkITXT) c).setLangtag(k); // we use the same orig tag (this is not quite right)
+			//((PngChunkITXT) c).setTranslatedTag(k); // we use the same orig tag (this is not quite right)
 		}
 		c.setKeyVal(k, val);
 		queueChunk(c, true);
