@@ -1,6 +1,7 @@
 .settings
 .classpath
 .project
+/site/
 build/
 /target/
 .idea
