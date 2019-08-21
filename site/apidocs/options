@@ -1,0 +1,30 @@
+-classpath
+'C:/Users/h/.m2/repository/junit/junit/4.12/junit-4.12.jar;C:/Users/h/.m2/repository/org/hamcrest/hamcrest-core/1.3/hamcrest-core-1.3.jar'
+-encoding
+'UTF-8'
+-overview
+'C:/wk/git/pngj/src/main/javadoc/overview.html'
+-protected
+-sourcepath
+'C:/wk/git/pngj/src/main/java;C:/wk/git/pngj/src/main/javadoc'
+-Xdoclint:all -Xdoclint:-missing
+-author
+-bottom
+'Copyright &#169; 2019. All rights reserved.'
+-charset
+'UTF-8'
+-d
+'C:/wk/git/pngj/site/apidocs'
+-docencoding
+'UTF-8'
+-doctitle
+'PNGJ 2.2.0-SNAPSHOT API'
+-linkoffline
+'https://docs.oracle.com/javase/8/docs/api' 'C:/wk/git/pngj/target/javadoc-bundle-options'
+-notimestamp
+-stylesheetfile
+'C:/wk/git/pngj/src/main/javadoc/stylesheet.css'
+-use
+-version
+-windowtitle
+'PNGJ 2.2.0-SNAPSHOT API'
