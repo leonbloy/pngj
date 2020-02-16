@@ -13,10 +13,12 @@ public class PngChunkTEXT extends PngChunkTextVar {
 
 	public PngChunkTEXT(ImageInfo info) {
 		super(ID, info);
+		setPriority(true);
 	}
 
 	public PngChunkTEXT(ImageInfo info, String key, String val) {
 		super(ID, info);
+		setPriority(true);
 		setKeyVal(key, val);
 	}
 

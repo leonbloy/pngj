@@ -59,9 +59,9 @@ public class CustomChunkTest {
 		// TestCase.assertEquals("IHDR[13] prOp[256] pHYs[9] tEXt[59] IEND[0] ",
 		// chunks);
 		TestCase.assertEquals("Second chunk should be  prOp", "prOp",
-				pngr.getChunksList().getChunks().get(1).getRaw().id);
-		TestCase.assertEquals("Next chunk should be  pHYs", "pHYs",
 				pngr.getChunksList().getChunks().get(2).getRaw().id);
+		TestCase.assertEquals("Next chunk should be  pHYs", "pHYs",
+				pngr.getChunksList().getChunks().get(3).getRaw().id);
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
 		TestCase.assertTrue(chunk instanceof PngChunkUNKNOWN);
 	}
@@ -84,9 +84,9 @@ public class CustomChunkTest {
 		// TestCase.assertEquals("IHDR[13] prOp[256] pHYs[9] tEXt[59] IEND[0] ",
 		// chunks);
 		TestCase.assertEquals("Second chunk should be  prOp", "prOp",
-				pngr.getChunksList().getChunks().get(1).getRaw().id);
-		TestCase.assertEquals("Next chunk should be  pHYs", "pHYs",
 				pngr.getChunksList().getChunks().get(2).getRaw().id);
+		TestCase.assertEquals("Next chunk should be  pHYs", "pHYs",
+				pngr.getChunksList().getChunks().get(3).getRaw().id);
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
 		TestCase.assertTrue(chunk instanceof PngChunkPROP);
 		String val2 = ((PngChunkPROP) chunk).getProps().getProperty("mykey2");
