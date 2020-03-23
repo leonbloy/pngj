@@ -37,10 +37,12 @@ public enum FilterType {
 	/**
 	 * @deprecated use #FILTER_ADAPTIVE_FAST
 	 */
+	@Deprecated
 	FILTER_AGGRESSIVE(-2),
 	/**
 	 * @deprecated use #FILTER_ADAPTIVE_MEDIUM or #FILTER_ADAPTIVE_FULL
 	 */
+	@Deprecated
 	FILTER_VERYAGGRESSIVE(-4),
 	/**
 	 * Adaptative strategy, sampling each row, or almost
