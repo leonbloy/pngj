@@ -2,14 +2,14 @@ package ar.com.hjg.pngj.chunks;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
-import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngjBadCrcException;
 import ar.com.hjg.pngj.PngjException;
-import ar.com.hjg.pngj.PngjInputException;
 import ar.com.hjg.pngj.PngjOutputException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Raw (physical) chunk.
@@ -19,7 +19,7 @@ import ar.com.hjg.pngj.PngjOutputException;
  * See http://www.libpng.org/pub/png/spec/1.2/PNG-Structure.html
  */
 public class ChunkRaw {
-	private static final Logger LOGGER = Logger.getLogger(ChunkRaw.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChunkRaw.class.getName());
 	/**
 	 * The length counts only the data field, not itself, the chunk type code,
 	 * or the CRC. Zero is a valid length. Although encoders and decoders should
@@ -122,7 +122,7 @@ public class ChunkRaw {
 			if (throwExcep)
 				throw new PngjBadCrcException(msg);
 			else
-				LOGGER.warning(msg);
+				LOGGER.warn(msg);
 		}
 	}
 

@@ -11,7 +11,7 @@ crossPaths := false
 autoScalaLibrary := false
 
 /*
-scalaVersion := "2.12.8"
+scalaVersion := "2.13.1"
 scalacOptions ++= Seq("-deprecation", "-encoding", "UTF8")
 libraryDependencies += "org.scala-lang" % "scala-library" % scalaVersion.value % "test"
 */
@@ -19,6 +19,7 @@ libraryDependencies += "org.scala-lang" % "scala-library" % scalaVersion.value %
 parallelExecution in Test := false
 
 libraryDependencies ++= Seq(
-  "junit" % "junit" % "4.12" % "test",
-  "com.novocode" % "junit-interface" % "0.11" % "test",
+  "org.slf4j" % "slf4j-api" % "1.7.30",
+  "ch.qos.logback" % "logback-classic" % "1.2.3" % Test,
+  "com.novocode" % "junit-interface" % "0.11" % Test
 )

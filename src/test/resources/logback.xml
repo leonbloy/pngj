@@ -1,0 +1,13 @@
+<configuration>
+    <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+        <encoder>
+            <pattern>[%date] %level [%logger] %message%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="ar.com.hjg.pngj" level="info"/>
+
+    <root level="info">
+        <appender-ref ref="STDOUT" />
+    </root>
+</configuration>

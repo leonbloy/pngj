@@ -1,9 +1,9 @@
 package ar.com.hjg.pngj.test;
 
-import java.util.logging.Logger;
-
 import org.junit.After;
 import org.junit.BeforeClass;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class PngjTest {
 
@@ -12,17 +12,16 @@ public class PngjTest {
 
 	@BeforeClass
 	public static void setup() {
-		System.setProperty("java.util.logging.config.file",
-				ClassLoader.getSystemResource("logging.properties").getPath());
 		//testLogger();
 	}
 
 	private static void testLogger() {
-		Logger log = Logger.getLogger(PngjTest.class.getName());
-		log.severe("Testing log SEVERE");
-		log.warning("Testing log WARN");
+		Logger log = LoggerFactory.getLogger(PngjTest.class.getName());
+		log.error("Testing log ERROR");
+		log.warn("Testing log WARN");
 		log.info("Testing log INFO");
-		log.fine("Testing log FINE");
+		log.debug("Testing log DEBUG");
+		log.trace("Testing log TRACE");
 	}
 
 	@After

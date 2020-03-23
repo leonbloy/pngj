@@ -4,7 +4,6 @@ import java.io.Closeable;
 import java.io.File;
 import java.io.OutputStream;
 import java.util.List;
-import java.util.logging.Logger;
 
 import ar.com.hjg.pngj.chunks.ChunkCopyBehaviour;
 import ar.com.hjg.pngj.chunks.ChunkPredicate;
@@ -17,6 +16,8 @@ import ar.com.hjg.pngj.chunks.PngChunkPLTE;
 import ar.com.hjg.pngj.chunks.PngMetadata;
 import ar.com.hjg.pngj.pixels.PixelsWriter;
 import ar.com.hjg.pngj.pixels.PixelsWriterDefault;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Writes a PNG image, line by line.
@@ -60,7 +61,7 @@ public class PngWriter implements Closeable {
 
 	protected StringBuilder debuginfo = new StringBuilder();
 
-	private static final Logger LOGGER = Logger.getLogger(PngWriter.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PngWriter.class.getName());
 
 	/**
 	 * Opens a file for writing.
@@ -192,7 +193,7 @@ public class PngWriter implements Closeable {
 	 * Queues an ancillary chunk for writing.
 	 * <p>
 	 * If a "equivalent" chunk is already queued (see
-	 * {@link ChunkHelper#equivalent(PngChunk, PngChunk)), this overwrites it.
+	 * {@link ar.com.hjg.pngj.chunks.ChunkHelper#equivalent(PngChunk, PngChunk)), this overwrites it.
 	 * <p> The chunk will be written as late as possible, unless the priority is
 	 * set.
 	 * 
@@ -252,7 +253,7 @@ public class PngWriter implements Closeable {
 	 */
 	public void copyChunksFrom(ChunksList chunks, ChunkPredicate predicate) {
 		if (copyFromList != null && chunks != null)
-			LOGGER.warning("copyChunksFrom should only be called once");
+			LOGGER.warn("copyChunksFrom should only be called once");
 		if (predicate == null)
 			throw new PngjOutputException("copyChunksFrom requires a predicate");
 		this.copyFromList = chunks;
@@ -308,7 +309,7 @@ public class PngWriter implements Closeable {
 			try {
 				os.close();
 			} catch (Exception e) {
-				LOGGER.warning("Error closing writer " + e.toString());
+				LOGGER.warn("Error closing writer " + e.toString());
 			}
 	}
 
@@ -340,12 +341,12 @@ public class PngWriter implements Closeable {
 	 * This is kept for backwards compatibility, now the PixelsWriter object
 	 * should be used for setting compression/filtering options
 	 * 
-	 * @see PixelsWriter#setCompressionFactor(double)
+	 * @see PixelsWriter#setDeflaterCompLevel(Integer)
 	 * @param compLevel
 	 *            between 0 (no compression, max speed) and 9 (max compression)
 	 */
-	public void setCompLevel(int complevel) {
-		pixelsWriter.setDeflaterCompLevel(complevel);
+	public void setCompLevel(int compLevel) {
+		pixelsWriter.setDeflaterCompLevel(compLevel);
 	}
 
 	/**
@@ -435,8 +436,6 @@ public class PngWriter implements Closeable {
 	 * @param imginfo
 	 *            Might be different than that of this object (eg: APNG with
 	 *            subimages)
-	 * @param os
-	 *            Output stream
 	 * @return new PixelsWriter. Don't forget to call close() when discarding it
 	 */
 	protected PixelsWriter createPixelsWriter(ImageInfo imginfo) {

@@ -3,7 +3,6 @@ package ar.com.hjg.pngj;
 import java.io.Closeable;
 import java.io.File;
 import java.io.InputStream;
-import java.util.logging.Logger;
 import java.util.zip.Adler32;
 import java.util.zip.CRC32;
 
@@ -13,6 +12,8 @@ import ar.com.hjg.pngj.chunks.PngChunkFCTL;
 import ar.com.hjg.pngj.chunks.PngChunkFDAT;
 import ar.com.hjg.pngj.chunks.PngChunkIDAT;
 import ar.com.hjg.pngj.chunks.PngMetadata;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reads a PNG image (pixels and/or metadata) from a file or stream.
@@ -50,7 +51,7 @@ import ar.com.hjg.pngj.chunks.PngMetadata;
  * samples).
  */
 public class PngReader implements Closeable {
-	private static final Logger LOGGER = Logger.getLogger(PngReader.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PngReader.class.getName());
 
 	// some performance/defensive limits
 	/**
@@ -544,7 +545,7 @@ public class PngReader implements Closeable {
 			if (chunkseq != null)
 				chunkseq.close();
 		} catch (Exception e) {
-			LOGGER.warning("error closing chunk sequence:" + e.getMessage());
+			LOGGER.warn("error closing chunk sequence:" + e.getMessage());
 		}
 		if (streamFeeder != null)
 			streamFeeder.close();

@@ -2,21 +2,20 @@ package ar.com.hjg.pngj.test;
 
 import junit.framework.TestCase;
 
-import java.util.logging.Logger;
-
 import org.junit.Test;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineSet;
 import ar.com.hjg.pngj.ImageLineByte;
-import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderApng;
 import ar.com.hjg.pngj.PngReaderByte;
 import ar.com.hjg.pngj.chunks.PngChunkFCTL;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ApngTests {
-	private static final Logger LOGGER = Logger.getLogger(ApngTests.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(ApngTests.class.getName());
 
 	@Test
 	public void notApng() {

@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 import java.util.Random;
-import java.util.logging.Logger;
 
 import junit.framework.TestCase;
 
@@ -11,12 +10,13 @@ import org.junit.Test;
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.ImageInfo;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class SkipRowsTest extends PngjTest {
-	private final Logger LOGGER = Logger.getLogger(getClass().getName());
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass().getName());
 
 	boolean verbose = false;
 	private int cols = 1300, rows = 1300;

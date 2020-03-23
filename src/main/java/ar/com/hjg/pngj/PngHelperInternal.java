@@ -1,5 +1,8 @@
 package ar.com.hjg.pngj;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -7,7 +10,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.logging.Logger;
 
 /**
  * Some utility static methods for internal use.
@@ -17,7 +19,7 @@ import java.util.logging.Logger;
  */
 public final class PngHelperInternal {
 
-	private static final Logger LOGGER = Logger.getLogger(PngHelperInternal.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(PngHelperInternal.class.getName());
 
 	/**
 	 * Default charset, used internally by PNG for several things

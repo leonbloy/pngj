@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 import java.util.LinkedHashMap;
-import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
 import junit.framework.TestCase;
@@ -11,15 +10,16 @@ import org.junit.Before;
 import org.junit.Test;
 
 import ar.com.hjg.pngj.ImageLineInt;
-import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reads all (valid) PNG images from the test suite, loads as INT (unpacked) and
  * computes a CRC of all lines (bytes 0 and 1), comparing with precomputed
  */
 public class SuiteCrcsIntTest extends PngjTest {
-	private final Logger LOGGER = Logger.getLogger(getClass().getName());
+	private final Logger LOGGER = LoggerFactory.getLogger(getClass().getName());
 
 	LinkedHashMap<String, Long> crcs;// these were computed with old PNJG
 
@@ -45,7 +45,7 @@ public class SuiteCrcsIntTest extends PngjTest {
 					ok++;
 				}
 			} catch (Exception e) {
-				LOGGER.severe("exception with " + file + ": " + e.getMessage());
+				LOGGER.error("exception with " + file + ": " + e.getMessage());
 			}
 		}
 		TestCase.assertEquals("bad crcs:" + bad.toString(), 0, errs);

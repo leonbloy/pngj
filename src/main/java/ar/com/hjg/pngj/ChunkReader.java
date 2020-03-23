@@ -1,8 +1,8 @@
 package ar.com.hjg.pngj;
 
-import java.util.logging.Logger;
-
 import ar.com.hjg.pngj.chunks.ChunkRaw;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Parses a PNG chunk, consuming bytes in one of three modes:
@@ -10,7 +10,7 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
  * {@link ChunkReaderMode#SKIP}.
  * <p>
  * It calls {@link #chunkDone()} when done. Also calls
- * {@link #processData(byte[], int, int)} if <code>PROCESS</code> mode. Apart
+ * {@link #processData(int, byte[], int, int)} if <code>PROCESS</code> mode. Apart
  * from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG
  * general structure)
  * <p>
@@ -20,7 +20,7 @@ import ar.com.hjg.pngj.chunks.ChunkRaw;
  * (usually is) long lived.
  */
 public abstract class ChunkReader implements IBytesConsumer {
-	private static final Logger LOGGER = Logger.getLogger(ChunkReader.class.getName());
+	private static final Logger LOGGER = LoggerFactory.getLogger(ChunkReader.class.getName());
 
 	/**
 	 * see {@link ChunkReaderMode}
@@ -149,7 +149,7 @@ public abstract class ChunkReader implements IBytesConsumer {
 						}
 						chunkRaw.checkCrc(errorBehav == ErrorBehaviour.STRICT);
 					}
-					LOGGER.fine("Chunk done");
+					LOGGER.debug("Chunk done");
 					chunkDone();
 				}
 			}
@@ -170,7 +170,7 @@ public abstract class ChunkReader implements IBytesConsumer {
 	 * Determines if CRC should be checked. This should be called before
 	 * starting reading.
 	 * 
-	 * @see also #setErrorBehav(ErrorBehaviour)
+	 * @see #setErrorBehav(ErrorBehaviour)
 	 * 
 	 * @param crcCheck
 	 */
