@@ -1,27 +1,23 @@
 # PNGJ: Java library for PNG encoding
 
-PNGJ is a pure Java library for high performance encoding and decoding PNG images 
-
----
-
-NOTE: _I'm currently (2015-01-07) migrating this project to GitHub from https://code.google.com/p/pngj/ Thanks for your patience._ 
+PNGJ is a pure Java library for high performance reading and writing of PNG images 
 
 ---
 
 ## Downloads
 
-You can download the latest release from here http://hjg.com.ar/pngj/ or use the [Maven Central repository](http://search.maven.org/#browse%7C-1552047720)
+You can download the latest release from here http://hjg.com.ar/pngj/ or use the [Maven Central repository](https://search.maven.org/search?q=pngj)
 
 ## Main features
 
 * Very efficient in memory usage and speed
-* Pure Java (requires 6 or greater)
+* Pure Java (8 or greater)
 * Small and self contained. No dependencies on third party libraries, nor even on `java.awt.*` or `javax.imageio.*`
 * Runs on  __Android__ and __GAE__ (Google App Engine) 
 * Allows to read and write progressively, row by row. This means that you can process huge images without needing to load them fully in memory.
 * Reads and writes all PNG color models. Interlaced PNG is supported (though not welcomed) for reading.
 * Full support for __metadata__ handling ("chunks").
-* The format of the pixel data (for read and write) is extensible and very efficient (no double copies).
+* The format of the pixel data (for read and write) is extensible and efficient (no double copies).
 * Supports asyncronous reading and low level tweaking and extension in the reader.
 * Basic support for APNG reading
 * Open source (Apache licence). Available in Maven Central repository.

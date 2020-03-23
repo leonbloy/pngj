@@ -11,7 +11,7 @@ import java.util.zip.Adler32;
 import java.util.zip.Deflater;
 import java.util.zip.DeflaterOutputStream;
 
-import ar.com.hjg.pngj.IDatChunkWriter;
+import ar.com.hjg.pngj.IdatChunkWriter;
 import ar.com.hjg.pngj.PngjException;
 import ar.com.hjg.pngj.PngjOutputException;
 
@@ -126,20 +126,20 @@ public class CompressorStreamParallelDeflater extends CompressorStream {
         }
     }
 
-    public CompressorStreamParallelDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen) {
+    public CompressorStreamParallelDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen) {
         this(idatCw, maxBlockLen, totalLen, getSharedThreadPool(), Deflater.DEFAULT_COMPRESSION, Deflater.DEFAULT_STRATEGY);
     }
 
-    public CompressorStreamParallelDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen, int deflaterCompLevel, int deflaterStrategy) {
+    public CompressorStreamParallelDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen, int deflaterCompLevel, int deflaterStrategy) {
         this(idatCw, maxBlockLen, totalLen, getSharedThreadPool(), deflaterCompLevel, deflaterStrategy);
     }
 
-    public CompressorStreamParallelDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen, ExecutorService executor) {
+    public CompressorStreamParallelDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen, ExecutorService executor) {
         this(idatCw, maxBlockLen, totalLen, executor, Deflater.DEFAULT_COMPRESSION, Deflater.DEFAULT_STRATEGY);
     }
 
 
-    public CompressorStreamParallelDeflater(IDatChunkWriter idatCw, int maxBlockLen, long totalLen, ExecutorService executor, int deflaterCompLevel, int deflaterStrategy) {
+    public CompressorStreamParallelDeflater(IdatChunkWriter idatCw, int maxBlockLen, long totalLen, ExecutorService executor, int deflaterCompLevel, int deflaterStrategy) {
         super(idatCw, maxBlockLen, totalLen);
         this.executor = executor;
         int nthreads = (executor instanceof ThreadPoolExecutor) ? ((ThreadPoolExecutor) executor).getMaximumPoolSize() : Runtime.getRuntime().availableProcessors();
