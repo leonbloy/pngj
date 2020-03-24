@@ -16,6 +16,10 @@ scalacOptions ++= Seq("-deprecation", "-encoding", "UTF8")
 libraryDependencies += "org.scala-lang" % "scala-library" % scalaVersion.value % "test"
 */
 
+githubOwner := "alexdupre"
+githubRepository := "pngj"
+githubTokenSource := TokenSource.Environment("GITHUB_TOKEN") || TokenSource.GitConfig("github.token")
+
 parallelExecution in Test := false
 
 libraryDependencies ++= Seq(
