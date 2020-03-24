@@ -1,12 +1,6 @@
 package ar.com.hjg.pngj.test;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
@@ -247,7 +241,7 @@ public class TestSupport {
 		try {
 			if (!f.isAbsolute())
 				f = new File(getResourcesDir(), f.getPath());
-			return new FileInputStream(f);
+			return new BufferedInputStream(new FileInputStream(f));
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}
@@ -277,7 +271,7 @@ public class TestSupport {
 		try {
 			if (!f.isAbsolute())
 				f = new File(getResourcesDir(), f.getPath());
-			return new FileOutputStream(f);
+			return new BufferedOutputStream(new FileOutputStream(f));
 		} catch (FileNotFoundException e) {
 			throw new RuntimeException(e);
 		}

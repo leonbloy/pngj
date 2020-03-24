@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj.misc;
 
 import java.awt.image.BufferedImage;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -414,7 +415,7 @@ public class WriterFiltersPerformanceUtil {
 				// : null;
 				dest = File.createTempFile(f.getName(), "");
 				BufferedImage img = ImageIO.read(f);
-				OutputStream nos = dest != null ? new FileOutputStream(dest) : new NullOs();
+				OutputStream nos = dest != null ? new BufferedOutputStream(new FileOutputStream(dest)) : new NullOs();
 				ImageOutputStream ios = ImageIO.createImageOutputStream(nos);
 				long t0 = System.currentTimeMillis();
 				iw.setOutput(ios);

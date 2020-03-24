@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj.samples;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -24,7 +25,7 @@ public class CreateHuge {
 	 */
 	public static void createHuge(String filename, final int cols, final int rows) throws Exception {
 		OutputStream os = filename == null ? TestSupport.createNullOutputStream()
-				: new FileOutputStream(new File(filename));
+				:new BufferedOutputStream( new FileOutputStream(new File(filename)));
 		PngWriter png = new PngWriter(os, new ImageInfo(cols, rows, 8, false));
 		((PixelsWriterDefault) png.getPixelsWriter()).setFilterType(FilterType.FILTER_AVERAGE);
 		png.setIdatMaxSize(0x10000);

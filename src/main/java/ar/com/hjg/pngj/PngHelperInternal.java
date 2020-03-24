@@ -3,11 +3,7 @@ package ar.com.hjg.pngj;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
 
@@ -272,9 +268,9 @@ public final class PngHelperInternal {
 	}
 
 	public static InputStream istreamFromFile(File f) {
-		FileInputStream is;
+		InputStream is;
 		try {
-			is = new FileInputStream(f);
+			is = new BufferedInputStream(new FileInputStream(f));
 		} catch (Exception e) {
 			throw new PngjInputException("Could not open " + f, e);
 		}
@@ -286,13 +282,11 @@ public final class PngHelperInternal {
 	}
 
 	static OutputStream ostreamFromFile(File f, boolean allowoverwrite) {
-		// In old versions of GAE (Google App Engine) this could trigger
-		// issues because java.io.FileOutputStream was not whitelisted.
-		java.io.FileOutputStream os = null;
+		OutputStream os = null;
 		if (f.exists() && !allowoverwrite)
 			throw new PngjOutputException("File already exists: " + f);
 		try {
-			os = new java.io.FileOutputStream(f);
+			os = new BufferedOutputStream(new FileOutputStream(f));
 		} catch (Exception e) {
 			throw new PngjInputException("Could not open for write" + f, e);
 		}

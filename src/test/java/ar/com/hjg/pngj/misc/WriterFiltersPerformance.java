@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj.misc;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -60,7 +61,7 @@ public class WriterFiltersPerformance {
 			}
 			imgInfo = reader.imgInfo;
 
-			OutputStream os = writeToFile ? new FileOutputStream(tempFile) : new NullOs();
+			OutputStream os = writeToFile ? new BufferedOutputStream(new FileOutputStream(tempFile)) : new NullOs();
 			PngWriter writer = writerFactory.createPngWriter(os, reader.imgInfo);
 			writer.copyChunksFrom(reader.getChunksList());
 			long t0 = System.currentTimeMillis();

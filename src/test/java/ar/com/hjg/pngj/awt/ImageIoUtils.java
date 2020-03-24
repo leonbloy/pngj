@@ -1,12 +1,7 @@
 package ar.com.hjg.pngj.awt;
 
 import java.awt.image.BufferedImage;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -122,9 +117,9 @@ public class ImageIoUtils {
 	}
 
 	public static void writePng(File f, BufferedImage bi, boolean preferBetter) {
-		FileOutputStream fos = null;
+		OutputStream fos = null;
 		try {
-			fos = new FileOutputStream(f);
+			fos = new BufferedOutputStream(new FileOutputStream(f));
 			writePng(fos, bi, preferBetter);
 		} catch (RuntimeException e) {
 			throw e;
@@ -153,9 +148,9 @@ public class ImageIoUtils {
 	}
 
 	public static BufferedImage readPng(File f, boolean preferBetter) {
-		FileInputStream fis = null;
+		InputStream fis = null;
 		try {
-			fis = new FileInputStream(f);
+			fis = new BufferedInputStream(new FileInputStream(f));
 			return readPng(fis, preferBetter);
 		} catch (RuntimeException e) {
 			throw e;

@@ -1,8 +1,6 @@
 package ar.com.hjg.pngj.cli;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 
 import ar.com.hjg.pngj.ChunkReader;
@@ -85,7 +83,7 @@ public class ApngExtractFrames {
 			this.orig = file;
 		}
 
-		FileOutputStream fo = null;
+		OutputStream fo = null;
 		File dest;
 		ImageInfo frameInfo;
 		int numframe = -1;
@@ -143,7 +141,7 @@ public class ApngExtractFrames {
 			if (fo != null)
 				endFile();
 			dest = createOutputName();
-			fo = new FileOutputStream(dest);
+			fo = new BufferedOutputStream(new FileOutputStream(dest));
 			fo.write(PngHelperInternal.getPngIdSignature());
 			PngChunkIHDR ihdr = new PngChunkIHDR(frameInfo);
 			ihdr.createRawChunk().writeChunk(fo);

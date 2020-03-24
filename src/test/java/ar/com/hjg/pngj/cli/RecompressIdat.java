@@ -1,10 +1,6 @@
 package ar.com.hjg.pngj.cli;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Arrays;
 import java.util.List;
 import java.util.zip.Deflater;
@@ -80,8 +76,8 @@ public class RecompressIdat {
 		File dest = file1.equals(file2) ? new File(file2.getAbsolutePath() + ".tmp_pngj") : file2;
 		long[] sizes;
 		try {
-			FileInputStream fin = new FileInputStream(file1);
-			OutputStream fout = nullOutput ? new NullOs() : new FileOutputStream(dest);
+			InputStream fin = new BufferedInputStream(new FileInputStream(file1));
+			OutputStream fout = nullOutput ? new NullOs() : new BufferedOutputStream(new FileOutputStream(dest));
 			sizes = recompressPng(fin, fout, clevel, strat, !fastMode);
 		} catch (Exception e) {
 			throw new PngjException("Fatal error processing " + file1 + " -> " + file2, e);

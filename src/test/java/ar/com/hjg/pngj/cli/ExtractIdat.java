@@ -1,11 +1,6 @@
 package ar.com.hjg.pngj.cli;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -66,8 +61,8 @@ public class ExtractIdat {
 
 	private void doitForFile(File file1, File file2) {
 		try {
-			FileInputStream fin = new FileInputStream(file1);
-			OutputStream fout = new FileOutputStream(file2);
+			InputStream fin = new BufferedInputStream(new FileInputStream(file1));
+			OutputStream fout = new BufferedOutputStream(new FileOutputStream(file2));
 			extractIdat(fin, fout, stripFilterByte, !fastMode);
 		} catch (Exception e) {
 			throw new PngjException("Fatal error processing " + file1 + " -> " + file2, e);

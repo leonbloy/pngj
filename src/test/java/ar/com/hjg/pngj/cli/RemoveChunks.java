@@ -1,10 +1,6 @@
 package ar.com.hjg.pngj.cli;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -95,8 +91,8 @@ public class RemoveChunks {
 	public void doitForFile(File file1, File file2) throws Exception {// warning: file1 can be the
 		// same as file2 (in place)
 		File dest = file1.equals(file2) ? new File(file2.getAbsolutePath() + ".tmp_pngj") : file2;
-		FileInputStream fin = new FileInputStream(file1);
-		FileOutputStream fout = new FileOutputStream(dest);
+		InputStream fin = new BufferedInputStream(new FileInputStream(file1));
+		OutputStream fout = new BufferedOutputStream(new FileOutputStream(dest));
 		ChunkSeqReaderRemoveChunks c = new ChunkSeqReaderRemoveChunks(fout);
 		c.quiet = quietMode;
 		c.chunksIds.addAll(chunks);

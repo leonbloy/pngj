@@ -1,9 +1,6 @@
 package ar.com.hjg.pngj.samples;
 
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.io.OutputStream;
+import java.io.*;
 
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkReader;
@@ -77,7 +74,7 @@ public class NgSampleInsertChunk {
 
 	public static void insert(String orig, String to, boolean beforeIdat) throws Exception {
 		NgSampleInsertChunk c = new NgSampleInsertChunk(new FileInputStream(orig));
-		FileOutputStream oss = new FileOutputStream(to);
+		OutputStream oss = new BufferedOutputStream(new FileOutputStream(to));
 		c.copyInsertingText(oss, "Hi!!! after idat", false);
 		oss.close();
 		System.out.println("inserted text " + orig + " -> " + to + " " + (beforeIdat ? " before idat" : "after idat"));

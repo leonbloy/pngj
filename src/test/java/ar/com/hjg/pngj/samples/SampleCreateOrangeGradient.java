@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj.samples;
 
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.OutputStream;
@@ -44,7 +45,7 @@ public class SampleCreateOrangeGradient {
 		File file = new File(args[0]);
 		if (file.exists())
 			throw new Exception("Cowardly refusing to overwrite " + file);
-		create(new FileOutputStream(file), cols, rows);
+		create(new BufferedOutputStream(new FileOutputStream(file)), cols, rows);
 		System.out.println(file + " created");
 	}
 

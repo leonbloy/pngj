@@ -2,7 +2,6 @@ package ar.com.hjg.pngj.test;
 
 import junit.framework.TestCase;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 import org.junit.Rule;

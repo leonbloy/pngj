@@ -1,9 +1,6 @@
 package ar.com.hjg.pngj.samples;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.OutputStream;
+import java.io.*;
 import java.util.Random;
 
 import ar.com.hjg.pngj.FilterType;
@@ -22,7 +19,7 @@ public class CreateVeryHuge {
 	public static void createVeryHuge(String filename, final int cols, final int rows) {
 		OutputStream os = null;
 		try {
-			os = filename == null ? TestSupport.createNullOutputStream() : new FileOutputStream(new File(filename));
+			os = filename == null ? TestSupport.createNullOutputStream() : new BufferedOutputStream(new FileOutputStream(new File(filename)));
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		}
