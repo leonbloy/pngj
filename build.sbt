@@ -2,7 +2,7 @@ organization := "ar.com.hjg"
 
 name := "PNGJ"
 
-version := "2.2.0-SNAPSHOT"
+version := "2.1.2"
 
 javacOptions ++= Seq("-Xlint:deprecation", "-encoding", "UTF8")
 
