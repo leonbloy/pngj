@@ -8,7 +8,6 @@ import ar.com.hjg.pngj.PngHelperInternal;
  * <p>
  * see
  * https://wiki.mozilla.org/APNG_Specification#.60fcTL.60:_The_Frame_Control_Chunk
- * <p>
  */
 public class PngChunkFCTL extends PngChunkMultiple {
 	public final static String ID = "fcTL";

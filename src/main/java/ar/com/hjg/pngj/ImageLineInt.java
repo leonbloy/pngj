@@ -13,7 +13,7 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 	 * <p>
 	 * Each <code>int</code> is a "sample" (one for channel), (0-255 or 0-65535)
 	 * in the corresponding PNG sequence: <code>R G B R G B...</code> or
-	 * <code>R G B A R G B A...</tt> or <code>g g g ...</code> or
+	 * <code>R G B A R G B A...</code> or <code>g g g ...</code> or
 	 * <code>i i i</code> (palette index)
 	 * <p>
 	 * For bitdepth=1/2/4 the value is not scaled (hence, eg, if bitdepth=2 the

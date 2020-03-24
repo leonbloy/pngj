@@ -8,23 +8,24 @@ package ar.com.hjg.pngj;
  * <ul>
  * <li>Cursor-like: stores only one line, which is implicitly moved when
  * requested</li>
- * <li>All lines: all lines stored as an array of <tt>IImageLine</tt></li>
+ * <li>All lines: all lines stored as an array of <code>IImageLine</code></li>
  * <li>Subset of lines: eg, only first 3 lines, or odd numbered lines. Or a band
- * of neighbours lines that is moved like a cursor.</li> The ImageLine that
+ * of neighbours lines that is moved like a cursor.</li>
+ * </ul>
+ * The ImageLine that
  * PngReader returns is hosted by a IImageLineSet (this abstraction allows the
  * implementation to deal with interlaced images cleanly) but the library user
  * does not normally needs to know that (or rely on that), except for the
  * {@link PngReader#readRows()} method.
- * </ul>
  */
 public interface IImageLineSet<T extends IImageLine> {
 
 	/**
-	 * Asks for imageline corresponding to row <tt>n</tt> in the original image
+	 * Asks for imageline corresponding to row <code>n</code> in the original image
 	 * (zero based). This can trigger side effects in this object (eg, advance a
 	 * cursor, set current row number...) In some scenarios, this should be
 	 * consider as alias to (pseudocode)
-	 * <tt>positionAtLine(n); getCurrentLine();</tt>
+	 * <code>positionAtLine(n); getCurrentLine();</code>
 	 * <p>
 	 * Throws exception if not available. The caller is supposed to know what
 	 * he/she is doing
@@ -42,7 +43,7 @@ public interface IImageLineSet<T extends IImageLine> {
 	public IImageLine getImageLineRawNum(int n);
 
 	/**
-	 * Returns true if the set contain row <tt>n</tt> (in the original
+	 * Returns true if the set contain row <code>n</code> (in the original
 	 * image,zero based) currently allocated.
 	 * <p>
 	 * If it's a single-cursor, this should return true only if it's positioned

@@ -2,7 +2,7 @@
 <h1> PNGJ: a PNG Java library</h1>
 
 PNGJ is a library to read and write *PNG* images. 
-It's fully written in Java, without any dependencies on  <tt>javax.imageio</tt>, AWT or any third party libraries.
+It's fully written in Java, without any dependencies on  <code>javax.imageio</code>, AWT or any third party libraries.
 
 It provides a simple API for progressive (sequential line-oriented) reading and writing. 
 It's specially suitable for huge images, which one does not want to  load fully in memory, eg. (as a !BufferedImage).

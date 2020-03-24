@@ -136,7 +136,7 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 	}
 
 	/**
-	 * Trys to feeds exactly <tt>len</tt> bytes, calling
+	 * Trys to feeds exactly <code>len</code> bytes, calling
 	 * {@link #consume(byte[], int, int)} retrying if necessary.
 	 * 
 	 * This should only be used in callback mode

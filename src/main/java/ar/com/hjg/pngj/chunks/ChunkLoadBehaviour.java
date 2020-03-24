@@ -2,8 +2,6 @@ package ar.com.hjg.pngj.chunks;
 
 /**
  * What to do with ancillary (non-critical) chunks when reading.
- * <p>
- * 
  */
 public enum ChunkLoadBehaviour {
 	/**

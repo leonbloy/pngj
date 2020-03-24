@@ -127,7 +127,7 @@ public class BufferedStreamFeeder implements Closeable {
 	 * 
 	 * If EOF is reached, sets eof=TRUE and calls close()
 	 * 
-	 * Find in <tt>pendinglen</tt> the amounts of bytes read.
+	 * Find in <code>pendinglen</code> the amounts of bytes read.
 	 * 
 	 * If IOException, throws a PngjInputException
 	 */
@@ -171,7 +171,7 @@ public class BufferedStreamFeeder implements Closeable {
 	/**
 	 * Closes this object.
 	 * 
-	 * Sets EOF=true, and closes the stream if <tt>closeStream</tt> is true
+	 * Sets EOF=true, and closes the stream if <code>closeStream</code> is true
 	 * 
 	 * This can be called internally, or from outside.
 	 * 

@@ -193,7 +193,7 @@ public class PngWriter implements Closeable {
 	 * Queues an ancillary chunk for writing.
 	 * <p>
 	 * If a "equivalent" chunk is already queued (see
-	 * {@link ar.com.hjg.pngj.chunks.ChunkHelper#equivalent(PngChunk, PngChunk)), this overwrites it.
+	 * {@link ar.com.hjg.pngj.chunks.ChunkHelper#equivalent(PngChunk, PngChunk)}, this overwrites it.
 	 * <p> The chunk will be written as late as possible, unless the priority is
 	 * set.
 	 * 

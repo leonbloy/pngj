@@ -7,7 +7,7 @@ import ar.com.hjg.pngj.PngjException;
 /**
  * bKGD Chunk.
  * <p>
- * see {@link http://www.w3.org/TR/PNG/#11bKGD}
+ * see http://www.w3.org/TR/PNG/#11bKGD
  * <p>
  * This chunk structure depends on the image type
  */

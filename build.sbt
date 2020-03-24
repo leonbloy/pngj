@@ -1,10 +1,11 @@
-organization := "ar.com.hjg"
+organization := "com.alexdupre"
 
 name := "PNGJ"
 
 version := "2.1.2"
 
 javacOptions ++= Seq("-Xlint:deprecation", "-encoding", "UTF8")
+javacOptions in (Compile, doc) := Seq("-encoding", "UTF8")
 
 crossPaths := false
 

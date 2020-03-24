@@ -8,7 +8,6 @@ import ar.com.hjg.pngj.PngHelperInternal;
  * <p>
  * see
  * https://wiki.mozilla.org/APNG_Specification#.60acTL.60:_The_Animation_Control_Chunk
- * <p>
  */
 public class PngChunkACTL extends PngChunkSingle {
 	public final static String ID = "acTL";

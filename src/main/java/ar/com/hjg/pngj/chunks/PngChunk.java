@@ -10,7 +10,7 @@ import ar.com.hjg.pngj.PngjExceptionInternal;
  * <p>
  * See
  * <a href="http://www.libpng.org/pub/png/spec/1.2/PNG-Chunks.html">http://www
- * .libpng.org/pub/png/spec/1.2/PNG-Chunks .html</a> </a>
+ * .libpng.org/pub/png/spec/1.2/PNG-Chunks .html</a>
  * <p>
  * Concrete classes should extend {@link PngChunkSingle} or
  * {@link PngChunkMultiple}

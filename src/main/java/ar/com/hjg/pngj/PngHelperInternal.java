@@ -11,7 +11,6 @@ import java.nio.charset.StandardCharsets;
  * Some utility static methods for internal use.
  * <p>
  * Client code should not normally use this class
- * <p>
  */
 public final class PngHelperInternal {
 

@@ -14,9 +14,9 @@ import org.slf4j.LoggerFactory;
  * from thas, it's totally agnostic (it doesn't know about IDAT chunks, or PNG
  * general structure)
  * <p>
- * The object wraps a <tt>ChunkRaw</tt> instance (content allocated and filled
+ * The object wraps a <code>ChunkRaw</code> instance (content allocated and filled
  * only if BUFFER mode). It should be short lived (one instance created for each
- * chunk, and discarded after reading), but the wrapped <tt>chunkRaw</tt> can be
+ * chunk, and discarded after reading), but the wrapped <code>chunkRaw</code> can be
  * (usually is) long lived.
  */
 public abstract class ChunkReader implements IBytesConsumer {

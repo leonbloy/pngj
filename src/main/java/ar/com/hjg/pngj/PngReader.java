@@ -181,7 +181,7 @@ public class PngReader implements Closeable {
 
 	/**
 	 * Constructs a PngReader opening a file. Sets
-	 * <tt>shouldCloseStream=true</tt>, so that the stream will be closed with
+	 * <code>shouldCloseStream=true</code>, so that the stream will be closed with
 	 * this object.
 	 * 
 	 * @param file
@@ -507,7 +507,7 @@ public class PngReader implements Closeable {
 	}
 
 	/**
-	 * Reads till end of PNG stream and calls <tt>close()</tt>
+	 * Reads till end of PNG stream and calls <code>close()</code>
 	 * 
 	 * This should normally be called after reading the pixel data, to read the
 	 * trailing chunks and close the stream. But it can be called at anytime.
@@ -515,9 +515,9 @@ public class PngReader implements Closeable {
 	 * (IDAT) if still pending.
 	 * 
 	 * If you want to read all metadata skipping pixels,
-	 * <tt>readSkippingAllRows()</tt> is a little more efficient.
+	 * <code>readSkippingAllRows()</code> is a little more efficient.
 	 * 
-	 * If you want to abort immediately, call instead <tt>close()</tt>
+	 * If you want to abort immediately, call instead <code>close()</code>
 	 */
 	public void end() {
 		try {
