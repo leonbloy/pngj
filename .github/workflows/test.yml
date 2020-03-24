@@ -19,3 +19,6 @@ jobs:
           java-version: 1.8
       - name: Run tests
         run: sbt test
+
+env:
+  GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
