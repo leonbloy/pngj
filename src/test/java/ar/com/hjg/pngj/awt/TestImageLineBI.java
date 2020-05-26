@@ -117,7 +117,9 @@ public class TestImageLineBI {
 		delOnExit(dest);
 		delOnExit(dest2);
 		{
+			System.out.println(ori);
 			PngReaderBI png = new PngReaderBI(ori);
+			System.out.println(png.imgInfo.rows);
 			int offset = 1, step = 2, nlines = (png.imgInfo.rows - offset - 1) / step + 1;
 			// dest.deleteOnExit();
 			BufferedImage img = png.readAll(nlines, offset, step); // 10 lines, starting from 1, skipping 1
