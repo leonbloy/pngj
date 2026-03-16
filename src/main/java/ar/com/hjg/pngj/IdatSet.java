@@ -52,6 +52,9 @@ public class IdatSet extends DeflatedChunksSet {
 		this.imgInfo = iminfo;
 		this.deinterlacer = deinterlacer;
 		this.rowinfo = new RowInfo(iminfo, deinterlacer);
+		int bufSize = iminfo.bytesPerRow + 1;
+		rowUnfiltered = new byte[bufSize];
+		rowUnfilteredPrev = new byte[bufSize];
 		LOGGER.fine("Creating IDAT set ");
 	}
 
@@ -65,10 +68,6 @@ public class IdatSet extends DeflatedChunksSet {
 
 	// nbytes: NOT including the filter byte. leaves result in rowUnfiltered
 	protected void unfilterRow(int nbytes) {
-		if (rowUnfiltered == null || rowUnfiltered.length < row.length) {
-			rowUnfiltered = new byte[row.length];
-			rowUnfilteredPrev = new byte[row.length];
-		}
 		if (rowinfo.rowNsubImg == 0)
 			Arrays.fill(rowUnfiltered, (byte) 0); // see swap that follows
 		// swap
@@ -104,26 +103,39 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	private void unfilterRowAverage(final int nbytes) {
-		int i, j, x;
-		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= nbytes; i++, j++) {
-			x = j > 0 ? (rowUnfiltered[j] & 0xff) : 0;
-			rowUnfiltered[i] = (byte) (row[i] + (x + (rowUnfilteredPrev[i] & 0xFF)) / 2);
+		int i, j;
+		// first bytesPixel bytes: left=0
+		for (i = 1; i <= imgInfo.bytesPixel; i++) {
+			rowUnfiltered[i] = (byte) (row[i] + ((rowUnfilteredPrev[i] & 0xFF) >>> 1));
+		}
+		// remaining bytes: both left and up available
+		for (j = 1, i = imgInfo.bytesPixel + 1; i <= nbytes; i++, j++) {
+			rowUnfiltered[i] = (byte) (row[i] + (((rowUnfiltered[j] & 0xFF) + (rowUnfilteredPrev[i] & 0xFF)) >>> 1));
 		}
 	}
 
 	private void unfilterRowNone(final int nbytes) {
-		for (int i = 1; i <= nbytes; i++) {
-			rowUnfiltered[i] = (byte) (row[i]);
-		}
+		System.arraycopy(row, 1, rowUnfiltered, 1, nbytes);
 	}
 
 	private void unfilterRowPaeth(final int nbytes) {
-		int i, j, x, y;
-		for (j = 1 - imgInfo.bytesPixel, i = 1; i <= nbytes; i++, j++) {
-			x = j > 0 ? (rowUnfiltered[j] & 0xFF) : 0;
-			y = j > 0 ? (rowUnfilteredPrev[j] & 0xFF) : 0;
-			rowUnfiltered[i] = (byte) (row[i]
-					+ PngHelperInternal.filterPaethPredictor(x, rowUnfilteredPrev[i] & 0xFF, y));
+		int i, j;
+		// first bytesPixel bytes: left=0, upleft=0
+		for (i = 1; i <= imgInfo.bytesPixel; i++) {
+			// paeth predictor with a=0, c=0 always returns b (=up)
+			rowUnfiltered[i] = (byte) (row[i] + (rowUnfilteredPrev[i] & 0xFF));
+		}
+		// remaining bytes: all neighbors available, inline paeth predictor
+		for (j = 1; i <= nbytes; i++, j++) {
+			final int a = rowUnfiltered[j] & 0xFF;
+			final int b = rowUnfilteredPrev[i] & 0xFF;
+			final int c = rowUnfilteredPrev[j] & 0xFF;
+			final int p = a + b - c;
+			final int pa = p >= a ? p - a : a - p;
+			final int pb = p >= b ? p - b : b - p;
+			final int pc = p >= c ? p - c : c - p;
+			final int pred = (pa <= pb && pa <= pc) ? a : (pb <= pc) ? b : c;
+			rowUnfiltered[i] = (byte) (row[i] + pred);
 		}
 	}
 
@@ -138,6 +150,10 @@ public class IdatSet extends DeflatedChunksSet {
 	}
 
 	private void unfilterRowUp(final int nbytes) {
+		if (VectorSupport.isAvailable()) {
+			VectorizedFilters.unfilterUp(row, rowUnfilteredPrev, rowUnfiltered, nbytes);
+			return;
+		}
 		for (int i = 1; i <= nbytes; i++) {
 			rowUnfiltered[i] = (byte) (row[i] + rowUnfilteredPrev[i]);
 		}

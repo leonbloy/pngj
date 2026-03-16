@@ -1,12 +1,13 @@
 package ar.com.hjg.pngj.pixels;
 
 import java.nio.ByteOrder;
+import java.util.Arrays;
 
 /**
  * This estimator actually uses the LZ4 compression algorithm, and hopes that
  * it's well correlated with Deflater. It's about 3 to 4 times faster than
  * Deflater.
- * 
+ *
  * This is a modified heavily trimmed version of the
  * net.jpountz.lz4.LZ4JavaSafeCompressor class plus some methods from other
  * classes from LZ4 Java library: https://github.com/jpountz/lz4-java ,
@@ -14,9 +15,8 @@ import java.nio.ByteOrder;
  */
 final public class DeflaterEstimatorLz4 {
 
-	/**
-	 * This object is stateless, it's thread safe and can be reused
-	 */
+	private final short[] hashTable = new short[HASH_TABLE_SIZE_64K];
+
 	public DeflaterEstimatorLz4() {
 	}
 
@@ -46,7 +46,8 @@ final public class DeflaterEstimatorLz4 {
 		while (len > 0) {
 			if (len > stride)
 				len = stride;
-			bytesOut += compress64k(src, srcOff, len);
+			Arrays.fill(hashTable, (short) 0);
+			bytesOut += compress64k(hashTable, src, srcOff, len);
 			srcOff += len;
 			bytesIn += len;
 			len = srcLen - bytesIn;
@@ -90,7 +91,7 @@ final public class DeflaterEstimatorLz4 {
 	static final int HASH_TABLE_SIZE_HC = 1 << HASH_LOG_HC;
 	static final int OPTIMAL_ML = ML_MASK - 1 + MIN_MATCH;
 
-	static int compress64k(byte[] src, int srcOff, int srcLen) {
+	static int compress64k(short[] hashTable, byte[] src, int srcOff, int srcLen) {
 		final int srcEnd = srcOff + srcLen;
 		final int srcLimit = srcEnd - LAST_LITERALS;
 		final int mflimit = srcEnd - MF_LIMIT;
@@ -100,8 +101,6 @@ final public class DeflaterEstimatorLz4 {
 		int anchor = sOff;
 
 		if (srcLen >= MIN_LENGTH) {
-
-			final short[] hashTable = new short[HASH_TABLE_SIZE_64K];
 
 			++sOff;
 

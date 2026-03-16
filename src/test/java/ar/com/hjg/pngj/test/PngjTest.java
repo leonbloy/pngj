@@ -2,15 +2,15 @@ package ar.com.hjg.pngj.test;
 
 import java.util.logging.Logger;
 
-import org.junit.After;
-import org.junit.BeforeClass;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeAll;
 
 public class PngjTest {
 
 	/** change to false if you want to inspect the temporary files */
 	protected boolean clearTempFiles = true;
 
-	@BeforeClass
+	@BeforeAll
 	public static void setup() {
 		System.setProperty("java.util.logging.config.file",
 				ClassLoader.getSystemResource("logging.properties").getPath());
@@ -25,7 +25,7 @@ public class PngjTest {
 		log.fine("Testing log FINE");
 	}
 
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (clearTempFiles) {
 			TestSupport.cleanAll();

@@ -4,9 +4,8 @@ import java.io.File;
 import java.util.Random;
 import java.util.logging.Logger;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
@@ -84,8 +83,8 @@ public class SkipRowsTest extends PngjTest {
 			chunks2 = pngr.getChunksList().toStringFull();
 			LOGGER.info(t0 + " msecs (skipping) " + chunks2);
 		}
-		TestCase.assertEquals(chunks2, chunks1);
-		TestCase.assertEquals(chunks3, chunks1);
+		Assertions.assertEquals(chunks2, chunks1);
+		Assertions.assertEquals(chunks3, chunks1);
 		if (verbose)
 			System.out.println(chunks1);
 	}

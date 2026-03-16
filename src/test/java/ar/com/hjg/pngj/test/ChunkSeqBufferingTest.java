@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkReader;
@@ -85,7 +84,7 @@ public class ChunkSeqBufferingTest extends PngjTest {
 		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES), TestSupport.ostream(dest), true);
 		String s = TestSupport.getChunksSummary(dest);
 		// PngHelperInternal.LOGGER.info(s);
-		TestCase.assertEquals(
+		Assertions.assertEquals(
 				"IHDR[13] pHYs[9] tEXt[16] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] IEND[0] ", s);
 	}
 
@@ -95,11 +94,11 @@ public class ChunkSeqBufferingTest extends PngjTest {
 		new InsertChunk(TestSupport.istream(TestSupport.PNG_TEST_STRIPES), TestSupport.ostream(dest), false);
 		String s = TestSupport.getChunksSummary(dest);
 		// PngHelperInternal.LOGGER.info(s);
-		TestCase.assertEquals(
+		Assertions.assertEquals(
 				"IHDR[13] pHYs[9] IDAT[2000] IDAT[2000] IDAT[2000] IDAT[610] tIME[7] iTXt[30] tEXt[16] IEND[0] ", s);
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 	}

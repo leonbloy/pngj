@@ -1,26 +1,53 @@
 package ar.com.hjg.pngj;
 
+import java.io.IOException;
 import java.io.OutputStream;
+import java.nio.ByteBuffer;
+import java.nio.channels.Channels;
+import java.nio.channels.WritableByteChannel;
+import java.util.zip.CRC32;
 
 import ar.com.hjg.pngj.chunks.ChunkHelper;
-import ar.com.hjg.pngj.chunks.ChunkRaw;
 
 /**
- * Outputs a sequence of IDAT-like chunk, that is filled progressively until the
- * max chunk length is reached (or until flush())
+ * Outputs a sequence of IDAT-like chunks, filled progressively until the max
+ * chunk length is reached (or until flush()).
+ *
+ * Uses a direct {@link ByteBuffer} internally so that:
+ * <ul>
+ *   <li>Deflater can write compressed output straight to off-heap memory via
+ *       {@link #getWritableSlice()} + {@link java.util.zip.Deflater#deflate(ByteBuffer)}.</li>
+ *   <li>Chunks are sent to the underlying stream via a {@link WritableByteChannel}.
+ *       When the stream is a {@link java.io.FileOutputStream}, Java promotes the
+ *       channel to a {@link java.nio.channels.FileChannel}, so the direct buffer
+ *       goes to the OS in a single syscall without an intermediate heap copy.</li>
+ * </ul>
  */
 public class IdatChunkWriter {
 
-	private static final int MAX_LEN_DEFAULT = 32768; // 32K rather arbitrary - data only
+	private static final int MAX_LEN_DEFAULT = 32768; // 32 K — data only
 
 	private final OutputStream outputStream;
+	/** For FileOutputStream this is a FileChannel; otherwise a generic wrapper. */
+	private final WritableByteChannel channel;
 	private final int maxChunkLen;
-	private byte[] buf;
+
+	/**
+	 * Off-heap buffer that holds one in-progress IDAT chunk's payload.
+	 * CompressorStreamDeflater deflates directly into this buffer via
+	 * {@link #getWritableSlice()}.
+	 */
+	private ByteBuffer directBuf;
 
 	private int offset = 0;
 	private int availLen;
-	private long totalBytesWriten = 0; // including header+crc
+	private long totalBytesWriten = 0;
 	private int chunksWriten = 0;
+
+	// Pre-allocated framing buffers — only touched once per flush, not per row.
+	private final ByteBuffer headerBuf = ByteBuffer.allocateDirect(8); // length(4) + type(4)
+	private final ByteBuffer crcBuf = ByteBuffer.allocateDirect(4);
+	private final CRC32 crc = new CRC32();
 
 	public IdatChunkWriter(OutputStream outputStream) {
 		this(outputStream, 0);
@@ -28,18 +55,16 @@ public class IdatChunkWriter {
 
 	public IdatChunkWriter(OutputStream outputStream, int maxChunkLength) {
 		this.outputStream = outputStream;
+		this.channel = Channels.newChannel(outputStream);
 		this.maxChunkLen = maxChunkLength > 0 ? maxChunkLength : MAX_LEN_DEFAULT;
-		buf = new byte[maxChunkLen];
-		availLen = maxChunkLen - offset;
+		this.directBuf = ByteBuffer.allocateDirect(this.maxChunkLen);
+		this.availLen = this.maxChunkLen;
 		postReset();
 	}
 
+	/** Kept for source compatibility; {@code b} now only determines chunk size. */
 	public IdatChunkWriter(OutputStream outputStream, byte[] b) {
-		this.outputStream = outputStream;
-		this.buf = b != null ? b : new byte[MAX_LEN_DEFAULT];
-		this.maxChunkLen = b.length;
-		availLen = maxChunkLen - offset;
-		postReset();
+		this(outputStream, b != null ? b.length : 0);
 	}
 
 	protected byte[] getChunkId() {
@@ -47,21 +72,48 @@ public class IdatChunkWriter {
 	}
 
 	/**
-	 * Writes a chhunk if there is more than minLenToWrite.
-	 * 
-	 * This is normally called internally, but can be called explicitly to force
-	 * flush.
+	 * Writes a chunk if there is more than minLenToWrite bytes pending.
+	 * Normally called internally, but can be called explicitly to force flush.
 	 */
 	public final void flush() {
 		if (offset > 0 && offset >= minLenToWrite()) {
-			ChunkRaw c = new ChunkRaw(offset, getChunkId(), false);
-			c.data = buf;
-			c.writeChunk(outputStream);
-			totalBytesWriten += c.len + 12;
+			writeChunkDirect(offset);
+			totalBytesWriten += offset + 12;
 			chunksWriten++;
 			offset = 0;
 			availLen = maxChunkLen;
+			directBuf.clear();
 			postReset();
+		}
+	}
+
+	/** Writes a PNG chunk (length + type + data + CRC) via the NIO channel. */
+	private void writeChunkDirect(int dataLen) {
+		byte[] id = getChunkId();
+
+		// CRC covers chunk type (4 bytes) + chunk data — matches PNG spec.
+		crc.reset();
+		crc.update(id);
+		directBuf.position(0).limit(dataLen);
+		crc.update(directBuf); // CRC32.update(ByteBuffer) — available since Java 8
+
+		headerBuf.clear();
+		headerBuf.putInt(dataLen);
+		headerBuf.put(id);
+		headerBuf.flip();
+
+		crcBuf.clear();
+		crcBuf.putInt((int) crc.getValue());
+		crcBuf.flip();
+
+		directBuf.position(0).limit(dataLen);
+
+		try {
+			channel.write(headerBuf); // length + type
+			channel.write(directBuf); // compressed data (off-heap → OS)
+			channel.write(crcBuf);    // CRC
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
 		}
 	}
 
@@ -73,34 +125,44 @@ public class IdatChunkWriter {
 		return availLen;
 	}
 
-	/** triggers an flush+reset if appropiate */
+	/**
+	 * Returns the direct ByteBuffer positioned at the current write offset,
+	 * limited to the available space. The caller writes into it (e.g. via
+	 * {@link java.util.zip.Deflater#deflate(ByteBuffer)}) then calls
+	 * {@link #incrementOffset(int)} with the number of bytes written.
+	 */
+	public ByteBuffer getWritableSlice() {
+		return (ByteBuffer) directBuf.limit(offset + availLen).position(offset);
+	}
+
+	/** Triggers a flush+reset if the buffer becomes full. */
 	public void incrementOffset(int n) {
 		offset += n;
 		availLen -= n;
 		if (availLen < 0)
 			throw new PngjOutputException("Anomalous situation");
-		if (availLen == 0) {
+		if (availLen == 0)
 			flush();
-		}
 	}
 
 	/**
-	 * this should rarely be used, the normal way (to avoid double copying) is
-	 * to get the buffer and write directly to it
+	 * Copies bytes into the direct buffer. The preferred path for
+	 * CompressorStreamDeflater is {@link #getWritableSlice()} to avoid this copy;
+	 * this method exists for other callers.
 	 */
 	public void write(byte[] b, int o, int len) {
 		while (len > 0) {
 			int n = len <= availLen ? len : availLen;
-			System.arraycopy(b, o, buf, offset, n);
+			directBuf.position(offset);
+			directBuf.put(b, o, n);
 			incrementOffset(n);
 			len -= n;
 			o += n;
 		}
 	}
 
-	/** this will be called after reset */
+	/** Called after reset; subclasses may override to add a prefix. */
 	protected void postReset() {
-		// fdat could override this (and minLenToWrite) to add a prefix
 	}
 
 	protected int minLenToWrite() {
@@ -110,16 +172,7 @@ public class IdatChunkWriter {
 	public void close() {
 		flush();
 		offset = 0;
-		buf = null;
-	}
-
-	/**
-	 * You can write directly to this buffer, using {@link #getOffset()} and
-	 * {@link #getAvailLen()}. You should call {@link #incrementOffset(int)}
-	 * inmediately after.
-	 */
-	public byte[] getBuf() {
-		return buf;
+		directBuf = null;
 	}
 
 	public long getTotalBytesWriten() {

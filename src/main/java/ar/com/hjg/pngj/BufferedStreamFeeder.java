@@ -17,7 +17,7 @@ public class BufferedStreamFeeder implements Closeable {
 	private boolean closeStream = true;
 	private long bytesRead = 0;
 
-	private static final int DEFAULTSIZE = 16384;
+	private static final int DEFAULTSIZE = 65536;
 
 	/** By default, the stream will be closed on close() */
 	public BufferedStreamFeeder(InputStream is) {

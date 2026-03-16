@@ -5,10 +5,9 @@ import java.util.LinkedHashMap;
 import java.util.logging.Logger;
 import java.util.zip.CRC32;
 
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.ImageLineByte;
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -48,7 +47,7 @@ public class SuiteCrcsByteTest extends PngjTest {
 				LOGGER.severe("exception with " + file + ": " + e.getMessage());
 			}
 		}
-		TestCase.assertEquals("bad crcs:" + bad.toString(), 0, errs);
+		Assertions.assertEquals(0, errs, "bad crcs:" + bad.toString());
 	}
 
 	protected long calcCrc(String file) {
@@ -231,7 +230,7 @@ public class SuiteCrcsByteTest extends PngjTest {
 
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 	}
 
@@ -240,7 +239,7 @@ public class SuiteCrcsByteTest extends PngjTest {
 		SuiteCrcsByteTest tc = new SuiteCrcsByteTest();
 		long res = tc.calcCrc(filename);
 		long crc0 = tc.crcs.get(filename);
-		TestCase.assertEquals("bad crc for " + filename, res, crc0);
+		Assertions.assertEquals(res, crc0, "bad crc for " + filename);
 		System.out.println("ok");
 	}
 }

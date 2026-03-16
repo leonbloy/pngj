@@ -122,15 +122,22 @@ public abstract class PixelsWriter {
 			// we return the same original (be careful!)
 			break;
 		case FILTER_PAETH:
+			// First bytesPixel bytes: left=0, upleft=0, predictor always returns up
 			for (i = 1; i <= bytesPixel; i++)
-				_rowf[i] = (byte) PngHelperInternal.filterRowPaeth(_rowb[i], 0, _rowbprev[i] & 0xFF, 0);
-			for (j = 1, i = bytesPixel + 1; i <= bytesRow; i++, j++)
-				_rowf[i] = (byte) PngHelperInternal.filterRowPaeth(_rowb[i], _rowb[j] & 0xFF, _rowbprev[i] & 0xFF,
-						_rowbprev[j] & 0xFF);
+				_rowf[i] = (byte) (_rowb[i] - (_rowbprev[i] & 0xFF));
+			for (j = 1, i = bytesPixel + 1; i <= bytesRow; i++, j++) {
+				// Inline filterPaethPredictor(left, up, upleft)
+				final int a = _rowb[j] & 0xFF, b = _rowbprev[i] & 0xFF, c = _rowbprev[j] & 0xFF;
+				final int p = a + b - c;
+				final int pa = p >= a ? p - a : a - p;
+				final int pb = p >= b ? p - b : b - p;
+				final int pc = p >= c ? p - c : c - p;
+				final int pred = (pa <= pb && pa <= pc) ? a : (pb <= pc ? b : c);
+				_rowf[i] = (byte) (_rowb[i] - pred);
+			}
 			break;
 		case FILTER_SUB:
-			for (i = 1; i <= bytesPixel; i++)
-				_rowf[i] = (byte) _rowb[i];
+			System.arraycopy(_rowb, 1, _rowf, 1, bytesPixel);
 			for (j = 1, i = bytesPixel + 1; i <= bytesRow; i++, j++)
 				_rowf[i] = (byte) (_rowb[i] - _rowb[j]);
 			break;
@@ -141,6 +148,10 @@ public abstract class PixelsWriter {
 				_rowf[i] = (byte) (_rowb[i] - ((_rowbprev[i] & 0xFF) + (_rowb[j] & 0xFF)) / 2);
 			break;
 		case FILTER_UP:
+			if (ar.com.hjg.pngj.VectorSupport.isAvailable()) {
+				ar.com.hjg.pngj.VectorizedFilters.filterUp(_rowb, _rowbprev, _rowf, bytesRow);
+				break;
+			}
 			for (i = 1; i <= bytesRow; i++)
 				_rowf[i] = (byte) (_rowb[i] - _rowbprev[i]);
 			break;

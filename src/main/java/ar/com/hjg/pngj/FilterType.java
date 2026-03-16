@@ -87,6 +87,8 @@ public enum FilterType {
 	}
 
 	public static FilterType getByVal(int i) {
+		if (i >= 0 && i <= 4)
+			return ALL_STANDARD[i];
 		return byVal.get(i);
 	}
 
@@ -103,23 +105,28 @@ public enum FilterType {
 		return fy.val <= -2 && fy.val >= -4;
 	}
 
+	private static final FilterType[] ALL_STANDARD = { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
+	private static final FilterType[] ALL_STANDARD_NONE_LAST = { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH, FILTER_NONE };
+	private static final FilterType[] ALL_STANDARD_EXCEPT_NONE = { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
+	private static final FilterType[] ALL_STANDARD_FIRST_ROW = { FILTER_SUB, FILTER_NONE };
+
 	/**
 	 * Returns all "standard" filters
 	 */
 	public static FilterType[] getAllStandard() {
-		return new FilterType[] { FILTER_NONE, FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
+		return ALL_STANDARD;
 	}
 
 	public static FilterType[] getAllStandardNoneLast() {
-		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH, FILTER_NONE };
+		return ALL_STANDARD_NONE_LAST;
 	}
 
 	public static FilterType[] getAllStandardExceptNone() {
-		return new FilterType[] { FILTER_SUB, FILTER_UP, FILTER_AVERAGE, FILTER_PAETH };
+		return ALL_STANDARD_EXCEPT_NONE;
 	}
 
 	static FilterType[] getAllStandardForFirstRow() {
-		return new FilterType[] { FILTER_SUB, FILTER_NONE };
+		return ALL_STANDARD_FIRST_ROW;
 	}
 
 }

@@ -4,10 +4,9 @@ import java.util.Arrays;
 import java.util.zip.DataFormatException;
 import java.util.zip.Inflater;
 
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.DeflatedChunksSet;
 import ar.com.hjg.pngj.test.PngjTest;
@@ -31,8 +30,8 @@ public class DeflatedChunk2Test extends PngjTest {
 		inf.setInput(compressed);
 		int n;
 		n = inf.inflate(raw);
-		TestCase.assertEquals(inflated.length, n);
-		TestCase.assertEquals(Arrays.toString(raw), Arrays.toString(inflated));
+		Assertions.assertEquals(inflated.length, n);
+		Assertions.assertEquals(Arrays.toString(raw), Arrays.toString(inflated));
 	}
 
 	@Test
@@ -77,10 +76,10 @@ public class DeflatedChunk2Test extends PngjTest {
 					+ TestSupport.showRow(c.getInflatedRow(), c.getRowFilled(), row) + ", ");
 			c.prepareForNextRow(row == nrows ? 0 : rowsize);
 		}
-		TestCase.assertEquals("ROW_READY 6 r=0[  0| 42  43], ROW_READY 10 r=1[  0| 44  41], ", sb.toString());
+		Assertions.assertEquals("ROW_READY 6 r=0[  0| 42  43], ROW_READY 10 r=1[  0| 44  41], ", sb.toString());
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 	}

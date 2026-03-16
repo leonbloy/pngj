@@ -30,6 +30,17 @@ public class FiltersPerformance {
 
 	private final static double LOG2NI = -1.0 / Math.log(2.0);
 
+	private static final int LOG_TABLE_SIZE = 4096;
+	private static final double[] LOG_TABLE = new double[LOG_TABLE_SIZE + 1];
+	static {
+		for (int i = 1; i <= LOG_TABLE_SIZE; i++)
+			LOG_TABLE[i] = Math.log(i);
+	}
+
+	private static double fastLog(int x) {
+		return x <= LOG_TABLE_SIZE ? LOG_TABLE[x] : Math.log(x);
+	}
+
 	public FiltersPerformance(ImageInfo imgInfo) {
 		this.iminfo = imgInfo;
 	}
@@ -110,8 +121,9 @@ public class FiltersPerformance {
 				histog[rowb[i] & 0xFF]++;
 			break;
 		case FILTER_PAETH:
-			for (i = 1; i <= imax; i++)
-				histog[PngHelperInternal.filterRowPaeth(rowb[i], 0, rowbprev[i] & 0xFF, 0)]++;
+			// first bytesPixel: left=0, upleft=0 → predictor returns up → result = (r - up) & 0xFF
+			for (i = 1; i <= iminfo.bytesPixel; i++)
+				histog[(rowb[i] - (rowbprev[i] & 0xFF)) & 0xFF]++;
 			for (j = 1, i = iminfo.bytesPixel + 1; i <= imax; i++, j++)
 				histog[PngHelperInternal.filterRowPaeth(rowb[i], rowb[j] & 0xFF, rowbprev[i] & 0xFF,
 						rowbprev[j] & 0xFF)]++;
@@ -159,7 +171,7 @@ public class FiltersPerformance {
 		double h = 0;
 		for (int x : histog) {
 			if (x > 0)
-				h += (Math.log(x) + ls) * x;
+				h += (fastLog(x) + ls) * x;
 		}
 		h *= s * LOG2NI;
 		if (h < 0.0)

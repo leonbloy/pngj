@@ -16,7 +16,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Random;
 
-import junit.framework.TestCase;
+import org.junit.jupiter.api.Assertions;
 import ar.com.hjg.pngj.BufferedStreamFeeder;
 import ar.com.hjg.pngj.ChunkSeqReader;
 import ar.com.hjg.pngj.ChunkSeqSkipping;
@@ -218,7 +218,7 @@ public class TestSupport {
 
 	/**
 	 * the location (if relative) is realtive to the resources dir
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
@@ -228,7 +228,7 @@ public class TestSupport {
 
 	/**
 	 * the location (if relative) is realtive to the resources dir
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
@@ -238,7 +238,7 @@ public class TestSupport {
 
 	/**
 	 * the location (if relative) is realtive to the resources dir
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
@@ -268,7 +268,7 @@ public class TestSupport {
 
 	/**
 	 * the location (if relative) is realtive to the resources dir
-	 * 
+	 *
 	 * @param f
 	 * @return
 	 */
@@ -346,16 +346,16 @@ public class TestSupport {
 		PngHelperInternal.initCrcForTests(png1);
 		PngReader png2 = new PngReader(dest);
 		PngHelperInternal.initCrcForTests(png2);
-		TestCase.assertEquals("Cannot compare, one is interlaced, the other not:", png1.isInterlaced(),
-				png2.isInterlaced());
-		TestCase.assertEquals("Image are of different type", png1.imgInfo, png2.imgInfo);
+		Assertions.assertEquals(png1.isInterlaced(), png2.isInterlaced(),
+				"Cannot compare, one is interlaced, the other not:");
+		Assertions.assertEquals(png1.imgInfo, png2.imgInfo, "Image are of different type");
 		png1.readRow(png1.imgInfo.rows - 1);
 		png2.readRow(png2.imgInfo.rows - 1);
 		png1.end();
 		png2.end();
 		long crc1 = PngHelperInternal.getDigest(png1);
 		long crc2 = PngHelperInternal.getDigest(png2);
-		TestCase.assertEquals("different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2, crc1, crc2);
+		Assertions.assertEquals(crc1, crc2, "different crcs " + ori + "=" + crc1 + " " + dest + "=" + crc2);
 	}
 
 	public static void testSameValues(File ori, File dest) {
@@ -365,8 +365,8 @@ public class TestSupport {
 	public static void testSameValues(File ori, File dest, int tolerance) {
 		PngReaderInt png1 = new PngReaderInt(ori);
 		PngReaderInt png2 = new PngReaderInt(dest);
-		TestCase.assertEquals("Image are of different size", png1.imgInfo.rows, png2.imgInfo.rows);
-		TestCase.assertEquals("Image are of different size", png1.imgInfo.cols, png2.imgInfo.cols);
+		Assertions.assertEquals(png1.imgInfo.rows, png2.imgInfo.rows, "Image are of different size");
+		Assertions.assertEquals(png1.imgInfo.cols, png2.imgInfo.cols, "Image are of different size");
 		int[] r1 = new int[png1.imgInfo.cols * 4];
 		int[] r2 = new int[png1.imgInfo.cols * 4];
 		String firstDif = "";
@@ -392,8 +392,8 @@ public class TestSupport {
 		difAv /= (png1.imgInfo.rows * (double) png1.imgInfo.samplesPerRow);
 		png1.end();
 		png2.end();
-		TestCase.assertEquals(firstDif + " avdif=" + difAv + " f=" + ori.getName() + " " + " -> " + dest.getName(), "",
-				firstDif);
+		Assertions.assertEquals("", firstDif,
+				firstDif + " avdif=" + difAv + " f=" + ori.getName() + " " + " -> " + dest.getName());
 		if (difAv > 0.001)
 			PngHelperInternal.debug(String.format("%s errorav=%f\n", ori.getName(), difAv));
 	}
@@ -415,7 +415,7 @@ public class TestSupport {
 		png1.readRow(png1.imgInfo.rows - 1);
 		png1.end();
 		long crc1 = PngHelperInternal.getDigest(png1);
-		TestCase.assertEquals(crc1, crc);
+		Assertions.assertEquals(crc1, crc);
 	}
 
 	public static File addSuffixToName(File orig, String suffix) {

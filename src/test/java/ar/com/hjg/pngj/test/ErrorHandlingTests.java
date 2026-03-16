@@ -2,12 +2,11 @@ package ar.com.hjg.pngj.test;
 
 import java.io.InputStream;
 
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.ChunkSeqReaderPng;
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngjException;
-import junit.framework.TestCase;
 
 public class ErrorHandlingTests {
 	@Test
@@ -16,6 +15,6 @@ public class ErrorHandlingTests {
 		PngReader r = new PngReader(is);
 		//r.readRows();
 		//r.end();
-		//TestCase.assertFalse(r.getChunkseq().isDone());
+		//Assertions.assertFalse(r.getChunkseq().isDone());
 	}
 }

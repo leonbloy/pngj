@@ -3,11 +3,8 @@ package ar.com.hjg.pngj.test;
 import java.io.File;
 import java.util.Arrays;
 
-import junit.framework.TestCase;
-
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.ExpectedException;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.PngHelperInternal;
 import ar.com.hjg.pngj.PngReader;
@@ -20,12 +17,9 @@ import ar.com.hjg.pngj.chunks.PngChunk;
 import ar.com.hjg.pngj.chunks.PngChunkTIME;
 
 /**
- *   
+ *
  */
 public class CopyChunksTest extends PngjTest {
-
-	@Rule
-	public ExpectedException expectedEx = ExpectedException.none();
 
 	/**
 	 * copy all chunks
@@ -65,9 +59,9 @@ public class CopyChunksTest extends PngjTest {
 		// System.out.println(chunks1);
 		String chunks2 = TestSupport.showChunks(pngr2.getChunksList().getChunks());
 		// System.out.println(chunks2);
-		TestCase.assertEquals(crc2, crc1);
-		TestCase.assertEquals(chunks1, chunks2);
-		TestCase.assertTrue("This could coincide... but it should be very improbable!", bytes1 != bytes2);
+		Assertions.assertEquals(crc2, crc1);
+		Assertions.assertEquals(chunks1, chunks2);
+		Assertions.assertTrue(bytes1 != bytes2, "This could coincide... but it should be very improbable!");
 	}
 
 	/**
@@ -93,8 +87,8 @@ public class CopyChunksTest extends PngjTest {
 			pngw.end();
 			int queued = pngw.getChunksList().getQueuedChunks().size();
 			int written = pngw.getChunksList().getChunks().size();
-			TestCase.assertEquals(0, queued);
-			TestCase.assertEquals(4, written); // not including IDAT
+			Assertions.assertEquals(0, queued);
+			Assertions.assertEquals(4, written); // not including IDAT
 
 		}
 		PngReader pngr2 = new PngReader(dest);
@@ -104,8 +98,9 @@ public class CopyChunksTest extends PngjTest {
 			// for a change, we here read line by line
 			pngr2.readRow();
 		pngr2.end();
-		TestCase.assertEquals("same as original, but without tIME", "IHDR[13] pHYs[9] iTXt[30] IEND[0] ",
-				TestSupport.showChunks(pngr2.getChunksList().getChunks()));
+		Assertions.assertEquals("IHDR[13] pHYs[9] iTXt[30] IEND[0] ",
+				TestSupport.showChunks(pngr2.getChunksList().getChunks()),
+				"same as original, but without tIME");
 	}
 
 	/**
@@ -132,8 +127,8 @@ public class CopyChunksTest extends PngjTest {
 		}
 		ChunksList cdest = TestSupport.readAllChunks(dest, false);
 		PngChunkTIME time = (PngChunkTIME) cdest.getById1("tIME");
-		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
-		TestCase.assertEquals("IHDR[13] tIME[7] pHYs[9] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
+		Assertions.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
+		Assertions.assertEquals("IHDR[13] tIME[7] pHYs[9] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
 	}
 
 	/**
@@ -160,8 +155,8 @@ public class CopyChunksTest extends PngjTest {
 		}
 		ChunksList cdest = TestSupport.readAllChunks(dest, false);
 		PngChunkTIME time = (PngChunkTIME) cdest.getById1("tIME");
-		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
-		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
+		Assertions.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
+		Assertions.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
 	}
 
 	/**
@@ -187,8 +182,8 @@ public class CopyChunksTest extends PngjTest {
 		}
 		ChunksList cdest = TestSupport.readAllChunks(dest, false);
 		PngChunkTIME time = (PngChunkTIME) cdest.getById1("tIME");
-		TestCase.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
-		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
+		Assertions.assertEquals("[2013, 1, 2, 3, 4, " + Integer.valueOf(secs) + "]", Arrays.toString(time.getYMDHMS()));
+		Assertions.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(cdest.getChunks()));
 	}
 
 	@Test
@@ -203,7 +198,7 @@ public class CopyChunksTest extends PngjTest {
 			pngr.end();
 			pngw.end();
 			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
-			TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", clist1);
+			Assertions.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", clist1);
 		}
 		{ // ONLY SAFE TO COPY
 			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
@@ -214,7 +209,7 @@ public class CopyChunksTest extends PngjTest {
 			pngr.end();
 			pngw.end();
 			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
-			TestCase.assertEquals("IHDR[13] pHYs[9] iTXt[30] IEND[0] ", clist1);
+			Assertions.assertEquals("IHDR[13] pHYs[9] iTXt[30] IEND[0] ", clist1);
 		}
 		{// NO ANCILLARY CHUNK
 			PngReader pngr = new PngReader(TestSupport.absFile(TestSupport.PNG_TEST_STRIPES));
@@ -225,7 +220,7 @@ public class CopyChunksTest extends PngjTest {
 			pngr.end();
 			pngw.end();
 			String clist1 = TestSupport.showChunks(TestSupport.readAllChunks(dest, false).getChunks());
-			TestCase.assertEquals("IHDR[13] IEND[0] ", clist1);
+			Assertions.assertEquals("IHDR[13] IEND[0] ", clist1);
 		}
 
 	}

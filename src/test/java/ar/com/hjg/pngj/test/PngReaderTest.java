@@ -1,9 +1,8 @@
 package ar.com.hjg.pngj.test;
 
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.IImageLine;
 import ar.com.hjg.pngj.IImageLineSet;
@@ -23,13 +22,13 @@ public class PngReaderTest extends PngjTest {
 			ImageLineInt line = (ImageLineInt) pngr.readRow(i);
 			sb.append("r=" + i).append(TestSupport.showLine(line)).append(" ");
 		}
-		TestCase.assertEquals("r=0[  0   1   2] r=1[112 192 105] r=2[255 238 220] ", sb.toString());
-		TestCase.assertTrue(pngr.getChunkseq().getIdatSet().isDone());
+		Assertions.assertEquals("r=0[  0   1   2] r=1[112 192 105] r=2[255 238 220] ", sb.toString());
+		Assertions.assertTrue(pngr.getChunkseq().getIdatSet().isDone());
 		pngr.end();
-		TestCase.assertEquals(181, pngr.getChunkseq().getBytesCount());
+		Assertions.assertEquals(181, pngr.getChunkseq().getBytesCount());
 		String chunks = TestSupport.showChunks(pngr.getChunksList().getChunks());
 		// PngHelperInternal.LOGGER.info("chunks: " + chunks);
-		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ", chunks);
+		Assertions.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ", chunks);
 	}
 
 	@SuppressWarnings("unchecked")
@@ -39,12 +38,12 @@ public class PngReaderTest extends PngjTest {
 		pngr.getChunkseq().setIncludeNonBufferedChunks(true);
 		IImageLineSet<ImageLineInt> lines = ((IImageLineSet<ImageLineInt>) pngr.readRows(1, 1, 1));
 		sb.append(TestSupport.showLine(lines.getImageLine(1)));
-		TestCase.assertEquals("[112 192 105]", sb.toString());
+		Assertions.assertEquals("[112 192 105]", sb.toString());
 		pngr.end();
-		TestCase.assertEquals(181, pngr.getChunkseq().getBytesCount());
+		Assertions.assertEquals(181, pngr.getChunkseq().getBytesCount());
 		String chunks = TestSupport.showChunks(pngr.getChunksList().getChunks());
 		// PngHelperInternal.LOGGER.info("chunks: " + chunks);
-		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ", chunks);
+		Assertions.assertEquals("IHDR[13] pHYs[9] tEXt[59] IDAT[3] IDAT[17] IEND[0] ", chunks);
 	}
 
 	@Test
@@ -55,11 +54,11 @@ public class PngReaderTest extends PngjTest {
 			ImageLineInt line = (ImageLineInt) pngr.readRow(i);
 			sb.append("r=" + i).append(TestSupport.showLine(line)).append(" ");
 		}
-		TestCase.assertEquals("r=0[  0   1   2] r=1[112 192 105] r=2[255 238 220] ", sb.toString());
-		TestCase.assertTrue(pngr.getChunkseq().getIdatSet().isDone());
+		Assertions.assertEquals("r=0[  0   1   2] r=1[112 192 105] r=2[255 238 220] ", sb.toString());
+		Assertions.assertTrue(pngr.getChunkseq().getIdatSet().isDone());
 		pngr.end();
-		TestCase.assertEquals(183, pngr.getChunkseq().getBytesCount());
-		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[70] IDAT[23] IEND[0] ",
+		Assertions.assertEquals(183, pngr.getChunkseq().getBytesCount());
+		Assertions.assertEquals("IHDR[13] pHYs[9] tEXt[70] IDAT[23] IEND[0] ",
 				TestSupport.showChunks(pngr.getChunksList().getChunks()));
 
 	}
@@ -71,12 +70,12 @@ public class PngReaderTest extends PngjTest {
 		pngr.getChunkseq().setIncludeNonBufferedChunks(true);
 		IImageLineSet<ImageLineInt> lines = (IImageLineSet<ImageLineInt>) pngr.readRows(1, 1, 1);
 		sb.append(TestSupport.showLine(lines.getImageLine(1)));
-		TestCase.assertEquals("[112 192 105]", sb.toString());
+		Assertions.assertEquals("[112 192 105]", sb.toString());
 		pngr.end();
-		TestCase.assertEquals(183, pngr.getChunkseq().getBytesCount());
+		Assertions.assertEquals(183, pngr.getChunkseq().getBytesCount());
 		String chunks = TestSupport.showChunks(pngr.getChunksList().getChunks());
 		// PngHelperInternal.LOGGER.info("chunks: " + chunks);
-		TestCase.assertEquals("IHDR[13] pHYs[9] tEXt[70] IDAT[23] IEND[0] ", chunks);
+		Assertions.assertEquals("IHDR[13] pHYs[9] tEXt[70] IDAT[23] IEND[0] ", chunks);
 	}
 
 	@Test
@@ -86,7 +85,7 @@ public class PngReaderTest extends PngjTest {
 		String pngfile = "test/testg1.png";
 		{
 			PngReader pngr = new PngReader(TestSupport.istream(pngfile));
-			TestCase.assertFalse(pngr.interlaced);
+			Assertions.assertFalse(pngr.interlaced);
 			IImageLineSet<? extends IImageLine> lines = pngr.readRows();
 			pngr.end();
 			line3 = TestSupport.showLine(lines.getImageLine(3));
@@ -103,8 +102,8 @@ public class PngReaderTest extends PngjTest {
 					line7b = TestSupport.showLine(line);
 			}
 			pngr.end();
-			TestCase.assertEquals(line3, line3b);
-			TestCase.assertEquals(line7, line7b);
+			Assertions.assertEquals(line3, line3b);
+			Assertions.assertEquals(line7, line7b);
 
 		}
 		{
@@ -113,26 +112,26 @@ public class PngReaderTest extends PngjTest {
 			pngr2.end();
 			String line3b = TestSupport.showLine(lines.getImageLine(3));
 			String line7b = TestSupport.showLine(lines.getImageLine(7));
-			TestCase.assertEquals(line3, line3b);
-			TestCase.assertEquals(line7, line7b);
-			TestCase.assertEquals(2, lines.size());
+			Assertions.assertEquals(line3, line3b);
+			Assertions.assertEquals(line7, line7b);
+			Assertions.assertEquals(2, lines.size());
 			try {
 				TestSupport.showLine(lines.getImageLine(6));
-				TestCase.fail("should not get here");
+				Assertions.fail("should not get here");
 			} catch (Exception e) {
-				TestCase.assertEquals("Invalid row number", e.getMessage());
+				Assertions.assertEquals("Invalid row number", e.getMessage());
 			}
 		}
 		pngfile = "test/testg1i.png";
 		{
 			PngReader pngr = new PngReader(TestSupport.istream(pngfile));
-			TestCase.assertTrue(pngr.interlaced);
+			Assertions.assertTrue(pngr.interlaced);
 			IImageLineSet<? extends IImageLine> lines = pngr.readRows();
 			pngr.end();
 			String line3b = TestSupport.showLine(lines.getImageLine(3));
 			String line7b = TestSupport.showLine(lines.getImageLine(7));
-			TestCase.assertEquals(line3, line3b);
-			TestCase.assertEquals(line7, line7b);
+			Assertions.assertEquals(line3, line3b);
+			Assertions.assertEquals(line7, line7b);
 		}
 		{
 			PngReaderByte pngr = new PngReaderByte(TestSupport.istream(pngfile));
@@ -145,8 +144,8 @@ public class PngReaderTest extends PngjTest {
 					line7b = TestSupport.showLine(line);
 			}
 			pngr.end();
-			TestCase.assertEquals(line3, line3b);
-			TestCase.assertEquals(line7, line7b);
+			Assertions.assertEquals(line3, line3b);
+			Assertions.assertEquals(line7, line7b);
 
 		}
 		{
@@ -155,14 +154,14 @@ public class PngReaderTest extends PngjTest {
 			pngr2.end();
 			String line3b = TestSupport.showLine(lines.getImageLine(3));
 			String line7b = TestSupport.showLine(lines.getImageLine(7));
-			TestCase.assertEquals(line3, line3b);
-			TestCase.assertEquals(line7, line7b);
-			TestCase.assertEquals(2, lines.size());
+			Assertions.assertEquals(line3, line3b);
+			Assertions.assertEquals(line7, line7b);
+			Assertions.assertEquals(2, lines.size());
 			try {
 				TestSupport.showLine(lines.getImageLine(6));
-				TestCase.fail("should not get here");
+				Assertions.fail("should not get here");
 			} catch (Exception e) {
-				TestCase.assertEquals("Invalid row number", e.getMessage());
+				Assertions.assertEquals("Invalid row number", e.getMessage());
 			}
 		}
 	}
@@ -179,11 +178,11 @@ public class PngReaderTest extends PngjTest {
 			linesok = (IImageLineSet<ImageLineInt>) pngr1.readRows();
 			pngr1.end();
 		}
-		TestCase.assertEquals(TestSupport.showLine(lines.getImageLine(0)),
+		Assertions.assertEquals(TestSupport.showLine(lines.getImageLine(0)),
 				TestSupport.showLine(linesok.getImageLine(0)));
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 		sb.setLength(0);
 	}

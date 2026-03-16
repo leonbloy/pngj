@@ -3,9 +3,8 @@ package ar.com.hjg.pngj.test;
 import java.io.File;
 import java.util.HashMap;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngWriter;
@@ -66,9 +65,9 @@ public class TextChunksTest {
 			String key = ct.getKey();
 			String val = ct.getVal();
 			//System.out.println(c.id + " chunk. Key:" + key + " val='" + val + "'" + " exp:'" +texts.get(key) +"'");
-			TestCase.assertEquals("Invalid value at key " + key, texts.get(key), val);
+			Assertions.assertEquals(texts.get(key), val, "Invalid value at key " + key);
 		}
-		TestCase.assertEquals("number of text chunks does not coincide", texts.keySet().size(), ok);
+		Assertions.assertEquals(texts.keySet().size(), ok, "number of text chunks does not coincide");
 
 	}
 

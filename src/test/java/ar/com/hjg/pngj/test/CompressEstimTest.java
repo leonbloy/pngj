@@ -4,10 +4,9 @@ import java.io.IOException;
 import java.io.OutputStream;
 import java.util.zip.Deflater;
 
-import junit.framework.TestCase;
-
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.pixels.CompressorStreamDeflater;
 import ar.com.hjg.pngj.pixels.CompressorStreamLz4;
@@ -57,7 +56,7 @@ public class CompressEstimTest {
 		}
 	}
 
-	@Before
+	@BeforeEach
 	public void computecompressions() { // same as testOpaque1 with buffering
 		for (int i = 0; i < buffers.length; i++) {
 			cbufd[i] = compressEstim(buffers[i], DEFLATE);
@@ -108,7 +107,7 @@ public class CompressEstimTest {
 		}
 		ratio /= segments;
 		// System.err.printf("ctarget=%.4f ratio=%.4f \n",ctarget,ratio);
-		TestCase.assertEquals(ctarget, ratio, 0.02);
+		Assertions.assertEquals(ctarget, ratio, 0.02);
 	}
 
 	@Test
@@ -124,7 +123,7 @@ public class CompressEstimTest {
 		}
 		ratio /= segments;
 		// System.err.printf("ctarget=%.4f ratio=%.4f \n",ctarget,ratio);
-		TestCase.assertEquals(ctarget, ratio, 0.02);
+		Assertions.assertEquals(ctarget, ratio, 0.02);
 	}
 
 	@Test
@@ -137,16 +136,16 @@ public class CompressEstimTest {
 			double cr1 = ds.getCompressionRatio();
 			ds.done(); // should not change
 			double cr1b = ds.getCompressionRatio();
-			TestCase.assertEquals(cr1, cr1b);
-			TestCase.assertEquals(ctarget, cr1, 0.00001);
+			Assertions.assertEquals(cr1, cr1b);
+			Assertions.assertEquals(ctarget, cr1, 0.00001);
 			ds.reset();
 			for (int stride = 1; stride < b.length - 10; stride += 1 + b.length / 20) {
 				writeWithStride(stride, ds, b);
 				cr1 = ds.getCompressionRatio();
 				ds.done(); // should not change
 				cr1b = ds.getCompressionRatio();
-				TestCase.assertEquals(cr1, cr1b);
-				TestCase.assertEquals(ctarget, cr1, 0.00001);
+				Assertions.assertEquals(cr1, cr1b);
+				Assertions.assertEquals(ctarget, cr1, 0.00001);
 				ds.reset();
 			}
 		}
@@ -164,20 +163,20 @@ public class CompressEstimTest {
 				cr1 = ds.getCompressionRatio();
 				ds.done(); // should not change
 				cr1b = ds.getCompressionRatio();
-				TestCase.assertEquals(cr1, cr1b);
-				TestCase.assertEquals(ctarget, cr1, 0.00001);
+				Assertions.assertEquals(cr1, cr1b);
+				Assertions.assertEquals(ctarget, cr1, 0.00001);
 				ds.close();
 			}
 			for (int stride = b.length - 30; stride > 0; stride -= (1 + b.length / 200)) {
 				CompressorStreamLz4 ds2 = new CompressorStreamLz4(null, stride, b.length);
 				writeWithStride(stride, ds2, b);
 				cr1 = ds2.getCompressionRatio();
-				TestCase.assertTrue("ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride + " buf" + i,
-						ds2.isDone());
+				Assertions.assertTrue(ds2.isDone(),
+						"ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride + " buf" + i);
 				ds2.done(); // should not change
 				cr1b = ds2.getCompressionRatio();
-				TestCase.assertEquals(cr1, cr1b);
-				TestCase.assertEquals(ctarget, cr1, 0.00001);
+				Assertions.assertEquals(cr1, cr1b);
+				Assertions.assertEquals(ctarget, cr1, 0.00001);
 				ds2.reset();
 			}
 		}
@@ -195,24 +194,24 @@ public class CompressEstimTest {
 				cr1 = ds.getCompressionRatio();
 				ds.done(); // should not change
 				cr1b = ds.getCompressionRatio();
-				TestCase.assertEquals(cr1, cr1b);
-				TestCase.assertEquals(ctarget, cr1, 0.00001);
+				Assertions.assertEquals(cr1, cr1b);
+				Assertions.assertEquals(ctarget, cr1, 0.00001);
 				ds.close();
 			}
 			for (int stride = b.length - 30; stride > 0; stride -= (1 + b.length / 200)) {
 				CompressorStreamLz4 ds2 = new CompressorStreamLz4(null, stride, b.length);
 				writeWithStride(stride, ds2, b);
 				cr1 = ds2.getCompressionRatio();
-				TestCase.assertTrue("ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride + " buf" + i,
-						ds2.isDone());
+				Assertions.assertTrue(ds2.isDone(),
+						"ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride + " buf" + i);
 				ds2.done(); // should not change
 				cr1b = ds2.getCompressionRatio();
-				TestCase.assertEquals(cr1, cr1b);
+				Assertions.assertEquals(cr1, cr1b);
 				double err = 1 - ctarget / cr1;
 				// System.err.printf("ctarget=%.4f cr1=%.4f stride=%d/%d
 				// err=%.4f\n",ctarget,cr1,stride,b.length,err);
-				TestCase.assertTrue("ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride + " buf" + i,
-						Math.abs(err) < 0.5); // we have some tolerance here
+				Assertions.assertTrue(Math.abs(err) < 0.5,
+						"ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride + " buf" + i); // we have some tolerance here
 				ds2.close();
 			}
 		}
@@ -230,8 +229,8 @@ public class CompressEstimTest {
 			cr1 = ds.getCompressionRatio();
 			ds.done(); // should not change
 			cr1b = ds.getCompressionRatio();
-			TestCase.assertEquals(cr1, cr1b);
-			TestCase.assertEquals(ctarget, cr1, 0.00001);
+			Assertions.assertEquals(cr1, cr1b);
+			Assertions.assertEquals(ctarget, cr1, 0.00001);
 			ds.close();
 		}
 		{
@@ -240,14 +239,16 @@ public class CompressEstimTest {
 				CompressorStreamLz4 ds2 = new CompressorStreamLz4(null, stride, b.length);
 				writeWithStride(stride, ds2, b);
 				cr1 = ds2.getCompressionRatio();
-				TestCase.assertTrue("ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride, ds2.isDone());
+				Assertions.assertTrue(ds2.isDone(),
+						"ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride);
 				ds2.done(); // should not change
 				cr1b = ds2.getCompressionRatio();
-				TestCase.assertEquals(cr1, cr1b);
+				Assertions.assertEquals(cr1, cr1b);
 				double err = 1 - ctarget / cr1;
 				// System.err.printf("ctarget=%.4f cr1=%.4f stride=%d/%d
 				// err=%.4f\n",ctarget,cr1,stride,b.length,err);
-				TestCase.assertTrue("ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride, Math.abs(err) < 0.5); // we
+				Assertions.assertTrue(Math.abs(err) < 0.5,
+						"ctarget=" + ctarget + " cr1=" + cr1 + " stride=" + stride); // we
 				// have
 				// some
 				// tolerance

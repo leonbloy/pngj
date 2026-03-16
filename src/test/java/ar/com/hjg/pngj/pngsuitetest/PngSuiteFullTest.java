@@ -6,11 +6,10 @@ import java.io.FileOutputStream;
 import java.nio.channels.FileChannel;
 import java.util.Random;
 
-import junit.framework.TestCase;
-
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.FilterType;
 import ar.com.hjg.pngj.IImageLine;
@@ -30,7 +29,7 @@ import ar.com.hjg.pngj.test.TestSupport;
 
 /**
  * To test all images in PNG test suite doing a horizontal mirror on all them
- * 
+ *
  * Instructions: Original images from PNG test suite is supposed to be in local
  * dir resources/testsuite1/ (images supposed to fail, because are erroneous,
  * must start with 'x') Output dir is hardcoded in static "outdir" field - it
@@ -38,7 +37,7 @@ import ar.com.hjg.pngj.test.TestSupport;
  * Result images are mirrored, with a 'z' appended to their names, and the
  * originals are laso copied. Suggestion: sort by name, and watch them in
  * sequence
- * 
+ *
  */
 public class PngSuiteFullTest {
 
@@ -51,7 +50,7 @@ public class PngSuiteFullTest {
 	/**
 	 * Takes a image, mirrors it using row-per-row int reading, mirror it again
 	 * using byte (if possible) and compares
-	 * 
+	 *
 	 * IF the original was interlaced, compares with origni
 	 */
 	public void testmirror(File orig, File origni, File truecolor) {
@@ -281,14 +280,14 @@ public class PngSuiteFullTest {
 			System.out.print("Output files removed, to see them set clearTempFiles=false. ");
 		System.out.println("Output dir: " + outdir);
 		int err = testAllSuite(dir, outdir, imagesToCheck);
-		TestCase.assertEquals("The suite returner " + err + " unexpected errors", 0, err);
+		Assertions.assertEquals(0, err, "The suite returner " + err + " unexpected errors");
 		long t1 = System.currentTimeMillis();
 
 		System.out.println("Time: " + (t1 - t0) + " msecs. Java version: " + System.getProperty("java.version"));
 
 	}
 
-	@Before
+	@BeforeEach
 	public void setUp() {
 
 	}
@@ -296,7 +295,7 @@ public class PngSuiteFullTest {
 	/**
 	 * Tears down the test fixture. (Called after every test case method.)
 	 */
-	@After
+	@AfterEach
 	public void tearDown() {
 		if (clearTempFiles) {
 			TestSupport.cleanAll();

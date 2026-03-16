@@ -95,8 +95,12 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 		int step1 = (step - 1) * imgInfo.channels;
 		if (imgInfo.bitDepth == 8) {
 			if (step == 1) {// 8bispp non-interlaced: most important case, should be optimized
-				for (int i = 0; i < size; i++) {
-					scanline[i] = (raw[i + 1] & 0xff);
+				if (VectorSupport.isAvailable()) {
+					VectorizedFilters.widenBytesToInts(raw, 1, scanline, 0, size);
+				} else {
+					for (int i = 0; i < size; i++) {
+						scanline[i] = (raw[i + 1] & 0xff);
+					}
 				}
 			} else {// 8bispp interlaced
 				for (int s = 1, c = 0, i = offset * imgInfo.channels; s <= len1; s++, i++) {
@@ -147,8 +151,12 @@ public class ImageLineInt implements IImageLine, IImageLineArray {
 	public void writeToPngRaw(byte[] raw) {
 		raw[0] = (byte) filterType.val;
 		if (imgInfo.bitDepth == 8) {
-			for (int i = 0; i < size; i++) {
-				raw[i + 1] = (byte) scanline[i];
+			if (VectorSupport.isAvailable()) {
+				VectorizedFilters.narrowIntsToBytes(scanline, 0, raw, 1, size);
+			} else {
+				for (int i = 0; i < size; i++) {
+					raw[i + 1] = (byte) scanline[i];
+				}
 			}
 		} else if (imgInfo.bitDepth == 16) {
 			for (int i = 0, s = 1; i < size; i++) {

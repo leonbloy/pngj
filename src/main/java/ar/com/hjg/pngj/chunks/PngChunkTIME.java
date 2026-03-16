@@ -1,6 +1,7 @@
 package ar.com.hjg.pngj.chunks;
 
-import java.util.Calendar;
+import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -51,14 +52,14 @@ public class PngChunkTIME extends PngChunkSingle {
 	}
 
 	public void setNow(int secsAgo) {
-		Calendar d = Calendar.getInstance();
-		d.setTimeInMillis(System.currentTimeMillis() - 1000 * (long) secsAgo);
-		year = d.get(Calendar.YEAR);
-		mon = d.get(Calendar.MONTH) + 1;
-		day = d.get(Calendar.DAY_OF_MONTH);
-		hour = d.get(Calendar.HOUR_OF_DAY);
-		min = d.get(Calendar.MINUTE);
-		sec = d.get(Calendar.SECOND);
+		LocalDateTime d = LocalDateTime.ofEpochSecond(
+				System.currentTimeMillis() / 1000 - secsAgo, 0, ZoneOffset.UTC);
+		year = d.getYear();
+		mon = d.getMonthValue();
+		day = d.getDayOfMonth();
+		hour = d.getHour();
+		min = d.getMinute();
+		sec = d.getSecond();
 	}
 
 	public void setYMDHMS(int yearx, int monx, int dayx, int hourx, int minx, int secx) {

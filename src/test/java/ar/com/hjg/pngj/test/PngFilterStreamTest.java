@@ -5,9 +5,8 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.PngReaderFilter;
 import ar.com.hjg.pngj.chunks.PngChunk;
@@ -28,10 +27,10 @@ public class PngFilterStreamTest {
 		 * System.out.println(chunks.size());
 		 */
 
-		TestCase.assertTrue(reader.getChunkseq().isDone());
-		TestCase.assertTrue(reader.getChunkseq().isClosed());
-		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(chunks));
-		TestCase.assertEquals(reader.getChunkseq().getImageInfo().cols, image1.getWidth());
+		Assertions.assertTrue(reader.getChunkseq().isDone());
+		Assertions.assertTrue(reader.getChunkseq().isClosed());
+		Assertions.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(chunks));
+		Assertions.assertEquals(reader.getChunkseq().getImageInfo().cols, image1.getWidth());
 	}
 
 }

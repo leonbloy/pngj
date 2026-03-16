@@ -448,10 +448,8 @@ public abstract class ChunkSeqReader implements IBytesConsumer, Closeable {
 	public void feedFromInputStream(InputStream is, boolean closeStream) {
 		BufferedStreamFeeder sf = new BufferedStreamFeeder(is);
 		sf.setCloseStream(closeStream);
-		try {
+		try (sf) {
 			sf.feedAll(this);
-		} finally {
-			sf.close();
 		}
 	}
 

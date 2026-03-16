@@ -1,6 +1,6 @@
 package ar.com.hjg.pngj.pixels;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.zip.Deflater;
 
 import ar.com.hjg.pngj.FilterType;
@@ -12,7 +12,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	 * unfiltered rowsperband elements, 0 is the current (rowb). This should
 	 * include all rows of current band, plus one
 	 */
-	protected LinkedList<byte[]> rows;
+	protected ArrayList<byte[]> rows;
 
 	/**
 	 * bank of compressor estimators, one for each filter and (perhaps) an
@@ -45,7 +45,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 	public PixelsWriterMultiple(ImageInfo imgInfo) {
 		super(imgInfo);
 		filtersPerf = new FiltersPerformance(imgInfo);
-		rows = new LinkedList<byte[]>();
+		rows = new ArrayList<>();
 		for (int i = 0; i < 2; i++)
 			rows.add(new byte[buflen]); // we preallocate 2 rows (rowb and rowbprev)
 		filteredRowTmp = new byte[buflen];
@@ -100,9 +100,9 @@ public class PixelsWriterMultiple extends PixelsWriter {
 		}
 		// rotate
 		if (rows.size() > rowsPerBandCurrent) {
-			rows.addFirst(rows.removeLast());
+			rows.add(0, rows.remove(rows.size() - 1));
 		} else
-			rows.addFirst(new byte[buflen]);
+			rows.add(0, new byte[buflen]);
 	}
 
 	@Override
@@ -151,7 +151,7 @@ public class PixelsWriterMultiple extends PixelsWriter {
 			} else {
 				cp.reset();
 			}
-			cp.setStoreFirstByte(true, rowsPerBandCurrent); // TODO: only for adaptive?
+			cp.setStoreFirstByte(true, rowsPerBandCurrent);
 		}
 	}
 

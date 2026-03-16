@@ -2,9 +2,8 @@ package ar.com.hjg.pngj;
 
 import java.util.Random;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.Deinterlacer;
 import ar.com.hjg.pngj.ImageInfo;
@@ -19,7 +18,7 @@ public class DeinterlacerTest extends PngjTest {
 		Deinterlacer ih = new Deinterlacer(imi);
 		int np = 0; // pixles
 		int nr = 0;
-		TestCase.assertFalse(msg, ih.isEnded());
+		Assertions.assertFalse(ih.isEnded(), msg);
 		int[][] im = new int[rows][cols];
 		do {
 			nr++;
@@ -30,15 +29,15 @@ public class DeinterlacerTest extends PngjTest {
 			for (int cc = 0; cc < colssub; cc++) {
 				int x = ih.getoX() + cc * ih.getdX();
 				int y = ih.getCurrRowReal();
-				TestCase.assertEquals(msg, im[y][x], 0);
+				Assertions.assertEquals(0, im[y][x], msg);
 				im[y][x]++;
 			}
 			np += colssub;
 		} while (ih.nextRow());
 
-		TestCase.assertEquals(msg, cols * rows, np);
-		TestCase.assertEquals(msg, ih.getTotalRows(), nr);
-		TestCase.assertTrue(msg, ih.isEnded());
+		Assertions.assertEquals(cols * rows, np, msg);
+		Assertions.assertEquals(ih.getTotalRows(), nr, msg);
+		Assertions.assertTrue(ih.isEnded(), msg);
 
 	}
 

@@ -67,15 +67,9 @@ public class ImageLineHelper {
 			return;
 		if (line instanceof ImageLineInt) {
 			final int scalefactor = 8 - line.getImageInfo().bitDepth;
-			if (line instanceof ImageLineInt) {
-				ImageLineInt iline = (ImageLineInt) line;
-				for (int i = 0; i < line.getSize(); i++)
-					iline.scanline[i] = iline.scanline[i] >> scalefactor;
-			} else if (line instanceof ImageLineByte) {
-				ImageLineByte iline = (ImageLineByte) line;
-				for (int i = 0; i < line.getSize(); i++)
-					iline.scanline[i] = (byte) ((iline.scanline[i] & 0xFF) >> scalefactor);
-			}
+			ImageLineInt iline = (ImageLineInt) line;
+			for (int i = 0; i < line.getSize(); i++)
+				iline.scanline[i] = iline.scanline[i] >> scalefactor;
 		} else
 			throw new PngjException("not implemented");
 	}
@@ -441,11 +435,9 @@ public class ImageLineHelper {
 
 	public static double int2double(ImageLineInt line, int p) {
 		return line.imgInfo.bitDepth == 16 ? p / 65535.0 : p / 255.0;
-		// TODO: replace my multiplication? check for other bitdepths
 	}
 
 	public static double int2doubleClamped(ImageLineInt line, int p) {
-		// TODO: replace my multiplication?
 		double d = line.imgInfo.bitDepth == 16 ? p / 65535.0 : p / 255.0;
 		return d <= 0.0 ? 0 : (d >= 1.0 ? 1.0 : d);
 	}

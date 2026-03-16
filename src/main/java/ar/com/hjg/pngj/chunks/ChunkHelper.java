@@ -54,11 +54,7 @@ public class ChunkHelper {
 	public static final byte[] b_IDAT = toBytesLatin1(IDAT);
 	public static final byte[] b_IEND = toBytesLatin1(IEND);
 
-	/*
-	 * static auxiliary buffer. any method that uses this should synchronize against
-	 * this
-	 */
-	private static byte[] tmpbuffer = new byte[4096];
+	private static final ThreadLocal<byte[]> tmpbuffer = ThreadLocal.withInitial(() -> new byte[4096]);
 
 	/**
 	 * Converts to bytes using Latin1 (ISO-8859-1)
@@ -190,11 +186,10 @@ public class ChunkHelper {
 	 * Shovels all data from an input stream to an output stream.
 	 */
 	private static void shovelInToOut(InputStream in, OutputStream out) throws IOException {
-		synchronized (tmpbuffer) {
-			int len;
-			while ((len = in.read(tmpbuffer)) > 0) {
-				out.write(tmpbuffer, 0, len);
-			}
+		byte[] buf = tmpbuffer.get();
+		int len;
+		while ((len = in.read(buf)) > 0) {
+			out.write(buf, 0, len);
 		}
 	}
 

@@ -2,9 +2,8 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngReader;
@@ -56,14 +55,14 @@ public class CustomChunkTest {
 		String chunks = TestSupport.showChunks(pngr.getChunksList().getChunks());
 		// no sense in testing this, the length of serialized via storeToXML can vary
 		// with version
-		// TestCase.assertEquals("IHDR[13] prOp[256] pHYs[9] tEXt[59] IEND[0] ",
+		// Assertions.assertEquals("IHDR[13] prOp[256] pHYs[9] tEXt[59] IEND[0] ",
 		// chunks);
-		TestCase.assertEquals("Second chunk should be  prOp", "prOp",
-				pngr.getChunksList().getChunks().get(1).getRaw().id);
-		TestCase.assertEquals("Next chunk should be  pHYs", "pHYs",
-				pngr.getChunksList().getChunks().get(2).getRaw().id);
+		Assertions.assertEquals("prOp", pngr.getChunksList().getChunks().get(1).getRaw().id,
+				"Second chunk should be  prOp");
+		Assertions.assertEquals("pHYs", pngr.getChunksList().getChunks().get(2).getRaw().id,
+				"Next chunk should be  pHYs");
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
-		TestCase.assertTrue(chunk instanceof PngChunkUNKNOWN);
+		Assertions.assertTrue(chunk instanceof PngChunkUNKNOWN);
 	}
 
 	private void readWithFactory() {
@@ -81,16 +80,16 @@ public class CustomChunkTest {
 		String chunks = TestSupport.showChunks(pngr.getChunksList().getChunks());
 		// no sense in testing this, the length of serialized via storeToXML can vary
 		// with version
-		// TestCase.assertEquals("IHDR[13] prOp[256] pHYs[9] tEXt[59] IEND[0] ",
+		// Assertions.assertEquals("IHDR[13] prOp[256] pHYs[9] tEXt[59] IEND[0] ",
 		// chunks);
-		TestCase.assertEquals("Second chunk should be  prOp", "prOp",
-				pngr.getChunksList().getChunks().get(1).getRaw().id);
-		TestCase.assertEquals("Next chunk should be  pHYs", "pHYs",
-				pngr.getChunksList().getChunks().get(2).getRaw().id);
+		Assertions.assertEquals("prOp", pngr.getChunksList().getChunks().get(1).getRaw().id,
+				"Second chunk should be  prOp");
+		Assertions.assertEquals("pHYs", pngr.getChunksList().getChunks().get(2).getRaw().id,
+				"Next chunk should be  pHYs");
 		PngChunk chunk = pngr.getChunksList().getById1(PngChunkPROP.ID);
-		TestCase.assertTrue(chunk instanceof PngChunkPROP);
+		Assertions.assertTrue(chunk instanceof PngChunkPROP);
 		String val2 = ((PngChunkPROP) chunk).getProps().getProperty("mykey2");
-		TestCase.assertEquals("myval2", val2);
+		Assertions.assertEquals("myval2", val2);
 	}
 
 }

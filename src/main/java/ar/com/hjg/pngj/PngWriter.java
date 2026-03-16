@@ -1,5 +1,6 @@
 package ar.com.hjg.pngj;
 
+import java.io.BufferedOutputStream;
 import java.io.Closeable;
 import java.io.File;
 import java.io.OutputStream;
@@ -60,6 +61,8 @@ public class PngWriter implements Closeable {
 
 	protected StringBuilder debuginfo = new StringBuilder();
 
+	private ImageLineInt writeRowIntCache;
+
 	private static final Logger LOGGER = Logger.getLogger(PngWriter.class.getName());
 
 	/**
@@ -98,13 +101,14 @@ public class PngWriter implements Closeable {
 	 *            Basic image parameters
 	 */
 	public PngWriter(OutputStream outputStream, ImageInfo imgInfo) {
-		this.os = outputStream;
+		this.os = outputStream instanceof BufferedOutputStream ? outputStream
+				: new BufferedOutputStream(outputStream, 65536);
 		this.imgInfo = imgInfo;
 		// prealloc
 		chunksList = new ChunksListForWrite(imgInfo);
 		metadata = new PngMetadata(chunksList);
 		pixelsWriter = createPixelsWriter(imgInfo);
-		setCompLevel(9);
+		setCompLevel(6);
 	}
 
 	private void initIdat() { // this triggers the writing of first chunks
@@ -420,10 +424,14 @@ public class PngWriter implements Closeable {
 	}
 
 	/**
-	 * Utility method, uses internaly a ImageLineInt
+	 * Utility method, uses internally a cached ImageLineInt to avoid
+	 * per-row allocation.
 	 */
 	public void writeRowInt(int[] buf) {
-		writeRow(new ImageLineInt(imgInfo, buf));
+		if (writeRowIntCache == null)
+			writeRowIntCache = new ImageLineInt(imgInfo);
+		System.arraycopy(buf, 0, writeRowIntCache.getScanline(), 0, imgInfo.samplesPerRow);
+		writeRow(writeRowIntCache);
 	}
 
 	/**

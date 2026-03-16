@@ -1,8 +1,7 @@
 package ar.com.hjg.pngj.test;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.ChunkReader;
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -138,9 +137,9 @@ public class ChunkSeqReaderOpaqueTest {
 		PngReader pngr = new PngReader(TestSupport.istream(png));
 		pngr.readSkippingAllRows();
 		long rawbytes = PngHelperInternal.getRawIdatBytes(pngr);
-		TestCase.assertEquals(rawbytes, cr.idatInflated);
-		TestCase.assertEquals(cr.getCurDeflatedSet().getBytesOut(), cr.idatInflated);
-		TestCase.assertEquals(expected, cr.sbdeb1.toString());
+		Assertions.assertEquals(rawbytes, cr.idatInflated);
+		Assertions.assertEquals(cr.getCurDeflatedSet().getBytesOut(), cr.idatInflated);
+		Assertions.assertEquals(expected, cr.sbdeb1.toString());
 	}
 
 	private void testOpaque2With(boolean buffer, String png, int bsize, String expected) {
@@ -148,9 +147,9 @@ public class ChunkSeqReaderOpaqueTest {
 		cr.setBlockSize(bsize);
 		cr.setBufferChunks(buffer);
 		cr.feedFromInputStream(TestSupport.istream(png));
-		TestCase.assertEquals(0, cr.idatInflated);
-		TestCase.assertNull(cr.getCurDeflatedSet());
-		TestCase.assertEquals(expected, cr.sbdeb1.toString());
+		Assertions.assertEquals(0, cr.idatInflated);
+		Assertions.assertNull(cr.getCurDeflatedSet());
+		Assertions.assertEquals(expected, cr.sbdeb1.toString());
 	}
 
 }

@@ -51,7 +51,8 @@ public class ChunkRaw {
 	 */
 	public byte[] crcval = new byte[4];
 
-	private CRC32 crcengine; // lazily instantiated
+	private static final ThreadLocal<CRC32> THREAD_LOCAL_CRC = ThreadLocal.withInitial(CRC32::new);
+	private CRC32 crcengine; // reference to ThreadLocal instance (set on first use)
 
 	public ChunkRaw(int len, String id, boolean alloc) {
 		this.len = len;
@@ -69,7 +70,7 @@ public class ChunkRaw {
 		this(len, ChunkHelper.toStringLatin1(idbytes), alloc);
 	}
 
-	public void allocData() { // TODO: not public
+	public void allocData() {
 		if (data == null || data.length < len)
 			data = new byte[len];
 	}
@@ -78,7 +79,8 @@ public class ChunkRaw {
 	 * this is called after setting data, before writing to os
 	 */
 	private void computeCrcForWriting() {
-		crcengine = new CRC32();
+		crcengine = THREAD_LOCAL_CRC.get();
+		crcengine.reset();
 		crcengine.update(idbytes, 0, 4);
 		if (len > 0)
 			crcengine.update(data, 0, len); //
@@ -127,8 +129,10 @@ public class ChunkRaw {
 	}
 
 	public void updateCrc(byte[] buf, int off, int len) {
-		if (crcengine == null)
-			crcengine = new CRC32();
+		if (crcengine == null) {
+			crcengine = THREAD_LOCAL_CRC.get();
+			crcengine.reset();
+		}
 		crcengine.update(buf, off, len);
 	}
 

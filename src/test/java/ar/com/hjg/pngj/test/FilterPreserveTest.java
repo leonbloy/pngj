@@ -2,9 +2,8 @@ package ar.com.hjg.pngj.test;
 
 import java.io.File;
 
-import junit.framework.TestCase;
-
-import org.junit.Test;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
 
 import ar.com.hjg.pngj.PngReader;
 import ar.com.hjg.pngj.PngReaderByte;
@@ -33,7 +32,7 @@ public class FilterPreserveTest {
 		pngw.end();
 		String f1 = TestSupport.showFilters(origFile(), 30, false);
 		String f2 = TestSupport.showFilters(dest, 30, false);
-		TestCase.assertFalse(f1.equals(f2)); // must be different
+		Assertions.assertFalse(f1.equals(f2)); // must be different
 	}
 
 	@Test
@@ -49,7 +48,7 @@ public class FilterPreserveTest {
 		pngw.end();
 		String f1 = TestSupport.showFilters(origFile(), 30, false);
 		String f2 = TestSupport.showFilters(dest, 30, false);
-		TestCase.assertEquals(f1, f2); // must be different
+		Assertions.assertEquals(f1, f2); // must be different
 	}
 
 	@Test
@@ -62,7 +61,7 @@ public class FilterPreserveTest {
 		pngw.end();
 		String f1 = TestSupport.showFilters(origFile(), 30, false);
 		String f2 = TestSupport.showFilters(dest, 30, false);
-		TestCase.assertFalse(f1.equals(f2)); // must be different
+		Assertions.assertFalse(f1.equals(f2)); // must be different
 	}
 
 	@Test
@@ -76,7 +75,7 @@ public class FilterPreserveTest {
 		pngw.end();
 		String f1 = TestSupport.showFilters(origFile(), 30, false);
 		String f2 = TestSupport.showFilters(dest, 30, false);
-		TestCase.assertEquals(f1, f2);
+		Assertions.assertEquals(f1, f2);
 	}
 
 }

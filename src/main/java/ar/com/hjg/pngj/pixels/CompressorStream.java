@@ -159,9 +159,12 @@ public abstract class CompressorStream extends OutputStream {
 		done = false;
 	}
 
+	private final byte[] singleByteBuf = new byte[1];
+
 	@Override
 	public void write(int i) { // should not be used
-		write(new byte[] { (byte) i });
+		singleByteBuf[0] = (byte) i;
+		write(singleByteBuf);
 	}
 
 }

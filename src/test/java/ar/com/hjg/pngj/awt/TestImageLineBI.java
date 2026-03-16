@@ -7,10 +7,10 @@ import java.util.List;
 import java.util.Random;
 import java.util.Set;
 
-import junit.framework.AssertionFailedError;
-
-import org.junit.After;
-import org.junit.Test;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.Assertions;
+import org.junit.jupiter.api.Test;
+import org.opentest4j.AssertionFailedError;
 
 import ar.com.hjg.pngj.ImageInfo;
 import ar.com.hjg.pngj.PngHelperInternal;
@@ -64,7 +64,7 @@ public class TestImageLineBI {
 	/**
 	 * Reads via via ImageIO, (optionally does a BI conversion), writes via our
 	 * PngWriterBI and compares pixel by pixel
-	 * 
+	 *
 	 * @param f          Png file
 	 * @param convToType one of the BufferedImage types (negative if not conversion)
 	 * @param forceRgb   If true, we force resort to getRGB in our internal logic
@@ -195,7 +195,7 @@ public class TestImageLineBI {
 		TestSupport.testSameValues(dest2, dest);
 	}
 
-	@After
+	@AfterEach
 	public void endTest() {
 		if (removeTmpFiles)
 			for (File f : tmpFilesToDelete) {

@@ -28,17 +28,16 @@ public final class PngHelperInternal {
 	 */
 	public static Charset charsetUTF8 = StandardCharsets.UTF_8;
 
-	private static ThreadLocal<Boolean> DEBUG = new ThreadLocal<Boolean>() {
-		protected Boolean initialValue() {
-			return Boolean.FALSE;
-		}
-	};
+	private static final ThreadLocal<Boolean> DEBUG = ThreadLocal.withInitial(() -> Boolean.FALSE);
+	private static final ThreadLocal<byte[]> INT4_BUF = ThreadLocal.withInitial(() -> new byte[4]);
 
 	/**
 	 * PNG magic bytes
 	 */
+	private static final byte[] PNG_ID_SIGNATURE = { -119, 80, 78, 71, 13, 10, 26, 10 };
+
 	public static byte[] getPngIdSignature() {
-		return new byte[] { -119, 80, 78, 71, 13, 10, 26, 10 };
+		return PNG_ID_SIGNATURE.clone();
 	}
 
 	public static int doubleToInt100000(double d) {
@@ -81,13 +80,11 @@ public final class PngHelperInternal {
 	 */
 	public static int readInt4(InputStream is) {
 		try {
-			int b1 = is.read();
-			int b2 = is.read();
-			int b3 = is.read();
-			int b4 = is.read();
-			if (b1 == -1 || b2 == -1 || b3 == -1 || b4 == -1)
+			byte[] tmp = INT4_BUF.get();
+			int n = is.readNBytes(tmp, 0, 4);
+			if (n < 4)
 				return -1;
-			return (b1 << 24) | (b2 << 16) | (b3 << 8) + b4;
+			return ((tmp[0] & 0xFF) << 24) | ((tmp[1] & 0xFF) << 16) | ((tmp[2] & 0xFF) << 8) | (tmp[3] & 0xFF);
 		} catch (IOException e) {
 			throw new PngjInputException("error reading Int4", e);
 		}
@@ -123,14 +120,23 @@ public final class PngHelperInternal {
 	}
 
 	public static void writeInt2(OutputStream os, int n) {
-		byte[] temp = { (byte) ((n >> 8) & 0xff), (byte) (n & 0xff) };
-		writeBytes(os, temp);
+		try {
+			os.write((n >> 8) & 0xff);
+			os.write(n & 0xff);
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
+		}
 	}
 
 	public static void writeInt4(OutputStream os, int n) {
-		byte[] temp = new byte[4];
-		writeInt4tobytes(n, temp, 0);
-		writeBytes(os, temp);
+		try {
+			os.write((n >> 24) & 0xff);
+			os.write((n >> 16) & 0xff);
+			os.write((n >> 8) & 0xff);
+			os.write(n & 0xff);
+		} catch (IOException e) {
+			throw new PngjOutputException(e);
+		}
 	}
 
 	public static void writeInt2tobytes(int n, byte[] b, int offset) {
