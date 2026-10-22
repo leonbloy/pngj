@@ -16,6 +16,34 @@ import ar.com.hjg.pngj.chunks.PngChunk;
 public class PngFilterStreamTest {
 
 	@Test
+	public void testSingleByteReads() throws Exception {
+		PngReaderFilter reader = new PngReaderFilter(TestSupport.istream("test/stripes.png"));
+		long bytesRead = 0;
+		while (reader.read() != -1) {
+			bytesRead++;
+		}
+		TestCase.assertEquals(bytesRead, reader.getChunkseq().getBytesCount());
+		TestCase.assertTrue(reader.getChunkseq().isDone());
+		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(reader.getChunksList()));
+		reader.close();
+	}
+
+	@Test
+	public void testByteArrayReads() throws Exception {
+		PngReaderFilter reader = new PngReaderFilter(TestSupport.istream("test/stripes.png"));
+		byte[] buffer = new byte[37];
+		long bytesRead = 0;
+		int count;
+		while ((count = reader.read(buffer)) != -1) {
+			bytesRead += count;
+		}
+		TestCase.assertEquals(bytesRead, reader.getChunkseq().getBytesCount());
+		TestCase.assertTrue(reader.getChunkseq().isDone());
+		TestCase.assertEquals("IHDR[13] pHYs[9] tIME[7] iTXt[30] IEND[0] ", TestSupport.showChunks(reader.getChunksList()));
+		reader.close();
+	}
+
+	@Test
 	public void testBufferedImage() throws Exception {
 		PngReaderFilter reader = new PngReaderFilter(TestSupport.istream("test/stripes.png"));
 		BufferedImage image1 = ImageIO.read(reader);

@@ -60,7 +60,7 @@ public class PngReaderFilter extends FilterInputStream {
 	@Override
 	public int read() throws IOException {
 		int r = super.read();
-		if (r > 0)
+		if (r >= 0)
 			chunkseq.feedAll(new byte[] { (byte) r }, 0, 1);
 		return r;
 	}
@@ -75,10 +75,7 @@ public class PngReaderFilter extends FilterInputStream {
 
 	@Override
 	public int read(byte[] b) throws IOException {
-		int res = super.read(b);
-		if (res > 0)
-			chunkseq.feedAll(b, 0, res);
-		return res;
+		return read(b, 0, b.length);
 	}
 
 	public void readUntilEndAndClose() throws IOException {
